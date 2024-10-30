@@ -5,7 +5,7 @@ export interface PlaceProperties {
   name: string;
   description: string;
   address: string;
-  image: string;
+  image?: string;
   instagram: string;
   averageRating: number;
   userRating: number;

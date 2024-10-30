@@ -99,6 +99,36 @@ export const GET_ALL_PLACES = gql`
         ratingCount
         isFavorite
         favoriteCount
+        characteristicCounts {
+          tastyFilterCoffee {
+            pressed
+            count
+          }
+          pleasantAtmosphere {
+            pressed
+            count
+          }
+          friendlyStaff {
+            pressed
+            count
+          }
+          tastyDesserts {
+            pressed
+            count
+          }
+          greatFood {
+            pressed
+            count
+          }
+          reasonablePrices {
+            pressed
+            count
+          }
+          hasWifi {
+            pressed
+            count
+          }
+        }
       }
     }
   }

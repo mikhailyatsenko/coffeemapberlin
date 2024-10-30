@@ -82,6 +82,7 @@ const DetailedPaceCard: React.FC = () => {
   if (!place?.properties || loading) return <Loader />;
 
   const { averageRating, description, name, address, instagram, ratingCount, image } = place.properties;
+
   return (
     <>
       <div className={cls.addressCopmactView}>{address}</div>
