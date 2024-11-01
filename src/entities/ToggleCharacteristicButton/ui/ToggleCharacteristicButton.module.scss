@@ -1,0 +1,29 @@
+.RegularButton {
+  border: 1px solid #303030;
+  background: transparent;
+  color: #303030;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  &.pressed {
+    border: 1px solid #61c289;
+    color: #61c289;
+    &:hover {
+      background-color: #61c289;
+    }
+  }
+  &:hover {
+    img {
+      filter: invert(100%);
+    }
+    color: #fff;
+    background-color: #303030;
+  }
+}

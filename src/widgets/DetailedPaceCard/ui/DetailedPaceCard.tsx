@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState, useRef, useCallback } from 'rea
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
+import { ToggleCharacteristic } from 'features/ToggleCharacteristic';
 import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
@@ -82,6 +83,7 @@ const DetailedPaceCard: React.FC = () => {
   if (!place?.properties || loading) return <Loader />;
 
   const { averageRating, description, name, address, instagram, ratingCount, image } = place.properties;
+  console.log(place);
 
   return (
     <>
@@ -134,6 +136,7 @@ const DetailedPaceCard: React.FC = () => {
             isHeaderVisible={isHeaderVisible}
           />
           <RateNow placeId={placeId} reviews={reviews} />
+          <ToggleCharacteristic placeId={placeId} characteristicCounts={place.properties.characteristicCounts} />
           <ReviewList
             reviews={reviews}
             placeId={placeId}

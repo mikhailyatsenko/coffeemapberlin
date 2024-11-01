@@ -1,5 +1,20 @@
 import { type Point } from 'geojson';
 
+interface CharacteristicData {
+  pressed: boolean;
+  count: number;
+}
+
+export interface ICharacteristicCounts {
+  deliciousFilterCoffee: CharacteristicData;
+  pleasantAtmosphere: CharacteristicData;
+  friendlyStaff: CharacteristicData;
+  deliciousDesserts: CharacteristicData;
+  excellentFood: CharacteristicData;
+  affordablePrices: CharacteristicData;
+  freeWifi: CharacteristicData;
+}
+
 export interface PlaceProperties {
   id: string;
   name: string;
@@ -12,6 +27,7 @@ export interface PlaceProperties {
   ratingCount: number;
   favoriteCount: number;
   isFavorite: boolean;
+  characteristicCounts: ICharacteristicCounts;
 }
 
 export interface User {
