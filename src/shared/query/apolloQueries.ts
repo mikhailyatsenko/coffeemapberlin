@@ -100,23 +100,7 @@ export const GET_ALL_PLACES = gql`
         isFavorite
         favoriteCount
         characteristicCounts {
-          deliciousFilterCoffee {
-            pressed
-            count
-          }
           pleasantAtmosphere {
-            pressed
-            count
-          }
-          friendlyStaff {
-            pressed
-            count
-          }
-          deliciousDesserts {
-            pressed
-            count
-          }
-          excellentFood {
             pressed
             count
           }
@@ -124,7 +108,28 @@ export const GET_ALL_PLACES = gql`
             pressed
             count
           }
+          friendlyStaff {
+            pressed
+            count
+          }
+          yummyEats {
+            pressed
+            count
+          }
+          deliciousFilterCoffee {
+            pressed
+            count
+          }
+
           freeWifi {
+            pressed
+            count
+          }
+          petFriendly {
+            pressed
+            count
+          }
+          outdoorSeating {
             pressed
             count
           }

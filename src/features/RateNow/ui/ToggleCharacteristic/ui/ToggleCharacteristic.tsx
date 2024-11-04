@@ -3,6 +3,7 @@ import { ToggleCharacteristicButton } from 'entities/ToggleCharacteristicButton'
 import { TOGGLE_CHARACTERISTIC } from 'shared/query/apolloQueries';
 import { type ICharacteristicCounts } from 'shared/types';
 import { updateAllPlacesCache } from '../lib/updateAllPlacesCache';
+import cls from './ToggleCharacteristic.module.scss';
 
 interface ToggleCharacteristicButtonProps {
   placeId: string;
@@ -16,13 +17,14 @@ interface ToggleCharacteristicVariables {
 
 export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = ({ placeId, characteristicCounts }) => {
   const characteristics = new Map<string, string>([
-    ['deliciousFilterCoffee', 'Delicious Filter Coffee'],
-    ['pleasantAtmosphere', 'Pleasant atmosphere'],
-    ['friendlyStaff', 'Friendly staff'],
-    ['deliciousDesserts', 'Delicious Desserts'],
-    ['excellentFood', 'Excellent Food'],
+    ['pleasantAtmosphere', 'Pleasant Atmosphere'],
+    ['friendlyStaff', 'Friendly Staff'],
     ['affordablePrices', 'Affordable Prices'],
-    ['freeWifi', 'Free Wi-fi'],
+    ['yummyEats', 'Yummy Eats'],
+    ['deliciousFilterCoffee', 'Delicious Filter Coffee'],
+    ['freeWifi', 'Free Wi-Fi'],
+    ['petFriendly', 'Pet Friendly'],
+    ['outdoorSeating', 'Outdoor Seating'],
   ]);
 
   const [toggleCharacteristic, { error, loading }] = useMutation<
@@ -52,7 +54,7 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
   };
 
   return (
-    <div>
+    <div className={cls.toggleCharacteristicButtons}>
       {Object.keys(characteristicCounts)
         .filter((charKey) => charKey !== '__typename')
         .map((charKey) => (

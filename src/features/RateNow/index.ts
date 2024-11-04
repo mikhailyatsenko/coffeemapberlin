@@ -1,1 +1,1 @@
-export { RateNow } from './ui/RateNow';
+export { RateNow } from './ui/RateNow/RateNow';

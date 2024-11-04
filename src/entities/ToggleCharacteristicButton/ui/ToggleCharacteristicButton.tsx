@@ -1,9 +1,10 @@
+import MyIcon from '../../../shared/assets/pet-friendly-icon.svg?react';
 import cls from './ToggleCharacteristicButton.module.scss';
 
 interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  pressed: boolean; // Состояние кнопки (нажата/не нажата)
-  onClick: () => void; // Обработчик клика
-  name: string; // Имя кнопки
+  pressed: boolean;
+  onClick: () => void;
+  name: string;
 }
 export const ToggleCharacteristicButton: React.FC<CustomButtonProps> = ({
   pressed,
@@ -13,12 +14,11 @@ export const ToggleCharacteristicButton: React.FC<CustomButtonProps> = ({
   ...props
 }) => {
   return (
-    <button
-      onClick={onClick}
-      className={`${cls.RegularButton} ${pressed ? cls.pressed : ''}`}
-      {...props} // Передаем остальные стандартные пропсы
-    >
-      {children} {/* Отображаем имя и дочерние элементы */}
+    <button onClick={onClick} className={`${cls.buttonChar} ${pressed ? cls.pressed : ''}`} {...props}>
+      <div className={cls.charIcon}>
+        <MyIcon />
+      </div>
+      {children}
     </button>
   );
 };

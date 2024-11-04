@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState, useRef, useCallback } from 'rea
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
-import { ToggleCharacteristic } from 'features/ToggleCharacteristic';
 import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
@@ -82,8 +81,8 @@ const DetailedPaceCard: React.FC = () => {
   if (!placeId) return null;
   if (!place?.properties || loading) return <Loader />;
 
-  const { averageRating, description, name, address, instagram, ratingCount, image } = place.properties;
-  console.log(place);
+  const { averageRating, description, name, address, instagram, ratingCount, image, characteristicCounts, isFavorite } =
+    place.properties;
 
   return (
     <>
@@ -118,7 +117,7 @@ const DetailedPaceCard: React.FC = () => {
               }}
               className={cls.iconFavWrapper}
             >
-              <AddToFavButton isFavorite={Boolean(place.properties.isFavorite)} />
+              <AddToFavButton isFavorite={Boolean(isFavorite)} />
             </div>
             <button
               className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
@@ -135,14 +134,14 @@ const DetailedPaceCard: React.FC = () => {
             description={description}
             isHeaderVisible={isHeaderVisible}
           />
-          <RateNow placeId={placeId} reviews={reviews} />
-          <ToggleCharacteristic placeId={placeId} characteristicCounts={place.properties.characteristicCounts} />
+          <RateNow placeId={placeId} reviews={reviews} characteristicCounts={characteristicCounts} />
           <ReviewList
             reviews={reviews}
             placeId={placeId}
             isCompactView={isHeaderVisible}
             setCompactView={setIsHeaderVisible}
           />
+          {/* for Google Rich Results */}
           <CoffeeShopSchema
             address={address}
             averageRating={averageRating}

@@ -9,10 +9,11 @@ export interface ICharacteristicCounts {
   deliciousFilterCoffee: CharacteristicData;
   pleasantAtmosphere: CharacteristicData;
   friendlyStaff: CharacteristicData;
-  deliciousDesserts: CharacteristicData;
-  excellentFood: CharacteristicData;
-  affordablePrices: CharacteristicData;
   freeWifi: CharacteristicData;
+  yummyEats: CharacteristicData;
+  affordablePrices: CharacteristicData;
+  petFriendly: CharacteristicData;
+  outdoorSeating: CharacteristicData;
 }
 
 export interface PlaceProperties {

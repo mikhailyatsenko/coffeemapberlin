@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { ReviewForm } from 'entities/ReviewForm';
-import { type Review } from 'shared/types';
+import { useAddReview } from 'shared/lib/hooks/interactions/useAddReview';
+import { type ICharacteristicCounts, type Review } from 'shared/types';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import { RegularButton } from 'shared/ui/RegularButton';
-import { useAddReview } from '../../../shared/lib/hooks/interactions/useAddReview';
+import { ToggleCharacteristic } from '../ToggleCharacteristic/ui/ToggleCharacteristic';
 import cls from './RateNow.module.scss';
 
 interface RateNowProps {
   reviews: Review[];
   placeId: string;
+  characteristicCounts: ICharacteristicCounts;
 }
 
-export const RateNow = ({ reviews, placeId }: RateNowProps) => {
+export const RateNow = ({ reviews, placeId, characteristicCounts }: RateNowProps) => {
   const { handleAddReview, loading: reviewLoading } = useAddReview(placeId);
 
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -43,7 +45,7 @@ export const RateNow = ({ reviews, placeId }: RateNowProps) => {
       )}
 
       {showReviewForm && (
-        <div className={cls.addReviewCard}>
+        <div className={cls.addReviewSection}>
           {!hasRating && (
             <>
               <div className={cls.rateWidget}>
@@ -65,7 +67,7 @@ export const RateNow = ({ reviews, placeId }: RateNowProps) => {
               )}
             </>
           )}
-
+          <ToggleCharacteristic placeId={placeId} characteristicCounts={characteristicCounts} />
           {!hasReviewWithText && (
             <ReviewForm
               isLoading={reviewLoading}
