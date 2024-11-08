@@ -91,6 +91,7 @@ export function useAddReview(placeId: string) {
     }
     try {
       const variables: { placeId: string; text?: string; rating?: number } = { placeId };
+
       if (text !== undefined) variables.text = text;
       if (rating !== undefined) variables.rating = rating;
 

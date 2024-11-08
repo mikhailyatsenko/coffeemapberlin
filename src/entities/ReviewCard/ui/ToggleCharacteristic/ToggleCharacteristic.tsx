@@ -1,21 +1,19 @@
-import { useMutation } from '@apollo/client';
-import { ToggleCharacteristicButton } from 'entities/ToggleCharacteristicButton';
-import { TOGGLE_CHARACTERISTIC } from 'shared/query/apolloQueries';
+
+import { ToggleCharacteristicButton } from '../ToggleCharacteristicButton/ToggleCharacteristicButton';
 import { type ICharacteristicCounts } from 'shared/types';
-import { updateAllPlacesCache } from '../lib/updateAllPlacesCache';
 import cls from './ToggleCharacteristic.module.scss';
+import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
 
 interface ToggleCharacteristicButtonProps {
   placeId: string;
   characteristicCounts: ICharacteristicCounts;
 }
 
-interface ToggleCharacteristicVariables {
-  placeId: string;
-  characteristic: keyof ICharacteristicCounts;
-}
+
 
 export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = ({ placeId, characteristicCounts }) => {
+
+  const {toggleFavorite, error} = useToggleCharacteristic(placeId)
   const characteristics = new Map<string, string>([
     ['pleasantAtmosphere', 'Pleasant Atmosphere'],
     ['friendlyStaff', 'Friendly Staff'],
@@ -27,31 +25,6 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
     ['outdoorSeating', 'Outdoor Seating'],
   ]);
 
-  const [toggleCharacteristic, { error, loading }] = useMutation<
-    { toggleCharacteristic: { success: boolean } },
-    ToggleCharacteristicVariables
-  >(TOGGLE_CHARACTERISTIC, {
-    optimisticResponse: {
-      toggleCharacteristic: {
-        success: true,
-      },
-    },
-
-    update(cache, _, { variables }) {
-      const characteristic = variables?.characteristic;
-      if (characteristic) {
-        updateAllPlacesCache(cache, placeId, characteristic);
-      }
-    },
-  });
-
-  const handleToggle = async (charKey: keyof ICharacteristicCounts) => {
-    try {
-      await toggleCharacteristic({ variables: { placeId, characteristic: charKey } });
-    } catch (err) {
-      console.error('Error toggling characteristic:', err);
-    }
-  };
 
   return (
     <div className={cls.toggleCharacteristicButtons}>
@@ -61,16 +34,15 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
           <ToggleCharacteristicButton
             key={charKey}
             pressed={characteristicCounts[charKey as keyof ICharacteristicCounts].pressed}
+            characteristic={charKey}
             onClick={async () => {
-              await handleToggle(charKey as keyof ICharacteristicCounts);
+              await toggleFavorite(charKey as keyof ICharacteristicCounts);
             }}
-            name={charKey}
           >
             {characteristics.get(charKey)}
           </ToggleCharacteristicButton>
         ))}
       {error && <span style={{ color: 'red' }}>Error: {error.message}</span>}
-      {loading && <span>Loading...</span>}
     </div>
   );
 };

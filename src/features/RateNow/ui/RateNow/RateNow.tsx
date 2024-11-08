@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { ReviewForm } from 'entities/ReviewForm';
-import { useAddReview } from 'shared/lib/hooks/interactions/useAddReview';
 import { type ICharacteristicCounts, type Review } from 'shared/types';
-import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
-import { RegularButton } from 'shared/ui/RegularButton';
-import { ToggleCharacteristic } from '../ToggleCharacteristic/ui/ToggleCharacteristic';
 import cls from './RateNow.module.scss';
+import { Modal } from 'shared/ui/Modal';
+import {RatePlace} from 'entities/ReviewCard/ui/RatePlace/RatePlace';
 
 interface RateNowProps {
   reviews: Review[];
@@ -14,80 +11,48 @@ interface RateNowProps {
 }
 
 export const RateNow = ({ reviews, placeId, characteristicCounts }: RateNowProps) => {
-  const { handleAddReview, loading: reviewLoading } = useAddReview(placeId);
 
-  const [showReviewForm, setShowReviewForm] = useState(false);
+
+  const [showRatePlace, setShowRatePlace] = useState(false);
 
   const hasRating = reviews.some((review) => review.isOwnReview && review.userRating !== null);
   const hasReviewWithText = reviews.some((review) => review.isOwnReview && review.text.trim() !== '');
 
-  const onSubmitTextReview = async (reviewText: string) => {
-    await handleAddReview(reviewText);
-  };
+
 
   if (hasRating && hasReviewWithText) return null;
 
   return (
     <>
-      {!showReviewForm && (
+      {!showRatePlace && (
         <div className={cls.rateNowContainer}>
           <h4 className={cls.question}>
             Have you visited this place?{' '}
             <span
               onClick={() => {
-                setShowReviewForm(true);
+                setShowRatePlace(true);
               }}
             >
-              {hasRating ? 'Leave a review' : 'Rate it now'}
+              Rate it
             </span>
           </h4>
         </div>
       )}
 
-      {showReviewForm && (
-        <div className={cls.addReviewSection}>
-          {!hasRating && (
-            <>
-              <div className={cls.rateWidget}>
-                <h3>Rate this place:</h3>
-                <RatingWidget isClickable={true} handleRating={handleAddReview} />
-              </div>
-              {hasReviewWithText && (
-                <div className={cls.itemFullWidth}>
-                  <RegularButton
-                    theme="blank"
-                    type="button"
-                    clickHandler={() => {
-                      setShowReviewForm(false);
-                    }}
-                  >
-                    &#8612; Back
-                  </RegularButton>
-                </div>
-              )}
-            </>
-          )}
-          <ToggleCharacteristic placeId={placeId} characteristicCounts={characteristicCounts} />
-          {!hasReviewWithText && (
-            <ReviewForm
-              isLoading={reviewLoading}
-              onSubmit={onSubmitTextReview}
-              onBack={() => {
-                setShowReviewForm(false);
-              }}
-            />
-          )}
-        </div>
-      )}
+      {showRatePlace && <Modal onClose={()=> setShowRatePlace(false)}>
+       <RatePlace placeId={placeId} characteristicCounts={characteristicCounts} hasRating={hasRating} hasReviewWithText={hasReviewWithText} />
+      </Modal>
+      
+      }
 
-      {reviews.length === 0 && !showReviewForm && (
+      {reviews.length === 0 && !showRatePlace && (
         <div className={cls.noReviews}>
           <p>There are no reviews yet.</p>
           <p>
             Be first to{' '}
             <span
               onClick={() => {
-                setShowReviewForm(true);
+                setShowRatePlace(true);
               }}
             >
               write one

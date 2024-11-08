@@ -2,9 +2,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
 import { FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 import { FormField } from 'shared/ui/FormField';
-import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
-import { validationSchema } from '../lib/validationSchema';
+import { validationSchema } from '../../lib/validationSchema';
 import cls from './ReviewForm.module.scss';
 
 interface ReviewFormProps {
@@ -17,7 +16,7 @@ interface ReviewFormData {
   review: string;
 }
 
-export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, isLoading, onBack }) => {
+export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onBack }) => {
   const form = useForm<ReviewFormData>({ mode: 'onChange', resolver: yupResolver(validationSchema) });
 
   const {
@@ -31,7 +30,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, isLoading, onB
     }
   };
 
-  if (isLoading) return <Loader />;
+
 
   return (
     <FormProvider {...form}>
