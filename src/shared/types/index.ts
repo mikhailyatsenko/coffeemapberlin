@@ -1,6 +1,6 @@
 import { type Point } from 'geojson';
 
-interface CharacteristicData {
+export interface CharacteristicData {
   pressed: boolean;
   count: number;
 }

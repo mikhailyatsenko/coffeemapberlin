@@ -134,7 +134,7 @@ const DetailedPaceCard: React.FC = () => {
             description={description}
             isHeaderVisible={isHeaderVisible}
           />
-          <RateNow placeId={placeId} reviews={reviews} characteristicCounts={characteristicCounts} />
+          <RateNow placeName={name} placeId={placeId} reviews={reviews} characteristicCounts={characteristicCounts} />
           <ReviewList
             reviews={reviews}
             placeId={placeId}
