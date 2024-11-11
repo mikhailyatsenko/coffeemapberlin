@@ -1,19 +1,15 @@
-
-import { ToggleCharacteristicButton } from '../ToggleCharacteristicButton/ToggleCharacteristicButton';
-import { type ICharacteristicCounts } from 'shared/types';
-import cls from './ToggleCharacteristic.module.scss';
 import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
+import { type ICharacteristicCounts } from 'shared/types';
+import { ToggleCharacteristicButton } from '../ToggleCharacteristicButton/ToggleCharacteristicButton';
+import cls from './ToggleCharacteristic.module.scss';
 
 interface ToggleCharacteristicButtonProps {
   placeId: string;
   characteristicCounts: ICharacteristicCounts;
 }
 
-
-
 export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = ({ placeId, characteristicCounts }) => {
-
-  const {toggleFavorite, error} = useToggleCharacteristic(placeId)
+  const { toggleFavorite, error } = useToggleCharacteristic(placeId);
   const characteristics = new Map<string, string>([
     ['pleasantAtmosphere', 'Pleasant Atmosphere'],
     ['friendlyStaff', 'Friendly Staff'],
@@ -24,7 +20,6 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
     ['petFriendly', 'Pet Friendly'],
     ['outdoorSeating', 'Outdoor Seating'],
   ]);
-
 
   return (
     <div className={cls.toggleCharacteristicButtons}>

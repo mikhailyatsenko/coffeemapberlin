@@ -14,7 +14,6 @@ export const ToggleCharacteristicButton: React.FC<CustomButtonProps> = ({
   characteristic,
   ...props
 }) => {
-
   const IconComponent = iconCharMap[characteristic as keyof typeof iconCharMap];
   return (
     <button onClick={onClick} className={`${cls.buttonChar} ${pressed ? cls.pressed : ''}`} {...props}>

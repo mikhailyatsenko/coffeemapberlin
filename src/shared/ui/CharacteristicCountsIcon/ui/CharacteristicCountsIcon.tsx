@@ -9,9 +9,10 @@ interface CharacteristicCountsIconsProps {
 
 export const CharacteristicCountsIcon = ({ characteristic, characteristicData }: CharacteristicCountsIconsProps) => {
   const IconComponent = iconCharMap[characteristic as keyof typeof iconCharMap];
+  if (characteristicData.count === 0) return null;
   return (
     <div className={`${cls.CharacteristicCountsIcon} ${characteristicData.pressed ? cls.pressed : ''}`}>
-      <IconComponent />
+      <IconComponent className={cls.icon} />
       <div className={cls.count}>{characteristicData.count}</div>
     </div>
   );

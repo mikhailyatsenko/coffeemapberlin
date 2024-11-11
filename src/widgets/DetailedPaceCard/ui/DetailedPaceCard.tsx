@@ -7,8 +7,9 @@ import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
 import { GET_ALL_PLACES, GET_PLACE_DETAILS } from 'shared/query/apolloQueries';
-import { type PlaceResponse } from 'shared/types';
+import { type ICharacteristicCounts, type PlaceResponse } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
@@ -23,6 +24,8 @@ const DetailedPaceCard: React.FC = () => {
   const { setLocation } = useContext(LocationContext);
   const [isViewInstProfile, setIsViewInstProfile] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [showRateNow, setShowRateNow] = useState(false);
+
   const detailedCardRef = useRef<HTMLDivElement>(null);
   const placeId = searchParams.get('id');
 
@@ -129,18 +132,41 @@ const DetailedPaceCard: React.FC = () => {
             </button>
           </div>
           <h2 className={cls.name}>{name}</h2>
-          <HeaderDetailedPlacCard
-            averageRating={averageRating}
-            description={description}
-            isHeaderVisible={isHeaderVisible}
+          <div className={cls.charCounts}>
+            {Object.keys(characteristicCounts)
+              .filter((charKey) => charKey !== '__typename')
+              .map((charKey) => (
+                <CharacteristicCountsIcon
+                  characteristic={charKey}
+                  characteristicData={characteristicCounts[charKey as keyof ICharacteristicCounts]}
+                  key={charKey}
+                />
+              ))}
+          </div>
+          {!showRateNow && (
+            <HeaderDetailedPlacCard
+              averageRating={averageRating}
+              description={description}
+              isHeaderVisible={isHeaderVisible}
+            />
+          )}
+          <RateNow
+            setShowRateNow={setShowRateNow}
+            showRateNow={showRateNow}
+            placeId={placeId}
+            reviews={reviews}
+            characteristicCounts={characteristicCounts}
           />
-          <RateNow placeName={name} placeId={placeId} reviews={reviews} characteristicCounts={characteristicCounts} />
+
           <ReviewList
+            showRateNow={showRateNow}
+            setShowRateNow={setShowRateNow}
             reviews={reviews}
             placeId={placeId}
             isCompactView={isHeaderVisible}
             setCompactView={setIsHeaderVisible}
           />
+
           {/* for Google Rich Results */}
           <CoffeeShopSchema
             address={address}

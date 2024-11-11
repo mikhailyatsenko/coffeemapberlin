@@ -1,28 +1,26 @@
-import { useState } from 'react';
-// import { useAddReview } from 'shared/lib/hooks/interactions/useAddReview';
+import { RatePlace } from 'entities/RatePlace';
 import { type ICharacteristicCounts, type Review } from 'shared/types';
 import cls from './RateNow.module.scss';
-import { Modal } from 'shared/ui/Modal';
-import {RatePlace} from 'entities/ReviewCard/ui/RatePlace/RatePlace';
 
 interface RateNowProps {
+  showRateNow: boolean;
+  setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   reviews: Review[];
   placeId: string;
   characteristicCounts: ICharacteristicCounts;
-  placeName: string;
 }
 
-export const RateNow = ({ reviews, placeId, characteristicCounts, placeName }: RateNowProps) => {
-
-
-  const [showReviewForm, setShowReviewForm] = useState(false);
-
-  const hasRating = reviews.some((review) => review.isOwnReview && review.userRating !== null);
+export const RateNow = ({
+  reviews,
+  placeId,
+  characteristicCounts,
+  setShowRateNow,
+  showRateNow: showReviewForm,
+}: RateNowProps) => {
+  const currentUserReview = reviews.find((review) => review.isOwnReview);
   const hasReviewWithText = reviews.some((review) => review.isOwnReview && review.text.trim() !== '');
 
-
-
-  if (hasRating && hasReviewWithText) return null;
+  // if (hasRating && hasReviewWithText) return null;
 
   return (
     <div>
@@ -32,7 +30,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, placeName }: R
             Have you visited this place?{' '}
             <span
               onClick={() => {
-                setShowReviewForm(true);
+                setShowRateNow(true);
               }}
             >
               Rate it
@@ -41,26 +39,14 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, placeName }: R
         </div>
       )}
 
-      {showReviewForm && <Modal onClose={()=> setShowReviewForm(false)}>
-       <RatePlace placeName={placeName} placeId={placeId} characteristicCounts={characteristicCounts} hasRating={hasRating} hasReviewWithText={hasReviewWithText} />
-      </Modal>
-      
-      }
-
-      {reviews.length === 0 && !showReviewForm && (
-        <div className={cls.noReviews}>
-          <p>There are no reviews yet.</p>
-          <p>
-            Be first to{' '}
-            <span
-              onClick={() => {
-                setShowReviewForm(true);
-              }}
-            >
-              write one
-            </span>
-          </p>
-        </div>
+      {showReviewForm && (
+        <RatePlace
+          setShowRateNow={setShowRateNow}
+          placeId={placeId}
+          characteristicCounts={characteristicCounts}
+          userRating={currentUserReview?.userRating}
+          hasReviewWithText={hasReviewWithText}
+        />
       )}
     </div>
   );

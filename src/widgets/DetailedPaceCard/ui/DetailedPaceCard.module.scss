@@ -22,7 +22,6 @@
   font-weight: 200;
   font-size: 16px;
   font-style: italic;
-
   z-index: 21;
   @media (width >= 501px) {
     display: none;
@@ -46,7 +45,8 @@
   z-index: 11;
 
   .name {
-    margin-top: 18px;
+    margin-top: 16px;
+    text-align: center;
     color: #fff;
   }
   .address {
@@ -198,4 +198,12 @@
   &::after {
     transform: rotate(-45deg);
   }
+}
+
+.charCounts {
+  display: flex;
+  width: 80%;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }

@@ -30,8 +30,6 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onBack }) => {
     }
   };
 
-
-
   return (
     <FormProvider {...form}>
       <form className={`${cls.reviewForm}`} onSubmit={handleSubmit(handleFormSubmit)}>

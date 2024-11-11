@@ -6,13 +6,22 @@ import { sortReviews } from '../lib/sortReviews';
 import cls from './ReviewList.module.scss';
 
 interface ReviewListProps {
+  showRateNow: boolean;
+  setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   reviews: Review[];
   placeId: string;
   isCompactView: boolean;
   setCompactView: (isCompact: boolean) => void;
 }
 
-export const ReviewList = ({ reviews, placeId, isCompactView, setCompactView }: ReviewListProps) => {
+export const ReviewList = ({
+  reviews,
+  placeId,
+  isCompactView,
+  setCompactView,
+  setShowRateNow,
+  showRateNow,
+}: ReviewListProps) => {
   const reviewsListRef = useRef<HTMLDivElement>(null);
 
   const { handleDeleteReview } = useDeleteReview(placeId);
@@ -84,7 +93,24 @@ export const ReviewList = ({ reviews, placeId, isCompactView, setCompactView }: 
     };
   }, [handleScrollReviewsDown]);
 
-  if (reviews.length === 0) return null;
+  if (showRateNow) return null;
+
+  if (reviews.length === 0)
+    return (
+      <div className={cls.noReviews}>
+        <p>There are no reviews yet.</p>
+        <p>
+          Be first to{' '}
+          <span
+            onClick={() => {
+              setShowRateNow(true);
+            }}
+          >
+            write one
+          </span>
+        </p>
+      </div>
+    );
 
   return (
     <div className={cls.reviewsContainer}>
