@@ -4,6 +4,7 @@ import { useAddReview } from 'shared/lib/hooks/interactions/useAddReview';
 import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
 import { type ICharacteristicCounts, type Review } from 'shared/types';
 import { Loader } from 'shared/ui/Loader';
+import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './RateNow.module.scss';
 
@@ -37,7 +38,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   return (
     <div className={cls.RateNow}>
       {!showRateNow && (
-        <div className={cls.rateNowContainer}>
+        <div className={cls.rateNowCall}>
           <h4 className={cls.question}>
             Have you visited this place?{' '}
             <span
@@ -58,13 +59,28 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
           <h3>Which of these did you notice?</h3>
           <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
 
+          <RegularButton
+            clickHandler={() => {
+              setShowReviewForm(true);
+            }}
+          >
+            Live text review
+          </RegularButton>
+
           {!hasReviewWithText && showReviewForm && (
-            <ReviewForm
-              onSubmit={onSubmitTextReview}
-              onBack={() => {
+            <Modal
+              desctopWidth={600}
+              onClose={() => {
                 setShowReviewForm(false);
               }}
-            />
+            >
+              <ReviewForm
+                onSubmit={onSubmitTextReview}
+                onBack={() => {
+                  setShowReviewForm(false);
+                }}
+              />
+            </Modal>
           )}
           <RegularButton
             theme="blank"

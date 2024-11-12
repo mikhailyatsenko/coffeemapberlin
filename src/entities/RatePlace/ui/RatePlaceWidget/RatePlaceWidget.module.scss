@@ -1,6 +1,5 @@
 .rateWidget {
-  background-color: rgba(255, 255, 255, 0.696);
-  margin: 20px auto;
+  background-color: #fbfbfb;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,7 +14,6 @@
     display: flex;
     align-items: center;
     gap: 4px;
-
     .currentUserRateNumber {
       font-weight: 400;
       font-size: 18px;
