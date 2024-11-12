@@ -2,14 +2,14 @@ import { useState } from 'react';
 import BeanIcon from './BeanIcon';
 import cls from './RatingWidget.module.scss';
 
-interface RatingProps {
+interface RatingWidgetProps {
   rating?: number | null;
-  handleRating?: (_: undefined, rating: number) => void;
+  handleRating?: (rating: number) => void;
   isClickable: boolean;
   userRating?: number;
 }
 
-const RatingWidget: React.FC<RatingProps> = ({ rating, handleRating, isClickable }) => {
+const RatingWidget: React.FC<RatingWidgetProps> = ({ rating, handleRating, isClickable }) => {
   const [hoverRating, setHoverRating] = useState<number>(0);
 
   const handleMouseEnter = (index: number) => {
@@ -22,7 +22,7 @@ const RatingWidget: React.FC<RatingProps> = ({ rating, handleRating, isClickable
 
   const handleClick = (index: number) => {
     if (handleRating) {
-      handleRating(undefined, index + 1);
+      handleRating(index + 1);
     }
   };
 

@@ -1,15 +1,16 @@
-import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
 import { type ICharacteristicCounts } from 'shared/types';
 import { ToggleCharacteristicButton } from '../ToggleCharacteristicButton/ToggleCharacteristicButton';
 import cls from './ToggleCharacteristic.module.scss';
 
 interface ToggleCharacteristicButtonProps {
-  placeId: string;
   characteristicCounts: ICharacteristicCounts;
+  toggleChar: (characteristic: keyof ICharacteristicCounts) => Promise<void>;
 }
 
-export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = ({ placeId, characteristicCounts }) => {
-  const { toggleFavorite, error } = useToggleCharacteristic(placeId);
+export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = ({
+  characteristicCounts,
+  toggleChar,
+}) => {
   const characteristics = new Map<string, string>([
     ['pleasantAtmosphere', 'Pleasant Atmosphere'],
     ['friendlyStaff', 'Friendly Staff'],
@@ -31,13 +32,12 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
             pressed={characteristicCounts[charKey as keyof ICharacteristicCounts].pressed}
             characteristic={charKey}
             onClick={async () => {
-              await toggleFavorite(charKey as keyof ICharacteristicCounts);
+              await toggleChar(charKey as keyof ICharacteristicCounts);
             }}
           >
             {characteristics.get(charKey)}
           </ToggleCharacteristicButton>
         ))}
-      {error && <span style={{ color: 'red' }}>Error: {error.message}</span>}
     </div>
   );
 };

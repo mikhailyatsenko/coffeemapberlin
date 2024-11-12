@@ -143,13 +143,13 @@ const DetailedPaceCard: React.FC = () => {
                 />
               ))}
           </div>
-          {!showRateNow && (
-            <HeaderDetailedPlacCard
-              averageRating={averageRating}
-              description={description}
-              isHeaderVisible={isHeaderVisible}
-            />
-          )}
+
+          <HeaderDetailedPlacCard
+            averageRating={averageRating}
+            description={description}
+            isHeaderVisible={isHeaderVisible}
+          />
+
           <RateNow
             setShowRateNow={setShowRateNow}
             showRateNow={showRateNow}

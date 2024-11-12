@@ -9,7 +9,6 @@ import cls from './ReviewForm.module.scss';
 interface ReviewFormProps {
   onSubmit: (text: string) => void;
   onBack: () => void;
-  isLoading: boolean;
 }
 
 interface ReviewFormData {

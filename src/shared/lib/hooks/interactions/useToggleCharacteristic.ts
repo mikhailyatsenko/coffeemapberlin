@@ -75,7 +75,7 @@ export const useToggleCharacteristic = (placeId: string) => {
     }
   };
 
-  const toggleFavorite = async (characteristic: keyof ICharacteristicCounts) => {
+  const toggleChar = async (characteristic: keyof ICharacteristicCounts) => {
     if (!user) {
       setIsAuthPopup('LoginRequired');
       return;
@@ -90,5 +90,5 @@ export const useToggleCharacteristic = (placeId: string) => {
     }
   };
 
-  return { toggleFavorite, error };
+  return { toggleChar, error };
 };
