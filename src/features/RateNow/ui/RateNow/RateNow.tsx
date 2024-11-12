@@ -20,7 +20,9 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { handleAddReview, loading } = useAddReview(placeId);
   const onSubmitTextReview = async (reviewText: string) => {
-    await handleAddReview(reviewText);
+    await handleAddReview(reviewText).then(() => {
+      setShowReviewForm(false);
+    });
   };
   const onSubmitRating = async (rating: number) => {
     await handleAddReview(undefined, rating);
@@ -31,9 +33,9 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   const currentUserReview = reviews.find((review) => review.isOwnReview);
   const hasReviewWithText = reviews.some((review) => review.isOwnReview && review.text.trim() !== '');
 
-  // if (hasRating && hasReviewWithText) return null;
-
   if (loading) return <Loader />;
+
+  console.log(showReviewForm);
 
   return (
     <div className={cls.RateNow}>
@@ -55,7 +57,6 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
       {showRateNow && (
         <>
           <RatePlaceWidget userRating={currentUserReview?.userRating} onSubmitRating={onSubmitRating} />
-
           <h3>Which of these did you notice?</h3>
           <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
 
@@ -64,10 +65,10 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
               setShowReviewForm(true);
             }}
           >
-            Live text review
+            {hasReviewWithText ? 'Edit my review' : 'Leave review'}
           </RegularButton>
 
-          {!hasReviewWithText && showReviewForm && (
+          {showReviewForm && (
             <Modal
               desctopWidth={600}
               onClose={() => {
@@ -75,8 +76,9 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
               }}
             >
               <ReviewForm
+                initialValue={currentUserReview?.text}
                 onSubmit={onSubmitTextReview}
-                onBack={() => {
+                onClose={() => {
                   setShowReviewForm(false);
                 }}
               />

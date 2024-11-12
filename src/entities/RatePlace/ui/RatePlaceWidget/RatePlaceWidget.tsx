@@ -1,5 +1,6 @@
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
+// import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './RatePlaceWidget.module.scss';
 
 interface RatePlaceWidgetProps {
@@ -17,6 +18,7 @@ export const RatePlaceWidget = ({ onSubmitRating, userRating }: RatePlaceWidgetP
             <BeanIcon filled />
             <div className={cls.currentUserRateNumber}>{userRating}</div>
           </div>
+          {/* <RegularButton theme="blank">Delete my rating</RegularButton> */}
         </>
       ) : (
         <>
