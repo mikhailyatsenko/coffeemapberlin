@@ -6,14 +6,14 @@ import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
-import { GET_ALL_PLACES, GET_PLACE_DETAILS } from 'shared/query/apolloQueries';
+import { GET_ALL_PLACES, GET_PLACE_REVIEWS } from 'shared/query/apolloQueries';
 import { type ICharacteristicCounts, type PlaceResponse } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
-import { type PlaceDetailsData } from '../../../shared/lib/hooks/interactions/useAddReview';
+import { type placeReviewsData } from '../../../shared/lib/hooks/interactions/useAddReview';
 import CoffeeShopSchema from '../lib/CoffeeShopSchema';
 import cls from './DetailedPaceCard.module.scss';
 
@@ -32,12 +32,12 @@ const DetailedPaceCard: React.FC = () => {
   const { toggleFavorite, toastMessage } = useToggleFavorite(placeId);
 
   const { data: allPlacesData } = useQuery<{ places: PlaceResponse[] }>(GET_ALL_PLACES);
-  const { data: placeDetailsData, loading } = useQuery<PlaceDetailsData>(GET_PLACE_DETAILS, {
+  const { data: placeReviewsData, loading } = useQuery<placeReviewsData>(GET_PLACE_REVIEWS, {
     variables: { placeId, skip: !placeId },
   });
 
   const place = allPlacesData?.places.find((p) => p.properties.id === placeId);
-  const reviews = placeDetailsData?.placeDetails.reviews ?? [];
+  const reviews = placeReviewsData?.placeReviews.reviews ?? [];
 
   const handleToggleFavorite = async () => {
     try {
@@ -144,12 +144,13 @@ const DetailedPaceCard: React.FC = () => {
               ))}
           </div>
 
-          <HeaderDetailedPlacCard
-            averageRating={averageRating}
-            description={description}
-            isHeaderVisible={isHeaderVisible}
-          />
-
+          {!showRateNow && (
+            <HeaderDetailedPlacCard
+              averageRating={averageRating}
+              description={description}
+              isHeaderVisible={isHeaderVisible}
+            />
+          )}
           <RateNow
             setShowRateNow={setShowRateNow}
             showRateNow={showRateNow}

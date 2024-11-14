@@ -1,10 +1,10 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { ADD_REVIEW, GET_PLACE_DETAILS, GET_ALL_PLACES } from 'shared/query/apolloQueries';
+import { ADD_REVIEW, GET_PLACE_REVIEWS, GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse, type Review } from 'shared/types';
 
-export interface PlaceDetailsData {
-  placeDetails: {
+export interface placeReviewsData {
+  placeReviews: {
     id: string;
     reviews: Review[];
   };
@@ -25,7 +25,7 @@ export function useAddReview(placeId: string) {
     update(cache, { data }) {
       if (data) {
         updateAllPlacesCache(cache, data.addReview);
-        updatePlaceDetailsCache(cache, data.addReview);
+        updateplaceReviewsCache(cache, data.addReview);
       }
     },
   });
@@ -55,14 +55,14 @@ export function useAddReview(placeId: string) {
     }
   };
 
-  const updatePlaceDetailsCache = (cache: ApolloCache<unknown>, newData: AddReviewResponse['addReview']) => {
-    const existingData = cache.readQuery<PlaceDetailsData>({
-      query: GET_PLACE_DETAILS,
+  const updateplaceReviewsCache = (cache: ApolloCache<unknown>, newData: AddReviewResponse['addReview']) => {
+    const existingData = cache.readQuery<placeReviewsData>({
+      query: GET_PLACE_REVIEWS,
       variables: { placeId: newData.review.placeId },
     });
 
-    if (existingData?.placeDetails) {
-      let updatedReviews = [...existingData.placeDetails.reviews];
+    if (existingData?.placeReviews) {
+      let updatedReviews = [...existingData.placeReviews.reviews];
 
       const existingReviewIndex = updatedReviews.findIndex((review) => review.id === newData.review.id);
       if (existingReviewIndex !== -1) {
@@ -71,11 +71,11 @@ export function useAddReview(placeId: string) {
         updatedReviews = [newData.review, ...updatedReviews];
       }
 
-      cache.writeQuery<PlaceDetailsData>({
-        query: GET_PLACE_DETAILS,
+      cache.writeQuery<placeReviewsData>({
+        query: GET_PLACE_REVIEWS,
         variables: { placeId: newData.review.placeId },
         data: {
-          placeDetails: {
+          placeReviews: {
             id: newData.review.id,
             reviews: updatedReviews,
           },

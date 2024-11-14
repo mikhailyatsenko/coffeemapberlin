@@ -183,9 +183,9 @@ export const DELETE_REVIEW = gql`
   }
 `;
 
-export const GET_PLACE_DETAILS = gql`
-  query PlaceDetails($placeId: ID!) {
-    placeDetails(placeId: $placeId) {
+export const GET_PLACE_REVIEWS = gql`
+  query PlaceReviews($placeId: ID!) {
+    placeReviews(placeId: $placeId) {
       id
       reviews {
         id

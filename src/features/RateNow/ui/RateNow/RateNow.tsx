@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/RatePlace';
+import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
 import { useAddReview } from 'shared/lib/hooks/interactions/useAddReview';
 import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
 import { type ICharacteristicCounts, type Review } from 'shared/types';
@@ -31,11 +32,8 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   const { toggleChar } = useToggleCharacteristic(placeId);
 
   const currentUserReview = reviews.find((review) => review.isOwnReview);
-  const hasReviewWithText = reviews.some((review) => review.isOwnReview && review.text.trim() !== '');
 
   if (loading) return <Loader />;
-
-  console.log(showReviewForm);
 
   return (
     <div className={cls.RateNow}>
@@ -56,18 +54,20 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
 
       {showRateNow && (
         <>
+          <RegularButton
+            theme="blank"
+            type="button"
+            className={cls.buttonBack}
+            clickHandler={() => {
+              setShowRateNow(false);
+            }}
+          >
+            &#8612; Back
+          </RegularButton>
           <RatePlaceWidget userRating={currentUserReview?.userRating} onSubmitRating={onSubmitRating} />
           <h3>Which of these did you notice?</h3>
           <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
-
-          <RegularButton
-            clickHandler={() => {
-              setShowReviewForm(true);
-            }}
-          >
-            {hasReviewWithText ? 'Edit my review' : 'Leave review'}
-          </RegularButton>
-
+          <LeaveOrEditMyReview review={currentUserReview?.text} buttonHandler={setShowReviewForm} />
           {showReviewForm && (
             <Modal
               desctopWidth={600}
@@ -84,15 +84,6 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
               />
             </Modal>
           )}
-          <RegularButton
-            theme="blank"
-            type="button"
-            clickHandler={() => {
-              setShowRateNow(false);
-            }}
-          >
-            &#8612; Back
-          </RegularButton>
         </>
       )}
     </div>

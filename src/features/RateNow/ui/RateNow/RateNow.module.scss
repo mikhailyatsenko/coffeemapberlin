@@ -9,6 +9,7 @@
   border-top: 1px solid #ffaa9f;
   justify-content: center;
   width: 100%;
+  overflow-y: scroll;
 }
 
 .rateNowCall {
@@ -28,4 +29,8 @@
       border-bottom: 2px black solid;
     }
   }
+}
+
+.buttonBack {
+  color: #fff;
 }

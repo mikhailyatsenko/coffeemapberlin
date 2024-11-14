@@ -1,10 +1,10 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { GET_PLACE_DETAILS, DELETE_REVIEW, GET_ALL_PLACES } from 'shared/query/apolloQueries';
+import { GET_PLACE_REVIEWS, DELETE_REVIEW, GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse, type Review } from 'shared/types';
 
-export interface PlaceDetailsData {
-  placeDetails: {
+export interface placeReviewsData {
+  placeReviews: {
     id: string;
     reviews: Review[];
     favoriteCount: number;
@@ -28,30 +28,30 @@ export function useDeleteReview(placeId: string) {
     {
       update(cache, { data }) {
         if (data) {
-          updatePlaceDetailsCacheAfterDelete(cache, data.deleteReview.reviewId);
+          updateplaceReviewsCacheAfterDelete(cache, data.deleteReview.reviewId);
           updateAllPlacesCache(cache, data.deleteReview);
         }
       },
     },
   );
 
-  const updatePlaceDetailsCacheAfterDelete = (cache: ApolloCache<unknown>, reviewId: string) => {
-    const existingData = cache.readQuery<PlaceDetailsData>({
-      query: GET_PLACE_DETAILS,
+  const updateplaceReviewsCacheAfterDelete = (cache: ApolloCache<unknown>, reviewId: string) => {
+    const existingData = cache.readQuery<placeReviewsData>({
+      query: GET_PLACE_REVIEWS,
       variables: { placeId },
     });
 
-    if (existingData?.placeDetails) {
-      const updatedReviews = existingData.placeDetails.reviews.filter((review) => review.id !== reviewId);
+    if (existingData?.placeReviews) {
+      const updatedReviews = existingData.placeReviews.reviews.filter((review) => review.id !== reviewId);
 
-      cache.writeQuery<PlaceDetailsData>({
-        query: GET_PLACE_DETAILS,
+      cache.writeQuery<placeReviewsData>({
+        query: GET_PLACE_REVIEWS,
         variables: { placeId },
         data: {
-          placeDetails: {
-            id: existingData.placeDetails.id,
-            isFavorite: existingData.placeDetails.isFavorite,
-            favoriteCount: existingData.placeDetails.favoriteCount,
+          placeReviews: {
+            id: existingData.placeReviews.id,
+            isFavorite: existingData.placeReviews.isFavorite,
+            favoriteCount: existingData.placeReviews.favoriteCount,
             reviews: updatedReviews,
           },
         },
