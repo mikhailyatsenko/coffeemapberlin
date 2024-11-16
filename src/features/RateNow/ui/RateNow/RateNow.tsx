@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/RatePlace';
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
-import { useAddReview } from 'shared/lib/hooks/interactions/useAddReview';
+import { useAddReview } from 'shared/lib/hooks/interactions/useAddRating';
+import { useAddTextReview } from 'shared/lib/hooks/interactions/useAddTextReview';
 import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
 import { type ICharacteristicCounts, type Review } from 'shared/types';
 import { Loader } from 'shared/ui/Loader';
@@ -19,21 +20,22 @@ interface RateNowProps {
 
 export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow, showRateNow }: RateNowProps) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const { handleAddReview, loading } = useAddReview(placeId);
+  const { handleAddTextReview, loading: loadingReview } = useAddTextReview(placeId);
+  const { handleAddRating, loading: loadingRating } = useAddReview(placeId);
   const onSubmitTextReview = async (reviewText: string) => {
-    await handleAddReview(reviewText).then(() => {
+    await handleAddTextReview(reviewText).then(() => {
       setShowReviewForm(false);
     });
   };
   const onSubmitRating = async (rating: number) => {
-    await handleAddReview(undefined, rating);
+    await handleAddRating(rating);
   };
 
   const { toggleChar } = useToggleCharacteristic(placeId);
 
   const currentUserReview = reviews.find((review) => review.isOwnReview);
 
-  if (loading) return <Loader />;
+  if (loadingRating || loadingReview) return <Loader />;
 
   return (
     <div className={cls.RateNow}>

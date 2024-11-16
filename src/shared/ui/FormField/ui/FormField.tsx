@@ -10,22 +10,31 @@ interface FormFieldProps {
   autoComplete?: string;
   autoFocus?: boolean;
 }
-export const FormField: React.FC<FormFieldProps> = ({ fieldName, type, value, error, labelText, autoComplete }) => {
+export const FormField: React.FC<FormFieldProps> = ({
+  fieldName,
+  type,
+  value,
+  error,
+  labelText,
+  autoComplete,
+  autoFocus,
+}) => {
   const { register } = useFormContext();
   const parameters = {
     placeholder: fieldName,
     type,
     value,
     autoComplete,
+    autoFocus,
     id: fieldName,
     ...register(fieldName),
   };
   return (
     <div className={`${cls.formGroup} ${type === 'hidden' ? cls.hiddenGroup : ''}`}>
       {!(type === 'textarea') ? (
-        <input className={`${cls.formField} ${error ? cls.error : ''}`} {...parameters} autoFocus />
+        <input className={`${cls.formField} ${error ? cls.error : ''}`} {...parameters} />
       ) : (
-        <textarea className={`${cls.formField} ${error ? cls.error : ''}`} rows={4} {...parameters} autoFocus />
+        <textarea className={`${cls.formField} ${error ? cls.error : ''}`} rows={4} {...parameters} />
       )}
 
       <label className={cls.formLabel} htmlFor={fieldName}>

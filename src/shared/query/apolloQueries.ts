@@ -153,9 +153,36 @@ export const TOGGLE_CHARACTERISTIC = gql`
   }
 `;
 
-export const ADD_REVIEW = gql`
-  mutation AddReview($placeId: ID!, $text: String, $rating: Float) {
-    addReview(placeId: $placeId, text: $text, rating: $rating) {
+// export const ADD_REVIEW = gql`
+//   mutation AddReview($placeId: ID!, $text: String, $rating: Float) {
+//     addReview(placeId: $placeId, text: $text, rating: $rating) {
+//       review {
+//         id
+//         text
+//         userId
+//         userName
+//         userAvatar
+//         placeId
+//         createdAt
+//         isOwnReview
+//         userRating
+//       }
+//     }
+//   }
+// `;
+
+export const ADD_RATING = gql`
+  mutation AddRating($placeId: ID!, $rating: Float!) {
+    addRating(placeId: $placeId, rating: $rating) {
+      averageRating
+      ratingCount
+    }
+  }
+`;
+
+export const ADD_TEXT_REVIEW = gql`
+  mutation AddTextReview($placeId: ID!, $text: String!) {
+    addTextReview(placeId: $placeId, text: $text) {
       review {
         id
         text
@@ -167,8 +194,6 @@ export const ADD_REVIEW = gql`
         isOwnReview
         userRating
       }
-      averageRating
-      ratingCount
     }
   }
 `;

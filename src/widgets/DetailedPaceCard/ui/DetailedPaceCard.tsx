@@ -4,6 +4,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
+import { type PlaceReviewsData } from 'shared/lib/hooks/interactions/useAddTextReview';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
 import { GET_ALL_PLACES, GET_PLACE_REVIEWS } from 'shared/query/apolloQueries';
@@ -13,7 +14,6 @@ import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
-import { type placeReviewsData } from '../../../shared/lib/hooks/interactions/useAddReview';
 import CoffeeShopSchema from '../lib/CoffeeShopSchema';
 import cls from './DetailedPaceCard.module.scss';
 
@@ -32,7 +32,7 @@ const DetailedPaceCard: React.FC = () => {
   const { toggleFavorite, toastMessage } = useToggleFavorite(placeId);
 
   const { data: allPlacesData } = useQuery<{ places: PlaceResponse[] }>(GET_ALL_PLACES);
-  const { data: placeReviewsData, loading } = useQuery<placeReviewsData>(GET_PLACE_REVIEWS, {
+  const { data: placeReviewsData, loading } = useQuery<PlaceReviewsData>(GET_PLACE_REVIEWS, {
     variables: { placeId, skip: !placeId },
   });
 
