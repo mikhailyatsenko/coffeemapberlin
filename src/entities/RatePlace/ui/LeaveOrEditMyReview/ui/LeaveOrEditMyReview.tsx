@@ -7,16 +7,22 @@ interface LeaveOrEditMyReviewProps {
 }
 
 export const LeaveOrEditMyReview = ({ review = '', buttonHandler }: LeaveOrEditMyReviewProps) => {
-  const formattedReview = review?.length > 40 ? `${review.slice(0, 40)}...` : review;
+  const formattedReview = review?.length > 15 ? `"${review.slice(0, 15)}..."` : `"${review}"`;
+
   return (
     <div>
-      <div className={cls.review}>{formattedReview}</div>
       <RegularButton
         clickHandler={() => {
           buttonHandler(true);
         }}
       >
-        {review ? 'Edit my review' : 'Leave text a review'}
+        {review ? (
+          <>
+            Edit my review: <span className={cls.formattedReview}>{formattedReview}</span>
+          </>
+        ) : (
+          'Leave a text review'
+        )}
       </RegularButton>
     </div>
   );

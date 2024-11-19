@@ -72,7 +72,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
           <LeaveOrEditMyReview review={currentUserReview?.text} buttonHandler={setShowReviewForm} />
           {showReviewForm && (
             <Modal
-              desctopWidth={600}
+              widthOnDesktop={600}
               onClose={() => {
                 setShowReviewForm(false);
               }}

@@ -25,7 +25,7 @@
 - **Interactive page**: Detailed page with reviews and ratings for each coffee shop.
 - **User Reviews**: Read and submit reviews for each coffee shop.
 - **Rating System**: Rate your favorite coffee shops.
-- **Authentication**: Google authentication.
+- **Authentication**: Google and E-mail authentication.
 - **Responsive Design**: Optimized for both desktop and mobile devices.
 
 ## Architecture

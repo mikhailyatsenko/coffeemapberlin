@@ -4,10 +4,10 @@ import cls from './Modal.module.scss';
 interface LoginPopupProps {
   children: ReactNode;
   onClose: () => void;
-  desctopWidth?: 400 | 600 | 800;
+  widthOnDesktop?: 400 | 600 | 800;
 }
 
-export const Modal = ({ children, onClose, desctopWidth = 400 }: LoginPopupProps) => {
+export const Modal = ({ children, onClose, widthOnDesktop = 400 }: LoginPopupProps) => {
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -28,7 +28,7 @@ export const Modal = ({ children, onClose, desctopWidth = 400 }: LoginPopupProps
   };
   return (
     <div className={cls.overlay} onClick={handleOverlayClick}>
-      <div style={{ maxWidth: desctopWidth }} className={cls.modal}>
+      <div style={{ maxWidth: widthOnDesktop }} className={cls.modal}>
         <div onClick={onClose} className={cls.close}></div>
         {children}
       </div>

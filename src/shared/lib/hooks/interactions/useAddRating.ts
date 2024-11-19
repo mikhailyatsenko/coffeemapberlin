@@ -17,11 +17,12 @@ export function useAddReview(placeId: string) {
   const [addRating, { loading, error }] = useMutation<AddRatingResponse, { placeId: string; rating: number }>(
     ADD_RATING,
     {
-      update(cache, { data }) {
+      update(cache, { data }, context) {
         if (data) {
           updateAllPlacesCache(cache, data.addRating);
-
-          // updateReviewsCache(cache, ???);
+          if (context?.variables?.rating) {
+            updateReviewsCache(cache, context.variables.rating);
+          }
         }
       },
     },
@@ -51,33 +52,44 @@ export function useAddReview(placeId: string) {
     }
   };
 
-  // const updateReviewsCache = (cache: ApolloCache<unknown>, ????) => {
-  //   const existingData = cache.readQuery<PlaceReviewsData>({
-  //     query: GET_PLACE_REVIEWS,
-  //     variables: { placeId },
-  //   });
+  const updateReviewsCache = (cache: ApolloCache<unknown>, newRating: number) => {
+    const existingData = cache.readQuery<PlaceReviewsData>({
+      query: GET_PLACE_REVIEWS,
+      variables: { placeId },
+    });
 
-  //   if (existingData?.placeReviews) {
-  //     const updatedReviews = [...existingData.placeReviews.reviews];
+    if (existingData?.placeReviews) {
+      const updatedReviews = [...existingData.placeReviews.reviews];
 
-  //     const existingRatingIndex = updatedReviews.findIndex((review) => review.userRating);
-  //     if (existingRatingIndex !== -1) {
-  //       updatedReviews[existingRatingIndex].userRating = newRating;
-  //     } else {
-  //    ????
-  //     }
+      const existingRatingIndex = updatedReviews.findIndex((review) => review.userRating);
+      if (existingRatingIndex !== -1) {
+        updatedReviews[existingRatingIndex].userRating = newRating;
+      } else {
+        updatedReviews.push({
+          id: 'temporary-id',
+          text: '',
+          userId: user!.id,
+          userName: user?.displayName || 'Anonymous',
+          userAvatar: user?.avatar || '',
+          placeId,
+          createdAt: new Date().toISOString(),
+          isOwnReview: true,
+          userRating: newRating,
+        });
+      }
 
-  //     cache.writeQuery<PlaceReviewsData>({
-  //       query: GET_PLACE_REVIEWS,
-  //       variables: { placeId },
-  //       data: {
-  //         placeReviews: {
-  //           reviews,
-  //         },
-  //       },
-  //     });
-  //   }
-  // };
+      cache.writeQuery<PlaceReviewsData>({
+        query: GET_PLACE_REVIEWS,
+        variables: { placeId },
+        data: {
+          placeReviews: {
+            id: existingData.placeReviews.id,
+            reviews: updatedReviews,
+          },
+        },
+      });
+    }
+  };
 
   const handleAddRating = async (rating: number): Promise<AddRatingResponse['addRating'] | undefined> => {
     if (!user) {

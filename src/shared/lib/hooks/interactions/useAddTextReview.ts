@@ -63,7 +63,6 @@ export function useAddTextReview(placeId: string) {
     }
     try {
       const variables: { placeId: string; text: string } = { placeId, text };
-      console.log('variables', variables);
       await addTextReview({ variables });
     } catch (err) {
       console.error('Error adding or updating review:', err);
