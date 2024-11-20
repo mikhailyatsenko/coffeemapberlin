@@ -84,13 +84,16 @@ export function useDeleteReview(placeId: string) {
     }
   };
 
-  const handleDeleteReview = async (reviewId: string): Promise<void> => {
+  const handleDeleteReview = async (
+    reviewId: string,
+    deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll' = 'deleteAll',
+  ): Promise<void> => {
     if (!user) {
       setIsAuthPopup('LoginRequired');
       return;
     }
     try {
-      await deleteReview({ variables: { reviewId } });
+      await deleteReview({ variables: { reviewId, deleteOptions } });
     } catch (err) {
       console.error('Error deleting review:', err);
       throw err;

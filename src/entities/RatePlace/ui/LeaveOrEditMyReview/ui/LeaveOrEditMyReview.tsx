@@ -10,20 +10,18 @@ export const LeaveOrEditMyReview = ({ review = '', buttonHandler }: LeaveOrEditM
   const formattedReview = review?.length > 15 ? `"${review.slice(0, 15)}..."` : `"${review}"`;
 
   return (
-    <div>
-      <RegularButton
-        clickHandler={() => {
-          buttonHandler(true);
-        }}
-      >
-        {review ? (
-          <>
-            Edit my review: <span className={cls.formattedReview}>{formattedReview}</span>
-          </>
-        ) : (
-          'Leave a text review'
-        )}
-      </RegularButton>
-    </div>
+    <RegularButton
+      onClick={() => {
+        buttonHandler(true);
+      }}
+    >
+      {review ? (
+        <>
+          Edit my review: <span className={cls.formattedReview}>{formattedReview}</span>
+        </>
+      ) : (
+        'Leave a text review'
+      )}
+    </RegularButton>
   );
 };

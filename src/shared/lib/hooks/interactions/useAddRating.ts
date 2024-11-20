@@ -8,6 +8,8 @@ interface AddRatingResponse {
   addRating: {
     averageRating: number;
     ratingCount: number;
+    reviewId: string;
+    userRating: number;
   };
 }
 
@@ -17,12 +19,11 @@ export function useAddReview(placeId: string) {
   const [addRating, { loading, error }] = useMutation<AddRatingResponse, { placeId: string; rating: number }>(
     ADD_RATING,
     {
-      update(cache, { data }, context) {
+      update(cache, { data }) {
         if (data) {
           updateAllPlacesCache(cache, data.addRating);
-          if (context?.variables?.rating) {
-            updateReviewsCache(cache, context.variables.rating);
-          }
+
+          updateReviewsCache(cache, data.addRating.userRating, data.addRating.reviewId);
         }
       },
     },
@@ -52,7 +53,7 @@ export function useAddReview(placeId: string) {
     }
   };
 
-  const updateReviewsCache = (cache: ApolloCache<unknown>, newRating: number) => {
+  const updateReviewsCache = (cache: ApolloCache<unknown>, newRating: number, reviewId: string) => {
     const existingData = cache.readQuery<PlaceReviewsData>({
       query: GET_PLACE_REVIEWS,
       variables: { placeId },
@@ -63,10 +64,13 @@ export function useAddReview(placeId: string) {
 
       const existingRatingIndex = updatedReviews.findIndex((review) => review.userRating);
       if (existingRatingIndex !== -1) {
-        updatedReviews[existingRatingIndex].userRating = newRating;
+        updatedReviews[existingRatingIndex] = {
+          ...updatedReviews[existingRatingIndex],
+          userRating: newRating,
+        };
       } else {
         updatedReviews.push({
-          id: 'temporary-id',
+          id: reviewId,
           text: '',
           userId: user!.id,
           userName: user?.displayName || 'Anonymous',
@@ -83,7 +87,7 @@ export function useAddReview(placeId: string) {
         variables: { placeId },
         data: {
           placeReviews: {
-            id: existingData.placeReviews.id,
+            id: placeId,
             reviews: updatedReviews,
           },
         },

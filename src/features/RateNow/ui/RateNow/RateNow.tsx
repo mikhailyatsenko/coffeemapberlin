@@ -3,6 +3,7 @@ import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/Rate
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
 import { useAddReview } from 'shared/lib/hooks/interactions/useAddRating';
 import { useAddTextReview } from 'shared/lib/hooks/interactions/useAddTextReview';
+import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
 import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
 import { type ICharacteristicCounts, type Review } from 'shared/types';
 import { Loader } from 'shared/ui/Loader';
@@ -19,6 +20,7 @@ interface RateNowProps {
 }
 
 export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow, showRateNow }: RateNowProps) => {
+  const { handleDeleteReview } = useDeleteReview(placeId);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { handleAddTextReview, loading: loadingReview } = useAddTextReview(placeId);
   const { handleAddRating, loading: loadingRating } = useAddReview(placeId);
@@ -60,13 +62,18 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
             theme="blank"
             type="button"
             className={cls.buttonBack}
-            clickHandler={() => {
+            onClick={() => {
               setShowRateNow(false);
             }}
           >
             &#8612; Back
           </RegularButton>
-          <RatePlaceWidget userRating={currentUserReview?.userRating} onSubmitRating={onSubmitRating} />
+          <RatePlaceWidget
+            handleDeleteReview={handleDeleteReview}
+            userRating={currentUserReview?.userRating}
+            reviewId={currentUserReview?.id}
+            onSubmitRating={onSubmitRating}
+          />
           <h3>Which of these did you notice?</h3>
           <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
           <LeaveOrEditMyReview review={currentUserReview?.text} buttonHandler={setShowReviewForm} />

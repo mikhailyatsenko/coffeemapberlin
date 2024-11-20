@@ -176,6 +176,8 @@ export const ADD_RATING = gql`
     addRating(placeId: $placeId, rating: $rating) {
       averageRating
       ratingCount
+      reviewId
+      userRating
     }
   }
 `;
@@ -199,8 +201,8 @@ export const ADD_TEXT_REVIEW = gql`
 `;
 
 export const DELETE_REVIEW = gql`
-  mutation DeleteReview($reviewId: ID!) {
-    deleteReview(reviewId: $reviewId) {
+  mutation DeleteReview($reviewId: ID!, $deleteOptions: String!) {
+    deleteReview(reviewId: $reviewId, deleteOptions: $deleteOptions) {
       reviewId
       averageRating
       ratingCount
