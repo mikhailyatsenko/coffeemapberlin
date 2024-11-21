@@ -5,6 +5,7 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  padding-bottom: 1px; /*for visibility boder bottom on hover span in delReview*/
 }
 
 .review {
@@ -21,7 +22,7 @@
   span {
     cursor: pointer;
     font-weight: 400;
-    padding-bottom: 1px; /*for visibility boder bottom on hover */
+
     &:hover {
       border-bottom: 1px solid #303030;
     }

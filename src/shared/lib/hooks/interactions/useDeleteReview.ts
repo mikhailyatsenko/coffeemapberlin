@@ -7,8 +7,6 @@ export interface placeReviewsData {
   placeReviews: {
     id: string;
     reviews: Review[];
-    favoriteCount: number;
-    isFavorite: boolean;
   };
 }
 
@@ -50,8 +48,6 @@ export function useDeleteReview(placeId: string) {
         data: {
           placeReviews: {
             id: existingData.placeReviews.id,
-            isFavorite: existingData.placeReviews.isFavorite,
-            favoriteCount: existingData.placeReviews.favoriteCount,
             reviews: updatedReviews,
           },
         },

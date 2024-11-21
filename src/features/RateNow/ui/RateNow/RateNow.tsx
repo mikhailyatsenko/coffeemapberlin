@@ -41,12 +41,16 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
 
   const handleDeleteMyRating = () => {
     if (currentUserReview) {
+      const isConfirmed = window.confirm('Deleting your rating. Continue?');
+      if (!isConfirmed) return;
       handleDeleteReview(currentUserReview?.id, 'deleteRating');
     }
   };
 
   const handleDeleteMyTextReview = () => {
     if (currentUserReview) {
+      const isConfirmed = window.confirm('Deleting your review. Continue?');
+      if (!isConfirmed) return;
       handleDeleteReview(currentUserReview?.id, 'deleteReviewText');
     }
   };

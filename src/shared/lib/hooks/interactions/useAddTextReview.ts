@@ -38,7 +38,10 @@ export function useAddTextReview(placeId: string) {
 
       const existingReviewIndex = updatedReviews.findIndex((review) => review.id === newData.review.id);
       if (existingReviewIndex !== -1) {
-        updatedReviews[existingReviewIndex] = newData.review;
+        updatedReviews[existingReviewIndex] = {
+          ...updatedReviews[existingReviewIndex],
+          text: newData.review.text,
+        };
       } else {
         updatedReviews = [newData.review, ...updatedReviews];
       }
