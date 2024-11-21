@@ -39,6 +39,18 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
 
   if (loadingRating || loadingReview) return <Loader />;
 
+  const handleDeleteMyRating = () => {
+    if (currentUserReview) {
+      handleDeleteReview(currentUserReview?.id, 'deleteRating');
+    }
+  };
+
+  const handleDeleteMyTextReview = () => {
+    if (currentUserReview) {
+      handleDeleteReview(currentUserReview?.id, 'deleteReviewText');
+    }
+  };
+
   return (
     <div className={cls.RateNow}>
       {!showRateNow && (
@@ -69,14 +81,18 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
             &#8612; Back
           </RegularButton>
           <RatePlaceWidget
-            handleDeleteReview={handleDeleteReview}
+            handleDeleteMyRating={handleDeleteMyRating}
             userRating={currentUserReview?.userRating}
             reviewId={currentUserReview?.id}
             onSubmitRating={onSubmitRating}
           />
           <h3>Which of these did you notice?</h3>
           <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
-          <LeaveOrEditMyReview review={currentUserReview?.text} buttonHandler={setShowReviewForm} />
+          <LeaveOrEditMyReview
+            handleDeleteMyTextReview={handleDeleteMyTextReview}
+            review={currentUserReview?.text}
+            leaveTextReviewHandler={setShowReviewForm}
+          />
           {showReviewForm && (
             <Modal
               widthOnDesktop={600}

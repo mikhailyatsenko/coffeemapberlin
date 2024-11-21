@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from 'date-fns';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
+import DeleteIcon from '../../../assets/delete-icon.svg?react';
 import cls from './ReviewCard.module.scss';
 
 interface ReviewCardProps {
@@ -52,6 +53,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             }}
             className={cls.deleteButton}
           >
+            <DeleteIcon fill="#fff" height={14} width={14} />
             Delete
           </button>
         )}
