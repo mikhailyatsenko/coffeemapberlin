@@ -24,6 +24,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { handleAddTextReview, loading: loadingReview } = useAddTextReview(placeId);
   const { handleAddRating, loading: loadingRating } = useAddReview(placeId);
+
   const onSubmitTextReview = async (reviewText: string) => {
     await handleAddTextReview(reviewText).then(() => {
       setShowReviewForm(false);

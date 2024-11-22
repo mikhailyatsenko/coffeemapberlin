@@ -61,6 +61,7 @@ export function useAddReview(placeId: string) {
 
     if (existingData?.placeReviews) {
       const updatedReviews = [...existingData.placeReviews.reviews];
+      console.log(existingData.placeReviews.reviews);
 
       const existingRatingIndex = updatedReviews.findIndex((review) => review.id === reviewId);
       if (existingRatingIndex !== -1) {

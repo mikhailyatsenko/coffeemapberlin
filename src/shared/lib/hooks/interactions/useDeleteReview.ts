@@ -21,26 +21,47 @@ interface DeleteReviewResponce {
 export function useDeleteReview(placeId: string) {
   const { user, setIsAuthPopup } = useAuth();
 
-  const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useMutation<DeleteReviewResponce>(
-    DELETE_REVIEW,
-    {
-      update(cache, { data }) {
-        if (data) {
-          updateplaceReviewsCacheAfterDelete(cache, data.deleteReview.reviewId);
-          updateAllPlacesCache(cache, data.deleteReview);
+  const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useMutation<
+    DeleteReviewResponce,
+    { reviewId: string; deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll' }
+  >(DELETE_REVIEW, {
+    update(cache, { data }, { variables }) {
+      if (data) {
+        updateAllPlacesCache(cache, data.deleteReview);
+        if (variables) {
+          updateplaceReviewsCacheAfterDelete(cache, data.deleteReview.reviewId, variables.deleteOptions);
         }
-      },
+      }
     },
-  );
+  });
 
-  const updateplaceReviewsCacheAfterDelete = (cache: ApolloCache<unknown>, reviewId: string) => {
+  const updateplaceReviewsCacheAfterDelete = (
+    cache: ApolloCache<unknown>,
+    reviewId: string,
+    deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll',
+  ) => {
     const existingData = cache.readQuery<placeReviewsData>({
       query: GET_PLACE_REVIEWS,
       variables: { placeId },
     });
 
     if (existingData?.placeReviews) {
-      const updatedReviews = existingData.placeReviews.reviews.filter((review) => review.id !== reviewId);
+      const updatedReviews = [...existingData.placeReviews.reviews];
+      updatedReviews.forEach((review, index) => {
+        if (review.id === reviewId) {
+          switch (deleteOptions) {
+            case 'deleteReviewText':
+              updatedReviews[index] = { ...review, text: '' };
+              break;
+            case 'deleteRating':
+              updatedReviews[index] = { ...review, userRating: null };
+              break;
+            case 'deleteAll':
+              updatedReviews.splice(index, 1);
+              break;
+          }
+        }
+      });
 
       cache.writeQuery<placeReviewsData>({
         query: GET_PLACE_REVIEWS,

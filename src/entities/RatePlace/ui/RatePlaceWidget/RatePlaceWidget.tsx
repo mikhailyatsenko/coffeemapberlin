@@ -6,7 +6,7 @@ import EditIcon from '../../../../shared/assets/edit-icon.svg?react';
 import cls from './RatePlaceWidget.module.scss';
 
 interface RatePlaceWidgetProps {
-  userRating?: number;
+  userRating?: number | null;
   reviewId?: string;
   onSubmitRating: (rating: number) => void;
   handleDeleteMyRating: () => void;

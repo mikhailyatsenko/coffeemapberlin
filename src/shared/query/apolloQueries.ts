@@ -185,17 +185,8 @@ export const ADD_RATING = gql`
 export const ADD_TEXT_REVIEW = gql`
   mutation AddTextReview($placeId: ID!, $text: String!) {
     addTextReview(placeId: $placeId, text: $text) {
-      review {
-        id
-        text
-        userId
-        userName
-        userAvatar
-        placeId
-        createdAt
-        isOwnReview
-        userRating
-      }
+      reviewId
+      text
     }
   }
 `;

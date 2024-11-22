@@ -49,7 +49,7 @@ export interface Review {
   id: string;
   text: string;
   userId: string;
-  userRating?: number;
+  userRating: number | null;
   userName: string;
   userAvatar: string;
   placeId: string;

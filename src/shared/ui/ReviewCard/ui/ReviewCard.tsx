@@ -8,7 +8,7 @@ interface ReviewCardProps {
   userAvatar?: string;
   userName: string;
   reviewText?: string;
-  rating?: number;
+  rating: number | null;
   isOwnReview?: boolean;
   handleDeleteReview?: (id: string) => void;
   createdAt: string;

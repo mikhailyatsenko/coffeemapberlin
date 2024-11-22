@@ -12,7 +12,8 @@ export interface PlaceReviewsData {
 
 interface AddTextReviewResponse {
   addTextReview: {
-    review: Review;
+    reviewId: string;
+    text: string;
   };
 }
 
@@ -22,6 +23,12 @@ export function useAddTextReview(placeId: string) {
   const [addTextReview, { loading, error }] = useMutation<AddTextReviewResponse>(ADD_TEXT_REVIEW, {
     update(cache, { data }) {
       if (data) {
+        console.log(
+          cache.readQuery<PlaceReviewsData>({
+            query: GET_PLACE_REVIEWS,
+            variables: { placeId },
+          }),
+        );
         updatePlaceReviewsCache(cache, data.addTextReview);
       }
     },
@@ -30,28 +37,39 @@ export function useAddTextReview(placeId: string) {
   const updatePlaceReviewsCache = (cache: ApolloCache<unknown>, newData: AddTextReviewResponse['addTextReview']) => {
     const existingData = cache.readQuery<PlaceReviewsData>({
       query: GET_PLACE_REVIEWS,
-      variables: { placeId: newData.review.placeId },
+      variables: { placeId },
     });
 
     if (existingData?.placeReviews) {
-      let updatedReviews = [...existingData.placeReviews.reviews];
+      const updatedReviews = [...existingData.placeReviews.reviews];
 
-      const existingReviewIndex = updatedReviews.findIndex((review) => review.id === newData.review.id);
+      const existingReviewIndex = updatedReviews.findIndex((review) => review.id === newData.reviewId);
       if (existingReviewIndex !== -1) {
+        // console.log(updatedReviews[existingReviewIndex], 'current review');
         updatedReviews[existingReviewIndex] = {
           ...updatedReviews[existingReviewIndex],
-          text: newData.review.text,
+          text: newData.text,
         };
       } else {
-        updatedReviews = [newData.review, ...updatedReviews];
+        updatedReviews.push({
+          id: newData.reviewId,
+          text: newData.text,
+          userId: user!.id,
+          userName: user?.displayName || 'Anonymous',
+          userAvatar: user?.avatar || '',
+          placeId,
+          createdAt: new Date().toISOString(),
+          isOwnReview: true,
+          userRating: null,
+        });
       }
 
       cache.writeQuery<PlaceReviewsData>({
         query: GET_PLACE_REVIEWS,
-        variables: { placeId: newData.review.placeId },
+        variables: { placeId },
         data: {
           placeReviews: {
-            id: newData.review.id,
+            id: newData.reviewId,
             reviews: updatedReviews,
           },
         },
