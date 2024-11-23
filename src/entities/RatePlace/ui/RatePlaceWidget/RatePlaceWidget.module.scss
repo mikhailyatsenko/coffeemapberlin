@@ -1,5 +1,5 @@
 .rateWidget {
-  background-color: #fbfbfb;
+  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,7 +9,10 @@
   width: fit-content;
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+
+  box-shadow:
+    0px 1px 2px rgba(0, 0, 0, 0.1),
+    0px 2px 4px rgba(0, 0, 0, 0.1);
   .currentUserRate {
     display: flex;
     align-items: center;

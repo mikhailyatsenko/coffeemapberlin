@@ -51,10 +51,18 @@ export function useDeleteReview(placeId: string) {
         if (review.id === reviewId) {
           switch (deleteOptions) {
             case 'deleteReviewText':
-              updatedReviews[index] = { ...review, text: '' };
+              if (updatedReviews[index].userRating) {
+                updatedReviews[index] = { ...review, text: '' };
+              } else {
+                updatedReviews.splice(index, 1);
+              }
               break;
             case 'deleteRating':
-              updatedReviews[index] = { ...review, userRating: null };
+              if (updatedReviews[index].text) {
+                updatedReviews[index] = { ...review, userRating: null };
+              } else {
+                updatedReviews.splice(index, 1);
+              }
               break;
             case 'deleteAll':
               updatedReviews.splice(index, 1);

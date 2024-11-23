@@ -9,6 +9,7 @@ import { type ICharacteristicCounts, type Review } from 'shared/types';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
+import EditIcon from '../../../../shared/assets/edit-icon.svg?react';
 import cls from './RateNow.module.scss';
 
 interface RateNowProps {
@@ -30,6 +31,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
       setShowReviewForm(false);
     });
   };
+
   const onSubmitRating = async (rating: number) => {
     await handleAddRating(rating);
   };
@@ -56,43 +58,53 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
     }
   };
 
+  const hasUserReviewed =
+    !!currentUserReview || Object.values(characteristicCounts).some((characteristic) => characteristic.pressed);
+
   return (
     <div className={cls.RateNow}>
       {!showRateNow && (
         <div className={cls.rateNowCall}>
-          <h4 className={cls.question}>
-            Have you visited this place?{' '}
-            <span
+          {!hasUserReviewed && (
+            <>
+              <h5 className={cls.question}>Have you visited this place?</h5>
+              <RegularButton
+                theme={'blank'}
+                onClick={() => {
+                  setShowRateNow(true);
+                }}
+              >
+                Share Your Thoughts
+              </RegularButton>
+            </>
+          )}
+          {hasUserReviewed && (
+            <RegularButton
+              theme={'blank'}
               onClick={() => {
                 setShowRateNow(true);
               }}
             >
-              Rate it
-            </span>
-          </h4>
+              Edit my feedback
+              <EditIcon width={16} height={16} />
+            </RegularButton>
+          )}
         </div>
       )}
 
       {showRateNow && (
-        <>
-          <RegularButton
-            theme="blank"
-            type="button"
-            className={cls.buttonBack}
-            onClick={() => {
-              setShowRateNow(false);
-            }}
-          >
-            &#8612; Back
-          </RegularButton>
+        <div className={cls.feedbackInteractions}>
           <RatePlaceWidget
             handleDeleteMyRating={handleDeleteMyRating}
             userRating={currentUserReview?.userRating}
             reviewId={currentUserReview?.id}
             onSubmitRating={onSubmitRating}
           />
-          <h3>Which of these did you notice?</h3>
-          <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
+          <div className={cls.characteristicWidget}>
+            <h4>What made your visit special?</h4>
+            <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
+          </div>
+
           <LeaveOrEditMyReview
             handleDeleteMyTextReview={handleDeleteMyTextReview}
             review={currentUserReview?.text}
@@ -114,7 +126,16 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
               />
             </Modal>
           )}
-        </>
+          <RegularButton
+            theme="blank"
+            type="button"
+            onClick={() => {
+              setShowRateNow(false);
+            }}
+          >
+            &#8612; Back
+          </RegularButton>
+        </div>
       )}
     </div>
   );
