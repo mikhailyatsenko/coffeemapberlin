@@ -1,5 +1,4 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
-// import { useState } from 'react';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 
 import { TOGGLE_CHARACTERISTIC, GET_ALL_PLACES } from 'shared/query/apolloQueries';
@@ -12,7 +11,6 @@ interface ToggleCharacteristicVariables {
 
 export const useToggleCharacteristic = (placeId: string) => {
   const { user, setIsAuthPopup } = useAuth();
-  // const [toastMessage, setToastMessage] = useState<string>('');
 
   const [toggleCharacteristic, { error }] = useMutation<
     { toggleCharacteristic: { success: boolean } },

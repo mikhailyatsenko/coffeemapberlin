@@ -153,24 +153,6 @@ export const TOGGLE_CHARACTERISTIC = gql`
   }
 `;
 
-// export const ADD_REVIEW = gql`
-//   mutation AddReview($placeId: ID!, $text: String, $rating: Float) {
-//     addReview(placeId: $placeId, text: $text, rating: $rating) {
-//       review {
-//         id
-//         text
-//         userId
-//         userName
-//         userAvatar
-//         placeId
-//         createdAt
-//         isOwnReview
-//         userRating
-//       }
-//     }
-//   }
-// `;
-
 export const ADD_RATING = gql`
   mutation AddRating($placeId: ID!, $rating: Float!) {
     addRating(placeId: $placeId, rating: $rating) {

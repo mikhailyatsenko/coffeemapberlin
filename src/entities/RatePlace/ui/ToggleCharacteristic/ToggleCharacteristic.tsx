@@ -1,4 +1,5 @@
 import { type ICharacteristicCounts } from 'shared/types';
+import { characteristicsMap } from 'shared/ui/CharacteristicCountsIcon/ui/CharacteristicCountsIcon';
 import { ToggleCharacteristicButton } from '../ToggleCharacteristicButton/ToggleCharacteristicButton';
 import cls from './ToggleCharacteristic.module.scss';
 
@@ -11,17 +12,6 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
   characteristicCounts,
   toggleChar,
 }) => {
-  const characteristics = new Map<string, string>([
-    ['pleasantAtmosphere', 'Pleasant Atmosphere'],
-    ['friendlyStaff', 'Friendly Staff'],
-    ['affordablePrices', 'Affordable Prices'],
-    ['yummyEats', 'Yummy Eats'],
-    ['deliciousFilterCoffee', 'Delicious Filter Coffee'],
-    ['freeWifi', 'Free Wi-Fi'],
-    ['petFriendly', 'Pet Friendly'],
-    ['outdoorSeating', 'Outdoor Seating'],
-  ]);
-
   return (
     <div className={cls.toggleCharacteristicButtons}>
       {Object.keys(characteristicCounts)
@@ -35,7 +25,7 @@ export const ToggleCharacteristic: React.FC<ToggleCharacteristicButtonProps> = (
               await toggleChar(charKey as keyof ICharacteristicCounts);
             }}
           >
-            {characteristics.get(charKey)}
+            {characteristicsMap.get(charKey)}
           </ToggleCharacteristicButton>
         ))}
     </div>
