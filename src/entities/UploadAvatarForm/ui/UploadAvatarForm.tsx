@@ -59,14 +59,14 @@ export const UploadAvatarForm = ({
           {!isUploadFormActive ? (
             <>
               <RegularButton
-                clickHandler={() => {
+                onClick={() => {
                   setIsUploadFormActive(true);
                 }}
               >
                 Upload new picture
               </RegularButton>
               {handleDelete && (
-                <RegularButton theme="blank" clickHandler={handleDelete}>
+                <RegularButton theme="blank" onClick={handleDelete}>
                   Delete
                 </RegularButton>
               )}
@@ -86,12 +86,12 @@ export const UploadAvatarForm = ({
                   <img className={cls.buttonIcon} src={fileIcon} alt="" /> Choose file
                 </label>
               ) : (
-                <RegularButton clickHandler={handleUpload} disabled={!selectedFile || !!isError}>
+                <RegularButton onClick={handleUpload} disabled={!selectedFile || !!isError}>
                   <img className={cls.buttonIcon} src={uploadIcon} alt="" /> Upload now
                 </RegularButton>
               )}
 
-              <RegularButton theme="blank" clickHandler={handleCancel}>
+              <RegularButton theme="blank" onClick={handleCancel}>
                 Cancel
               </RegularButton>
             </>

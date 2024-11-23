@@ -34,7 +34,7 @@ export const AuthIndicator: React.FC = () => {
   if (!user) {
     return (
       <RegularButton
-        clickHandler={() => {
+        onClick={() => {
           setIsAuthPopup('SignInWithEmail');
         }}
       >

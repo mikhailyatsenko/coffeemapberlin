@@ -8,14 +8,24 @@ interface FormFieldProps {
   value?: string;
   labelText?: string;
   autoComplete?: string;
+  autoFocus?: boolean;
 }
-export const FormField: React.FC<FormFieldProps> = ({ fieldName, type, value, error, labelText, autoComplete }) => {
+export const FormField: React.FC<FormFieldProps> = ({
+  fieldName,
+  type,
+  value,
+  error,
+  labelText,
+  autoComplete,
+  autoFocus,
+}) => {
   const { register } = useFormContext();
   const parameters = {
     placeholder: fieldName,
     type,
     value,
     autoComplete,
+    autoFocus,
     id: fieldName,
     ...register(fieldName),
   };

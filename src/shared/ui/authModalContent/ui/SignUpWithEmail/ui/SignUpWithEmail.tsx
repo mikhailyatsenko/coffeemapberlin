@@ -25,13 +25,7 @@ interface RegisterWithEmailFormData {
 }
 
 export const SignUpWithEmail = ({ onSwitchToSignIn, onSuccessfulSignUp }: SignUpWithEmailProps) => {
-  const [
-    registerUser,
-    {
-      // loading,
-      error,
-    },
-  ] = useMutation(REGISTER_USER);
+  const [registerUser, { error }] = useMutation(REGISTER_USER);
   const { checkAuth } = useAuth();
   const form = useForm<RegisterWithEmailFormData>({ mode: 'onBlur', resolver: yupResolver(validationSchema) });
 

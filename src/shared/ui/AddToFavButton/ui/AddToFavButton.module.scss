@@ -4,13 +4,7 @@
   background-image: url('../../../assets/favorite-empty.svg');
   background-repeat: no-repeat;
   background-position: center;
-  /*
-  background-size: 16px;
-  display: flex;
-  justify-content: flex-end;
-  flex-direction: column;
-  text-align: center;
-  */
+
   color: #787878;
   min-height: 16px;
   min-width: 16px;
@@ -172,17 +166,5 @@
       0% 0%,
       0% 0%,
       0% 0%;
-  }
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
   }
 }

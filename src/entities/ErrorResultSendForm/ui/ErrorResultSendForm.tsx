@@ -14,7 +14,7 @@ export const ErrorResultSendForm = () => {
       </div>
       <h3 className={cls.title}>Oops!</h3>
       <p className={cls.text}>Something went wrong while sending your message. Please try again later.</p>
-      <RegularButton clickHandler={handleRefresh} theme="error">
+      <RegularButton onClick={handleRefresh} theme="error">
         Try again
       </RegularButton>
     </div>

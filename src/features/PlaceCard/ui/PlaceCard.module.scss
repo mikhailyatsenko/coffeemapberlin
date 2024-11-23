@@ -93,18 +93,18 @@
     margin-left: 10px;
     padding: 8px;
     border: 0px solid #767676;
-    border-radius: 50%; /* Делает элемент кругом */
-    box-sizing: border-box; /* Включает padding и border в общие размеры */
+    border-radius: 50%;
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Прячет все, что выходит за пределы круга */
+    overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.18) 0px 0.5px 1.5px;
     transition: background-color 0.2s;
     .icon {
-      max-height: 100%; /* Иконка будет масштабироваться, сохраняя свои пропорции */
+      max-height: 100%;
       max-width: 100%;
-      filter: grayscale(25%); /* Применяет фильтр к изображению */
+      filter: grayscale(25%);
     }
     &:hover,
     &:active {

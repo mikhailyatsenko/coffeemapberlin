@@ -14,8 +14,7 @@ export const SuccessfulSignUp = () => {
       <p>You can now leave reviews and ratings, as well as keep track of your personal list of favorites.</p>
       <p>Enjoy exploring and sharing your experiences!</p>
 
-      <RegularButton
-        clickHandler={() => {
+      <RegularButton onClick={() => {
           setIsAuthPopup(null);
         }}
       >
