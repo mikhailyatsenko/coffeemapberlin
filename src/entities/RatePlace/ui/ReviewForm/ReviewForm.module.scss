@@ -22,8 +22,11 @@
   background: rgba(255, 255, 255, 0.69);
 }
 .buttons {
-  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-right: 10px;
+  margin-left: auto;
 }
 
 .formError {
