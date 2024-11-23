@@ -99,6 +99,41 @@ export const GET_ALL_PLACES = gql`
         ratingCount
         isFavorite
         favoriteCount
+        characteristicCounts {
+          pleasantAtmosphere {
+            pressed
+            count
+          }
+          affordablePrices {
+            pressed
+            count
+          }
+          friendlyStaff {
+            pressed
+            count
+          }
+          yummyEats {
+            pressed
+            count
+          }
+          deliciousFilterCoffee {
+            pressed
+            count
+          }
+
+          freeWifi {
+            pressed
+            count
+          }
+          petFriendly {
+            pressed
+            count
+          }
+          outdoorSeating {
+            pressed
+            count
+          }
+        }
       }
     }
   }
@@ -110,29 +145,37 @@ export const TOGGLE_FAVORITE = gql`
   }
 `;
 
-export const ADD_REVIEW = gql`
-  mutation AddReview($placeId: ID!, $text: String, $rating: Float) {
-    addReview(placeId: $placeId, text: $text, rating: $rating) {
-      review {
-        id
-        text
-        userId
-        userName
-        userAvatar
-        placeId
-        createdAt
-        isOwnReview
-        userRating
-      }
+export const TOGGLE_CHARACTERISTIC = gql`
+  mutation ToggleCharacteristic($placeId: ID!, $characteristic: Characteristic!) {
+    toggleCharacteristic(placeId: $placeId, characteristic: $characteristic) {
+      success
+    }
+  }
+`;
+
+export const ADD_RATING = gql`
+  mutation AddRating($placeId: ID!, $rating: Float!) {
+    addRating(placeId: $placeId, rating: $rating) {
       averageRating
       ratingCount
+      reviewId
+      userRating
+    }
+  }
+`;
+
+export const ADD_TEXT_REVIEW = gql`
+  mutation AddTextReview($placeId: ID!, $text: String!) {
+    addTextReview(placeId: $placeId, text: $text) {
+      reviewId
+      text
     }
   }
 `;
 
 export const DELETE_REVIEW = gql`
-  mutation DeleteReview($reviewId: ID!) {
-    deleteReview(reviewId: $reviewId) {
+  mutation DeleteReview($reviewId: ID!, $deleteOptions: String!) {
+    deleteReview(reviewId: $reviewId, deleteOptions: $deleteOptions) {
       reviewId
       averageRating
       ratingCount
@@ -140,9 +183,9 @@ export const DELETE_REVIEW = gql`
   }
 `;
 
-export const GET_PLACE_DETAILS = gql`
-  query PlaceDetails($placeId: ID!) {
-    placeDetails(placeId: $placeId) {
+export const GET_PLACE_REVIEWS = gql`
+  query PlaceReviews($placeId: ID!) {
+    placeReviews(placeId: $placeId) {
       id
       reviews {
         id

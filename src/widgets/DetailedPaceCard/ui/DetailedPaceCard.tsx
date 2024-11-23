@@ -4,15 +4,16 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
+import { type PlaceReviewsData } from 'shared/lib/hooks/interactions/useAddTextReview';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
-import { GET_ALL_PLACES, GET_PLACE_DETAILS } from 'shared/query/apolloQueries';
-import { type PlaceResponse } from 'shared/types';
+import { GET_ALL_PLACES, GET_PLACE_REVIEWS } from 'shared/query/apolloQueries';
+import { type ICharacteristicCounts, type PlaceResponse } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
-import { type PlaceDetailsData } from '../../../shared/lib/hooks/interactions/useAddReview';
 import CoffeeShopSchema from '../lib/CoffeeShopSchema';
 import cls from './DetailedPaceCard.module.scss';
 
@@ -23,18 +24,20 @@ const DetailedPaceCard: React.FC = () => {
   const { setLocation } = useContext(LocationContext);
   const [isViewInstProfile, setIsViewInstProfile] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [showRateNow, setShowRateNow] = useState(false);
+
   const detailedCardRef = useRef<HTMLDivElement>(null);
   const placeId = searchParams.get('id');
 
   const { toggleFavorite, toastMessage } = useToggleFavorite(placeId);
 
   const { data: allPlacesData } = useQuery<{ places: PlaceResponse[] }>(GET_ALL_PLACES);
-  const { data: placeDetailsData, loading } = useQuery<PlaceDetailsData>(GET_PLACE_DETAILS, {
+  const { data: placeReviewsData, loading } = useQuery<PlaceReviewsData>(GET_PLACE_REVIEWS, {
     variables: { placeId, skip: !placeId },
   });
 
   const place = allPlacesData?.places.find((p) => p.properties.id === placeId);
-  const reviews = placeDetailsData?.placeDetails.reviews ?? [];
+  const reviews = placeReviewsData?.placeReviews.reviews ?? [];
 
   const handleToggleFavorite = async () => {
     try {
@@ -81,7 +84,9 @@ const DetailedPaceCard: React.FC = () => {
   if (!placeId) return null;
   if (!place?.properties || loading) return <Loader />;
 
-  const { averageRating, description, name, address, instagram, ratingCount, image } = place.properties;
+  const { averageRating, description, name, address, instagram, ratingCount, image, characteristicCounts, isFavorite } =
+    place.properties;
+
   return (
     <>
       <div className={cls.addressCopmactView}>{address}</div>
@@ -115,7 +120,7 @@ const DetailedPaceCard: React.FC = () => {
               }}
               className={cls.iconFavWrapper}
             >
-              <AddToFavButton isFavorite={Boolean(place.properties.isFavorite)} />
+              <AddToFavButton isFavorite={Boolean(isFavorite)} />
             </div>
             <button
               className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
@@ -127,18 +132,43 @@ const DetailedPaceCard: React.FC = () => {
             </button>
           </div>
           <h2 className={cls.name}>{name}</h2>
-          <HeaderDetailedPlacCard
-            averageRating={averageRating}
-            description={description}
-            isHeaderVisible={isHeaderVisible}
+          <div className={cls.charCounts}>
+            {Object.keys(characteristicCounts)
+              .filter((charKey) => charKey !== '__typename')
+              .map((charKey) => (
+                <CharacteristicCountsIcon
+                  characteristic={charKey}
+                  characteristicData={characteristicCounts[charKey as keyof ICharacteristicCounts]}
+                  key={charKey}
+                />
+              ))}
+          </div>
+
+          {!showRateNow && (
+            <HeaderDetailedPlacCard
+              averageRating={averageRating}
+              description={description}
+              isHeaderVisible={isHeaderVisible}
+            />
+          )}
+          <RateNow
+            setShowRateNow={setShowRateNow}
+            showRateNow={showRateNow}
+            placeId={placeId}
+            reviews={reviews}
+            characteristicCounts={characteristicCounts}
           />
-          <RateNow placeId={placeId} reviews={reviews} />
+
           <ReviewList
+            showRateNow={showRateNow}
+            setShowRateNow={setShowRateNow}
             reviews={reviews}
             placeId={placeId}
             isCompactView={isHeaderVisible}
             setCompactView={setIsHeaderVisible}
           />
+
+          {/* for Google Rich Results */}
           <CoffeeShopSchema
             address={address}
             averageRating={averageRating}

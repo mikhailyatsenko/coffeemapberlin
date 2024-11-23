@@ -26,7 +26,6 @@ export const UserReviewActivity = () => {
   if (error) return <p>Error: {error.message}</p>;
   if (!data) return <p>No yet reviews</p>;
 
-  console.log(data);
   return (
     <div className={cls.UserReviewActivity}>
       <h2 className={cls.header}>My reviews and ratings:</h2>

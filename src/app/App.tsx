@@ -3,7 +3,7 @@ import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { AuthModalContent } from 'shared/ui/authModalContent/ui/AuthModalContent';
+import { AuthModalContent } from 'shared/ui/authModalContent';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { AppRouter } from './providers/router';

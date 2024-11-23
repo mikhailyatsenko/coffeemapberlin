@@ -14,7 +14,7 @@ export const LoginRequired = ({ onSwitchToSignIn, onSwitchToSignUp }: LoginRequi
       <p>You need to be logged in to perform this action.</p>
       <div className={cls.buttons}>
         <GoogleLoginButton textButton="Continue with Google" />
-        <RegularButton clickHandler={onSwitchToSignIn}>Sign in</RegularButton>
+        <RegularButton onClick={onSwitchToSignIn}>Sign in</RegularButton>
       </div>
       <div className={cls.noAccount}>
         No account? <span onClick={onSwitchToSignUp}>Create one</span>

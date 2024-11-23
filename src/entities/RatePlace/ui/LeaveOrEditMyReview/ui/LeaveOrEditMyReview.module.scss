@@ -1,0 +1,30 @@
+.LeaveOrEditMyReview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  padding-bottom: 1px; /*for visibility boder bottom on hover span in delReview*/
+}
+
+.review {
+  margin: 10px auto;
+}
+
+.formattedReview {
+  font-style: italic;
+  font-size: 12px;
+}
+
+.delReview {
+  font-size: 12px;
+  span {
+    cursor: pointer;
+    font-weight: 400;
+
+    &:hover {
+      border-bottom: 1px solid #303030;
+    }
+  }
+}
