@@ -49,6 +49,8 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {isOwnReview && handleDeleteReview && (
           <button
             onClick={() => {
+              const isConfirmed = window.confirm('Deleting review. Continue?');
+              if (!isConfirmed) return;
               handleDeleteReview(id);
             }}
             className={cls.deleteButton}
