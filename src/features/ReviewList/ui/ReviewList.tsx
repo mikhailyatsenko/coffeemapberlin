@@ -31,66 +31,21 @@ export const ReviewList = ({
       const scrollTop = reviewsListRef.current.scrollTop;
       setCompactView(scrollTop < 100);
     }
+
+    if (reviewsListRef.current && !isCompactView) {
+      const scrollTop = reviewsListRef.current.scrollTop;
+      setCompactView(scrollTop < 10);
+    }
   }, [isCompactView, setCompactView]);
-
-  const handleScrollUpAttempt = useCallback(
-    (e: WheelEvent | TouchEvent) => {
-      if (reviewsListRef.current && reviewsListRef.current.scrollTop === 0 && !isCompactView) {
-        if ('deltaY' in e && e.deltaY < 0) {
-          setCompactView(true);
-          e.preventDefault();
-        } else if ('touches' in e) {
-          const touch = e.touches[0];
-          const startY = touch.pageY;
-
-          const handleTouchEnd = (endEvent: TouchEvent) => {
-            const endY = endEvent.changedTouches[0].pageY;
-            if (endY > startY) {
-              setCompactView(true);
-              e.preventDefault();
-            }
-            reviewsListRef.current?.removeEventListener('touchend', handleTouchEnd);
-          };
-
-          reviewsListRef.current.addEventListener('touchend', handleTouchEnd);
-        }
-      }
-    },
-    [isCompactView, setCompactView],
-  );
 
   useEffect(() => {
     const reviewsList = reviewsListRef.current;
     if (reviewsList) {
       reviewsList.addEventListener('scroll', handleScrollReviewsDown);
-      reviewsList.addEventListener('wheel', handleScrollUpAttempt, { passive: false });
-      reviewsList.addEventListener('touchmove', handleScrollUpAttempt, { passive: false });
       return () => {
         reviewsList.removeEventListener('scroll', handleScrollReviewsDown);
-        reviewsList.removeEventListener('wheel', handleScrollUpAttempt);
-        reviewsList.removeEventListener('touchmove', handleScrollUpAttempt);
       };
     }
-  }, [handleScrollReviewsDown, handleScrollUpAttempt]);
-
-  useEffect(() => {
-    let reviewsListContainer: HTMLDivElement | null = null;
-
-    const observer = new MutationObserver(() => {
-      reviewsListContainer = reviewsListRef.current;
-      if (reviewsListContainer) {
-        reviewsListContainer.addEventListener('scroll', handleScrollReviewsDown);
-      }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      observer.disconnect();
-      if (reviewsListContainer) {
-        reviewsListContainer.removeEventListener('scroll', handleScrollReviewsDown);
-      }
-    };
   }, [handleScrollReviewsDown]);
 
   if (showRateNow) return null;
