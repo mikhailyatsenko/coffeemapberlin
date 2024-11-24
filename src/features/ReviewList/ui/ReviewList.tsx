@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
 import { type Review } from 'shared/types';
 import { ReviewCard } from 'shared/ui/ReviewCard';
@@ -22,31 +22,32 @@ export const ReviewList = ({
   setShowRateNow,
   showRateNow,
 }: ReviewListProps) => {
-  const reviewsListRef = useRef<HTMLDivElement>(null);
-
   const { handleDeleteReview } = useDeleteReview(placeId);
 
-  const handleScrollReviewsDown = useCallback(() => {
-    if (reviewsListRef.current && isCompactView) {
-      const scrollTop = reviewsListRef.current.scrollTop;
-      setCompactView(scrollTop < 100);
-    }
+  const [reviewsListRef, setReviewsListRef] = useState<HTMLDivElement | null>(null);
 
-    if (reviewsListRef.current && !isCompactView) {
-      const scrollTop = reviewsListRef.current.scrollTop;
-      setCompactView(scrollTop < 10);
-    }
-  }, [isCompactView, setCompactView]);
+  const handleRef = useCallback((node: HTMLDivElement | null) => {
+    setReviewsListRef(node);
+  }, []);
 
   useEffect(() => {
-    const reviewsList = reviewsListRef.current;
-    if (reviewsList) {
-      reviewsList.addEventListener('scroll', handleScrollReviewsDown);
-      return () => {
-        reviewsList.removeEventListener('scroll', handleScrollReviewsDown);
-      };
-    }
-  }, [handleScrollReviewsDown]);
+    console.log('inside scroll useEffect');
+    if (!reviewsListRef) return;
+
+    const handleScrollReviews = () => {
+      const scrollTop = reviewsListRef.scrollTop;
+      if (isCompactView) {
+        setCompactView(scrollTop < 100);
+      } else {
+        setCompactView(scrollTop < 10);
+      }
+    };
+
+    reviewsListRef.addEventListener('scroll', handleScrollReviews);
+    return () => {
+      reviewsListRef.removeEventListener('scroll', handleScrollReviews);
+    };
+  }, [reviewsListRef, isCompactView, setCompactView]);
 
   if (showRateNow) return null;
 
@@ -77,7 +78,7 @@ export const ReviewList = ({
       >
         Reviews ({reviews.length})
       </h4>
-      <div ref={reviewsListRef} className={cls.reviewsList}>
+      <div ref={handleRef} className={cls.reviewsList}>
         {sortReviews(reviews).map((review) => (
           <ReviewCard
             key={`${review.id}-${review.createdAt}`}

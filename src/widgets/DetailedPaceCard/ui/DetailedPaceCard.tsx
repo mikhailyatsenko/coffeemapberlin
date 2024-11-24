@@ -151,13 +151,16 @@ const DetailedPaceCard: React.FC = () => {
               isHeaderVisible={isHeaderVisible}
             />
           )}
-          <RateNow
-            setShowRateNow={setShowRateNow}
-            showRateNow={showRateNow}
-            placeId={placeId}
-            reviews={reviews}
-            characteristicCounts={characteristicCounts}
-          />
+
+          {isHeaderVisible && (
+            <RateNow
+              setShowRateNow={setShowRateNow}
+              showRateNow={showRateNow}
+              placeId={placeId}
+              reviews={reviews}
+              characteristicCounts={characteristicCounts}
+            />
+          )}
 
           <ReviewList
             showRateNow={showRateNow}
