@@ -10,7 +10,7 @@ import { AppRouter } from './providers/router';
 
 const App = () => {
   const location = useLocation();
-  const { isAuthPopup, setIsAuthPopup } = useAuth();
+  const { authPopupContent, setAuthPopupContent } = useAuth();
   return (
     <>
       <Navbar />
@@ -20,13 +20,13 @@ const App = () => {
 
       {location.pathname !== '/' && <Footer />}
       <PortalToBody>
-        {isAuthPopup && (
+        {authPopupContent && (
           <Modal
             onClose={() => {
-              setIsAuthPopup(null);
+              setAuthPopupContent(null);
             }}
           >
-            <AuthModalContent initialContent={isAuthPopup} />
+            <AuthModalContent initialContent={authPopupContent} />
           </Modal>
         )}
 

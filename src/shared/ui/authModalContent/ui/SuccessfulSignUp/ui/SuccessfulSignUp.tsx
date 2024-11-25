@@ -4,7 +4,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './SuccessfulSignUp.module.scss';
 
 export const SuccessfulSignUp = () => {
-  const { user, setIsAuthPopup } = useAuth();
+  const { user, setAuthPopupContent } = useAuth();
 
   return (
     <div className={cls.content}>
@@ -14,8 +14,9 @@ export const SuccessfulSignUp = () => {
       <p>You can now leave reviews and ratings, as well as keep track of your personal list of favorites.</p>
       <p>Enjoy exploring and sharing your experiences!</p>
 
-      <RegularButton onClick={() => {
-          setIsAuthPopup(null);
+      <RegularButton
+        onClick={() => {
+          setAuthPopupContent(null);
         }}
       >
         Here we go!

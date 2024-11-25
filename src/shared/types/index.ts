@@ -31,6 +31,12 @@ export interface PlaceProperties {
   characteristicCounts: ICharacteristicCounts;
 }
 
+export interface PlaceResponse {
+  type: 'Feature';
+  geometry: Point;
+  properties: PlaceProperties;
+}
+
 export interface User {
   id: string;
   displayName: string;
@@ -38,11 +44,6 @@ export interface User {
   avatar: string | null;
   createdAt: Date | null;
   isGoogleUserUserWithoutPassword: boolean;
-}
-export interface PlaceResponse {
-  type: 'Feature';
-  geometry: Point;
-  properties: PlaceProperties;
 }
 
 export interface Review {

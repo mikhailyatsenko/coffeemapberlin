@@ -4,8 +4,8 @@ import { usePlaces } from 'shared/lib/reactContext/PlacesData/usePlaces';
 
 export const ShowFavoritePlaces = () => {
   const { user } = useAuth();
-  const { setShowFavorite, favoritePlaces } = usePlaces();
 
+  const { setShowFavorite, favoritePlaces } = usePlaces();
   if (!user) return null;
 
   if (favoritePlaces === null) return null;
@@ -13,7 +13,7 @@ export const ShowFavoritePlaces = () => {
   const onClickHandler = () => {
     setShowFavorite((prev) => !prev);
   };
-
+  console.log('favorite places:', favoritePlaces);
   return (
     <>
       {favoritePlaces.length > 0 && (

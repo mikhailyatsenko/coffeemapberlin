@@ -5,7 +5,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  const { user, logout, setIsAuthPopup } = useAuth();
+  const { user, logout, setAuthPopupContent } = useAuth();
   const [isProfileCardVisible, setIsProfileCardVisible] = useState(false);
 
   const authIndicatorRef = useRef<HTMLDivElement>(null);
@@ -35,7 +35,7 @@ export const AuthIndicator: React.FC = () => {
     return (
       <RegularButton
         onClick={() => {
-          setIsAuthPopup('SignInWithEmail');
+          setAuthPopupContent('SignInWithEmail');
         }}
       >
         Sign in
