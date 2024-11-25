@@ -49,10 +49,15 @@ export const SearchPlaces = () => {
     });
   };
 
+  const sortedByRatingPlaces = [...filterablePlaces].sort(
+    (a, b) => b.properties.averageRating - a.properties.averageRating,
+  );
+
   return (
     <div
       onClick={() => {
         setIsActive(true);
+        setSearchTerm(' '); // ' ' to activating onClick SearchResultsTab with all places by default
       }}
       className={`${cls.SearchPlaces} ${isActive ? cls.smallScreensSearch : ''}`}
       ref={SearchPlacesRef}
@@ -63,7 +68,7 @@ export const SearchPlaces = () => {
           <RatingFilter filterRating={minRating} setFilterRating={setMinRating} />
         </div>
       )}
-      {searchTerm && <SearchResultsTab filterdPlaces={filterablePlaces} onSelect={onResultSelectHandler} />}
+      {searchTerm && <SearchResultsTab filterdPlaces={sortedByRatingPlaces} onSelect={onResultSelectHandler} />}
     </div>
   );
 };

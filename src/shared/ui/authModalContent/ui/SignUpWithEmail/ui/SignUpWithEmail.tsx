@@ -1,9 +1,8 @@
-import { useMutation } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { type SignUpWithEmailData } from 'shared/lib/reactContext/Auth/AuthContext';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { REGISTER_USER } from 'shared/query/apolloQueries';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { FormField } from '../../../../FormField';
 import { GoogleLoginButton } from '../../../../GoogleLoginButton';
@@ -16,18 +15,9 @@ interface SignUpWithEmailProps {
   onSuccessfulSignUp: () => void;
 }
 
-interface RegisterWithEmailFormData {
-  displayName: string;
-  email: string;
-  password: string;
-  repeatPassword: string;
-  recaptcha: string;
-}
-
-export const SignUpWithEmail = ({ onSwitchToSignIn, onSuccessfulSignUp }: SignUpWithEmailProps) => {
-  const [registerUser, { error }] = useMutation(REGISTER_USER);
-  const { checkAuth } = useAuth();
-  const form = useForm<RegisterWithEmailFormData>({ mode: 'onBlur', resolver: yupResolver(validationSchema) });
+export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
+  const { signUpWithEmailHandler, error } = useAuth();
+  const form = useForm<SignUpWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchema) });
 
   const {
     handleSubmit,
@@ -41,26 +31,6 @@ export const SignUpWithEmail = ({ onSwitchToSignIn, onSuccessfulSignUp }: SignUp
     trigger('recaptcha');
   };
 
-  const onSubmit: SubmitHandler<RegisterWithEmailFormData> = async (data) => {
-    try {
-      const response = await registerUser({
-        variables: {
-          email: data.email,
-          displayName: data.displayName,
-          password: data.password,
-        },
-      });
-      if (response) {
-        checkAuth();
-        onSuccessfulSignUp();
-      }
-    } catch (err) {
-      const errorMessage = (err as Error).message || 'Unknown error';
-
-      console.error('Registration error:', errorMessage);
-    }
-  };
-
   return (
     <div className={cls.content}>
       <h2>Create account</h2>
@@ -70,7 +40,7 @@ export const SignUpWithEmail = ({ onSwitchToSignIn, onSuccessfulSignUp }: SignUp
       <div className={cls.or}>or</div>
 
       <FormProvider {...form}>
-        <form className={cls.registerWithEmail} onSubmit={handleSubmit(onSubmit)}>
+        <form className={cls.registerWithEmail} onSubmit={handleSubmit(signUpWithEmailHandler)}>
           <FormField fieldName="displayName" type="text" labelText="Name" error={errors.displayName?.message} />
           <FormField fieldName="email" type="email" labelText="E-mail" error={errors.email?.message} />
           <FormField fieldName="password" type="password" labelText="Password" error={errors.password?.message} />

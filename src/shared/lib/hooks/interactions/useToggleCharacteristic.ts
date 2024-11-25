@@ -10,7 +10,7 @@ interface ToggleCharacteristicVariables {
 }
 
 export const useToggleCharacteristic = (placeId: string) => {
-  const { user, setIsAuthPopup } = useAuth();
+  const { user, setAuthPopupContent } = useAuth();
 
   const [toggleCharacteristic, { error }] = useMutation<
     { toggleCharacteristic: { success: boolean } },
@@ -75,7 +75,7 @@ export const useToggleCharacteristic = (placeId: string) => {
 
   const toggleChar = async (characteristic: keyof ICharacteristicCounts) => {
     if (!user) {
-      setIsAuthPopup('LoginRequired');
+      setAuthPopupContent('LoginRequired');
       return;
     }
     try {
