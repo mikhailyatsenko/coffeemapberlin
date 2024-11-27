@@ -8,6 +8,7 @@ import {
   PersonalSettingsForm,
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
+import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { SET_NEW_PASSWORD, UPDATE_PERSONAL_DATA } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
@@ -18,7 +19,8 @@ import cls from './AccountSettings.module.scss';
 export const AccountSettings = () => {
   const [toastMessage, setToastMessage] = useState<string>('');
 
-  const { user, checkAuth, loading: loadingUserData } = useAuth();
+  const { user, isLoading: loadingUserData } = useAuth();
+  const { checkAuth } = useAuthHandlers();
 
   const passwordForm = useForm<SetNewPasswordFormData>({
     mode: 'onBlur',
@@ -74,7 +76,7 @@ export const AccountSettings = () => {
         },
       });
       if (response) {
-        checkAuth();
+        await checkAuth();
         setToastMessage('Profile updated successfully');
       }
     } catch (err) {
@@ -95,7 +97,7 @@ export const AccountSettings = () => {
       });
       if (response) {
         resetPasswordValues();
-        checkAuth();
+        await checkAuth();
         setToastMessage('Password updated successfully');
       }
     } catch (err) {

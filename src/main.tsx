@@ -14,8 +14,8 @@ if (!process.env.GOOGLE_CLIENT_ID) {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ApolloProviderWrapper>
-    <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
-      <AuthProvider>
+    <AuthProvider>
+      <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
         <BrowserRouter>
           <LocationProvider>
             <PlacesDataProvider>
@@ -23,7 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </PlacesDataProvider>
           </LocationProvider>
         </BrowserRouter>
-      </AuthProvider>
-    </GoogleOAuthProvider>
+      </GoogleOAuthProvider>
+    </AuthProvider>
   </ApolloProviderWrapper>,
 );
