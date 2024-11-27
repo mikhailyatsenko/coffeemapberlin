@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
+import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { UPLOAD_AVATAR, DELETE_AVATAR } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
@@ -12,7 +13,9 @@ interface UploadResponse {
 }
 
 export const AvatarUpload: React.FC = () => {
-  const { user, checkAuth, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const { checkAuth } = useAuthHandlers();
+
   const [isError, setIsError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
@@ -79,7 +82,7 @@ export const AvatarUpload: React.FC = () => {
       }
 
       if (data?.uploadAvatar.success) {
-        checkAuth();
+        await checkAuth();
         setIsUploading(false);
         setToastMessage('Avatar uploaded successfully');
       }
@@ -105,7 +108,7 @@ export const AvatarUpload: React.FC = () => {
       }
 
       if (data?.deleteAvatar.success) {
-        checkAuth();
+        await checkAuth();
         setToastMessage('Avatar deleted successfully');
       }
     } catch (error) {

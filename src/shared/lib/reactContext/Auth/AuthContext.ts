@@ -2,30 +2,17 @@ import { createContext } from 'react';
 import { type User } from 'shared/types';
 import { type AuthModalContentProps } from 'shared/ui/authModalContent/ui/AuthModalContent';
 
-export interface SignUpWithEmailData {
-  displayName: string;
-  email: string;
-  password: string;
-  repeatPassword: string;
-  recaptcha: string;
-}
-
-export interface SignInWithEmailData {
-  email: string;
-  password: string;
-}
-
 interface AuthContextType {
-  loading: boolean;
+  isLoading: boolean;
   user: User | null;
-  continueWithGoogle: () => void;
-  signInWithEmailHandler: (data: SignInWithEmailData) => Promise<void>;
-  signUpWithEmailHandler: (data: SignUpWithEmailData) => Promise<void>;
-  checkAuth: () => void;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  setAuthPopupContent: React.Dispatch<
+    React.SetStateAction<'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp' | null>
+  >;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   authPopupContent: AuthModalContentProps['initialContent'] | null;
-  setAuthPopupContent: React.Dispatch<React.SetStateAction<AuthModalContentProps['initialContent'] | null>>;
-  logout: () => Promise<void>;
-
+  setError: React.Dispatch<React.SetStateAction<Error | null>>;
+  checkAuth: () => Promise<void>;
   error: Error | null;
 }
 

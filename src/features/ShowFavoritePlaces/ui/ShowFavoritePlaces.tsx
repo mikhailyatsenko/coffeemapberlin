@@ -13,7 +13,6 @@ export const ShowFavoritePlaces = () => {
   const onClickHandler = () => {
     setShowFavorite((prev) => !prev);
   };
-  console.log('favorite places:', favoritePlaces);
   return (
     <>
       {favoritePlaces.length > 0 && (

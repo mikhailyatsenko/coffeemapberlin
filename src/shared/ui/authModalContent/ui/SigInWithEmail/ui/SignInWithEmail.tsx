@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
-import { type SignInWithEmailData } from 'shared/lib/reactContext/Auth/AuthContext';
+import { useAuthHandlers, type SignInWithEmailData } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 
 import { RegularButton } from 'shared/ui/RegularButton';
@@ -15,7 +15,8 @@ interface SignInWithEmailProps {
 }
 
 export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
-  const { signInWithEmailHandler, error } = useAuth();
+  const { error } = useAuth();
+  const { signInWithEmailHandler } = useAuthHandlers();
 
   const form = useForm<SignInWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchema) });
 

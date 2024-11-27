@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  const { user, logout, setAuthPopupContent } = useAuth();
+  const { user, setAuthPopupContent } = useAuth();
+  const { logout } = useAuthHandlers();
+
   const [isProfileCardVisible, setIsProfileCardVisible] = useState(false);
 
   const authIndicatorRef = useRef<HTMLDivElement>(null);

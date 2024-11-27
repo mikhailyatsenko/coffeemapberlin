@@ -24,8 +24,6 @@ export const PlacesDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const favoritePlaces = places.filter((place) => place.properties.isFavorite);
 
-  console.log('favorites in provider', favoritePlaces);
-
   return (
     <PlacesDataContext.Provider
       value={{
