@@ -2,11 +2,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useAuthHandlers, type SignInWithEmailData } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-
 import { RegularButton } from 'shared/ui/RegularButton';
 import { FormField } from '../../../../FormField';
 import { GoogleLoginButton } from '../../../../GoogleLoginButton';
-
 import { validationSchema } from '../lib/validationSchema';
 import cls from './SignInWithEmail.module.scss';
 
