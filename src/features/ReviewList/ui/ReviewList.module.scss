@@ -7,11 +7,31 @@
   gap: 10px;
   overflow: hidden;
   z-index: 9;
-  .reviewsTitel {
-    align-self: flex-start;
+  .reviewsTitle {
+    margin-right: auto;
     font-weight: 400;
     font-style: italic;
     margin-left: 10px;
+  }
+  .reviewsCollapse {
+    cursor: pointer;
+    margin-right: auto;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    font-weight: 400;
+    font-style: italic;
+    margin-left: 10px;
+    color: #fff;
+    border-bottom: 1px solid transparent;
+    .collapseIcon {
+      fill: #fff;
+      width: 14px;
+      height: 14px;
+    }
+    &:hover {
+      border-bottom: 1px solid #fff;
+    }
   }
   @media (height < 600px) {
     overflow-y: initial;

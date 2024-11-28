@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
 import { type Review } from 'shared/types';
 import { ReviewCard } from 'shared/ui/ReviewCard';
+import CollapseIcon from '../../../shared/assets/collapse-icon.svg?react';
 import { sortReviews } from '../lib/sortReviews';
 import cls from './ReviewList.module.scss';
 
@@ -25,21 +26,35 @@ export const ReviewList = ({
   const { handleDeleteReview } = useDeleteReview(placeId);
 
   const [reviewsListRef, setReviewsListRef] = useState<HTMLDivElement | null>(null);
+  const [isReviewsListScrollable, setIsReviewsListScrollable] = useState(false);
 
   const handleRef = useCallback((node: HTMLDivElement | null) => {
     setReviewsListRef(node);
   }, []);
 
   useEffect(() => {
-    console.log('inside scroll useEffect');
     if (!reviewsListRef) return;
 
+    const handleTransitionEnd = () => {
+      const isScrollable = reviewsListRef.offsetHeight < reviewsListRef.scrollHeight;
+      setIsReviewsListScrollable(isScrollable);
+    };
+
+    reviewsListRef.addEventListener('transitionend', handleTransitionEnd);
+
+    return () => {
+      reviewsListRef.removeEventListener('transitionend', handleTransitionEnd);
+    };
+  }, [reviewsListRef, isCompactView]);
+
+  useEffect(() => {
+    if (!reviewsListRef) return;
     const handleScrollReviews = () => {
       const scrollTop = reviewsListRef.scrollTop;
       if (isCompactView) {
         setCompactView(scrollTop < 100);
       } else {
-        setCompactView(scrollTop < 10);
+        setCompactView(isReviewsListScrollable && scrollTop === 0);
       }
     };
 
@@ -47,7 +62,7 @@ export const ReviewList = ({
     return () => {
       reviewsListRef.removeEventListener('scroll', handleScrollReviews);
     };
-  }, [reviewsListRef, isCompactView, setCompactView]);
+  }, [reviewsListRef, isCompactView, setCompactView, isReviewsListScrollable]);
 
   if (showRateNow) return null;
 
@@ -70,14 +85,28 @@ export const ReviewList = ({
 
   return (
     <div className={cls.reviewsContainer}>
-      <h4
-        onClick={() => {
-          setCompactView(!isCompactView);
-        }}
-        className={cls.reviewsTitel}
-      >
-        Reviews ({reviews.length})
-      </h4>
+      {isCompactView && (
+        <h4
+          onClick={() => {
+            setCompactView(!isCompactView);
+          }}
+          className={cls.reviewsTitle}
+        >
+          Reviews ({reviews.length})
+        </h4>
+      )}
+      {!isCompactView && (
+        <div
+          className={cls.reviewsCollapse}
+          onClick={() => {
+            setCompactView(true);
+          }}
+        >
+          Collapse reviews
+          <CollapseIcon className={cls.collapseIcon} />
+        </div>
+      )}
+
       <div ref={handleRef} className={cls.reviewsList}>
         {sortReviews(reviews).map((review) => (
           <ReviewCard
