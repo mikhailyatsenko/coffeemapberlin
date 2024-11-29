@@ -1,15 +1,10 @@
 .RateNow {
+  width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding-top: 20px;
-  margin-top: 20px;
-  border-top: 1px solid #ffaa9f;
-  justify-content: center;
-  width: 100%;
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 
 .rateNowCall {
@@ -40,8 +35,10 @@
   flex-direction: column;
   align-items: center;
   gap: 25px;
-  overflow: scroll;
-
+  padding-top: 20px;
+  border-top: 1px solid #ffaa9f;
+  justify-content: flex-start;
+  overflow-y: scroll;
   .characteristicWidget {
     padding: 14px;
     padding-bottom: 22px;
@@ -53,5 +50,18 @@
       margin-bottom: 8px;
       font-weight: 400;
     }
+  }
+}
+
+.buttonBack {
+  cursor: pointer;
+  color: #fff;
+  width: fit-content;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 20px auto 10px;
+  border-bottom: 1px solid transparent;
+  &:hover {
+    border-bottom: 1px solid #fff;
   }
 }
