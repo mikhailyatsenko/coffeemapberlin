@@ -23,12 +23,6 @@ export function useAddTextReview(placeId: string) {
   const [addTextReview, { loading, error }] = useMutation<AddTextReviewResponse>(ADD_TEXT_REVIEW, {
     update(cache, { data }) {
       if (data) {
-        console.log(
-          cache.readQuery<PlaceReviewsData>({
-            query: GET_PLACE_REVIEWS,
-            variables: { placeId },
-          }),
-        );
         updatePlaceReviewsCache(cache, data.addTextReview);
       }
     },
