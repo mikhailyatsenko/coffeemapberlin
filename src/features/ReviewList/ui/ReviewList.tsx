@@ -26,7 +26,6 @@ export const ReviewList = ({
   const { handleDeleteReview } = useDeleteReview(placeId);
 
   const [reviewsListRef, setReviewsListRef] = useState<HTMLDivElement | null>(null);
-  const [isReviewsListScrollable, setIsReviewsListScrollable] = useState(false);
 
   const handleRef = useCallback((node: HTMLDivElement | null) => {
     setReviewsListRef(node);
@@ -35,34 +34,19 @@ export const ReviewList = ({
   useEffect(() => {
     if (!reviewsListRef) return;
 
-    const handleTransitionEnd = () => {
-      const isScrollable = reviewsListRef.offsetHeight < reviewsListRef.scrollHeight;
-      setIsReviewsListScrollable(isScrollable);
-    };
-
-    reviewsListRef.addEventListener('transitionend', handleTransitionEnd);
-
-    return () => {
-      reviewsListRef.removeEventListener('transitionend', handleTransitionEnd);
-    };
-  }, [reviewsListRef, isCompactView]);
-
-  useEffect(() => {
-    if (!reviewsListRef) return;
-    const handleScrollReviews = () => {
+    const handleScrollReviewsExpand = () => {
       const scrollTop = reviewsListRef.scrollTop;
-      if (isCompactView) {
-        setCompactView(scrollTop < 100);
-      } else {
-        setCompactView(isReviewsListScrollable && scrollTop === 0);
+      if (isCompactView && scrollTop > 100) {
+        setCompactView(false);
       }
     };
 
-    reviewsListRef.addEventListener('scroll', handleScrollReviews);
+    reviewsListRef.addEventListener('scroll', handleScrollReviewsExpand);
+
     return () => {
-      reviewsListRef.removeEventListener('scroll', handleScrollReviews);
+      reviewsListRef.removeEventListener('scroll', handleScrollReviewsExpand);
     };
-  }, [reviewsListRef, isCompactView, setCompactView, isReviewsListScrollable]);
+  }, [isCompactView, reviewsListRef, setCompactView]);
 
   if (showRateNow) return null;
 
@@ -88,7 +72,7 @@ export const ReviewList = ({
       {isCompactView && (
         <h4
           onClick={() => {
-            setCompactView(!isCompactView);
+            setCompactView(false);
           }}
           className={cls.reviewsTitle}
         >

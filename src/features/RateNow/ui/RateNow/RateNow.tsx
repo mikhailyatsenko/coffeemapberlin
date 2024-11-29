@@ -61,37 +61,38 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   const hasUserReviewed =
     !!currentUserReview || Object.values(characteristicCounts).some((characteristic) => characteristic.pressed);
 
-  return (
-    <div className={cls.RateNow}>
-      {!showRateNow && (
-        <div className={cls.rateNowCall}>
-          {!hasUserReviewed && (
-            <>
-              <h5 className={cls.question}>Have you visited this place?</h5>
-              <RegularButton
-                theme={'blank'}
-                onClick={() => {
-                  setShowRateNow(true);
-                }}
-              >
-                Share Your Thoughts
-              </RegularButton>
-            </>
-          )}
-          {hasUserReviewed && (
+  if (!showRateNow)
+    return (
+      <div className={cls.rateNowCall}>
+        {!hasUserReviewed && (
+          <>
+            <h5 className={cls.question}>Have you visited this place?</h5>
             <RegularButton
               theme={'blank'}
               onClick={() => {
                 setShowRateNow(true);
               }}
             >
-              Edit my feedback
-              <EditIcon width={16} height={16} />
+              Share Your Thoughts
             </RegularButton>
-          )}
-        </div>
-      )}
+          </>
+        )}
+        {hasUserReviewed && (
+          <RegularButton
+            theme={'blank'}
+            onClick={() => {
+              setShowRateNow(true);
+            }}
+          >
+            Edit my feedback
+            <EditIcon width={16} height={16} />
+          </RegularButton>
+        )}
+      </div>
+    );
 
+  return (
+    <div className={cls.RateNow}>
       {showRateNow && (
         <div className={cls.feedbackInteractions}>
           <RatePlaceWidget
