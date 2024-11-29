@@ -93,6 +93,15 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
 
   return (
     <div className={cls.RateNow}>
+      <div
+        className={cls.buttonBack}
+        onClick={() => {
+          setShowRateNow(false);
+        }}
+      >
+        &#8612; Back
+      </div>
+
       {showRateNow && (
         <div className={cls.feedbackInteractions}>
           <RatePlaceWidget
@@ -127,15 +136,6 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
               />
             </Modal>
           )}
-          <RegularButton
-            theme="blank"
-            type="button"
-            onClick={() => {
-              setShowRateNow(false);
-            }}
-          >
-            &#8612; Back
-          </RegularButton>
         </div>
       )}
     </div>
