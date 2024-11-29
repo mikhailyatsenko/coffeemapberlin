@@ -101,6 +101,7 @@ export const ReviewList = ({
             userName={review.userName}
             isOwnReview={review.isOwnReview}
             userAvatar={review.userAvatar}
+            setShowRateNow={setShowRateNow}
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}
           />

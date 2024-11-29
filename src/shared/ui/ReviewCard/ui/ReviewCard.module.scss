@@ -28,6 +28,8 @@
 }
 
 .reviewText {
+  font-size: 14px;
+  word-wrap: break-word;
   margin-bottom: 8px;
   margin-left: 4px;
 }
@@ -38,36 +40,27 @@
   margin-bottom: 8px;
 }
 
-.dateAndDeleteButton {
+.dateAndButtons {
   display: flex;
-  align-items: center;
   gap: 20px;
-  justify-content: end;
+  margin-left: auto;
   .createdAt {
     font-size: 12px;
     color: #a3a3a3;
     font-style: italic;
   }
-  .deleteButton {
-    align-self: flex-end;
-    width: fit-content;
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    font-size: 14px;
-    font-weight: 300;
+  .buttons {
     display: flex;
     align-items: center;
-    background-color: #303030;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-
-    &:hover {
-      background-color: #0b0b0b;
+    gap: 4px;
+    .buttonIcon {
+      fill: #8a8a8a;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      &:hover {
+        fill: #000;
+      }
     }
   }
 }

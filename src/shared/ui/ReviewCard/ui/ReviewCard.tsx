@@ -1,6 +1,7 @@
 import { formatDistanceToNow } from 'date-fns';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import DeleteIcon from '../../../assets/delete-icon.svg?react';
+import EditIcon from '../../../assets/edit-icon.svg?react';
 import cls from './ReviewCard.module.scss';
 
 interface ReviewCardProps {
@@ -11,6 +12,7 @@ interface ReviewCardProps {
   rating: number | null;
   isOwnReview?: boolean;
   handleDeleteReview?: (id: string) => void;
+  setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
 }
 
@@ -22,6 +24,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   rating,
   isOwnReview,
   handleDeleteReview,
+  setShowRateNow,
   createdAt,
 }) => {
   return (
@@ -44,20 +47,27 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
       <p className={cls.reviewText}>{!reviewText && rating ? `Rated: ${rating}` : reviewText}</p>
 
-      <div className={cls.dateAndDeleteButton}>
+      <div className={cls.dateAndButtons}>
         <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
         {isOwnReview && handleDeleteReview && (
-          <button
-            onClick={() => {
-              const isConfirmed = window.confirm('Deleting review. Continue?');
-              if (!isConfirmed) return;
-              handleDeleteReview(id);
-            }}
-            className={cls.deleteButton}
-          >
-            <DeleteIcon fill="#fff" height={14} width={14} />
-            Delete
-          </button>
+          <div className={cls.buttons}>
+            <EditIcon
+              onClick={() => {
+                setShowRateNow(true);
+              }}
+              className={cls.buttonIcon}
+              title="Edit my feedback"
+            />
+            <DeleteIcon
+              onClick={() => {
+                const isConfirmed = window.confirm('Deleting review. Continue?');
+                if (!isConfirmed) return;
+                handleDeleteReview(id);
+              }}
+              className={cls.buttonIcon}
+              title="Delete my review"
+            />
+          </div>
         )}
       </div>
     </div>

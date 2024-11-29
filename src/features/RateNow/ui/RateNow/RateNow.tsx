@@ -58,26 +58,28 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
     }
   };
 
-  const hasUserReviewed =
+  const hasUserInteracted =
     !!currentUserReview || Object.values(characteristicCounts).some((characteristic) => characteristic.pressed);
 
-  if (!showRateNow)
-    return (
-      <div className={cls.rateNowCall}>
-        {!hasUserReviewed && (
-          <>
-            <h5 className={cls.question}>Have you visited this place?</h5>
-            <RegularButton
-              theme={'blank'}
-              onClick={() => {
-                setShowRateNow(true);
-              }}
-            >
-              Share Your Thoughts
-            </RegularButton>
-          </>
-        )}
-        {hasUserReviewed && (
+  if (!showRateNow) {
+    if (!hasUserInteracted)
+      return (
+        <div className={cls.rateNowCall}>
+          <h5 className={cls.question}>Have you visited this place?</h5>
+          <RegularButton
+            theme={'blank'}
+            onClick={() => {
+              setShowRateNow(true);
+            }}
+          >
+            Share Your Thoughts
+          </RegularButton>
+        </div>
+      );
+
+    if (hasUserInteracted && !currentUserReview)
+      return (
+        <div className={cls.rateNowCall}>
           <RegularButton
             theme={'blank'}
             onClick={() => {
@@ -87,57 +89,56 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
             Edit my feedback
             <EditIcon width={16} height={16} />
           </RegularButton>
-        )}
-      </div>
-    );
+        </div>
+      );
+  } else
+    return (
+      <div className={cls.RateNow}>
+        <div
+          className={cls.buttonBack}
+          onClick={() => {
+            setShowRateNow(false);
+          }}
+        >
+          &#8612; Back
+        </div>
 
-  return (
-    <div className={cls.RateNow}>
-      <div
-        className={cls.buttonBack}
-        onClick={() => {
-          setShowRateNow(false);
-        }}
-      >
-        &#8612; Back
-      </div>
+        {showRateNow && (
+          <div className={cls.feedbackInteractions}>
+            <RatePlaceWidget
+              handleDeleteMyRating={handleDeleteMyRating}
+              userRating={currentUserReview?.userRating}
+              reviewId={currentUserReview?.id}
+              onSubmitRating={onSubmitRating}
+            />
+            <div className={cls.characteristicWidget}>
+              <h4>What made your visit special?</h4>
+              <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
+            </div>
 
-      {showRateNow && (
-        <div className={cls.feedbackInteractions}>
-          <RatePlaceWidget
-            handleDeleteMyRating={handleDeleteMyRating}
-            userRating={currentUserReview?.userRating}
-            reviewId={currentUserReview?.id}
-            onSubmitRating={onSubmitRating}
-          />
-          <div className={cls.characteristicWidget}>
-            <h4>What made your visit special?</h4>
-            <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
-          </div>
-
-          <LeaveOrEditMyReview
-            handleDeleteMyTextReview={handleDeleteMyTextReview}
-            review={currentUserReview?.text}
-            leaveTextReviewHandler={setShowReviewForm}
-          />
-          {showReviewForm && (
-            <Modal
-              widthOnDesktop={600}
-              onClose={() => {
-                setShowReviewForm(false);
-              }}
-            >
-              <ReviewForm
-                initialValue={currentUserReview?.text}
-                onSubmit={onSubmitTextReview}
+            <LeaveOrEditMyReview
+              handleDeleteMyTextReview={handleDeleteMyTextReview}
+              review={currentUserReview?.text}
+              leaveTextReviewHandler={setShowReviewForm}
+            />
+            {showReviewForm && (
+              <Modal
+                widthOnDesktop={600}
                 onClose={() => {
                   setShowReviewForm(false);
                 }}
-              />
-            </Modal>
-          )}
-        </div>
-      )}
-    </div>
-  );
+              >
+                <ReviewForm
+                  initialValue={currentUserReview?.text}
+                  onSubmit={onSubmitTextReview}
+                  onClose={() => {
+                    setShowReviewForm(false);
+                  }}
+                />
+              </Modal>
+            )}
+          </div>
+        )}
+      </div>
+    );
 };
