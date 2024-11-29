@@ -3,7 +3,6 @@ import cls from './HeaderDetailedPlacCard.module.scss';
 
 interface HeaderDetailedPlacCardProps {
   isHeaderVisible: boolean;
-
   description: string;
   averageRating: number;
 }
