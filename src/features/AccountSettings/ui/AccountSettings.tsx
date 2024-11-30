@@ -8,7 +8,6 @@ import {
   PersonalSettingsForm,
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
-import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { SET_NEW_PASSWORD, UPDATE_PERSONAL_DATA } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
@@ -19,8 +18,7 @@ import cls from './AccountSettings.module.scss';
 export const AccountSettings = () => {
   const [toastMessage, setToastMessage] = useState<string>('');
 
-  const { user, isLoading: loadingUserData } = useAuth();
-  const { checkAuth } = useAuthHandlers();
+  const { user, isLoading: loadingUserData, checkAuth } = useAuth();
 
   const passwordForm = useForm<SetNewPasswordFormData>({
     mode: 'onBlur',
