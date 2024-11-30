@@ -1,7 +1,6 @@
 import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
-import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { UPLOAD_AVATAR, DELETE_AVATAR } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
@@ -13,8 +12,7 @@ interface UploadResponse {
 }
 
 export const AvatarUpload: React.FC = () => {
-  const { user, isLoading: authLoading } = useAuth();
-  const { checkAuth } = useAuthHandlers();
+  const { user, isLoading: authLoading, checkAuth } = useAuth();
 
   const [isError, setIsError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
