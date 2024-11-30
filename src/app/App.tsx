@@ -1,16 +1,11 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, matchPath } from 'react-router-dom';
+import { AuthModalWindow } from 'widgets/AuthModalWindow';
 import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
-import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { AuthModalContent } from 'shared/ui/authModalContent';
-import { Modal } from 'shared/ui/Modal';
-import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { AppRouter } from './providers/router';
-
+import { AppRoutes } from './providers/router/lib/routeConfig/routeConfig';
 const App = () => {
   const location = useLocation();
-  const { authPopupContent, setAuthPopupContent } = useAuth();
   return (
     <>
       <Navbar />
@@ -18,20 +13,8 @@ const App = () => {
         <AppRouter />
       </main>
 
-      {location.pathname !== '/' && <Footer />}
-      <PortalToBody>
-        {authPopupContent && (
-          <Modal
-            onClose={() => {
-              setAuthPopupContent(null);
-            }}
-          >
-            <AuthModalContent initialContent={authPopupContent} />
-          </Modal>
-        )}
-
-        {location.pathname === '/' && <ShowFavoritePlaces />}
-      </PortalToBody>
+      {!matchPath(AppRoutes.MAIN, location.pathname) && <Footer />}
+      <AuthModalWindow />
     </>
   );
 };

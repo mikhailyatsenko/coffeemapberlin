@@ -36,7 +36,7 @@ export const ReviewList = ({
 
     const handleScrollReviewsExpand = () => {
       const scrollTop = reviewsListRef.scrollTop;
-      if (isCompactView && scrollTop > 100) {
+      if (isCompactView && scrollTop > 180) {
         setCompactView(false);
       }
     };
@@ -79,6 +79,7 @@ export const ReviewList = ({
           Reviews ({reviews.length})
         </h4>
       )}
+
       {!isCompactView && (
         <div
           className={cls.reviewsCollapse}

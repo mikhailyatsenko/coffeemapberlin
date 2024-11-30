@@ -16,7 +16,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const client = useApolloClient();
   const [error, setError] = useState<Error | null>(null);
 
-  const [authPopupContent, setAuthPopupContent] = useState<AuthModalContentProps['initialContent'] | null>(null);
+  const [authModalType, setAuthModalType] = useState<AuthModalContentProps['initialContent'] | null>(null);
 
   const [user, setUser] = useState<User | null>(null);
 
@@ -48,8 +48,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         checkAuth,
         user,
         setUser,
-        authPopupContent,
-        setAuthPopupContent,
+        authModalType,
+        setAuthModalType,
         isLoading,
         setIsLoading,
         error,
