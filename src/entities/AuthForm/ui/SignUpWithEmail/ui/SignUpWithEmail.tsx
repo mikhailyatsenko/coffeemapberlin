@@ -1,13 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
+import { validationSchemaSignUpWithEmail } from 'entities/AuthForm/lib/validationSchema';
 import { useAuthHandlers, type SignUpWithEmailData } from 'shared/lib/hooks/auth/useAuthHandlers';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { FormField } from 'shared/ui/FormField';
+import { GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import { RegularButton } from 'shared/ui/RegularButton';
-import { FormField } from '../../../../FormField';
-import { GoogleLoginButton } from '../../../../GoogleLoginButton';
-
-import { validationSchema } from '../lib/validationSchema';
 import cls from './SignUpWithEmail.module.scss';
 
 interface SignUpWithEmailProps {
@@ -19,7 +18,7 @@ export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
   const { error } = useAuth();
 
   const { signUpWithEmailHandler } = useAuthHandlers();
-  const form = useForm<SignUpWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchema) });
+  const form = useForm<SignUpWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignUpWithEmail) });
 
   const {
     handleSubmit,
