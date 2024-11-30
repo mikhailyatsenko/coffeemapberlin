@@ -6,11 +6,11 @@ interface AuthContextType {
   isLoading: boolean;
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  setAuthPopupContent: React.Dispatch<
+  setAuthModalType: React.Dispatch<
     React.SetStateAction<'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp' | null>
   >;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  authPopupContent: AuthModalContentProps['initialContent'] | null;
+  authModalType: AuthModalContentProps['initialContent'] | null;
   setError: React.Dispatch<React.SetStateAction<Error | null>>;
   checkAuth: () => Promise<void>;
   error: Error | null;

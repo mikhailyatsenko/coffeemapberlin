@@ -9,6 +9,7 @@ import { type ICharacteristicCounts, type Review } from 'shared/types';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
+import BackIcon from '../../../../shared/assets/back-icon.svg?react';
 import EditIcon from '../../../../shared/assets/edit-icon.svg?react';
 import cls from './RateNow.module.scss';
 
@@ -94,13 +95,17 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   } else
     return (
       <div className={cls.RateNow}>
-        <div
-          className={cls.buttonBack}
-          onClick={() => {
-            setShowRateNow(false);
-          }}
-        >
-          &#8612; Back
+        <div className={cls.feedbackHeader}>
+          <div
+            className={cls.buttonBack}
+            onClick={() => {
+              setShowRateNow(false);
+            }}
+          >
+            <BackIcon className={cls.backIcon} /> Back
+          </div>
+
+          <h4 className={cls.feedbackTitle}>Your feedback</h4>
         </div>
 
         {showRateNow && (

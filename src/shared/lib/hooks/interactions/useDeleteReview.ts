@@ -19,7 +19,7 @@ interface DeleteReviewResponce {
 }
 
 export function useDeleteReview(placeId: string) {
-  const { user, setAuthPopupContent } = useAuth();
+  const { user, setAuthModalType } = useAuth();
 
   const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useMutation<
     DeleteReviewResponce,
@@ -114,7 +114,7 @@ export function useDeleteReview(placeId: string) {
     deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll' = 'deleteAll',
   ): Promise<void> => {
     if (!user) {
-      setAuthPopupContent('LoginRequired');
+      setAuthModalType('LoginRequired');
       return;
     }
     try {

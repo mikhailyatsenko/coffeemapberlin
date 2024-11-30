@@ -36,7 +36,7 @@ export const useAuthHandlers = () => {
   const [registerUser] = useMutation(REGISTER_USER);
   const [signInWithEmail] = useMutation(SIGN_IN_WITH_EMAIL);
 
-  const { setIsLoading, setUser, setError, setAuthPopupContent, checkAuth } = useAuth();
+  const { setIsLoading, setUser, setError, setAuthModalType, checkAuth } = useAuth();
 
   const continueWithGoogle = useGoogleLogin({
     flow: 'auth-code',
@@ -50,9 +50,9 @@ export const useAuthHandlers = () => {
         if (data?.loginWithGoogle.user) {
           setUser(data.loginWithGoogle.user);
           if (data.loginWithGoogle.isFirstLogin) {
-            setAuthPopupContent('SuccessfulSignUp');
+            setAuthModalType('SuccessfulSignUp');
           } else {
-            setAuthPopupContent(null);
+            setAuthModalType(null);
           }
           await client.resetStore();
         }
@@ -79,7 +79,7 @@ export const useAuthHandlers = () => {
       });
       if (response) {
         await checkAuth();
-        setAuthPopupContent('SuccessfulSignUp');
+        setAuthModalType('SuccessfulSignUp');
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
@@ -97,7 +97,7 @@ export const useAuthHandlers = () => {
       if (response) {
         await checkAuth();
         await client.resetStore();
-        setAuthPopupContent(null);
+        setAuthModalType(null);
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign in'));
@@ -119,11 +119,10 @@ export const useAuthHandlers = () => {
   };
 
   return {
-    checkAuth,
     continueWithGoogle,
     signInWithEmailHandler,
     signUpWithEmailHandler,
     logout,
-    setAuthPopupContent,
+    setAuthModalType,
   };
 };

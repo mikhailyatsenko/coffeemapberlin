@@ -1,6 +1,7 @@
 import { FavoritesIndicator } from 'entities/FavoritesIndicator';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { usePlaces } from 'shared/lib/reactContext/PlacesData/usePlaces';
+import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 
 export const ShowFavoritePlaces = () => {
   const { user } = useAuth();
@@ -13,11 +14,11 @@ export const ShowFavoritePlaces = () => {
   const onClickHandler = () => {
     setShowFavorite((prev) => !prev);
   };
-  return (
-    <>
-      {favoritePlaces.length > 0 && (
-        <FavoritesIndicator favoritesQuantity={favoritePlaces.length} onClickHandler={onClickHandler} />
-      )}
-    </>
-  );
+
+  if (favoritePlaces.length > 0)
+    return (
+      <PortalToBody>
+        <FavoritesIndicator favoritesQuantity={favoritePlaces.length} onClickHandler={onClickHandler} />;
+      </PortalToBody>
+    );
 };

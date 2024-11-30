@@ -59,9 +59,35 @@
   width: fit-content;
   font-size: 14px;
   font-weight: 500;
-  margin: 20px auto 10px;
   border-bottom: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
   &:hover {
-    border-bottom: 1px solid #fff;
+    .backIcon {
+      transform: translateX(-2px);
+    }
   }
+}
+
+.feedbackHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 2px 4px;
+}
+
+.feedbackTitle {
+  color: #fff;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.backIcon {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+  transition: transform ease-in-out 0.1s;
 }

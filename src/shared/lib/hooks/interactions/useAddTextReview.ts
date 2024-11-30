@@ -18,7 +18,7 @@ interface AddTextReviewResponse {
 }
 
 export function useAddTextReview(placeId: string) {
-  const { user, setAuthPopupContent } = useAuth();
+  const { user, setAuthModalType } = useAuth();
 
   const [addTextReview, { loading, error }] = useMutation<AddTextReviewResponse>(ADD_TEXT_REVIEW, {
     update(cache, { data }) {
@@ -72,7 +72,7 @@ export function useAddTextReview(placeId: string) {
 
   const handleAddTextReview = async (text: string): Promise<AddTextReviewResponse['addTextReview'] | undefined> => {
     if (!user) {
-      setAuthPopupContent('LoginRequired');
+      setAuthModalType('LoginRequired');
       return;
     }
     try {
