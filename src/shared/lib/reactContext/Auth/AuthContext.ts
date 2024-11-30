@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { type User } from 'shared/types';
-import { type AuthModalContentProps } from 'shared/ui/authModalContent/ui/AuthModalContent';
+import { type AuthModalContentProps } from 'features/AuthModal/ui/AuthModal';
 
 interface AuthContextType {
   isLoading: boolean;

@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import cls from './AuthModalContent.module.scss';
-import { LoginRequired } from './LoginRequired/LoginRequired';
-import { SignInWithEmail } from './SigInWithEmail/ui/SignInWithEmail';
-import { SignUpWithEmail } from './SignUpWithEmail/ui/SignUpWithEmail';
-import { SuccessfulSignUp } from './SuccessfulSignUp/ui/SuccessfulSignUp';
+import { SuccessfulSignUp, LoginRequired, SignInWithEmail, SignUpWithEmail } from 'entities/AuthForm';
+import cls from './AuthModal.module.scss';
 
 export interface AuthModalContentProps {
   initialContent: 'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp';
 }
 
-export const AuthModalContent: React.FC<AuthModalContentProps> = ({ initialContent }) => {
+export const AuthModal: React.FC<AuthModalContentProps> = ({ initialContent }) => {
   const [currentContent, setCurrentContent] = useState(initialContent);
 
   const handleSwitchToSignUp = () => {

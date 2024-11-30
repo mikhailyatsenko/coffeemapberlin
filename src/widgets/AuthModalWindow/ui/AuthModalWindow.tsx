@@ -1,5 +1,5 @@
+import { AuthModal } from 'features/AuthModal';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { AuthModalContent } from 'shared/ui/authModalContent';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 
@@ -14,7 +14,7 @@ export const AuthModalWindow = () => {
             setAuthModalType(null);
           }}
         >
-          <AuthModalContent initialContent={authModalType} />
+          <AuthModal initialContent={authModalType} />
         </Modal>
       )}
     </PortalToBody>
