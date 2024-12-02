@@ -1,6 +1,9 @@
 import { createContext } from 'react';
 import { type User } from 'shared/types';
-import { type AuthModalContentProps } from 'features/AuthModal/ui/AuthModal';
+
+export interface AuthModalContentProps {
+  initialContent: 'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp';
+}
 
 interface AuthContextType {
   isLoading: boolean;

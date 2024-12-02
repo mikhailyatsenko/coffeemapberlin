@@ -88,7 +88,7 @@ const DetailedPaceCard: React.FC = () => {
     place.properties;
 
   return (
-    <>
+    <div>
       <div className={cls.addressCopmactView}>{address}</div>
       <div
         onClick={() => {
@@ -183,7 +183,7 @@ const DetailedPaceCard: React.FC = () => {
         </div>
       </div>
       <Toast message={toastMessage} />
-    </>
+    </div>
   );
 };
 

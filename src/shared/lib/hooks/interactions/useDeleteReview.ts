@@ -1,4 +1,5 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
+import { useState } from 'react';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { GET_PLACE_REVIEWS, DELETE_REVIEW, GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse, type Review } from 'shared/types';
@@ -51,6 +52,7 @@ export function useDeleteReview(placeId: string) {
         if (review.id === reviewId) {
           switch (deleteOptions) {
             case 'deleteReviewText':
+              console.log('delete text');
               if (updatedReviews[index].userRating) {
                 updatedReviews[index] = { ...review, text: '' };
               } else {

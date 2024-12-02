@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/RatePlace';
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
-import { useAddReview } from 'shared/lib/hooks/interactions/useAddRating';
+import { useAddRating } from 'shared/lib/hooks/interactions/useAddRating';
 import { useAddTextReview } from 'shared/lib/hooks/interactions/useAddTextReview';
 import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
 import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
@@ -25,7 +25,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   const { handleDeleteReview } = useDeleteReview(placeId);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { handleAddTextReview, loading: loadingReview } = useAddTextReview(placeId);
-  const { handleAddRating, loading: loadingRating } = useAddReview(placeId);
+  const { handleAddRating, loading: loadingRating } = useAddRating(placeId);
 
   const onSubmitTextReview = async (reviewText: string) => {
     await handleAddTextReview(reviewText).then(() => {
