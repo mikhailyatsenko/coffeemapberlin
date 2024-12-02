@@ -18,6 +18,7 @@
   overflow: hidden;
   z-index: -1;
   pointer-events: none;
+  filter: blur(0.7px);
   &::before {
     content: '';
     position: absolute;
@@ -29,6 +30,7 @@
     z-index: 10;
   }
   &.normalView {
+    filter: none;
     clip-path: none;
     margin-top: 0;
     pointer-events: all;

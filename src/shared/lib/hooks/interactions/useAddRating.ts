@@ -13,7 +13,7 @@ interface AddRatingResponse {
   };
 }
 
-export function useAddReview(placeId: string) {
+export function useAddRating(placeId: string) {
   const { user, setAuthModalType } = useAuth();
 
   const [addRating, { loading, error }] = useMutation<AddRatingResponse, { placeId: string; rating: number }>(

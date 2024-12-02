@@ -10,7 +10,6 @@ module.exports = {
     'plugin:prettier/recommended',
     'prettier',
     '@feature-sliced/eslint-config/rules/import-order',
-    // '@feature-sliced/eslint-config/rules/public-api',
     '@feature-sliced/eslint-config/rules/layers-slices',
   ],
   overrides: [

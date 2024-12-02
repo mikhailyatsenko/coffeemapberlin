@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { SuccessfulSignUp, LoginRequired, SignInWithEmail, SignUpWithEmail } from 'entities/AuthForm';
+import { type AuthModalContentProps } from 'shared/lib/reactContext/Auth/AuthContext';
 import cls from './AuthModal.module.scss';
-
-export interface AuthModalContentProps {
-  initialContent: 'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp';
-}
 
 export const AuthModal: React.FC<AuthModalContentProps> = ({ initialContent }) => {
   const [currentContent, setCurrentContent] = useState(initialContent);
