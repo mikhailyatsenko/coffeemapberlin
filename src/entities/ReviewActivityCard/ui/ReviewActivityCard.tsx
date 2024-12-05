@@ -6,13 +6,19 @@ import cls from './ReviewActivityCard.module.scss';
 
 interface ReviewActivityCardProps {
   averageRating: number | null;
-  review: string | null;
+  reviewText: string | null;
   placeName: string;
   userRating: number | null;
   createdAt: string;
   placeId: string;
 }
-export const ReviewActivityCard = ({ placeName, review, userRating, createdAt, placeId }: ReviewActivityCardProps) => {
+export const ReviewActivityCard = ({
+  placeName,
+  reviewText,
+  userRating,
+  createdAt,
+  placeId,
+}: ReviewActivityCardProps) => {
   return (
     <div className={cls.ReviewActivityCard}>
       <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
@@ -28,10 +34,10 @@ export const ReviewActivityCard = ({ placeName, review, userRating, createdAt, p
         </div>
       )}
 
-      {review && (
+      {reviewText && (
         <div className={cls.review}>
           <h3>My review:</h3>
-          <p className={cls.reviewText}>&quot;{review.trim()}&quot;</p>
+          <p className={cls.reviewText}>&quot;{reviewText.trim()}&quot;</p>
         </div>
       )}
 

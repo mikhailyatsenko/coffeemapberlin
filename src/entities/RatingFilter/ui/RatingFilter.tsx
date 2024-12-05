@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import clearIcon from 'shared/assets/clear-icon.svg';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
-import clearIcon from '../../../shared/assets/clear-icon.svg';
 import cls from './RatingFilter.module.scss';
 
 interface RatingFilterProps {

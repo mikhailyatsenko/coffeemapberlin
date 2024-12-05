@@ -6,7 +6,7 @@ import cls from './UserReviewActivity.module.scss';
 
 interface UserReviewActivityData {
   rating: number | null;
-  review: string | null;
+  reviewText: string | null;
   placeName: string;
   placeId: string;
   averageRating: number | null;
@@ -40,7 +40,7 @@ export const UserReviewActivity = () => {
             <ReviewActivityCard
               key={activityData.placeId}
               userRating={activityData.rating}
-              review={activityData.review}
+              reviewText={activityData.reviewText}
               placeName={activityData.placeName}
               averageRating={activityData.averageRating}
               createdAt={activityData.createdAt}

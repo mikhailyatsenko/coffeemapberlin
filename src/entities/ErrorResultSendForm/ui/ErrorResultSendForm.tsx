@@ -1,5 +1,5 @@
+import errorIcon from 'shared/assets/errorIcon.svg';
 import { RegularButton } from 'shared/ui/RegularButton';
-import errorIcon from '../../../shared/assets/errorIcon.svg';
 import cls from './ErrorResultSendForm.module.scss';
 
 export const ErrorResultSendForm = () => {

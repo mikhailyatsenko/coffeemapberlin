@@ -1,13 +1,13 @@
 import { type Position } from 'geojson';
 import { createSearchParams, NavLink } from 'react-router-dom';
+import instagramIcon from 'shared/assets/instagram.svg';
+import routeToIcon from 'shared/assets/route-to.svg';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 
 import Toast from 'shared/ui/ToastMessage/Toast';
-import instagramIcon from '../../../shared/assets/instagram.svg';
-import routeToIcon from '../../../shared/assets/route-to.svg';
 import cls from './TooltipCardOnMap.module.scss';
 
 interface TooltipCardOnMapProps {

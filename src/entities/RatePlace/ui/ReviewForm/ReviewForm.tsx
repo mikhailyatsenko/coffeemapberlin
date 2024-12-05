@@ -13,14 +13,14 @@ interface ReviewFormProps {
 }
 
 interface ReviewFormData {
-  review: string;
+  reviewText: string;
 }
 
 export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onClose, initialValue = '' }) => {
   const form = useForm<ReviewFormData>({
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
-    defaultValues: { review: initialValue },
+    defaultValues: { reviewText: initialValue },
   });
 
   const {
@@ -29,16 +29,16 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onClose, initi
   } = form;
 
   const handleFormSubmit: SubmitHandler<ReviewFormData> = (data) => {
-    if (data.review.trim()) {
-      onSubmit(data.review);
+    if (data.reviewText.trim()) {
+      onSubmit(data.reviewText);
     }
   };
 
   return (
     <FormProvider {...form}>
       <form className={`${cls.reviewForm}`} onSubmit={handleSubmit(handleFormSubmit)}>
-        <FormField fieldName="review" type="textarea" labelText="Review" autoFocus={true} />
-        {errors.review && <p className={cls.formError}>{errors.review.message}</p>}
+        <FormField fieldName="reviewText" type="textarea" labelText="Review" autoFocus={true} />
+        {errors.reviewText && <p className={cls.formError}>{errors.reviewText.message}</p>}
         <div className={cls.buttons}>
           <RegularButton theme="blank" type="button" onClick={onClose}>
             &#8612; Back

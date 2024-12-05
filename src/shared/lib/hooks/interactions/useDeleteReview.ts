@@ -1,5 +1,4 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
-import { useState } from 'react';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { GET_PLACE_REVIEWS, DELETE_REVIEW, GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse, type Review } from 'shared/types';

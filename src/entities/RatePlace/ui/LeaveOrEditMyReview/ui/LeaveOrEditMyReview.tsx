@@ -2,17 +2,17 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './LeaveOrEditMyReview.module.scss';
 
 interface LeaveOrEditMyReviewProps {
-  review?: string;
+  reviewText?: string;
   leaveTextReviewHandler: React.Dispatch<React.SetStateAction<boolean>>;
   handleDeleteMyTextReview: () => void;
 }
 
 export const LeaveOrEditMyReview = ({
-  review = '',
+  reviewText = '',
   leaveTextReviewHandler,
   handleDeleteMyTextReview,
 }: LeaveOrEditMyReviewProps) => {
-  const formattedReview = review?.length > 15 ? `"${review.slice(0, 15)}..."` : `"${review}"`;
+  const formattedReview = reviewText?.length > 15 ? `"${reviewText.slice(0, 15)}..."` : `"${reviewText}"`;
 
   return (
     <div className={cls.LeaveOrEditMyReview}>
@@ -21,7 +21,7 @@ export const LeaveOrEditMyReview = ({
           leaveTextReviewHandler(true);
         }}
       >
-        {review ? (
+        {reviewText ? (
           <>
             Edit my review: <span className={cls.formattedReview}>{formattedReview}</span>
           </>
@@ -29,7 +29,7 @@ export const LeaveOrEditMyReview = ({
           'Leave a text review'
         )}
       </RegularButton>
-      {review && (
+      {reviewText && (
         <div className={cls.delReview}>
           ...or <span onClick={handleDeleteMyTextReview}>detete it</span>
         </div>
