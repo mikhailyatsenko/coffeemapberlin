@@ -11,11 +11,6 @@ const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, image }: 
     '@context': 'https://schema.org',
     '@type': 'CafeOrCoffeeShop',
     name,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: averageRating,
-      reviewCount,
-    },
     address: {
       '@type': 'PostalAddress',
       streetAddress: address,
@@ -23,6 +18,14 @@ const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, image }: 
       addressCountry: 'DE',
     },
   };
+
+  if (reviewCount) {
+    schemaData.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: averageRating,
+      reviewCount,
+    };
+  }
 
   if (image) {
     schemaData.image = `${window.location.origin}/places-images/${image}`;
