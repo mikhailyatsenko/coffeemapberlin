@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+import CollapseIcon from 'shared/assets/collapse-icon.svg?react';
 import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
 import { type Review } from 'shared/types';
 import { ReviewCard } from 'shared/ui/ReviewCard';
-import CollapseIcon from '../../../shared/assets/collapse-icon.svg?react';
 import { sortReviews } from '../lib/sortReviews';
 import cls from './ReviewList.module.scss';
 

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import DeleteIcon from 'shared/assets/delete-icon.svg?react';
+import EditIcon from 'shared/assets/edit-icon.svg?react';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
-import DeleteIcon from '../../../../shared/assets/delete-icon.svg?react';
-import EditIcon from '../../../../shared/assets/edit-icon.svg?react';
 import cls from './RatePlaceWidget.module.scss';
 
 interface RatePlaceWidgetProps {

@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import fileIcon from 'shared/assets/file-icon.svg';
+import uploadIcon from 'shared/assets/upload-icon.svg';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
-import fileIcon from '../../../shared/assets/file-icon.svg';
-import uploadIcon from '../../../shared/assets/upload-icon.svg';
 import cls from './UploadAvatarForm.module.scss';
 
 interface UploadAvatarFormProps {

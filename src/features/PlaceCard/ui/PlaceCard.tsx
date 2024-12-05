@@ -1,6 +1,9 @@
 import { type Position } from 'geojson';
 import { useContext } from 'react';
 import { createSearchParams, NavLink, useNavigate } from 'react-router-dom';
+import instagram from 'shared/assets/instagram.svg';
+import roteToImage from 'shared/assets/route-to.svg';
+import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import LazyImage from 'shared/lib/LazyImage/LazyImage';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
@@ -9,9 +12,6 @@ import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import Toast from 'shared/ui/ToastMessage/Toast';
-import instagram from '../../../shared/assets/instagram.svg';
-import roteToImage from '../../../shared/assets/route-to.svg';
-import showPlacePointOnMap from '../../../shared/assets/show-on-map.svg';
 import cls from './PlaceCard.module.scss';
 
 interface PlaceCardProps {

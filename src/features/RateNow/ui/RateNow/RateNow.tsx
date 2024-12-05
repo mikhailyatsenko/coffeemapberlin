@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/RatePlace';
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
+import BackIcon from 'shared/assets/back-icon.svg?react';
+import EditIcon from 'shared/assets/edit-icon.svg?react';
 import { useAddRating } from 'shared/lib/hooks/interactions/useAddRating';
 import { useAddTextReview } from 'shared/lib/hooks/interactions/useAddTextReview';
 import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
@@ -9,8 +11,6 @@ import { type ICharacteristicCounts, type Review } from 'shared/types';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
-import BackIcon from '../../../../shared/assets/back-icon.svg?react';
-import EditIcon from '../../../../shared/assets/edit-icon.svg?react';
 import cls from './RateNow.module.scss';
 
 interface RateNowProps {
@@ -123,7 +123,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
 
             <LeaveOrEditMyReview
               handleDeleteMyTextReview={handleDeleteMyTextReview}
-              review={currentUserReview?.text}
+              reviewText={currentUserReview?.text}
               leaveTextReviewHandler={setShowReviewForm}
             />
             {showReviewForm && (

@@ -205,7 +205,7 @@ export const GET_USER_REVIEW_ACTIVITY = gql`
   query getUserReviewActivity {
     getUserReviewActivity {
       rating
-      review
+      reviewText
       placeId
       placeName
       averageRating
