@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SendContactForm } from 'features/SendContactForm/ui/SendContactForm';
+import { SendContactForm } from 'features/SendContactForm/';
 import cls from './ContactPage.module.scss';
 
 const ContactPage = () => {

@@ -1,5 +1,5 @@
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
-import cls from './HeaderDetailedPlacCard.module.scss';
+import cls from './HeaderDetailedPlaceCard.module.scss';
 
 interface HeaderDetailedPlacCardProps {
   isHeaderVisible: boolean;
@@ -7,7 +7,7 @@ interface HeaderDetailedPlacCardProps {
   averageRating: number;
 }
 
-export const HeaderDetailedPlacCard = ({
+export const HeaderDetailedPlaceCard = ({
   isHeaderVisible,
   averageRating,
   description,

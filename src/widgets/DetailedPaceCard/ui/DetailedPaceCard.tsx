@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState, useRef, useCallback } from 'rea
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
-import { HeaderDetailedPlacCard } from 'entities/HeaderDetailedPlacCard';
+import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
 import { type PlaceReviewsData } from 'shared/lib/hooks/interactions/useAddTextReview';
 import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
 import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
@@ -145,7 +145,7 @@ const DetailedPaceCard: React.FC = () => {
           </div>
 
           {!showRateNow && (
-            <HeaderDetailedPlacCard
+            <HeaderDetailedPlaceCard
               averageRating={averageRating}
               description={description}
               isHeaderVisible={isHeaderVisible}
