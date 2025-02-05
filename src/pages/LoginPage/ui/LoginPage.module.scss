@@ -1,0 +1,16 @@
+.LoginPage {
+  width: 100%;
+  min-height: calc(100dvh - 90px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginFormWrapper {
+  width: 400px;
+  padding: 36px;
+
+  @media (width <= 480px) {
+    width: 100%;
+  }
+}

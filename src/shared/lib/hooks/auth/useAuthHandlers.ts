@@ -1,5 +1,6 @@
 import { useApolloClient, useMutation } from '@apollo/client';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import {
@@ -31,6 +32,7 @@ export interface SignInWithEmailData {
 }
 
 export const useAuthHandlers = () => {
+  const navigate = useNavigate();
   const client = useApolloClient();
   const [loginWithGoogle] = useMutation<LoginWithGoogleData>(LOGIN_WITH_GOOGLE_MUTATION);
   const [registerUser] = useMutation(REGISTER_USER);
@@ -111,13 +113,16 @@ export const useAuthHandlers = () => {
 
   const logout = async () => {
     setIsLoading(true);
-    setError(null);
+
     try {
       await client.mutate({ mutation: LOGOUT_MUTATION });
       setUser(null);
-      setIsLoading(false);
+      navigate('/', { replace: true });
       await client.resetStore();
+      setIsLoading(false);
+      setError(null);
     } catch (error) {
+      setIsLoading(false);
       setError(error instanceof Error ? error : new Error('An unknown error occurred during logout'));
     }
   };
