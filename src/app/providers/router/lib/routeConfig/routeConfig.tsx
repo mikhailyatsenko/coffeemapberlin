@@ -3,10 +3,12 @@ import { AboutPage } from 'pages/AboutPage';
 import { AccountSettingsPage } from 'pages/AccountSettingsPage';
 import { BlogPage } from 'pages/BlogPage';
 import { ContactPage } from 'pages/ContactPage';
+import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
 import { DetailedPaceCard } from 'widgets/DetailedPaceCard';
+import { PrivateRoute } from '../../ui/PrivateRoute';
 
 export interface AppRouteConfig {
   path: string;
@@ -21,6 +23,8 @@ export enum AppRoutes {
   CONTACTS = 'contacts',
   PROFILE = 'profile',
   MY_REVIEWS = 'myReviews',
+  LOGIN = 'login',
+
   NOT_FOUND = 'not_found',
 }
 
@@ -31,6 +35,8 @@ export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.CONTACTS]: 'contacts',
   [AppRoutes.MY_REVIEWS]: 'my-reviews',
   [AppRoutes.PROFILE]: 'profile',
+  [AppRoutes.LOGIN]: 'login',
+
   [AppRoutes.NOT_FOUND]: '*',
 };
 
@@ -59,12 +65,25 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
   },
   [AppRoutes.MY_REVIEWS]: {
     path: RoutePaths.myReviews,
-    element: <MyReviews />,
+    element: (
+      <PrivateRoute>
+        <MyReviews />
+      </PrivateRoute>
+    ),
   },
   [AppRoutes.PROFILE]: {
     path: RoutePaths.profile,
-    element: <AccountSettingsPage />,
+    element: (
+      <PrivateRoute>
+        <AccountSettingsPage />
+      </PrivateRoute>
+    ),
   },
+  [AppRoutes.LOGIN]: {
+    path: RoutePaths.login,
+    element: <LoginPage />,
+  },
+
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,
     element: <NotFoundPage />,
