@@ -49,6 +49,7 @@ export const useAuthHandlers = () => {
         });
         if (data?.loginWithGoogle.user) {
           setUser(data.loginWithGoogle.user);
+          setIsLoading(false);
           if (data.loginWithGoogle.isFirstLogin) {
             setAuthModalContentVariant('SuccessfulSignUp');
           } else {
@@ -57,9 +58,8 @@ export const useAuthHandlers = () => {
           await client.resetStore();
         }
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('An unknown error occurred during login'));
-      } finally {
         setIsLoading(false);
+        setError(err instanceof Error ? err : new Error('An unknown error occurred during login'));
       }
     },
     onError: () => {
@@ -80,13 +80,12 @@ export const useAuthHandlers = () => {
       });
       if (response) {
         await checkAuth();
-
         setAuthModalContentVariant('SuccessfulSignUp');
+        setIsLoading(false);
       }
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
-    } finally {
       setIsLoading(false);
+      setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
     }
   };
 
@@ -101,13 +100,12 @@ export const useAuthHandlers = () => {
       });
       if (response) {
         await checkAuth();
-        await client.resetStore();
         setAuthModalContentVariant(null);
+        setIsLoading(false);
+        await client.resetStore();
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign in'));
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -117,11 +115,10 @@ export const useAuthHandlers = () => {
     try {
       await client.mutate({ mutation: LOGOUT_MUTATION });
       setUser(null);
+      setIsLoading(false);
       await client.resetStore();
     } catch (error) {
       setError(error instanceof Error ? error : new Error('An unknown error occurred during logout'));
-    } finally {
-      setIsLoading(false);
     }
   };
 
