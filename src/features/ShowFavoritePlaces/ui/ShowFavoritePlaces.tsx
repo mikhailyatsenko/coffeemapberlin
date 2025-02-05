@@ -18,7 +18,7 @@ export const ShowFavoritePlaces = () => {
   if (favoritePlaces.length > 0)
     return (
       <PortalToBody>
-        <FavoritesIndicator favoritesQuantity={favoritePlaces.length} onClickHandler={onClickHandler} />;
+        <FavoritesIndicator favoritesQuantity={favoritePlaces.length} onClickHandler={onClickHandler} />
       </PortalToBody>
     );
 };
