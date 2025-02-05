@@ -9,7 +9,7 @@ interface PlacesData {
 }
 
 export const useToggleFavorite = (placeId: string | null) => {
-  const { user, setAuthModalType } = useAuth();
+  const { user, setAuthModalContentVariant } = useAuth();
   const [toastMessage, setToastMessage] = useState<string>('');
 
   const [toggleFavoriteMutation] = useMutation<{ toggleFavorite: boolean }>(TOGGLE_FAVORITE, {
@@ -52,7 +52,7 @@ export const useToggleFavorite = (placeId: string | null) => {
   const toggleFavorite = async () => {
     if (!placeId) return;
     if (!user) {
-      setAuthModalType('LoginRequired');
+      setAuthModalContentVariant('LoginRequired');
       return;
     }
     try {

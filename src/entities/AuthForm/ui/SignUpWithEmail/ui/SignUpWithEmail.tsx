@@ -11,7 +11,6 @@ import cls from './SignUpWithEmail.module.scss';
 
 interface SignUpWithEmailProps {
   onSwitchToSignIn: () => void;
-  onSuccessfulSignUp: () => void;
 }
 
 export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {

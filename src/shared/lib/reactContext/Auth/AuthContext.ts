@@ -1,19 +1,15 @@
 import { createContext } from 'react';
 import { type User } from 'shared/types';
 
-export interface AuthModalContentProps {
-  initialContent: 'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp';
-}
-
-interface AuthContextType {
+export interface AuthContextType {
   isLoading: boolean;
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  setAuthModalType: React.Dispatch<
+  setAuthModalContentVariant: React.Dispatch<
     React.SetStateAction<'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp' | null>
   >;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  authModalType: AuthModalContentProps['initialContent'] | null;
+  authModalContentVariant: 'LoginRequired' | 'SignUpWithEmail' | 'SignInWithEmail' | 'SuccessfulSignUp' | null;
   setError: React.Dispatch<React.SetStateAction<Error | null>>;
   checkAuth: () => Promise<void>;
   error: Error | null;
