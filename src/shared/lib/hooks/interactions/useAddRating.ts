@@ -14,7 +14,7 @@ interface AddRatingResponse {
 }
 
 export function useAddRating(placeId: string) {
-  const { user, setAuthModalType } = useAuth();
+  const { user, setAuthModalContentVariant } = useAuth();
 
   const [addRating, { loading, error }] = useMutation<AddRatingResponse, { placeId: string; rating: number }>(
     ADD_RATING,
@@ -96,7 +96,7 @@ export function useAddRating(placeId: string) {
 
   const handleAddRating = async (rating: number): Promise<AddRatingResponse['addRating'] | undefined> => {
     if (!user) {
-      setAuthModalType('LoginRequired');
+      setAuthModalContentVariant('LoginRequired');
       return;
     }
     try {

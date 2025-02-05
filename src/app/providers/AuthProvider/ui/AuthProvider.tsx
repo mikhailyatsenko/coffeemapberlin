@@ -3,7 +3,7 @@
 import { useApolloClient } from '@apollo/client';
 import { useCallback, useState, type FC, type PropsWithChildren } from 'react';
 import { useEffect } from 'react';
-import { type AuthModalContentProps, AuthContext } from 'shared/lib/reactContext/Auth/AuthContext';
+import { AuthContext, type AuthContextType } from 'shared/lib/reactContext/Auth/AuthContext';
 import { CURRENT_USER_QUERY } from 'shared/query/apolloQueries';
 import { type User } from 'shared/types';
 
@@ -15,7 +15,9 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const client = useApolloClient();
   const [error, setError] = useState<Error | null>(null);
 
-  const [authModalType, setAuthModalType] = useState<AuthModalContentProps['initialContent'] | null>(null);
+  const [authModalContentVariant, setAuthModalContentVariant] = useState<
+    AuthContextType['authModalContentVariant'] | null
+  >(null);
 
   const [user, setUser] = useState<User | null>(null);
 
@@ -47,8 +49,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         checkAuth,
         user,
         setUser,
-        authModalType,
-        setAuthModalType,
+        authModalContentVariant,
+        setAuthModalContentVariant,
         isLoading,
         setIsLoading,
         error,

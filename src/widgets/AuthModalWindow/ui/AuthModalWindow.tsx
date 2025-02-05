@@ -1,20 +1,23 @@
-import { AuthModal } from 'features/AuthModal';
+import { AuthModalContent } from 'features/AuthModalContent';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 
 export const AuthModalWindow = () => {
-  const { authModalType, setAuthModalType } = useAuth();
+  const { authModalContentVariant, setAuthModalContentVariant } = useAuth();
 
   return (
     <PortalToBody>
-      {authModalType && (
+      {authModalContentVariant && (
         <Modal
           onClose={() => {
-            setAuthModalType(null);
+            setAuthModalContentVariant(null);
           }}
         >
-          <AuthModal initialContent={authModalType} />
+          <AuthModalContent
+            setAuthModalContentVariant={setAuthModalContentVariant}
+            currentContent={authModalContentVariant}
+          />
         </Modal>
       )}
     </PortalToBody>
