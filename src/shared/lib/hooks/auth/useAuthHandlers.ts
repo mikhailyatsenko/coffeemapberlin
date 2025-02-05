@@ -69,6 +69,7 @@ export const useAuthHandlers = () => {
   });
 
   const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
+    setIsLoading(true);
     try {
       const response = await registerUser({
         variables: {
@@ -84,10 +85,13 @@ export const useAuthHandlers = () => {
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const signInWithEmailHandler = async (data: SignInWithEmailData) => {
+    setIsLoading(true);
     try {
       const response = await signInWithEmail({
         variables: {
@@ -102,6 +106,8 @@ export const useAuthHandlers = () => {
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign in'));
+    } finally {
+      setIsLoading(false);
     }
   };
 

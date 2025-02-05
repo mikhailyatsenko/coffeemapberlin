@@ -57,7 +57,7 @@ export const SearchPlaces = () => {
     <div
       onClick={() => {
         setIsActive(true);
-        setSearchTerm(' '); // ' ' to activating onClick SearchResultsTab with all places by default
+        setSearchTerm(' '); // ' ' to activate onClick SearchResultsTab with all places by default
       }}
       className={`${cls.SearchPlaces} ${isActive ? cls.smallScreensSearch : ''}`}
       ref={SearchPlacesRef}

@@ -24,7 +24,6 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const checkAuth = useCallback(async () => {
-    setIsLoading(true);
     try {
       const { data } = await client.query<CurrentUserData>({
         query: CURRENT_USER_QUERY,
@@ -34,10 +33,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       setUser(data.currentUser);
     } catch (error) {
       setError(error instanceof Error ? error : new Error('An unknown error occurred'));
-    } finally {
-      setIsLoading(false);
     }
-  }, [client, setError, setIsLoading, setUser]);
+  }, [client, setError, setUser]);
 
   useEffect(() => {
     checkAuth();
