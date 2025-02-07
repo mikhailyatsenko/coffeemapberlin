@@ -107,6 +107,7 @@ export const useAuthHandlers = () => {
         await client.resetStore();
       }
     } catch (err) {
+      setIsLoading(false);
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign in'));
     }
   };
