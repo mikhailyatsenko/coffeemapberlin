@@ -15,9 +15,9 @@ import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 import CoffeeShopSchema from '../lib/CoffeeShopSchema';
-import cls from './DetailedPaceCard.module.scss';
+import cls from './DetailedPlaceCard.module.scss';
 
-const DetailedPaceCard: React.FC = () => {
+const DetailedPlaceCard: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -39,7 +39,8 @@ const DetailedPaceCard: React.FC = () => {
   const place = allPlacesData?.places.find((p) => p.properties.id === placeId);
   const reviews = placeReviewsData?.placeReviews.reviews ?? [];
 
-  const handleToggleFavorite = async () => {
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       await toggleFavorite();
       if (navigator.vibrate) {
@@ -50,32 +51,39 @@ const DetailedPaceCard: React.FC = () => {
     }
   };
 
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClose();
+  };
+
+  const onClose = useCallback(() => {
+    navigate({ pathname: '/' });
+  }, [navigate]);
+
+  const handleEscKey = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    },
+    [onClose],
+  );
+
   useEffect(() => {
     if (place?.geometry.coordinates && setLocation) {
       setLocation(place.geometry.coordinates);
     }
   }, [place?.geometry.coordinates, setLocation]);
 
-  const onClose = useCallback(() => {
-    navigate({ pathname: '/' });
-  }, [navigate]);
-
   useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
     document.addEventListener('keydown', handleEscKey);
     return () => {
       document.removeEventListener('keydown', handleEscKey);
     };
-  }, [onClose]);
+  }, [handleEscKey]);
 
   useEffect(() => {
     document.title = place?.properties?.name ? `${place.properties.name} | Berlin Coffee Map` : 'Berlin Coffee Map';
-
     return () => {
       document.title = 'Berlin Coffee Map';
     };
@@ -90,12 +98,7 @@ const DetailedPaceCard: React.FC = () => {
   return (
     <div>
       <div className={cls.addressCopmactView}>{address}</div>
-      <div
-        onClick={() => {
-          onClose();
-        }}
-        className={cls.backDrop}
-      >
+      <div onClick={handleClose} className={cls.backDrop}>
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -105,19 +108,11 @@ const DetailedPaceCard: React.FC = () => {
         >
           <p className={cls.address}>{address}</p>
           <InstagramEmbedProfile normalView={isViewInstProfile} username={instagram} />
-          <button
-            className={cls.closeButton}
-            onClick={() => {
-              onClose();
-            }}
-          ></button>
+          <button className={cls.closeButton} onClick={handleClose}></button>
           <div className={cls.iconsRow}>
             <div
-              title={place.properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
-              onClick={async (e) => {
-                e.stopPropagation();
-                await handleToggleFavorite();
-              }}
+              title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
+              onClick={handleToggleFavorite}
               className={cls.iconFavWrapper}
             >
               <AddToFavButton isFavorite={Boolean(isFavorite)} />
@@ -187,4 +182,4 @@ const DetailedPaceCard: React.FC = () => {
   );
 };
 
-export default DetailedPaceCard;
+export default DetailedPlaceCard;

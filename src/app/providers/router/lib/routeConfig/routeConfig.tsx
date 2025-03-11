@@ -7,7 +7,7 @@ import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
-import { DetailedPaceCard } from 'widgets/DetailedPaceCard';
+import { DetailedPlaceCard } from 'widgets/DetailedPlaceCard';
 import { PrivateRoute } from '../../ui/PrivateRoute';
 
 export interface AppRouteConfig {
@@ -47,7 +47,7 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
     children: [
       {
         path: 'details',
-        element: <DetailedPaceCard />,
+        element: <DetailedPlaceCard />,
       },
     ],
   },
