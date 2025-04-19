@@ -1,11 +1,12 @@
 import './index.scss';
+import { ApolloProvider } from '@apollo/client';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ApolloProviderWrapper } from 'app/providers/ApolloProviderWrapper';
 import { AuthProvider } from 'app/providers/AuthProvider';
 import { LocationProvider } from 'app/providers/LocationProvider';
 import { PlacesDataProvider } from 'app/providers/PlacesDataProvider';
+import { client } from 'shared/config/apolloClient';
 import App from './app/App';
 
 if (!process.env.GOOGLE_CLIENT_ID) {
@@ -13,7 +14,7 @@ if (!process.env.GOOGLE_CLIENT_ID) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <ApolloProviderWrapper>
+  <ApolloProvider client={client}>
     <AuthProvider>
       <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
         <BrowserRouter>
@@ -25,5 +26,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </GoogleOAuthProvider>
     </AuthProvider>
-  </ApolloProviderWrapper>,
+  </ApolloProvider>,
 );
