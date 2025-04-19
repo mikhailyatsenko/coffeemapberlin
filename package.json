@@ -11,7 +11,9 @@
     "lint:ts:fix": "eslint \"**/*.{ts, tsx}\" --fix",
     "preview": "vite preview",
     "predeploy": "VITE_ENV=production npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "codegen": "graphql-codegen",
+    "codegen:watch": "graphql-codegen --watch"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
@@ -34,6 +36,10 @@
   },
   "devDependencies": {
     "@feature-sliced/eslint-config": "^0.1.1",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-operations": "^4.6.0",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.2",
     "@types/geojson": "^7946.0.14",
     "@types/mapbox-gl": "^3.1.0",
     "@types/node": "^20.14.10",

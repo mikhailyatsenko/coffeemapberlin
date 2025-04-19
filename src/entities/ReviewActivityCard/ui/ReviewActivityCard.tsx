@@ -5,10 +5,10 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './ReviewActivityCard.module.scss';
 
 interface ReviewActivityCardProps {
-  averageRating: number | null;
-  reviewText: string | null;
+  averageRating?: number;
+  reviewText?: string;
+  userRating?: number;
   placeName: string;
-  userRating: number | null;
   createdAt: string;
   placeId: string;
 }

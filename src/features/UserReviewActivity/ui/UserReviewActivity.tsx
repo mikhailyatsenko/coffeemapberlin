@@ -1,23 +1,10 @@
-import { useQuery } from '@apollo/client';
 import { ReviewActivityCard } from 'entities/ReviewActivityCard';
+import { useGetUserReviewActivityQuery } from 'shared/generated/graphql';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { GET_USER_REVIEW_ACTIVITY } from 'shared/query/apolloQueries';
 import cls from './UserReviewActivity.module.scss';
 
-interface UserReviewActivityData {
-  rating: number | null;
-  reviewText: string | null;
-  placeName: string;
-  placeId: string;
-  averageRating: number | null;
-  createdAt: string;
-}
-
 export const UserReviewActivity = () => {
-  const { loading, error, data } = useQuery<{ getUserReviewActivity: UserReviewActivityData[] }>(
-    GET_USER_REVIEW_ACTIVITY,
-  );
-
+  const { data, loading, error } = useGetUserReviewActivityQuery();
   const { user } = useAuth();
 
   if (!user) return <p>You need to be logged in to perform this action.</p>;
@@ -39,10 +26,10 @@ export const UserReviewActivity = () => {
           {data.getUserReviewActivity.map((activityData) => (
             <ReviewActivityCard
               key={activityData.placeId}
-              userRating={activityData.rating}
-              reviewText={activityData.reviewText}
+              userRating={activityData.rating ?? undefined}
+              reviewText={activityData.reviewText ?? undefined}
               placeName={activityData.placeName}
-              averageRating={activityData.averageRating}
+              averageRating={activityData.averageRating ?? undefined}
               createdAt={activityData.createdAt}
               placeId={activityData.placeId}
             />

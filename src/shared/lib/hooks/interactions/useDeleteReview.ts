@@ -1,35 +1,26 @@
-import { type ApolloCache, useMutation } from '@apollo/client';
+import { type ApolloCache } from '@apollo/client';
+import {
+  useDeleteReviewMutation,
+  type GetAllPlacesQuery,
+  type PlaceReviewsQuery,
+  GetAllPlacesDocument,
+  PlaceReviewsDocument,
+} from 'shared/generated/graphql';
 import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { GET_PLACE_REVIEWS, DELETE_REVIEW, GET_ALL_PLACES } from 'shared/query/apolloQueries';
-import { type PlaceResponse, type Review } from 'shared/types';
+import { type PlaceResponse } from 'shared/types';
 
-export interface placeReviewsData {
-  placeReviews: {
-    id: string;
-    reviews: Review[];
-  };
-}
-
-interface DeleteReviewResponce {
-  deleteReview: {
-    reviewId: string;
-    averageRating: number;
-    ratingCount: number;
-  };
-}
+type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 
 export function useDeleteReview(placeId: string) {
   const { user, setAuthModalContentVariant } = useAuth();
 
-  const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useMutation<
-    DeleteReviewResponce,
-    { reviewId: string; deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll' }
-  >(DELETE_REVIEW, {
-    update(cache, { data }, { variables }) {
-      if (data) {
-        updateAllPlacesCache(cache, data.deleteReview);
-        if (variables) {
-          updateplaceReviewsCacheAfterDelete(cache, data.deleteReview.reviewId, variables.deleteOptions);
+  const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useDeleteReviewMutation({
+    update(cache, result, { variables }) {
+      if (result.data?.deleteReview) {
+        updateAllPlacesCache(cache, result.data.deleteReview);
+        const deleteOptions = variables?.deleteOptions as DeleteOptions;
+        if (deleteOptions) {
+          updateplaceReviewsCacheAfterDelete(cache, result.data.deleteReview.reviewId, deleteOptions);
         }
       }
     },
@@ -38,10 +29,10 @@ export function useDeleteReview(placeId: string) {
   const updateplaceReviewsCacheAfterDelete = (
     cache: ApolloCache<unknown>,
     reviewId: string,
-    deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll',
+    deleteOptions: DeleteOptions,
   ) => {
-    const existingData = cache.readQuery<placeReviewsData>({
-      query: GET_PLACE_REVIEWS,
+    const existingData = cache.readQuery<PlaceReviewsQuery>({
+      query: PlaceReviewsDocument,
       variables: { placeId },
     });
 
@@ -51,7 +42,6 @@ export function useDeleteReview(placeId: string) {
         if (review.id === reviewId) {
           switch (deleteOptions) {
             case 'deleteReviewText':
-              console.log('delete text');
               if (updatedReviews[index].userRating) {
                 updatedReviews[index] = { ...review, text: '' };
               } else {
@@ -72,8 +62,8 @@ export function useDeleteReview(placeId: string) {
         }
       });
 
-      cache.writeQuery<placeReviewsData>({
-        query: GET_PLACE_REVIEWS,
+      cache.writeQuery({
+        query: PlaceReviewsDocument,
         variables: { placeId },
         data: {
           placeReviews: {
@@ -85,8 +75,13 @@ export function useDeleteReview(placeId: string) {
     }
   };
 
-  const updateAllPlacesCache = (cache: ApolloCache<unknown>, newData: DeleteReviewResponce['deleteReview']) => {
-    const existingData = cache.readQuery<{ places: PlaceResponse[] }>({ query: GET_ALL_PLACES });
+  const updateAllPlacesCache = (
+    cache: ApolloCache<unknown>,
+    newData: { averageRating: number; ratingCount: number },
+  ) => {
+    const existingData = cache.readQuery<GetAllPlacesQuery>({
+      query: GetAllPlacesDocument,
+    });
 
     if (existingData?.places) {
       const updatedPlaces = existingData.places.map((place) => {
@@ -104,16 +99,13 @@ export function useDeleteReview(placeId: string) {
       });
 
       cache.writeQuery({
-        query: GET_ALL_PLACES,
+        query: GetAllPlacesDocument,
         data: { places: updatedPlaces },
       });
     }
   };
 
-  const handleDeleteReview = async (
-    reviewId: string,
-    deleteOptions: 'deleteReviewText' | 'deleteRating' | 'deleteAll' = 'deleteAll',
-  ): Promise<void> => {
+  const handleDeleteReview = async (reviewId: string, deleteOptions: DeleteOptions = 'deleteAll'): Promise<void> => {
     if (!user) {
       setAuthModalContentVariant('LoginRequired');
       return;
