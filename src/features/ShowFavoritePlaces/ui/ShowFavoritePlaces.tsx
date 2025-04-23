@@ -1,6 +1,6 @@
 import { FavoritesIndicator } from 'entities/FavoritesIndicator';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { usePlaces } from 'shared/lib/reactContext/PlacesData/usePlaces';
+import { usePlaces } from 'shared/context/PlacesData/usePlaces';
+import { useAuth } from 'shared/hooks';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 
 export const ShowFavoritePlaces = () => {

@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useAuthHandlers, type SignInWithEmailData } from 'shared/lib/hooks/auth/useAuthHandlers';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { useAuth } from 'shared/hooks';
+import { useAuthHandlers, type SignInWithEmailData } from 'shared/hooks';
 import { FormField } from 'shared/ui/FormField';
 import { GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import { RegularButton } from 'shared/ui/RegularButton';

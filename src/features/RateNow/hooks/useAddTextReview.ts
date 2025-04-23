@@ -1,26 +1,16 @@
-import { type ApolloCache, useMutation } from '@apollo/client';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { ADD_TEXT_REVIEW, GET_PLACE_REVIEWS } from 'shared/query/apolloQueries';
-import { type Review } from 'shared/types';
-
-export interface PlaceReviewsData {
-  placeReviews: {
-    id: string;
-    reviews: Review[];
-  };
-}
-
-interface AddTextReviewResponse {
-  addTextReview: {
-    reviewId: string;
-    text: string;
-  };
-}
+import { type ApolloCache } from '@apollo/client';
+import {
+  type AddTextReviewMutation,
+  PlaceReviewsDocument,
+  type PlaceReviewsQuery,
+  useAddTextReviewMutation,
+} from 'shared/generated/graphql';
+import { useAuth } from 'shared/hooks';
 
 export function useAddTextReview(placeId: string) {
   const { user, setAuthModalContentVariant } = useAuth();
 
-  const [addTextReview, { loading, error }] = useMutation<AddTextReviewResponse>(ADD_TEXT_REVIEW, {
+  const [addTextReview, { loading, error }] = useAddTextReviewMutation({
     update(cache, { data }) {
       if (data) {
         updatePlaceReviewsCache(cache, data.addTextReview);
@@ -28,9 +18,12 @@ export function useAddTextReview(placeId: string) {
     },
   });
 
-  const updatePlaceReviewsCache = (cache: ApolloCache<unknown>, newData: AddTextReviewResponse['addTextReview']) => {
-    const existingData = cache.readQuery<PlaceReviewsData>({
-      query: GET_PLACE_REVIEWS,
+  const updatePlaceReviewsCache = (
+    cache: ApolloCache<unknown>,
+    newData: NonNullable<AddTextReviewMutation['addTextReview']>,
+  ) => {
+    const existingData = cache.readQuery<PlaceReviewsQuery>({
+      query: PlaceReviewsDocument,
       variables: { placeId },
     });
 
@@ -50,15 +43,14 @@ export function useAddTextReview(placeId: string) {
           userId: user!.id,
           userName: user?.displayName || 'Anonymous',
           userAvatar: user?.avatar || '',
-          placeId,
           createdAt: new Date().toISOString(),
           isOwnReview: true,
           userRating: null,
         });
       }
 
-      cache.writeQuery<PlaceReviewsData>({
-        query: GET_PLACE_REVIEWS,
+      cache.writeQuery<PlaceReviewsQuery>({
+        query: PlaceReviewsDocument,
         variables: { placeId },
         data: {
           placeReviews: {
@@ -70,7 +62,9 @@ export function useAddTextReview(placeId: string) {
     }
   };
 
-  const handleAddTextReview = async (text: string): Promise<AddTextReviewResponse['addTextReview'] | undefined> => {
+  const handleAddTextReview = async (
+    text: string,
+  ): Promise<NonNullable<AddTextReviewMutation['addTextReview']> | undefined> => {
     if (!user) {
       setAuthModalContentVariant('LoginRequired');
       return;

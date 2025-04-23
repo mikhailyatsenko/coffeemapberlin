@@ -2,8 +2,8 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl';
 import type { MapRef, GeoJSONSource, MapLayerMouseEvent, LngLatLike, MapboxGeoJSONFeature } from 'react-map-gl';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
-import useWidth from 'shared/lib/hooks/useWidth/useWidth';
-import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
+import { LocationContext } from 'shared/context/Location/LocationContext';
+import { useWidth } from 'shared/hooks';
 import { type PlaceResponse, type PlaceProperties } from 'shared/types';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 

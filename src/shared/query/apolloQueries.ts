@@ -139,6 +139,15 @@ export const GET_ALL_PLACES = gql`
   }
 `;
 
+export const GET_PLACE_POINT_BY_ID = gql`
+  query GetPlacePointById($id: ID!) {
+    placePoint(placeId: $id) {
+      id
+      point
+    }
+  }
+`;
+
 export const TOGGLE_FAVORITE = gql`
   mutation ToggleFavorite($placeId: ID!) {
     toggleFavorite(placeId: $placeId)

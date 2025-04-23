@@ -2,7 +2,7 @@ import { useApolloClient, useMutation } from '@apollo/client';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { useAuth } from 'shared/hooks';
 import {
   LOGIN_WITH_GOOGLE_MUTATION,
   LOGOUT_MUTATION,

@@ -8,7 +8,7 @@ import {
   PersonalSettingsForm,
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { useAuth } from 'shared/hooks';
 import { SET_NEW_PASSWORD, UPDATE_PERSONAL_DATA } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';

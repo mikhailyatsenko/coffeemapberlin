@@ -6,7 +6,7 @@ interface CoffeeShopSchemaProps {
   image?: string;
 }
 
-const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, image }: CoffeeShopSchemaProps) => {
+export const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, image }: CoffeeShopSchemaProps) => {
   const schemaData: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'CafeOrCoffeeShop',
@@ -32,5 +32,3 @@ const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, image }: 
   }
   return <script type="application/ld+json">{JSON.stringify(schemaData)}</script>;
 };
-
-export default CoffeeShopSchema;

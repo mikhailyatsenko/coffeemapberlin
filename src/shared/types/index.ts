@@ -48,12 +48,11 @@ export interface User {
 
 export interface Review {
   id: string;
-  text: string;
+  text?: string;
   userId: string;
-  userRating: number | null;
+  userRating?: number;
   userName: string;
-  userAvatar: string;
-  placeId: string;
+  userAvatar?: string;
   createdAt: string;
   isOwnReview: boolean;
 }

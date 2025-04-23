@@ -1,4 +1,5 @@
 import { type ApolloCache } from '@apollo/client';
+import { useCallback } from 'react';
 import {
   useDeleteReviewMutation,
   type GetAllPlacesQuery,
@@ -6,8 +7,7 @@ import {
   GetAllPlacesDocument,
   PlaceReviewsDocument,
 } from 'shared/generated/graphql';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { type PlaceResponse } from 'shared/types';
+import { useAuth } from 'shared/hooks';
 
 type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 
@@ -17,17 +17,21 @@ export function useDeleteReview(placeId: string) {
   const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useDeleteReviewMutation({
     update(cache, result, { variables }) {
       if (result.data?.deleteReview) {
-        updateAllPlacesCache(cache, result.data.deleteReview);
+        updateAllPlacesCache(cache as ApolloCache<GetAllPlacesQuery>, result.data.deleteReview);
         const deleteOptions = variables?.deleteOptions as DeleteOptions;
         if (deleteOptions) {
-          updateplaceReviewsCacheAfterDelete(cache, result.data.deleteReview.reviewId, deleteOptions);
+          updatePlaceReviewsCacheAfterDelete(
+            cache as ApolloCache<PlaceReviewsQuery>,
+            result.data.deleteReview.reviewId,
+            deleteOptions,
+          );
         }
       }
     },
   });
 
-  const updateplaceReviewsCacheAfterDelete = (
-    cache: ApolloCache<unknown>,
+  const updatePlaceReviewsCacheAfterDelete = (
+    cache: ApolloCache<GetAllPlacesQuery | PlaceReviewsQuery>,
     reviewId: string,
     deleteOptions: DeleteOptions,
   ) => {
@@ -105,18 +109,21 @@ export function useDeleteReview(placeId: string) {
     }
   };
 
-  const handleDeleteReview = async (reviewId: string, deleteOptions: DeleteOptions = 'deleteAll'): Promise<void> => {
-    if (!user) {
-      setAuthModalContentVariant('LoginRequired');
-      return;
-    }
-    try {
-      await deleteReview({ variables: { reviewId, deleteOptions } });
-    } catch (err) {
-      console.error('Error deleting review:', err);
-      throw err;
-    }
-  };
+  const handleDeleteReview = useCallback(
+    async (reviewId: string, deleteOptions: DeleteOptions = 'deleteAll'): Promise<void> => {
+      if (!user) {
+        setAuthModalContentVariant('LoginRequired');
+        return;
+      }
+      try {
+        await deleteReview({ variables: { reviewId, deleteOptions } });
+      } catch (err) {
+        console.error('Error deleting review:', err);
+        throw err;
+      }
+    },
+    [user, deleteReview, setAuthModalContentVariant],
+  );
 
   return {
     handleDeleteReview,

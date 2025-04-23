@@ -9,7 +9,7 @@ interface ReviewCardProps {
   userAvatar?: string;
   userName: string;
   reviewText?: string;
-  rating: number | null;
+  rating?: number;
   isOwnReview?: boolean;
   handleDeleteReview?: (id: string) => void;
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;

@@ -2,7 +2,7 @@ import { createContext } from 'react';
 import { type PlaceResponse } from 'shared/types';
 
 interface PlacesContextType {
-  places?: PlaceResponse[];
+  places: PlaceResponse[];
   filterablePlaces: PlaceResponse[];
   favoritePlaces: PlaceResponse[] | null;
   setSearchTerm: (term: string) => void;

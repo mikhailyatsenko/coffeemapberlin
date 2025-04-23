@@ -1,20 +1,19 @@
-import { useQuery } from '@apollo/client';
 import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
-import { type PlaceReviewsData } from 'shared/lib/hooks/interactions/useAddTextReview';
-import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
-import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
-import { GET_ALL_PLACES, GET_PLACE_REVIEWS } from 'shared/query/apolloQueries';
-import { type ICharacteristicCounts, type PlaceResponse } from 'shared/types';
+import { LocationContext } from 'shared/context/Location/LocationContext';
+import { usePlaces } from 'shared/context/PlacesData/usePlaces';
+import { useToggleFavorite } from 'shared/hooks';
+import { type ICharacteristicCounts } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
-import CoffeeShopSchema from '../lib/CoffeeShopSchema';
+import { usePlaceReviews } from '../api/usePlaceReviews';
+import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
 import cls from './DetailedPlaceCard.module.scss';
 
 const DetailedPlaceCard: React.FC = () => {
@@ -31,12 +30,11 @@ const DetailedPlaceCard: React.FC = () => {
 
   const { toggleFavorite, toastMessage } = useToggleFavorite(placeId);
 
-  const { data: allPlacesData } = useQuery<{ places: PlaceResponse[] }>(GET_ALL_PLACES);
-  const { data: placeReviewsData, loading } = useQuery<PlaceReviewsData>(GET_PLACE_REVIEWS, {
-    variables: { placeId, skip: !placeId },
-  });
+  const { places } = usePlaces();
+  const place = places.find((p) => p.properties.id === placeId);
 
-  const place = allPlacesData?.places.find((p) => p.properties.id === placeId);
+  const { data: placeReviewsData, loading, error } = usePlaceReviews(placeId);
+
   const reviews = placeReviewsData?.placeReviews.reviews ?? [];
 
   const handleToggleFavorite = async (e: React.MouseEvent) => {
@@ -89,8 +87,9 @@ const DetailedPlaceCard: React.FC = () => {
     };
   }, [place?.properties?.name]);
 
-  if (!placeId) return null;
-  if (!place?.properties || loading) return <Loader />;
+  if (loading) return <Loader />;
+
+  if (!placeId || !place?.properties) return null;
 
   const { averageRating, description, name, address, instagram, ratingCount, image, characteristicCounts, isFavorite } =
     place.properties;
@@ -177,7 +176,7 @@ const DetailedPlaceCard: React.FC = () => {
           {/* for Google Rich Results */}
         </div>
       </div>
-      <Toast message={toastMessage} />
+      <Toast message={toastMessage || error?.message} />
     </div>
   );
 };
