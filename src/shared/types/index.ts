@@ -45,14 +45,3 @@ export interface User {
   createdAt: Date | null;
   isGoogleUserUserWithoutPassword: boolean;
 }
-
-export interface Review {
-  id: string;
-  text?: string;
-  userId: string;
-  userRating?: number;
-  userName: string;
-  userAvatar?: string;
-  createdAt: string;
-  isOwnReview: boolean;
-}

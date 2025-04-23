@@ -1,19 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import CollapseIcon from 'shared/assets/collapse-icon.svg?react';
 import { useDeleteReview } from 'shared/hooks';
-import { type Review } from 'shared/types';
 import { ReviewCard } from 'shared/ui/ReviewCard';
 import { sortReviews } from '../lib/sortReviews';
+import { type ReviewListProps } from '../types';
 import cls from './ReviewList.module.scss';
-
-interface ReviewListProps {
-  showRateNow: boolean;
-  setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
-  reviews: Review[];
-  placeId: string;
-  isCompactView: boolean;
-  setCompactView: (isCompact: boolean) => void;
-}
 
 export const ReviewList = ({
   reviews,

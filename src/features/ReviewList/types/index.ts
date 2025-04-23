@@ -1,5 +1,3 @@
-import { type ICharacteristicCounts } from 'shared/types';
-
 interface Review {
   id: string;
   text?: string;
@@ -10,10 +8,12 @@ interface Review {
   createdAt: string;
   isOwnReview: boolean;
 }
-export interface RateNowProps {
+
+export interface ReviewListProps {
   showRateNow: boolean;
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   reviews: Review[];
   placeId: string;
-  characteristicCounts: ICharacteristicCounts;
+  isCompactView: boolean;
+  setCompactView: (isCompact: boolean) => void;
 }

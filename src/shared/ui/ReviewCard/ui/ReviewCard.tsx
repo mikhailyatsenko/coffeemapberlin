@@ -28,7 +28,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   createdAt,
 }) => {
   return (
-    <div className={cls.reviewCard}>
+    <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
       <div className={cls.userInfo}>
         <img
           src={userAvatar || './user-default-icon.svg'}

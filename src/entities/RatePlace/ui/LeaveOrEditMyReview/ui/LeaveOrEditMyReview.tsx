@@ -8,11 +8,12 @@ interface LeaveOrEditMyReviewProps {
 }
 
 export const LeaveOrEditMyReview = ({
-  reviewText = '',
+  reviewText,
   leaveTextReviewHandler,
   handleDeleteMyTextReview,
 }: LeaveOrEditMyReviewProps) => {
-  const formattedReview = reviewText?.length > 15 ? `"${reviewText.slice(0, 15)}..."` : `"${reviewText}"`;
+  const formattedReview =
+    reviewText && reviewText.length > 15 ? `"${reviewText.slice(0, 15)}..."` : `"${reviewText || ''}"`;
 
   return (
     <div className={cls.LeaveOrEditMyReview}>
