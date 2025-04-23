@@ -1,5 +1,5 @@
 import './GoogleLoginButton.scss';
-import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
+import { useAuthHandlers } from 'shared/hooks';
 
 interface GoogleLoginButtonProps {
   textButton?: string;

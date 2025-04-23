@@ -2,7 +2,7 @@ import { type Position } from 'geojson';
 import { createSearchParams, NavLink } from 'react-router-dom';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
-import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
+import { useToggleFavorite } from 'shared/hooks';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';

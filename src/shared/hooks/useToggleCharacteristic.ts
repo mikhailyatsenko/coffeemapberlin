@@ -1,21 +1,18 @@
-import { type ApolloCache, useMutation } from '@apollo/client';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { type ApolloCache } from '@apollo/client';
+import {
+  GetAllPlacesDocument,
+  type GetAllPlacesQuery,
+  useToggleCharacteristicMutation,
+  type Characteristic,
+} from 'shared/generated/graphql';
+import { useAuth } from 'shared/hooks';
 
-import { TOGGLE_CHARACTERISTIC, GET_ALL_PLACES } from 'shared/query/apolloQueries';
-import { type ICharacteristicCounts, type PlaceResponse } from 'shared/types';
-
-interface ToggleCharacteristicVariables {
-  placeId: string;
-  characteristic: keyof ICharacteristicCounts;
-}
+import { type ICharacteristicCounts } from 'shared/types';
 
 export const useToggleCharacteristic = (placeId: string) => {
   const { user, setAuthModalContentVariant } = useAuth();
 
-  const [toggleCharacteristic, { error }] = useMutation<
-    { toggleCharacteristic: { success: boolean } },
-    ToggleCharacteristicVariables
-  >(TOGGLE_CHARACTERISTIC, {
+  const [toggleCharacteristic, { error }] = useToggleCharacteristicMutation({
     optimisticResponse: {
       toggleCharacteristic: {
         success: true,
@@ -30,16 +27,12 @@ export const useToggleCharacteristic = (placeId: string) => {
     },
   });
 
-  interface PlacesData {
-    places: PlaceResponse[];
-  }
-
   const updateAllPlacesCache = (
     cache: ApolloCache<unknown>,
     placeId: string,
     characteristic: keyof ICharacteristicCounts,
   ) => {
-    const existingData = cache.readQuery<PlacesData>({ query: GET_ALL_PLACES });
+    const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
 
     if (existingData?.places) {
       const updatedPlaces = existingData.places.map((place) => {
@@ -67,13 +60,13 @@ export const useToggleCharacteristic = (placeId: string) => {
       });
 
       cache.writeQuery({
-        query: GET_ALL_PLACES,
+        query: GetAllPlacesDocument,
         data: { places: updatedPlaces },
       });
     }
   };
 
-  const toggleChar = async (characteristic: keyof ICharacteristicCounts) => {
+  const toggleChar = async (characteristic: Characteristic) => {
     if (!user) {
       setAuthModalContentVariant('LoginRequired');
       return;

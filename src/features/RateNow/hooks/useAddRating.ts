@@ -1,36 +1,28 @@
-import { type ApolloCache, useMutation } from '@apollo/client';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
-import { ADD_RATING, GET_ALL_PLACES, GET_PLACE_REVIEWS } from 'shared/query/apolloQueries';
-import { type PlaceResponse } from 'shared/types';
-import { type PlaceReviewsData } from './useAddTextReview';
-
-interface AddRatingResponse {
-  addRating: {
-    averageRating: number;
-    ratingCount: number;
-    reviewId: string;
-    userRating: number;
-  };
-}
+import { type ApolloCache } from '@apollo/client';
+import {
+  type AddRatingMutation,
+  GetAllPlacesDocument,
+  type GetAllPlacesQuery,
+  PlaceReviewsDocument,
+  type PlaceReviewsQuery,
+  useAddRatingMutation,
+} from 'shared/generated/graphql';
+import { useAuth } from 'shared/hooks';
 
 export function useAddRating(placeId: string) {
   const { user, setAuthModalContentVariant } = useAuth();
 
-  const [addRating, { loading, error }] = useMutation<AddRatingResponse, { placeId: string; rating: number }>(
-    ADD_RATING,
-    {
-      update(cache, { data }) {
-        if (data) {
-          updateAllPlacesCache(cache, data.addRating);
-
-          updateReviewsCache(cache, data.addRating.userRating, data.addRating.reviewId);
-        }
-      },
+  const [addRating, { loading, error }] = useAddRatingMutation({
+    update(cache, { data }) {
+      if (data) {
+        updateAllPlacesCache(cache, data.addRating);
+        updateReviewsCache(cache, data.addRating.userRating, data.addRating.reviewId);
+      }
     },
-  );
+  });
 
-  const updateAllPlacesCache = (cache: ApolloCache<unknown>, newData: AddRatingResponse['addRating']) => {
-    const existingData = cache.readQuery<{ places: PlaceResponse[] }>({ query: GET_ALL_PLACES });
+  const updateAllPlacesCache = (cache: ApolloCache<unknown>, newData: NonNullable<AddRatingMutation['addRating']>) => {
+    const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
     if (existingData?.places) {
       const updatedPlaces = existingData.places.map((place) => {
         if (place.properties.id === placeId) {
@@ -47,15 +39,15 @@ export function useAddRating(placeId: string) {
       });
 
       cache.writeQuery({
-        query: GET_ALL_PLACES,
+        query: GetAllPlacesDocument,
         data: { places: updatedPlaces },
       });
     }
   };
 
   const updateReviewsCache = (cache: ApolloCache<unknown>, newRating: number, reviewId: string) => {
-    const existingData = cache.readQuery<PlaceReviewsData>({
-      query: GET_PLACE_REVIEWS,
+    const existingData = cache.readQuery<PlaceReviewsQuery>({
+      query: PlaceReviewsDocument,
       variables: { placeId },
     });
 
@@ -74,15 +66,14 @@ export function useAddRating(placeId: string) {
           userId: user!.id,
           userName: user?.displayName || 'Anonymous',
           userAvatar: user?.avatar || '',
-          placeId,
           createdAt: new Date().toISOString(),
           isOwnReview: true,
           userRating: newRating,
         });
       }
 
-      cache.writeQuery<PlaceReviewsData>({
-        query: GET_PLACE_REVIEWS,
+      cache.writeQuery<PlaceReviewsQuery>({
+        query: PlaceReviewsDocument,
         variables: { placeId },
         data: {
           placeReviews: {
@@ -94,7 +85,7 @@ export function useAddRating(placeId: string) {
     }
   };
 
-  const handleAddRating = async (rating: number): Promise<AddRatingResponse['addRating'] | undefined> => {
+  const handleAddRating = async (rating: number): Promise<NonNullable<AddRatingMutation['addRating']> | undefined> => {
     if (!user) {
       setAuthModalContentVariant('LoginRequired');
       return;

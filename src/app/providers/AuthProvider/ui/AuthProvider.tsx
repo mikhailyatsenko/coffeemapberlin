@@ -3,7 +3,7 @@
 import { useApolloClient } from '@apollo/client';
 import { useCallback, useState, type FC, type PropsWithChildren } from 'react';
 import { useEffect } from 'react';
-import { AuthContext, type AuthContextType } from 'shared/lib/reactContext/Auth/AuthContext';
+import { AuthContext, type AuthContextType } from 'shared/context/Auth/AuthContext';
 import { CURRENT_USER_QUERY } from 'shared/query/apolloQueries';
 import { type User } from 'shared/types';
 

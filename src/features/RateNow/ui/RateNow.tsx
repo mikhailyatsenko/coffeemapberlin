@@ -3,23 +3,13 @@ import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/Rate
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
 import BackIcon from 'shared/assets/back-icon.svg?react';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
-import { useAddRating } from 'shared/lib/hooks/interactions/useAddRating';
-import { useAddTextReview } from 'shared/lib/hooks/interactions/useAddTextReview';
-import { useDeleteReview } from 'shared/lib/hooks/interactions/useDeleteReview';
-import { useToggleCharacteristic } from 'shared/lib/hooks/interactions/useToggleCharacteristic';
-import { type ICharacteristicCounts, type Review } from 'shared/types';
+import { useDeleteReview, useToggleCharacteristic } from 'shared/hooks';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { useAddRating, useAddTextReview } from '../hooks';
+import { type RateNowProps } from '../types';
 import cls from './RateNow.module.scss';
-
-interface RateNowProps {
-  showRateNow: boolean;
-  setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
-  reviews: Review[];
-  placeId: string;
-  characteristicCounts: ICharacteristicCounts;
-}
 
 export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow, showRateNow }: RateNowProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);

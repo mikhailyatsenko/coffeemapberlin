@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function useWidth(debounceTime: number = 200): number {
+export const useWidth = (debounceTime: number = 200): number => {
   const [width, setWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
 
   useEffect(() => {
@@ -24,4 +24,4 @@ export default function useWidth(debounceTime: number = 200): number {
   }, [debounceTime]);
 
   return width;
-}
+};

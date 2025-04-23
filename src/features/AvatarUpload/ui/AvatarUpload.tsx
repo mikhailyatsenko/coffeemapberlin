@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { useAuth } from 'shared/hooks';
 import { UPLOAD_AVATAR, DELETE_AVATAR } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';

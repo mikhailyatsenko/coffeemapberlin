@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
-import { PlacesDataContext } from 'shared/lib/reactContext/PlacesData/PlacesContext';
+import { PlacesDataContext } from 'shared/context/PlacesData/PlacesContext';
 import { GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse } from 'shared/types';
 
@@ -27,6 +27,7 @@ export const PlacesDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   return (
     <PlacesDataContext.Provider
       value={{
+        places,
         filterablePlaces,
         setMinRating,
         setSearchTerm,

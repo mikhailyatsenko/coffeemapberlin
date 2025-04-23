@@ -1,5 +1,5 @@
 import { SuccessfulSignUp, LoginRequired, SignInWithEmail, SignUpWithEmail } from 'entities/AuthForm';
-import { type AuthContextType } from 'shared/lib/reactContext/Auth/AuthContext';
+import { type AuthContextType } from 'shared/context/Auth/AuthContext';
 import cls from './AuthModalContent.module.scss';
 
 interface AuthModalContentProps {

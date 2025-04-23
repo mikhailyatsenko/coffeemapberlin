@@ -165,6 +165,12 @@ export interface Place {
   type: Scalars['String']['output'];
 }
 
+export interface PlacePoint {
+  __typename?: 'PlacePoint';
+  id: Scalars['ID']['output'];
+  point: Array<Scalars['Float']['output']>;
+}
+
 export interface PlaceProperties {
   __typename?: 'PlaceProperties';
   address: Scalars['String']['output'];
@@ -191,8 +197,13 @@ export interface Query {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getUserReviewActivity: UserReviewActivity[];
+  placePoint: PlacePoint;
   placeReviews: PlaceReviews;
   places: Place[];
+}
+
+export interface QueryPlacePointArgs {
+  placeId: Scalars['ID']['input'];
 }
 
 export interface QueryPlaceReviewsArgs {
@@ -205,8 +216,8 @@ export interface Review {
   id: Scalars['ID']['output'];
   isOwnReview: Scalars['Boolean']['output'];
   placeId: Scalars['ID']['output'];
-  text: Scalars['String']['output'];
-  userAvatar: Scalars['String']['output'];
+  text?: Maybe<Scalars['String']['output']>;
+  userAvatar?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
   userName: Scalars['String']['output'];
   userRating?: Maybe<Scalars['Float']['output']>;
@@ -372,6 +383,15 @@ export interface GetAllPlacesQuery {
   }>;
 }
 
+export type GetPlacePointByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export interface GetPlacePointByIdQuery {
+  __typename?: 'Query';
+  placePoint: { __typename?: 'PlacePoint'; id: string; point: number[] };
+}
+
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
 }>;
@@ -439,10 +459,10 @@ export interface PlaceReviewsQuery {
     reviews: Array<{
       __typename?: 'Review';
       id: string;
-      text: string;
+      text?: string | null;
       userId: string;
       userName: string;
-      userAvatar: string;
+      userAvatar?: string | null;
       createdAt: string;
       userRating?: number | null;
       isOwnReview: boolean;
@@ -893,6 +913,62 @@ export type GetAllPlacesQueryHookResult = ReturnType<typeof useGetAllPlacesQuery
 export type GetAllPlacesLazyQueryHookResult = ReturnType<typeof useGetAllPlacesLazyQuery>;
 export type GetAllPlacesSuspenseQueryHookResult = ReturnType<typeof useGetAllPlacesSuspenseQuery>;
 export type GetAllPlacesQueryResult = Apollo.QueryResult<GetAllPlacesQuery, GetAllPlacesQueryVariables>;
+export const GetPlacePointByIdDocument = gql`
+  query GetPlacePointById($id: ID!) {
+    placePoint(placeId: $id) {
+      id
+      point
+    }
+  }
+`;
+
+/**
+ * __useGetPlacePointByIdQuery__
+ *
+ * To run a query within a React component, call `useGetPlacePointByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlacePointByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPlacePointByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetPlacePointByIdQuery(
+  baseOptions: Apollo.QueryHookOptions<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables> &
+    ({ variables: GetPlacePointByIdQueryVariables; skip?: boolean } | { skip: boolean }),
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>(GetPlacePointByIdDocument, options);
+}
+export function useGetPlacePointByIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>(
+    GetPlacePointByIdDocument,
+    options,
+  );
+}
+export function useGetPlacePointByIdSuspenseQuery(
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>,
+) {
+  const options = baseOptions === Apollo.skipToken ? baseOptions : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>(
+    GetPlacePointByIdDocument,
+    options,
+  );
+}
+export type GetPlacePointByIdQueryHookResult = ReturnType<typeof useGetPlacePointByIdQuery>;
+export type GetPlacePointByIdLazyQueryHookResult = ReturnType<typeof useGetPlacePointByIdLazyQuery>;
+export type GetPlacePointByIdSuspenseQueryHookResult = ReturnType<typeof useGetPlacePointByIdSuspenseQuery>;
+export type GetPlacePointByIdQueryResult = Apollo.QueryResult<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>;
 export const ToggleFavoriteDocument = gql`
   mutation ToggleFavorite($placeId: ID!) {
     toggleFavorite(placeId: $placeId)

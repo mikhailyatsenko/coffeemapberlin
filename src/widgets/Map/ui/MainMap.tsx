@@ -1,7 +1,7 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { LoadMap } from 'features/LoadMap';
 import { type PlacesDataWithGeo } from 'features/LoadMap/ui/LoadMap';
-import { usePlaces } from 'shared/lib/reactContext/PlacesData/usePlaces';
+import { usePlaces } from 'shared/context/PlacesData/usePlaces';
 import { Loader } from 'shared/ui/Loader';
 
 export const MainMap = () => {
