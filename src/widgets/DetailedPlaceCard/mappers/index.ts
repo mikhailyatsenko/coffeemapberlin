@@ -1,4 +1,4 @@
-import { Place, type PlaceReviewsQuery } from 'shared/generated/graphql';
+import { type PlaceReviewsQuery } from 'shared/generated/graphql';
 
 export const mapPlaceReviews = (data: PlaceReviewsQuery) => ({
   ...data,
