@@ -2,49 +2,14 @@ import { useApolloClient, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from 'shared/api';
-import { LOGOUT_MUTATION, REGISTER_USER, SIGN_IN_WITH_EMAIL } from 'shared/query/apolloQueries';
-
-export interface SignUpWithEmailData {
-  displayName: string;
-  email: string;
-  password: string;
-  repeatPassword: string;
-  recaptcha: string;
-}
-
-export interface SignInWithEmailData {
-  email: string;
-  password: string;
-}
+import { LOGOUT_MUTATION, SIGN_IN_WITH_EMAIL } from 'shared/query/apolloQueries';
 
 export const useAuthHandlers = () => {
   const navigate = useNavigate();
   const client = useApolloClient();
-  const [registerUser] = useMutation(REGISTER_USER);
   const [signInWithEmail] = useMutation(SIGN_IN_WITH_EMAIL);
 
   const { setIsLoading, setUser, setError, setAuthModalContentVariant, checkAuth } = useAuth();
-
-  const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
-    setIsLoading(true);
-    try {
-      const response = await registerUser({
-        variables: {
-          email: data.email,
-          displayName: data.displayName,
-          password: data.password,
-        },
-      });
-      if (response) {
-        await checkAuth();
-        setAuthModalContentVariant('SuccessfulSignUp');
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setIsLoading(false);
-      setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
-    }
-  };
 
   const signInWithEmailHandler = async (data: SignInWithEmailData) => {
     setIsLoading(true);
@@ -85,7 +50,6 @@ export const useAuthHandlers = () => {
 
   return {
     signInWithEmailHandler,
-    signUpWithEmailHandler,
     logout,
     setAuthModalContentVariant,
   };
