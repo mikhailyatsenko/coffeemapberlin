@@ -1,6 +1,6 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
 import { useState } from 'react';
-import { useAuth } from 'shared/hooks';
+import { useAuth } from 'shared/api';
 import { TOGGLE_FAVORITE, GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse } from 'shared/types';
 

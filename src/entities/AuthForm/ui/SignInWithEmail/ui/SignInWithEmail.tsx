@@ -1,9 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useAuth } from 'shared/hooks';
-import { useAuthHandlers, type SignInWithEmailData } from 'shared/hooks';
+import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
+import { useAuth } from 'shared/api';
+import { useAuthHandlers, type SignInWithEmailData } from 'shared/api';
 import { FormField } from 'shared/ui/FormField';
-import { GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchemaSignInWithEmail } from '../../../lib/validationSchema';
 import cls from './SignInWithEmail.module.scss';
@@ -28,7 +28,7 @@ export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
     <div className={cls.content}>
       <h2>Sign in</h2>
       <div className={cls.withGoogle}>
-        <GoogleLoginButton textButton="Continue with Google" />
+        <ContinueWithGoogleButton />
       </div>
       <div className={cls.or}>or</div>
 

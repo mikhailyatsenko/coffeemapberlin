@@ -7,7 +7,7 @@ import {
   GetAllPlacesDocument,
   PlaceReviewsDocument,
 } from 'shared/generated/graphql';
-import { useAuth } from 'shared/hooks';
+import { useAuth } from './useAuth';
 
 type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 

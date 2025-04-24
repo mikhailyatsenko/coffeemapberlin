@@ -1,11 +1,11 @@
 import { type ApolloCache } from '@apollo/client';
+import { useAuth } from 'shared/api';
 import {
   GetAllPlacesDocument,
   type GetAllPlacesQuery,
   useToggleCharacteristicMutation,
   type Characteristic,
 } from 'shared/generated/graphql';
-import { useAuth } from 'shared/hooks';
 
 import { type ICharacteristicCounts } from 'shared/types';
 

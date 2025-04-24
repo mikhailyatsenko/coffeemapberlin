@@ -41,7 +41,7 @@ export interface User {
   id: string;
   displayName: string;
   email: string;
-  avatar: string | null;
-  createdAt: Date | null;
+  avatar?: string;
+  createdAt?: Date;
   isGoogleUserUserWithoutPassword: boolean;
 }

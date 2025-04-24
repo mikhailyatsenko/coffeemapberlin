@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/RatePlace';
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
+import { useDeleteReview, useToggleCharacteristic } from 'shared/api';
 import BackIcon from 'shared/assets/back-icon.svg?react';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
-import { useDeleteReview, useToggleCharacteristic } from 'shared/hooks';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';

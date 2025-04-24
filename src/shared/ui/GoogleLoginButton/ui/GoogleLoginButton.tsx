@@ -1,15 +1,10 @@
+import { GOOGLE_LOGIN_BUTTON_TEXT } from '../constants';
+import { type GoogleLoginButtonProps } from '../types';
 import './GoogleLoginButton.scss';
-import { useAuthHandlers } from 'shared/hooks';
 
-interface GoogleLoginButtonProps {
-  textButton?: string;
-}
-
-export const GoogleLoginButton = ({ textButton }: GoogleLoginButtonProps) => {
-  const { continueWithGoogle } = useAuthHandlers();
-
+export const GoogleLoginButton = ({ textButton = GOOGLE_LOGIN_BUTTON_TEXT, onClick }: GoogleLoginButtonProps) => {
   return (
-    <button onClick={continueWithGoogle} type="button" className="login-with-google-btn">
+    <button onClick={onClick} type="button" className="login-with-google-btn">
       {textButton || 'Sign in'}
     </button>
   );

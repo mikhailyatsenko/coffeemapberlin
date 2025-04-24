@@ -8,7 +8,7 @@ import {
   PersonalSettingsForm,
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
-import { useAuth } from 'shared/hooks';
+import { useAuth } from 'shared/api';
 import { SET_NEW_PASSWORD, UPDATE_PERSONAL_DATA } from 'shared/query/apolloQueries';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SignInWithEmail, SignUpWithEmail } from 'entities/AuthForm';
-import { useAuth } from 'shared/hooks';
+import { useAuth } from 'shared/api';
 import cls from './LoginPage.module.scss';
 
 export const LoginPage = () => {

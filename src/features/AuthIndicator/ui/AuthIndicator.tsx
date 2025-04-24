@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuthHandlers, useAuth } from 'shared/hooks';
+import { useAuthHandlers, useAuth } from 'shared/api';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
