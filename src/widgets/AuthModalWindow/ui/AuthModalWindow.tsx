@@ -1,5 +1,5 @@
 import { AuthModalContent } from 'features/AuthModalContent';
-import { useAuth } from 'shared/hooks';
+import { useAuth } from 'shared/api';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';

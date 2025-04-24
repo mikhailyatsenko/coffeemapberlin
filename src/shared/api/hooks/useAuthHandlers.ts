@@ -1,22 +1,8 @@
 import { useApolloClient, useMutation } from '@apollo/client';
-import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 
-import { useAuth } from 'shared/hooks';
-import {
-  LOGIN_WITH_GOOGLE_MUTATION,
-  LOGOUT_MUTATION,
-  REGISTER_USER,
-  SIGN_IN_WITH_EMAIL,
-} from 'shared/query/apolloQueries';
-import { type User } from 'shared/types';
-
-interface LoginWithGoogleData {
-  loginWithGoogle: {
-    user: User | null;
-    isFirstLogin: boolean;
-  };
-}
+import { useAuth } from 'shared/api';
+import { LOGOUT_MUTATION, REGISTER_USER, SIGN_IN_WITH_EMAIL } from 'shared/query/apolloQueries';
 
 export interface SignUpWithEmailData {
   displayName: string;
@@ -34,41 +20,10 @@ export interface SignInWithEmailData {
 export const useAuthHandlers = () => {
   const navigate = useNavigate();
   const client = useApolloClient();
-  const [loginWithGoogle] = useMutation<LoginWithGoogleData>(LOGIN_WITH_GOOGLE_MUTATION);
   const [registerUser] = useMutation(REGISTER_USER);
   const [signInWithEmail] = useMutation(SIGN_IN_WITH_EMAIL);
 
   const { setIsLoading, setUser, setError, setAuthModalContentVariant, checkAuth } = useAuth();
-
-  const continueWithGoogle = useGoogleLogin({
-    flow: 'auth-code',
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    onSuccess: async (tokenResponse) => {
-      setIsLoading(true);
-      try {
-        const { data } = await loginWithGoogle({
-          variables: { code: tokenResponse.code },
-        });
-        if (data?.loginWithGoogle.user) {
-          setUser(data.loginWithGoogle.user);
-          setIsLoading(false);
-          if (data.loginWithGoogle.isFirstLogin) {
-            setAuthModalContentVariant('SuccessfulSignUp');
-          } else {
-            setAuthModalContentVariant(null);
-          }
-          await client.resetStore();
-        }
-      } catch (err) {
-        setIsLoading(false);
-        setError(err instanceof Error ? err : new Error('An unknown error occurred during login'));
-      }
-    },
-    onError: () => {
-      setError(new Error('Google Login Error'));
-      setIsLoading(false);
-    },
-  });
 
   const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
     setIsLoading(true);
@@ -129,7 +84,6 @@ export const useAuthHandlers = () => {
   };
 
   return {
-    continueWithGoogle,
     signInWithEmailHandler,
     signUpWithEmailHandler,
     logout,

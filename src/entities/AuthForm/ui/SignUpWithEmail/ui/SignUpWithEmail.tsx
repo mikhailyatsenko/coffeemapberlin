@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
+import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
 import { validationSchemaSignUpWithEmail } from 'entities/AuthForm/lib/validationSchema';
-import { useAuthHandlers, type SignUpWithEmailData } from 'shared/hooks';
-import { useAuth } from 'shared/hooks';
+import { useAuthHandlers, type SignUpWithEmailData } from 'shared/api';
+import { useAuth } from 'shared/api';
 import { FormField } from 'shared/ui/FormField';
-import { GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './SignUpWithEmail.module.scss';
 
@@ -35,7 +35,7 @@ export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
     <div className={cls.content}>
       <h2>Create account</h2>
       <div className={cls.withGoogle}>
-        <GoogleLoginButton textButton="Continue with Google" />
+        <ContinueWithGoogleButton />
       </div>
       <div className={cls.or}>or</div>
 
