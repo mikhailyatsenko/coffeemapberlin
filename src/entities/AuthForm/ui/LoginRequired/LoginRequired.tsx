@@ -1,4 +1,4 @@
-import { GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
+import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './LoginRequired.module.scss';
 
@@ -13,7 +13,7 @@ export const LoginRequired = ({ onSwitchToSignIn, onSwitchToSignUp }: LoginRequi
       <h2>Login Required</h2>
       <p>You need to be logged in to perform this action.</p>
       <div className={cls.buttons}>
-        <GoogleLoginButton textButton="Continue with Google" />
+        <ContinueWithGoogleButton />
         <RegularButton onClick={onSwitchToSignIn}>Sign in</RegularButton>
       </div>
       <div className={cls.noAccount}>

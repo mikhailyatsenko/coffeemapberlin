@@ -3,21 +3,19 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
 import { validationSchemaSignUpWithEmail } from 'entities/AuthForm/lib/validationSchema';
-import { useAuthHandlers, type SignUpWithEmailData } from 'shared/api';
+import { type SignUpWithEmailData } from 'entities/AuthForm/types';
 import { useAuth } from 'shared/api';
+import { useRegisterUserMutation } from 'shared/generated/graphql';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './SignUpWithEmail.module.scss';
-
 interface SignUpWithEmailProps {
   onSwitchToSignIn: () => void;
 }
 
 export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
-  const { error } = useAuth();
-
-  const { signUpWithEmailHandler } = useAuthHandlers();
-  const form = useForm<SignUpWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignUpWithEmail) });
+  const { setIsLoading, setError, setAuthModalContentVariant, checkAuth, error: authError } = useAuth();
+  const form = useForm({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignUpWithEmail) });
 
   const {
     handleSubmit,
@@ -25,6 +23,29 @@ export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
     trigger,
     formState: { errors, isValid },
   } = form;
+
+  const [registerUser] = useRegisterUserMutation();
+
+  const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
+    setIsLoading(true);
+    try {
+      const response = await registerUser({
+        variables: {
+          email: data.email,
+          displayName: data.displayName,
+          password: data.password,
+        },
+      });
+      if (response) {
+        await checkAuth();
+        setAuthModalContentVariant('SuccessfulSignUp');
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
+    }
+  };
 
   const handleCaptchaChange = (value: string | null) => {
     setValue('recaptcha', value || '');
@@ -65,7 +86,7 @@ export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
           <RegularButton disabled={!isValid}>Sign up</RegularButton>
         </form>
       </FormProvider>
-      {error?.message}
+      {authError?.message}
       <div className={cls.signIn}>
         Have an account? <span onClick={onSwitchToSignIn}>Sign in</span>
       </div>

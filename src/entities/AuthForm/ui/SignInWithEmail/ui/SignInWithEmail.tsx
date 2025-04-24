@@ -1,8 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
+import { type SignInWithEmailData } from 'entities/AuthForm/types';
 import { useAuth } from 'shared/api';
-import { useAuthHandlers, type SignInWithEmailData } from 'shared/api';
+import { client } from 'shared/config/apolloClient';
+import { useSignInWithEmailMutation } from 'shared/generated/graphql';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchemaSignInWithEmail } from '../../../lib/validationSchema';
@@ -13,14 +15,35 @@ interface SignInWithEmailProps {
 }
 
 export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
-  const { error } = useAuth();
-  const { signInWithEmailHandler } = useAuthHandlers();
+  const { setIsLoading, setError, setAuthModalContentVariant, checkAuth, error: authError } = useAuth();
+
+  const [signInWithEmail] = useSignInWithEmailMutation();
+
+  const signInWithEmailHandler = async (data: SignInWithEmailData) => {
+    setIsLoading(true);
+    try {
+      const response = await signInWithEmail({
+        variables: {
+          email: data.email,
+          password: data.password,
+        },
+      });
+      if (response) {
+        await checkAuth();
+        setAuthModalContentVariant(null);
+        setIsLoading(false);
+        await client.resetStore();
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setError(err instanceof Error ? err : new Error('An unknown error occurred during sign in'));
+    }
+  };
 
   const form = useForm<SignInWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignInWithEmail) });
 
   const {
     handleSubmit,
-
     formState: { errors, isValid },
   } = form;
 
@@ -40,7 +63,7 @@ export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
           <RegularButton disabled={!isValid}>Sign up</RegularButton>
         </form>
       </FormProvider>
-      <p className={cls.errorMessage}>{error?.message}</p>
+      <p className={cls.errorMessage}>{authError?.message}</p>
       <div className={cls.noAccount}>
         No account? <span onClick={onSwitchToSignUp}>Create one</span>
       </div>
