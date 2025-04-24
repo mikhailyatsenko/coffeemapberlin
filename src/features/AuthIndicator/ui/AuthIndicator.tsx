@@ -1,12 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuthHandlers, useAuth } from 'shared/api';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from 'shared/api';
+import { client } from 'shared/config/apolloClient';
+import { LOGOUT_MUTATION } from 'shared/query/apolloQueries';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  const { user, setAuthModalContentVariant } = useAuth();
-  const { logout } = useAuthHandlers();
+  const navigate = useNavigate();
+
+  const { user, setAuthModalContentVariant, setIsLoading, setUser, setError } = useAuth();
+
+  const logoutHandler = async () => {
+    setIsLoading(true);
+
+    try {
+      await client.mutate({ mutation: LOGOUT_MUTATION });
+      setUser(null);
+      navigate('/', { replace: true });
+      await client.resetStore();
+      setIsLoading(false);
+      setError(null);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error instanceof Error ? error : new Error('An unknown error occurred during logout'));
+    }
+  };
 
   const [isProfileCardVisible, setIsProfileCardVisible] = useState(false);
 
@@ -88,7 +107,7 @@ export const AuthIndicator: React.FC = () => {
         <div
           className={cls.profileButton}
           onClick={() => {
-            logout();
+            logoutHandler();
           }}
         >
           Sign out
