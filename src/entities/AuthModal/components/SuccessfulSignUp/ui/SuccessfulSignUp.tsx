@@ -3,8 +3,12 @@ import { useAuth } from 'shared/api';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './SuccessfulSignUp.module.scss';
 
-export const SuccessfulSignUp = () => {
-  const { user, setAuthModalContentVariant } = useAuth();
+interface SuccessfulSignUpProps {
+  hideAuthModal: () => void;
+}
+
+export const SuccessfulSignUp = ({ hideAuthModal }: SuccessfulSignUpProps) => {
+  const { user } = useAuth();
 
   return (
     <div className={cls.content}>
@@ -16,7 +20,7 @@ export const SuccessfulSignUp = () => {
 
       <RegularButton
         onClick={() => {
-          setAuthModalContentVariant(null);
+          hideAuthModal();
         }}
       >
         Here we go!

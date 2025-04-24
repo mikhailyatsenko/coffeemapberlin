@@ -1,20 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
-import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
-import { validationSchemaSignUpWithEmail } from 'entities/AuthForm/lib/validationSchema';
-import { type SignUpWithEmailData } from 'entities/AuthForm/types';
 import { useAuth } from 'shared/api';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { validationSchemaSignUpWithEmail } from '../../../lib/validationSchema';
+import { type SignUpWithEmailData } from '../../../types';
+import { ContinueWithGoogleButton } from '../../ContinueWithGoogle';
 import cls from './SignUpWithEmail.module.scss';
+
 interface SignUpWithEmailProps {
+  onSuccessfulSignUp: () => void;
   onSwitchToSignIn: () => void;
 }
 
-export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
-  const { setIsLoading, setError, setAuthModalContentVariant, checkAuth, error: authError } = useAuth();
+export const SignUpWithEmail = ({ onSuccessfulSignUp, onSwitchToSignIn }: SignUpWithEmailProps) => {
+  const { setIsLoading, setError, checkAuth, error: authError } = useAuth();
   const form = useForm({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignUpWithEmail) });
 
   const {
@@ -38,7 +40,7 @@ export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
       });
       if (response) {
         await checkAuth();
-        setAuthModalContentVariant('SuccessfulSignUp');
+        onSuccessfulSignUp();
         setIsLoading(false);
       }
     } catch (err) {
@@ -88,7 +90,14 @@ export const SignUpWithEmail = ({ onSwitchToSignIn }: SignUpWithEmailProps) => {
       </FormProvider>
       {authError?.message}
       <div className={cls.signIn}>
-        Have an account? <span onClick={onSwitchToSignIn}>Sign in</span>
+        Have an account?{' '}
+        <span
+          onClick={() => {
+            onSwitchToSignIn();
+          }}
+        >
+          Sign in
+        </span>
       </div>
     </div>
   );

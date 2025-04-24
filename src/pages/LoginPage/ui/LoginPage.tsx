@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { SignInWithEmail, SignUpWithEmail } from 'entities/AuthForm';
+import { SignInWithEmail, SignUpWithEmail } from 'entities/AuthModal';
 import { useAuth } from 'shared/api';
 import cls from './LoginPage.module.scss';
 

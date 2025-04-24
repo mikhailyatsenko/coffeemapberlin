@@ -1,4 +1,4 @@
-import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
+import { ContinueWithGoogleButton } from 'entities/AuthModal/components/ContinueWithGoogle';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './LoginRequired.module.scss';
 
