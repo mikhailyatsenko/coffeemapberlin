@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { AuthModal } from 'entities/AuthModal';
 import { useAuth } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { LOGOUT_MUTATION } from 'shared/query/apolloQueries';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
   const navigate = useNavigate();
-
-  const { user, setAuthModalContentVariant, setIsLoading, setUser, setError } = useAuth();
+  const { showSignIn } = useAuthModal();
+  const { user, setIsLoading, setUser, setError } = useAuth();
 
   const logoutHandler = async () => {
     setIsLoading(true);
@@ -28,7 +30,6 @@ export const AuthIndicator: React.FC = () => {
   };
 
   const [isProfileCardVisible, setIsProfileCardVisible] = useState(false);
-
   const authIndicatorRef = useRef<HTMLDivElement>(null);
 
   const toggleProfileCard = () => {
@@ -53,15 +54,7 @@ export const AuthIndicator: React.FC = () => {
   }, [isProfileCardVisible]);
 
   if (!user) {
-    return (
-      <RegularButton
-        onClick={() => {
-          setAuthModalContentVariant('SignInWithEmail');
-        }}
-      >
-        Sign in
-      </RegularButton>
-    );
+    return <RegularButton onClick={showSignIn}>Sign in</RegularButton>;
   }
 
   return (
@@ -113,6 +106,7 @@ export const AuthIndicator: React.FC = () => {
           Sign out
         </div>
       </div>
+      <AuthModal />
     </div>
   );
 };

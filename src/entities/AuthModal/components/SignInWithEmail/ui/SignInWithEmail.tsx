@@ -1,21 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
-import { ContinueWithGoogleButton } from 'entities/AuthForm/components/ContinueWithGoogle';
-import { type SignInWithEmailData } from 'entities/AuthForm/types';
+import { ContinueWithGoogleButton } from 'entities/AuthModal/components/ContinueWithGoogle';
 import { useAuth } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
 import { useSignInWithEmailMutation } from 'shared/generated/graphql';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchemaSignInWithEmail } from '../../../lib/validationSchema';
+import { type SignInWithEmailData } from '../../../types';
 import cls from './SignInWithEmail.module.scss';
 
 interface SignInWithEmailProps {
+  hideAuthModal: () => void;
   onSwitchToSignUp: () => void;
 }
 
-export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
-  const { setIsLoading, setError, setAuthModalContentVariant, checkAuth, error: authError } = useAuth();
+export const SignInWithEmail = ({ hideAuthModal, onSwitchToSignUp }: SignInWithEmailProps) => {
+  const { setIsLoading, setError, checkAuth, error: authError } = useAuth();
 
   const [signInWithEmail] = useSignInWithEmailMutation();
 
@@ -30,7 +31,7 @@ export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
       });
       if (response) {
         await checkAuth();
-        setAuthModalContentVariant(null);
+        hideAuthModal();
         setIsLoading(false);
         await client.resetStore();
       }
@@ -65,7 +66,14 @@ export const SignInWithEmail = ({ onSwitchToSignUp }: SignInWithEmailProps) => {
       </FormProvider>
       <p className={cls.errorMessage}>{authError?.message}</p>
       <div className={cls.noAccount}>
-        No account? <span onClick={onSwitchToSignUp}>Create one</span>
+        No account?{' '}
+        <span
+          onClick={() => {
+            onSwitchToSignUp();
+          }}
+        >
+          Create one
+        </span>
       </div>
     </div>
   );

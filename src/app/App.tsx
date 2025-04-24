@@ -1,5 +1,4 @@
 import { useLocation, matchPath } from 'react-router-dom';
-import { AuthModalWindow } from 'widgets/AuthModalWindow';
 import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { AppRouter } from './providers/router';
@@ -14,7 +13,6 @@ const App = () => {
       </main>
 
       {!matchPath(AppRoutes.MAIN, location.pathname) && <Footer />}
-      <AuthModalWindow />
     </>
   );
 };
