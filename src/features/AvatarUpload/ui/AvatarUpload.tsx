@@ -1,8 +1,7 @@
-import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
 import { useAuth } from 'shared/api';
-import { UPLOAD_AVATAR, DELETE_AVATAR } from 'shared/query/apolloQueries';
+import { useUploadAvatarMutation, useDeleteAvatarMutation } from 'shared/generated/graphql';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 
@@ -19,8 +18,8 @@ export const AvatarUpload: React.FC = () => {
 
   const [toastMessage, setToastMessage] = useState<string>('');
 
-  const [uploadAvatar, { error: uploadError }] = useMutation<{ uploadAvatar: { success: boolean } }>(UPLOAD_AVATAR);
-  const [deleteAvatar, { error: deleteError }] = useMutation<{ deleteAvatar: { success: boolean } }>(DELETE_AVATAR);
+  const [uploadAvatar, { error: uploadError }] = useUploadAvatarMutation();
+  const [deleteAvatar, { error: deleteError }] = useDeleteAvatarMutation();
 
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
@@ -63,6 +62,12 @@ export const AvatarUpload: React.FC = () => {
 
       if (responseData.error) {
         setIsError(responseData.error);
+        setIsUploading(false);
+        return;
+      }
+
+      if (!responseData.fileUrl) {
+        setIsError('Failed to get file URL from server');
         setIsUploading(false);
         return;
       }
@@ -119,7 +124,7 @@ export const AvatarUpload: React.FC = () => {
   return (
     <>
       <UploadAvatarForm
-        avatar={user?.avatar}
+        avatar={user?.avatar || undefined}
         displayName={user?.displayName}
         handleFileChange={handleFileChange}
         handleUpload={handleUploadAvatar}

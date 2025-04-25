@@ -3,10 +3,9 @@
 import { useApolloClient } from '@apollo/client';
 import { useCallback, useState, type FC, type PropsWithChildren } from 'react';
 import { useEffect } from 'react';
-import { AuthContext, type AuthContextType } from 'shared/context/Auth/AuthContext';
-import { CURRENT_USER_QUERY } from 'shared/query/apolloQueries';
+import { AuthContext } from 'shared/context/Auth/AuthContext';
+import { CurrentUserDocument } from 'shared/generated/graphql';
 import { type User } from 'shared/types';
-
 interface CurrentUserData {
   currentUser: User | null;
 }
@@ -22,7 +21,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const checkAuth = useCallback(async () => {
     try {
       const { data } = await client.query<CurrentUserData>({
-        query: CURRENT_USER_QUERY,
+        query: CurrentUserDocument,
         fetchPolicy: 'network-only',
       });
 

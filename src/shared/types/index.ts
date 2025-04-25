@@ -1,4 +1,4 @@
-import { type Point } from 'geojson';
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 
 export interface CharacteristicData {
   pressed: boolean;
@@ -31,11 +31,7 @@ export interface PlaceProperties {
   characteristicCounts: ICharacteristicCounts;
 }
 
-export interface PlaceResponse {
-  type: 'Feature';
-  geometry: Point;
-  properties: PlaceProperties;
-}
+export type PlaceResponse = GetAllPlacesQuery['places'];
 
 export interface User {
   id: string;
