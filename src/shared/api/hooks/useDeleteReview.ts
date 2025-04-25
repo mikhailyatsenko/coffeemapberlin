@@ -1,5 +1,6 @@
 import { type ApolloCache } from '@apollo/client';
 import { useCallback } from 'react';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   useDeleteReviewMutation,
   type GetAllPlacesQuery,
@@ -12,8 +13,8 @@ import { useAuth } from './useAuth';
 type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 
 export function useDeleteReview(placeId: string) {
-  const { user, setAuthModalContentVariant } = useAuth();
-
+  const { user } = useAuth();
+  const { showSignIn } = useAuthModal();
   const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useDeleteReviewMutation({
     update(cache, result, { variables }) {
       if (result.data?.deleteReview) {
@@ -112,7 +113,7 @@ export function useDeleteReview(placeId: string) {
   const handleDeleteReview = useCallback(
     async (reviewId: string, deleteOptions: DeleteOptions = 'deleteAll'): Promise<void> => {
       if (!user) {
-        setAuthModalContentVariant('LoginRequired');
+        showSignIn();
         return;
       }
       try {
@@ -122,7 +123,7 @@ export function useDeleteReview(placeId: string) {
         throw err;
       }
     },
-    [user, deleteReview, setAuthModalContentVariant],
+    [user, deleteReview, showSignIn],
   );
 
   return {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { AuthModal } from 'entities/AuthModal';
 import { useAuth } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
@@ -106,7 +105,6 @@ export const AuthIndicator: React.FC = () => {
           Sign out
         </div>
       </div>
-      <AuthModal />
     </div>
   );
 };

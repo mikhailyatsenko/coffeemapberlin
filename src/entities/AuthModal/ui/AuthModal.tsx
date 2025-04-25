@@ -1,4 +1,5 @@
 import { useAuth } from 'shared/api';
+import { AuthModalContentVariant } from 'shared/constants';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
@@ -7,7 +8,6 @@ import { LoginRequired } from '../components/LoginRequired';
 import { SignInWithEmail } from '../components/SignInWithEmail';
 import { SignUpWithEmail } from '../components/SignUpWithEmail';
 import { SuccessfulSignUp } from '../components/SuccessfulSignUp';
-import { AuthModalContentVariant } from '../constants';
 import cls from './AuthModal.module.scss';
 
 export const AuthModal = () => {
@@ -17,10 +17,12 @@ export const AuthModal = () => {
   if (isLoading) {
     return <Loader />;
   }
+  console.log(authModalContentVariant);
 
   if (authModalContentVariant === AuthModalContentVariant.Hidden) {
     return null;
   }
+
   return (
     <PortalToBody>
       <Modal onClose={hideModal}>
