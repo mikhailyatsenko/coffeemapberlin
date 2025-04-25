@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
-import { LOGOUT_MUTATION } from 'shared/query/apolloQueries';
+import { LogoutDocument } from 'shared/generated/graphql';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
@@ -16,7 +16,7 @@ export const AuthIndicator: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await client.mutate({ mutation: LOGOUT_MUTATION });
+      await client.mutate({ mutation: LogoutDocument });
       setUser(null);
       navigate('/', { replace: true });
       await client.resetStore();

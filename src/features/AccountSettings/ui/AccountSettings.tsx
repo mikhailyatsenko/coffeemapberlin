@@ -9,7 +9,7 @@ import {
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
 import { useAuth } from 'shared/api';
-import { SET_NEW_PASSWORD, UPDATE_PERSONAL_DATA } from 'shared/query/apolloQueries';
+import { useSetNewPasswordMutation, useUpdatePersonalDataMutation } from 'shared/generated/graphql';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 import { passwordValidationSchema, personalDataValidationSchema } from '../lib/validationSchema';
@@ -39,9 +39,9 @@ export const AccountSettings = () => {
 
   const { reset: resetPersonalData, watch: watchPersonalData } = personalDataForm;
 
-  const [setNewPassword, { loading: loadingPassword, error: errorSettingPassword }] = useMutation(SET_NEW_PASSWORD);
+  const [setNewPassword, { loading: loadingPassword, error: errorSettingPassword }] = useSetNewPasswordMutation();
   const [updatePersonalData, { loading: loadingPersonalData, error: errorUpdatingPersonalData }] =
-    useMutation(UPDATE_PERSONAL_DATA);
+    useUpdatePersonalDataMutation();
 
   useEffect(() => {
     if (user) {

@@ -1,10 +1,9 @@
 import { createContext } from 'react';
-import { type PlaceResponse } from 'shared/types';
-
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 interface PlacesContextType {
-  places: PlaceResponse[];
-  filterablePlaces: PlaceResponse[];
-  favoritePlaces: PlaceResponse[] | null;
+  places: GetAllPlacesQuery['places'];
+  filterablePlaces: GetAllPlacesQuery['places'];
+  favoritePlaces: GetAllPlacesQuery['places'] | null;
   setSearchTerm: (term: string) => void;
   setMinRating: (rating: number) => void;
   setShowFavorite: React.Dispatch<React.SetStateAction<boolean>>;
