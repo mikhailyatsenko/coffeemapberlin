@@ -1,14 +1,16 @@
 import { type ApolloCache } from '@apollo/client';
+import { useAuth } from 'shared/api';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   type AddTextReviewMutation,
   PlaceReviewsDocument,
   type PlaceReviewsQuery,
   useAddTextReviewMutation,
 } from 'shared/generated/graphql';
-import { useAuth } from 'shared/api';
 
 export function useAddTextReview(placeId: string) {
-  const { user, setAuthModalContentVariant } = useAuth();
+  const { user } = useAuth();
+  const { showSignIn } = useAuthModal();
 
   const [addTextReview, { loading, error }] = useAddTextReviewMutation({
     update(cache, { data }) {
@@ -66,7 +68,7 @@ export function useAddTextReview(placeId: string) {
     text: string,
   ): Promise<NonNullable<AddTextReviewMutation['addTextReview']> | undefined> => {
     if (!user) {
-      setAuthModalContentVariant('LoginRequired');
+      showSignIn();
       return;
     }
     try {

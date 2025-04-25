@@ -1,6 +1,7 @@
 import { type ApolloCache, useMutation } from '@apollo/client';
 import { useState } from 'react';
 import { useAuth } from 'shared/api';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { TOGGLE_FAVORITE, GET_ALL_PLACES } from 'shared/query/apolloQueries';
 import { type PlaceResponse } from 'shared/types';
 
@@ -9,7 +10,8 @@ interface PlacesData {
 }
 
 export const useToggleFavorite = (placeId: string | null) => {
-  const { user, setAuthModalContentVariant } = useAuth();
+  const { user } = useAuth();
+  const { showSignIn } = useAuthModal();
   const [toastMessage, setToastMessage] = useState<string>('');
 
   const [toggleFavoriteMutation] = useMutation<{ toggleFavorite: boolean }>(TOGGLE_FAVORITE, {
@@ -52,7 +54,7 @@ export const useToggleFavorite = (placeId: string | null) => {
   const toggleFavorite = async () => {
     if (!placeId) return;
     if (!user) {
-      setAuthModalContentVariant('LoginRequired');
+      showSignIn();
       return;
     }
     try {

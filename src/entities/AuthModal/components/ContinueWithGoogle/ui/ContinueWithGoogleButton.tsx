@@ -1,18 +1,20 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { useLoginWithGoogleMutation } from 'shared/generated/graphql';
 import { GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import { mapLoginWithGoogleData } from '../../../mappers';
 
 export const ContinueWithGoogleButton = () => {
   const [loginWithGoogle] = useLoginWithGoogleMutation();
-  const { setUser, setIsLoading, setError, setAuthModalContentVariant } = useAuth();
+  const { setUser, setIsLoading, setError } = useAuth();
+  const { showSuccessfulSignUp, hideModal } = useAuthModal();
   const continueWithGoogle = useGoogleLogin({
     flow: 'auth-code',
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSuccess: async (tokenResponse) => {
-      //   setIsLoading(true);
+      setIsLoading(true);
       try {
         const { data } = await loginWithGoogle({ variables: { code: tokenResponse.code } });
         if (data?.loginWithGoogle) {
@@ -21,9 +23,9 @@ export const ContinueWithGoogleButton = () => {
             setUser(user);
             setIsLoading(false);
             if (data.loginWithGoogle.isFirstLogin) {
-              setAuthModalContentVariant('SuccessfulSignUp');
+              showSuccessfulSignUp();
             } else {
-              setAuthModalContentVariant(null);
+              hideModal();
             }
             await client.resetStore();
           }

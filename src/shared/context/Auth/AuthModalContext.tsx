@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { AuthModalContentVariant } from 'entities/AuthModal/constants';
+import { AuthModalContentVariant } from '../../constants';
+
+// TODO: refactor this context to use zustand
 
 interface AuthModalContextType {
   authModalContentVariant: AuthModalContentVariant;
-  // setAuthModalContentVariant: (variant: AuthModalContentVariant) => void;
   showSuccessfulSignUp: () => void;
   showLoginRequired: () => void;
   showSignIn: () => void;
@@ -23,6 +24,7 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const showSignIn = () => {
+    console.log('showSignIn');
     setAuthModalContentVariant(AuthModalContentVariant.SignInWithEmail);
   };
 
@@ -38,6 +40,7 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
     setAuthModalContentVariant(AuthModalContentVariant.SuccessfulSignUp);
   };
 
+  console.log(authModalContentVariant);
   return (
     <AuthModalContext.Provider
       value={{
