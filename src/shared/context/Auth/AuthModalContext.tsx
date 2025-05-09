@@ -24,7 +24,6 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const showSignIn = () => {
-    console.log('showSignIn');
     setAuthModalContentVariant(AuthModalContentVariant.SignInWithEmail);
   };
 
@@ -40,7 +39,6 @@ export const AuthModalProvider = ({ children }: { children: ReactNode }) => {
     setAuthModalContentVariant(AuthModalContentVariant.SuccessfulSignUp);
   };
 
-  console.log(authModalContentVariant);
   return (
     <AuthModalContext.Provider
       value={{

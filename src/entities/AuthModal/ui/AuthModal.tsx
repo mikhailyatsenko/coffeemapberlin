@@ -17,7 +17,6 @@ export const AuthModal = () => {
   if (isLoading) {
     return <Loader />;
   }
-  console.log(authModalContentVariant);
 
   if (authModalContentVariant === AuthModalContentVariant.Hidden) {
     return null;
