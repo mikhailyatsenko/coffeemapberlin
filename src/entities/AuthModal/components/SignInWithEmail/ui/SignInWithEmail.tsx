@@ -11,7 +11,7 @@ import { type SignInWithEmailData } from '../../../types';
 import cls from './SignInWithEmail.module.scss';
 
 interface SignInWithEmailProps {
-  hideAuthModal: () => void;
+  hideAuthModal?: () => void;
   onSwitchToSignUp: () => void;
 }
 
@@ -31,7 +31,9 @@ export const SignInWithEmail = ({ hideAuthModal, onSwitchToSignUp }: SignInWithE
       });
       if (response) {
         await checkAuth();
-        hideAuthModal();
+        if (hideAuthModal) {
+          hideAuthModal();
+        }
         setIsLoading(false);
         await client.resetStore();
       }

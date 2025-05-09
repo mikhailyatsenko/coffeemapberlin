@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SignInWithEmail, SignUpWithEmail } from 'entities/AuthModal';
 import { useAuth } from 'shared/api';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import cls from './LoginPage.module.scss';
 
 export const LoginPage = () => {
   const { user } = useAuth();
+  const { showSuccessfulSignUp } = useAuthModal();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,6 +32,7 @@ export const LoginPage = () => {
           />
         ) : (
           <SignUpWithEmail
+            onSuccessfulSignUp={showSuccessfulSignUp}
             onSwitchToSignIn={() => {
               setIiSignIn(true);
             }}
