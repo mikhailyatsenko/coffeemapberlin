@@ -140,7 +140,7 @@ const DetailedPlaceCard: React.FC = () => {
 
           {!showRateNow && (
             <HeaderDetailedPlaceCard
-              averageRating={averageRating}
+              averageRating={averageRating || 0}
               description={description}
               isHeaderVisible={isHeaderVisible}
             />
@@ -168,7 +168,7 @@ const DetailedPlaceCard: React.FC = () => {
           {/* for Google Rich Results */}
           <CoffeeShopSchema
             address={address}
-            averageRating={averageRating}
+            averageRating={averageRating || 0}
             reviewCount={ratingCount}
             name={name}
             image={image}

@@ -3,7 +3,7 @@ import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from '
 import type { MapRef, GeoJSONSource, MapLayerMouseEvent, LngLatLike, MapboxGeoJSONFeature } from 'react-map-gl';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { LocationContext } from 'shared/context/Location/LocationContext';
-import { type GeoPlaces } from 'shared/context/PlacesData/PlacesContext';
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
 // import { type PlaceProperties } from 'shared/types';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
@@ -16,7 +16,7 @@ const MAPBOX_TOKEN = process.env.MAPBOX_API;
 //   type: 'FeatureCollection';
 // }
 
-type MyMapboxGeoJSONFeature = MapboxGeoJSONFeature & GeoPlaces;
+type MyMapboxGeoJSONFeature = Omit<MapboxGeoJSONFeature, 'geometry'> & GetAllPlacesQuery['places'][number];
 
 export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
@@ -24,7 +24,9 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const { location } = useContext(LocationContext);
 
   const [eventFeatureData, setEventFeatureData] = useState<MyMapboxGeoJSONFeature | null>(null);
-  const [tooltipCurrentData, setTooltipCurrentData] = useState<GeoPlaces[number]['properties'] | null>(null);
+  const [tooltipCurrentData, setTooltipCurrentData] = useState<
+    GetAllPlacesQuery['places'][number]['properties'] | null
+  >(null);
 
   const screenWidth = useWidth();
 
@@ -41,7 +43,9 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const onClick = (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
 
-    const featureFromEvent = event.features?.[0] as MyMapboxGeoJSONFeature;
+    const featureFromEvent = event.features?.[0] as unknown as MyMapboxGeoJSONFeature;
+
+    console.log('featureFromEvent', featureFromEvent);
 
     if (!featureFromEvent) {
       setEventFeatureData(null);

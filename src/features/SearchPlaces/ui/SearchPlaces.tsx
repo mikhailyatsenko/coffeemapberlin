@@ -50,7 +50,7 @@ export const SearchPlaces = () => {
   };
 
   const sortedByRatingPlaces = [...filterablePlaces].sort(
-    (a, b) => b.properties.averageRating - a.properties.averageRating,
+    (a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0),
   );
 
   return (
