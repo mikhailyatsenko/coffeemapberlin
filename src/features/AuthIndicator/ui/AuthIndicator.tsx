@@ -1,16 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuthHandlers } from 'shared/lib/hooks/auth/useAuthHandlers';
-import { useAuth } from 'shared/lib/reactContext/Auth/useAuth';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from 'shared/api';
+import { client } from 'shared/config/apolloClient';
+import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
+import { LogoutDocument } from 'shared/generated/graphql';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  const { user, setAuthModalContentVariant } = useAuth();
-  const { logout } = useAuthHandlers();
+  const navigate = useNavigate();
+  const { showSignIn } = useAuthModal();
+  const { user, setIsLoading, setUser, setError } = useAuth();
+
+  const logoutHandler = async () => {
+    setIsLoading(true);
+
+    try {
+      await client.mutate({ mutation: LogoutDocument });
+      setUser(null);
+      navigate('/', { replace: true });
+      await client.resetStore();
+      setIsLoading(false);
+      setError(null);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error instanceof Error ? error : new Error('An unknown error occurred during logout'));
+    }
+  };
 
   const [isProfileCardVisible, setIsProfileCardVisible] = useState(false);
-
   const authIndicatorRef = useRef<HTMLDivElement>(null);
 
   const toggleProfileCard = () => {
@@ -35,15 +53,7 @@ export const AuthIndicator: React.FC = () => {
   }, [isProfileCardVisible]);
 
   if (!user) {
-    return (
-      <RegularButton
-        onClick={() => {
-          setAuthModalContentVariant('SignInWithEmail');
-        }}
-      >
-        Sign in
-      </RegularButton>
-    );
+    return <RegularButton onClick={showSignIn}>Sign in</RegularButton>;
   }
 
   return (
@@ -89,7 +99,7 @@ export const AuthIndicator: React.FC = () => {
         <div
           className={cls.profileButton}
           onClick={() => {
-            logout();
+            logoutHandler();
           }}
         >
           Sign out

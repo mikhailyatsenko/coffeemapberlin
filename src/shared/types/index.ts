@@ -1,4 +1,4 @@
-import { type Point } from 'geojson';
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 
 export interface CharacteristicData {
   pressed: boolean;
@@ -21,39 +21,22 @@ export interface PlaceProperties {
   name: string;
   description: string;
   address: string;
-  image?: string;
+  image: string;
   instagram: string;
-  averageRating: number;
-  userRating: number;
+  averageRating?: number | null;
   ratingCount: number;
   favoriteCount: number;
   isFavorite: boolean;
   characteristicCounts: ICharacteristicCounts;
 }
 
-export interface PlaceResponse {
-  type: 'Feature';
-  geometry: Point;
-  properties: PlaceProperties;
-}
+export type PlaceResponse = GetAllPlacesQuery['places'];
 
 export interface User {
   id: string;
   displayName: string;
   email: string;
-  avatar: string | null;
-  createdAt: Date | null;
+  avatar?: string;
+  createdAt?: Date;
   isGoogleUserUserWithoutPassword: boolean;
-}
-
-export interface Review {
-  id: string;
-  text: string;
-  userId: string;
-  userRating: number | null;
-  userName: string;
-  userAvatar: string;
-  placeId: string;
-  createdAt: string;
-  isOwnReview: boolean;
 }

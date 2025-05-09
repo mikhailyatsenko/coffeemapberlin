@@ -3,7 +3,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './SearchResultsTab.module.scss';
 
 interface SearchResultsTabProps {
-  filterdPlaces: PlaceResponse[];
+  filterdPlaces: PlaceResponse;
   onSelect: (id: string) => void;
 }
 
