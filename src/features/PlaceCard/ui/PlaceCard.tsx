@@ -1,13 +1,13 @@
 import { type Position } from 'geojson';
 import { useContext } from 'react';
 import { createSearchParams, NavLink, useNavigate } from 'react-router-dom';
+import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
-import { useToggleFavorite } from 'shared/lib/hooks/interactions/useToggleFavorite';
+import { LocationContext } from 'shared/context/Location/LocationContext';
+import { usePlaces } from 'shared/context/PlacesData/usePlaces';
 import LazyImage from 'shared/lib/LazyImage/LazyImage';
-import { LocationContext } from 'shared/lib/reactContext/Location/LocationContext';
-import { usePlaces } from 'shared/lib/reactContext/PlacesData/usePlaces';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';

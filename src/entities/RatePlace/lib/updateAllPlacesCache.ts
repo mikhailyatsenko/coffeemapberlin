@@ -1,17 +1,14 @@
 import { type ApolloCache } from '@apollo/client';
-import { GET_ALL_PLACES } from 'shared/query/apolloQueries';
-import { type ICharacteristicCounts, type PlaceResponse } from 'shared/types';
+import { GetAllPlacesDocument, type GetAllPlacesQuery } from 'shared/generated/graphql';
 
-interface PlacesData {
-  places: PlaceResponse[];
-}
+import { type ICharacteristicCounts } from 'shared/types';
 
 export const updateAllPlacesCache = (
   cache: ApolloCache<unknown>,
   placeId: string,
   characteristic: keyof ICharacteristicCounts,
 ) => {
-  const existingData = cache.readQuery<PlacesData>({ query: GET_ALL_PLACES });
+  const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
 
   if (existingData?.places) {
     const updatedPlaces = existingData.places.map((place) => {
@@ -39,7 +36,7 @@ export const updateAllPlacesCache = (
     });
 
     cache.writeQuery({
-      query: GET_ALL_PLACES,
+      query: GetAllPlacesDocument,
       data: { places: updatedPlaces },
     });
   }

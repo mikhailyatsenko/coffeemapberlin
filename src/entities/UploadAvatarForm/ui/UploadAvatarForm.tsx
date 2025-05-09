@@ -6,7 +6,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './UploadAvatarForm.module.scss';
 
 interface UploadAvatarFormProps {
-  avatar: string | null;
+  avatar?: string;
   displayName: string;
   handleUpload: () => void;
   handleDelete?: () => void;

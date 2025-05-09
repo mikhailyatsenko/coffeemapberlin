@@ -1,15 +1,9 @@
-import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
-import { PlacesDataContext } from 'shared/lib/reactContext/PlacesData/PlacesContext';
-import { GET_ALL_PLACES } from 'shared/query/apolloQueries';
-import { type PlaceResponse } from 'shared/types';
-
-interface PlacesData {
-  places: PlaceResponse[];
-}
+import { PlacesDataContext } from 'shared/context/PlacesData/PlacesContext';
+import { useGetAllPlacesQuery } from 'shared/generated/graphql';
 
 export const PlacesDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data, loading } = useQuery<PlacesData>(GET_ALL_PLACES);
+  const { data, loading } = useGetAllPlacesQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const [minRating, setMinRating] = useState(0);
   const [showFavorites, setShowFavorite] = useState<boolean>(false);
@@ -27,6 +21,7 @@ export const PlacesDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   return (
     <PlacesDataContext.Provider
       value={{
+        places,
         filterablePlaces,
         setMinRating,
         setSearchTerm,

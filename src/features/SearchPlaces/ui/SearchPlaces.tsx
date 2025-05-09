@@ -3,7 +3,7 @@ import { createSearchParams, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
-import { usePlaces } from 'shared/lib/reactContext/PlacesData/usePlaces';
+import { usePlaces } from 'shared/context/PlacesData/usePlaces';
 import cls from './SearchPlaces.module.scss';
 
 export const SearchPlaces = () => {
@@ -50,7 +50,7 @@ export const SearchPlaces = () => {
   };
 
   const sortedByRatingPlaces = [...filterablePlaces].sort(
-    (a, b) => b.properties.averageRating - a.properties.averageRating,
+    (a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0),
   );
 
   return (

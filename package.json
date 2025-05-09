@@ -9,9 +9,13 @@
     "build": "tsc && vite build",
     "lint:ts": "eslint \"**/*.{ts, tsx}\"",
     "lint:ts:fix": "eslint \"**/*.{ts, tsx}\" --fix",
+    "lint:css:fix": "stylelint \"**/*.{scss, css}\" --fix",
     "preview": "vite preview",
     "predeploy": "VITE_ENV=production npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "codegen": "graphql-codegen",
+    "codegen:watch": "graphql-codegen --watch",
+    "prepare": "husky"
   },
   "dependencies": {
     "@apollo/client": "^3.10.8",
@@ -22,6 +26,7 @@
     "emailjs-com": "^3.2.0",
     "google-auth-library": "^9.11.0",
     "graphql": "^16.9.0",
+    "graphql-ws": "^5.16.2",
     "mapbox-gl": "^3.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -34,6 +39,10 @@
   },
   "devDependencies": {
     "@feature-sliced/eslint-config": "^0.1.1",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-operations": "^4.6.0",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.2",
     "@types/geojson": "^7946.0.14",
     "@types/mapbox-gl": "^3.1.0",
     "@types/node": "^20.14.10",
@@ -57,6 +66,7 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "gh-pages": "^6.1.1",
     "globals": "^15.1.0",
+    "husky": "^9.1.7",
     "prettier": "3.2.5",
     "sass": "^1.68.0",
     "stylelint": "^16.3.1",
