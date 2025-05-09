@@ -21,10 +21,9 @@ export interface PlaceProperties {
   name: string;
   description: string;
   address: string;
-  image?: string;
+  image: string;
   instagram: string;
-  averageRating: number;
-  userRating: number;
+  averageRating?: number | null;
   ratingCount: number;
   favoriteCount: number;
   isFavorite: boolean;

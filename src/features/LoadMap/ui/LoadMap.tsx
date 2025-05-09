@@ -3,29 +3,28 @@ import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from '
 import type { MapRef, GeoJSONSource, MapLayerMouseEvent, LngLatLike, MapboxGeoJSONFeature } from 'react-map-gl';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { LocationContext } from 'shared/context/Location/LocationContext';
+import { type GeoPlaces } from 'shared/context/PlacesData/PlacesContext';
 import { useWidth } from 'shared/hooks';
-import { type PlaceResponse, type PlaceProperties } from 'shared/types';
+// import { type PlaceProperties } from 'shared/types';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
+import { type LoadMapProps } from '../types';
 
 const MAPBOX_TOKEN = process.env.MAPBOX_API;
 
-export interface PlacesDataWithGeo extends GeoJSON.FeatureCollection<GeoJSON.Geometry, PlaceProperties> {
-  features: PlaceResponse[];
-}
+// export interface PlacesDataWithGeo
+//   extends GeoJSON.FeatureCollection<GeoJSON.Geometry, GeoPlaces[number]['properties']> {
+//   type: 'FeatureCollection';
+// }
 
-interface LoadMapProps {
-  placesGeo: PlacesDataWithGeo;
-}
+type MyMapboxGeoJSONFeature = MapboxGeoJSONFeature & GeoPlaces;
 
 export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
 
   const { location } = useContext(LocationContext);
 
-  type MyMapboxGeoJSONFeature = MapboxGeoJSONFeature & PlaceResponse;
-
   const [eventFeatureData, setEventFeatureData] = useState<MyMapboxGeoJSONFeature | null>(null);
-  const [tooltipCurrentData, setTooltipCurrentData] = useState<PlaceProperties | null>(null);
+  const [tooltipCurrentData, setTooltipCurrentData] = useState<GeoPlaces[number]['properties'] | null>(null);
 
   const screenWidth = useWidth();
 
@@ -85,7 +84,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   useEffect(() => {
     if (eventFeatureData?.properties) {
       const currentData = placesGeo.features.find(
-        (propsFeature) => propsFeature.properties.id === eventFeatureData.properties.id,
+        (propsFeature) => propsFeature.properties.id === eventFeatureData?.properties?.id,
       );
       if (currentData) {
         setTooltipCurrentData(currentData.properties);
@@ -119,7 +118,14 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
           }
         }}
       >
-        <Source id="places" type="geojson" data={placesGeo} cluster={true} clusterMaxZoom={12} clusterRadius={30}>
+        <Source
+          id="places"
+          type="geojson"
+          data={placesGeo as GeoJSON.FeatureCollection<GeoJSON.Geometry>}
+          cluster={true}
+          clusterMaxZoom={12}
+          clusterRadius={30}
+        >
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
