@@ -5,16 +5,10 @@ import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { LocationContext } from 'shared/context/Location/LocationContext';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
-// import { type PlaceProperties } from 'shared/types';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
 const MAPBOX_TOKEN = process.env.MAPBOX_API;
-
-// export interface PlacesDataWithGeo
-//   extends GeoJSON.FeatureCollection<GeoJSON.Geometry, GeoPlaces[number]['properties']> {
-//   type: 'FeatureCollection';
-// }
 
 type MyMapboxGeoJSONFeature = Omit<MapboxGeoJSONFeature, 'geometry'> & GetAllPlacesQuery['places'][number];
 
@@ -44,8 +38,6 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
     event.originalEvent.stopPropagation();
 
     const featureFromEvent = event.features?.[0] as unknown as MyMapboxGeoJSONFeature;
-
-    console.log('featureFromEvent', featureFromEvent);
 
     if (!featureFromEvent) {
       setEventFeatureData(null);
