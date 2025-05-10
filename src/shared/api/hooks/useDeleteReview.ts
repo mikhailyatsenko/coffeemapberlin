@@ -8,7 +8,7 @@ import {
   PlaceReviewsDocument,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { showSignIn } from 'shared/stores/modal';
+import { showLoginRequired } from 'shared/stores/modal';
 
 type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 
@@ -112,7 +112,7 @@ export function useDeleteReview(placeId: string) {
   const handleDeleteReview = useCallback(
     async (reviewId: string, deleteOptions: DeleteOptions = 'deleteAll'): Promise<void> => {
       if (!user) {
-        showSignIn();
+        showLoginRequired();
         return;
       }
       try {

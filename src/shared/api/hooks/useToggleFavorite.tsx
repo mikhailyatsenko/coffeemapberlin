@@ -2,7 +2,7 @@ import { type ApolloCache } from '@apollo/client';
 import { useState } from 'react';
 import { GetAllPlacesDocument, useToggleFavoriteMutation, type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { showSignIn } from 'shared/stores/modal';
+import { showLoginRequired } from 'shared/stores/modal';
 
 export const useToggleFavorite = (placeId: string | null) => {
   const { user } = useAuthStore();
@@ -48,7 +48,7 @@ export const useToggleFavorite = (placeId: string | null) => {
   const toggleFavorite = async () => {
     if (!placeId) return;
     if (!user) {
-      showSignIn();
+      showLoginRequired();
       return;
     }
     try {

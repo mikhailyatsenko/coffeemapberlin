@@ -6,7 +6,7 @@ import {
   useAddTextReviewMutation,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { showSignIn } from 'shared/stores/modal';
+import { showLoginRequired } from 'shared/stores/modal';
 
 export function useAddTextReview(placeId: string) {
   const { user } = useAuthStore();
@@ -67,7 +67,7 @@ export function useAddTextReview(placeId: string) {
     text: string,
   ): Promise<NonNullable<AddTextReviewMutation['addTextReview']> | undefined> => {
     if (!user) {
-      showSignIn();
+      showLoginRequired();
       return;
     }
     try {
