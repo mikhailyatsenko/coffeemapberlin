@@ -9,7 +9,7 @@ import {
   useAddRatingMutation,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { showSignIn } from 'shared/stores/modal';
+import { showLoginRequired } from 'shared/stores/modal';
 
 export function useAddRating(placeId: string) {
   const { user } = useAuthStore();
@@ -89,7 +89,7 @@ export function useAddRating(placeId: string) {
 
   const handleAddRating = async (rating: number): Promise<NonNullable<AddRatingMutation['addRating']> | undefined> => {
     if (!user) {
-      showSignIn();
+      showLoginRequired();
       return;
     }
     try {

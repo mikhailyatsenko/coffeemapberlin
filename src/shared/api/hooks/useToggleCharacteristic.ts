@@ -6,7 +6,7 @@ import {
   type Characteristic,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { showSignIn } from 'shared/stores/modal';
+import { showLoginRequired } from 'shared/stores/modal';
 import { type ICharacteristicCounts } from 'shared/types';
 
 export const useToggleCharacteristic = (placeId: string) => {
@@ -68,7 +68,7 @@ export const useToggleCharacteristic = (placeId: string) => {
 
   const toggleChar = async (characteristic: Characteristic) => {
     if (!user) {
-      showSignIn();
+      showLoginRequired();
       return;
     }
     try {
