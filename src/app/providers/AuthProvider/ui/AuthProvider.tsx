@@ -34,7 +34,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
+  
   return (
     <AuthContext.Provider
       value={{
