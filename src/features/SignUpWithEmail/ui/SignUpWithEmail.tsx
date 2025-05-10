@@ -5,6 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
 import { checkAuth } from 'shared/stores/auth';
 import { FormField } from 'shared/ui/FormField';
+import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchemaSignUpWithEmail } from '../lib/validationSchema';
 import { type SignUpWithEmailData, type SignUpWithEmailProps } from '../types';
@@ -28,8 +29,8 @@ export const SignUpWithEmail = ({
   const [registerUser] = useRegisterUserMutation();
 
   const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const response = await registerUser({
         variables: {
           email: data.email,
@@ -45,6 +46,8 @@ export const SignUpWithEmail = ({
     } catch (err) {
       setIsLoading(false);
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,6 +58,7 @@ export const SignUpWithEmail = ({
 
   return (
     <div className={cls.content}>
+      {isLoading ? <Loader /> : null}
       <h2>Create account</h2>
       <div className={cls.continueWithSocial}>{continueWithSocial?.map((social) => social)}</div>
       <div className={cls.or}>or</div>

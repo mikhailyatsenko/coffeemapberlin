@@ -5,6 +5,7 @@ import { client } from 'shared/config/apolloClient';
 import { useSignInWithEmailMutation } from 'shared/generated/graphql';
 import { checkAuth } from 'shared/stores/auth';
 import { FormField } from 'shared/ui/FormField';
+import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchemaSignInWithEmail } from '../lib/validationSchema';
 import { type SignInWithEmailData, type SignInWithEmailProps } from '../types';
@@ -21,6 +22,7 @@ export const SignInWithEmail = ({
 
   const signInWithEmailHandler = async (data: SignInWithEmailData) => {
     try {
+      setIsLoading(true);
       const response = await signInWithEmail({
         variables: {
           email: data.email,
@@ -37,6 +39,8 @@ export const SignInWithEmail = ({
       }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign in'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,6 +53,7 @@ export const SignInWithEmail = ({
 
   return (
     <div className={cls.content}>
+      {isLoading ? <Loader /> : null}
       <h2>Sign in</h2>
       <div className={cls.continueWithSocial}>{continueWithSocial?.map((social) => social)}</div>
       <div className={cls.or}>or</div>
