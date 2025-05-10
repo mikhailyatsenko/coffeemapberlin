@@ -1,5 +1,4 @@
 import { type ApolloCache } from '@apollo/client';
-import { useAuthStore } from 'shared/stores/auth/hooks';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   type AddRatingMutation,
@@ -9,6 +8,7 @@ import {
   type PlaceReviewsQuery,
   useAddRatingMutation,
 } from 'shared/generated/graphql';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 
 export function useAddRating(placeId: string) {
   const { user } = useAuthStore();

@@ -30,16 +30,13 @@ const App = () => {
     });
   }, []);
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   return (
     <ApolloProvider client={client}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <LocationProvider>
           <PlacesDataProvider>
             <AuthModalProvider>
+              {isLoading ? <Loader /> : null}
               <Navbar />
               <main>
                 <AppRouter />

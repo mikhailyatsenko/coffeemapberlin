@@ -1,5 +1,4 @@
 import { type ApolloCache } from '@apollo/client';
-import { useAuthStore } from 'shared/stores/auth/hooks';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   type AddTextReviewMutation,
@@ -7,6 +6,7 @@ import {
   type PlaceReviewsQuery,
   useAddTextReviewMutation,
 } from 'shared/generated/graphql';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 
 export function useAddTextReview(placeId: string) {
   const { user } = useAuthStore();
