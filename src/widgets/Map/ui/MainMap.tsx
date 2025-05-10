@@ -7,10 +7,6 @@ import { Loader } from 'shared/ui/Loader';
 export const MainMap = () => {
   const { filterablePlaces, favoritePlaces, showFavorites, loading } = usePlaces();
 
-  if (loading) {
-    return <Loader />;
-  }
-
   if (!filterablePlaces) return null;
 
   const placesGeo = {
@@ -20,6 +16,7 @@ export const MainMap = () => {
 
   return (
     <>
+      {loading ? <Loader /> : null}
       <div style={{ width: '100dvw', height: 'calc(100dvh - 60px)', zIndex: 1 }}>
         {placesGeo && <LoadMap placesGeo={placesGeo as PlacesDataWithGeo} />}
       </div>
