@@ -8,12 +8,12 @@ import {
   GetAllPlacesDocument,
   PlaceReviewsDocument,
 } from 'shared/generated/graphql';
-import { useAuth } from './useAuth';
+import { useAuthStore } from 'shared/stores/auth';
 
 type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 
 export function useDeleteReview(placeId: string) {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { showSignIn } = useAuthModal();
   const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useDeleteReviewMutation({
     update(cache, result, { variables }) {

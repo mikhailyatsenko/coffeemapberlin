@@ -1,11 +1,11 @@
 import { ReviewActivityCard } from 'entities/ReviewActivityCard';
 import { useGetUserReviewActivityQuery } from 'shared/generated/graphql';
-import { useAuth } from 'shared/api';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 import cls from './UserReviewActivity.module.scss';
 
 export const UserReviewActivity = () => {
   const { data, loading, error } = useGetUserReviewActivityQuery();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   if (!user) return <p>You need to be logged in to perform this action.</p>;
 

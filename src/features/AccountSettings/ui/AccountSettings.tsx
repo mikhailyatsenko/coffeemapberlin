@@ -7,8 +7,9 @@ import {
   PersonalSettingsForm,
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
-import { useAuth } from 'shared/api';
 import { useSetNewPasswordMutation, useUpdatePersonalDataMutation } from 'shared/generated/graphql';
+import { checkAuth } from 'shared/stores/auth';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 import { passwordValidationSchema, personalDataValidationSchema } from '../lib/validationSchema';
@@ -17,7 +18,7 @@ import cls from './AccountSettings.module.scss';
 export const AccountSettings = () => {
   const [toastMessage, setToastMessage] = useState<string>('');
 
-  const { user, isLoading: loadingUserData, checkAuth } = useAuth();
+  const { user } = useAuthStore();
 
   const passwordForm = useForm<SetNewPasswordFormData>({
     mode: 'onBlur',
@@ -50,8 +51,6 @@ export const AccountSettings = () => {
       });
     }
   }, [user, resetPersonalData]);
-
-  if (loadingUserData || loadingPassword || loadingPersonalData) return <Loader />;
 
   if (!user) {
     return <p>Please log in to view your profile.</p>;
@@ -106,13 +105,13 @@ export const AccountSettings = () => {
 
   return (
     <div className={cls.settingsSection}>
+      {loadingPassword || loadingPersonalData ? <Loader /> : null}
       <PersonalSettingsForm
         isButtonPersonalFormDisabled={isButtonPersonalFormDisabled}
         onUpdatePersonalDataSubmit={onUpdatePersonalDataSubmit}
         personalDataForm={personalDataForm}
         errorUpdatingPersonalData={errorUpdatingPersonalData}
       />
-
       <PasswordSettingsForm
         isGoogleUserUserWithoutPassword={user.isGoogleUserUserWithoutPassword}
         onSetNewPasswordSubmit={onSetNewPasswordSubmit}

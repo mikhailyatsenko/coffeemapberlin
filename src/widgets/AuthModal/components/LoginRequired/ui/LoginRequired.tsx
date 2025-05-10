@@ -4,8 +4,8 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import { type LoginRequiredProps } from '../types';
 import cls from './LoginRequired.module.scss';
 
-export const LoginRequired = ({ onSwitchToSignIn, onSwitchToSignUp }: LoginRequiredProps) => {
-  const continueWithGoogle = useWithGoogle();
+export const LoginRequired = ({ onSwitchToSignIn, onSwitchToSignUp, setError }: LoginRequiredProps) => {
+  const continueWithGoogle = useWithGoogle({ setError });
 
   return (
     <div className={cls.LoginRequired}>

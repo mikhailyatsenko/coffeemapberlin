@@ -1,5 +1,5 @@
 import { type ApolloCache } from '@apollo/client';
-import { useAuth } from 'shared/api';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   GetAllPlacesDocument,
@@ -10,7 +10,7 @@ import {
 import { type ICharacteristicCounts } from 'shared/types';
 
 export const useToggleCharacteristic = (placeId: string) => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { showSignIn } = useAuthModal();
 
   const [toggleCharacteristic, { error }] = useToggleCharacteristicMutation({

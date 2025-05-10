@@ -1,11 +1,11 @@
 import { type ApolloCache } from '@apollo/client';
 import { useState } from 'react';
-import { useAuth } from 'shared/api';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { GetAllPlacesDocument, useToggleFavoriteMutation, type GetAllPlacesQuery } from 'shared/generated/graphql';
 
 export const useToggleFavorite = (placeId: string | null) => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { showSignIn } = useAuthModal();
   const [toastMessage, setToastMessage] = useState<string>('');
 

@@ -3,16 +3,17 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useWithGoogle } from 'features/ContinueWithGoogle';
 import { SignInWithEmail } from 'features/SignInWithEmail';
 import { SignUpWithEmail } from 'features/SignUpWithEmail';
-import { useAuth } from 'shared/api';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 
 import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import cls from './LoginPage.module.scss';
 
 export const LoginPage = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { showSuccessfulSignUp } = useAuthModal();
-  const continueWithGoogle = useWithGoogle();
+  const [error, setError] = useState<Error | null>(null);
+  const continueWithGoogle = useWithGoogle({ setError });
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,6 +32,7 @@ export const LoginPage = () => {
       <div className={cls.loginFormWrapper}>
         {isSignIn ? (
           <SignInWithEmail
+            setError={setError}
             onSwitchToSignUp={() => {
               setIiSignIn(false);
             }}
@@ -38,6 +40,7 @@ export const LoginPage = () => {
           />
         ) : (
           <SignUpWithEmail
+            setError={setError}
             onSuccessfulSignUp={showSuccessfulSignUp}
             onSwitchToSignIn={() => {
               setIiSignIn(true);
@@ -45,6 +48,7 @@ export const LoginPage = () => {
             continueWithSocial={[<GoogleLoginButton key={GOOGLE_LOGIN_BUTTON_KEY} onClick={continueWithGoogle} />]}
           />
         )}
+        <p className={cls.errorMessage}>{error?.message}</p>
       </div>
     </div>
   );

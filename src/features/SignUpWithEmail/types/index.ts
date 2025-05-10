@@ -7,4 +7,5 @@ export interface SignUpWithEmailProps {
   onSuccessfulSignUp: () => void;
   onSwitchToSignIn: () => void;
   continueWithSocial?: React.ReactNode[];
+  setError: (error: Error | null) => void;
 }
