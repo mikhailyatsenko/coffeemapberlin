@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useWithGoogle } from 'features/ContinueWithGoogle';
 import { SignInWithEmail } from 'features/SignInWithEmail';
 import { SignUpWithEmail } from 'features/SignUpWithEmail';
-import { AuthModalContentVariant } from 'shared/constants';
-import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
+
+import { hideModal, showSignIn, showSignUp, showSuccessfulSignUp, useModalStore } from 'shared/stores/modal';
+import { ModalContentVariant } from 'shared/stores/modal/constants';
 import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
@@ -14,13 +15,13 @@ import cls from './AuthModal.module.scss';
 export const AuthModal = () => {
   const [error, setError] = useState<Error | null>(null);
   const continueWithGoogle = useWithGoogle({ setError });
-  const { authModalContentVariant, showSuccessfulSignUp, showSignIn, showSignUp, hideModal } = useAuthModal();
+  const modalContentVariant = useModalStore((state) => state.modalContentVariant);
 
   useEffect(() => {
     setError(null);
-  }, [authModalContentVariant]);
+  }, [modalContentVariant]);
 
-  if (authModalContentVariant === AuthModalContentVariant.Hidden) {
+  if (modalContentVariant === ModalContentVariant.Hidden) {
     return null;
   }
 
@@ -28,10 +29,10 @@ export const AuthModal = () => {
     <PortalToBody>
       <Modal onClose={hideModal}>
         <div className={cls.authModalContent}>
-          {authModalContentVariant === AuthModalContentVariant.LoginRequired && (
+          {modalContentVariant === ModalContentVariant.LoginRequired && (
             <LoginRequired setError={setError} onSwitchToSignUp={showSignUp} onSwitchToSignIn={showSignIn} />
           )}
-          {authModalContentVariant === AuthModalContentVariant.SignUpWithEmail && (
+          {modalContentVariant === ModalContentVariant.SignUpWithEmail && (
             <SignUpWithEmail
               setError={setError}
               continueWithSocial={[<GoogleLoginButton key={GOOGLE_LOGIN_BUTTON_KEY} onClick={continueWithGoogle} />]}
@@ -39,10 +40,10 @@ export const AuthModal = () => {
               onSwitchToSignIn={showSignIn}
             />
           )}
-          {authModalContentVariant === AuthModalContentVariant.SuccessfulSignUp && (
+          {modalContentVariant === ModalContentVariant.SuccessfulSignUp && (
             <SuccessfulSignUp hideAuthModal={hideModal} />
           )}
-          {authModalContentVariant === AuthModalContentVariant.SignInWithEmail && (
+          {modalContentVariant === ModalContentVariant.SignInWithEmail && (
             <SignInWithEmail
               setError={setError}
               continueWithSocial={[<GoogleLoginButton key={GOOGLE_LOGIN_BUTTON_KEY} onClick={continueWithGoogle} />]}
