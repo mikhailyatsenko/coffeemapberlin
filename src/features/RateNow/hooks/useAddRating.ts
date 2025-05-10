@@ -8,7 +8,7 @@ import {
   type PlaceReviewsQuery,
   useAddRatingMutation,
 } from 'shared/generated/graphql';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { useAuthStore } from 'shared/stores/auth';
 
 export function useAddRating(placeId: string) {
   const { user } = useAuthStore();
