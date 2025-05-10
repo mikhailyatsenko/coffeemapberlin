@@ -4,7 +4,7 @@ import { useWithGoogle } from 'features/ContinueWithGoogle';
 import { SignInWithEmail } from 'features/SignInWithEmail';
 import { SignUpWithEmail } from 'features/SignUpWithEmail';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { useAuthStore } from 'shared/stores/auth';
 
 import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import cls from './LoginPage.module.scss';

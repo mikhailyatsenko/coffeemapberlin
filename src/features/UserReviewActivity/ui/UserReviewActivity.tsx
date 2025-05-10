@@ -1,6 +1,6 @@
 import { ReviewActivityCard } from 'entities/ReviewActivityCard';
 import { useGetUserReviewActivityQuery } from 'shared/generated/graphql';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { useAuthStore } from 'shared/stores/auth';
 import cls from './UserReviewActivity.module.scss';
 
 export const UserReviewActivity = () => {

@@ -8,8 +8,7 @@ import {
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
 import { useSetNewPasswordMutation, useUpdatePersonalDataMutation } from 'shared/generated/graphql';
-import { checkAuth } from 'shared/stores/auth';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 import { passwordValidationSchema, personalDataValidationSchema } from '../lib/validationSchema';

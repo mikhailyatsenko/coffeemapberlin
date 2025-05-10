@@ -6,7 +6,7 @@ import {
   type PlaceReviewsQuery,
   useAddTextReviewMutation,
 } from 'shared/generated/graphql';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { useAuthStore } from 'shared/stores/auth';
 
 export function useAddTextReview(placeId: string) {
   const { user } = useAuthStore();

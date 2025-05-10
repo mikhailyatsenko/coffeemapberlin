@@ -6,7 +6,7 @@ import {
   useToggleCharacteristicMutation,
   type Characteristic,
 } from 'shared/generated/graphql';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { useAuthStore } from 'shared/stores/auth';
 import { type ICharacteristicCounts } from 'shared/types';
 
 export const useToggleCharacteristic = (placeId: string) => {

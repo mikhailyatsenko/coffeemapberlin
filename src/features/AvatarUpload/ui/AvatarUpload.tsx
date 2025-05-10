@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
 import { useUploadAvatarMutation, useDeleteAvatarMutation } from 'shared/generated/graphql';
-import { checkAuth } from 'shared/stores/auth';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 

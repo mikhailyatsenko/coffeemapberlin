@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
-import { clearAuth } from 'shared/stores/auth';
-import { useAuthStore } from 'shared/stores/auth/hooks';
+import { clearAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';

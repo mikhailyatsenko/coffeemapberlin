@@ -1,8 +1,8 @@
 import { type ApolloCache } from '@apollo/client';
 import { useState } from 'react';
-import { useAuthStore } from 'shared/stores/auth/hooks';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { GetAllPlacesDocument, useToggleFavoriteMutation, type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { useAuthStore } from 'shared/stores/auth';
 
 export const useToggleFavorite = (placeId: string | null) => {
   const { user } = useAuthStore();
