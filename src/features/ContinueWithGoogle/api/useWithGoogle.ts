@@ -1,14 +1,13 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { client } from 'shared/config/apolloClient';
-import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { useLoginWithGoogleMutation } from 'shared/generated/graphql';
 import { setUser } from 'shared/stores/auth';
+import { hideModal, showSuccessfulSignUp } from 'shared/stores/modal';
 import { mapLoginWithGoogleData } from '../mappers';
 import { type UseWithGoogleProps } from '../types';
 
 export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
   const [loginWithGoogle] = useLoginWithGoogleMutation();
-  const { showSuccessfulSignUp, hideModal } = useAuthModal();
   const continueWithGoogle = useGoogleLogin({
     flow: 'auth-code',
     // eslint-disable-next-line @typescript-eslint/no-misused-promises

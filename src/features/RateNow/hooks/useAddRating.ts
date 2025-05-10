@@ -1,5 +1,5 @@
 import { type ApolloCache } from '@apollo/client';
-import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
+
 import {
   type AddRatingMutation,
   GetAllPlacesDocument,
@@ -9,10 +9,10 @@ import {
   useAddRatingMutation,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
+import { showLoginRequired } from 'shared/stores/modal';
 
 export function useAddRating(placeId: string) {
   const { user } = useAuthStore();
-  const { showSignIn } = useAuthModal();
 
   const [addRating, { loading, error }] = useAddRatingMutation({
     update(cache, { data }) {
@@ -89,7 +89,7 @@ export function useAddRating(placeId: string) {
 
   const handleAddRating = async (rating: number): Promise<NonNullable<AddRatingMutation['addRating']> | undefined> => {
     if (!user) {
-      showSignIn();
+      showLoginRequired();
       return;
     }
     try {
