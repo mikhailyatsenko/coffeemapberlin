@@ -35,14 +35,12 @@ const App = () => {
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <LocationProvider>
           <PlacesDataProvider>
-            <AuthModalProvider>
-              {isLoading ? <Loader /> : null}
-              <Navbar />
-              <main>
-                <AppRouter />
-              </main>
-              {!matchPath(AppRoutes.MAIN, location.pathname) && <Footer />}
-            </AuthModalProvider>
+            {isLoading ? <Loader /> : null}
+            <Navbar />
+            <main>
+              <AppRouter />
+            </main>
+            {!matchPath(AppRoutes.MAIN, location.pathname) && <Footer />}
           </PlacesDataProvider>
         </LocationProvider>
       </GoogleOAuthProvider>
