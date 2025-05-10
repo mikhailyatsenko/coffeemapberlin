@@ -7,4 +7,5 @@ export interface SignInWithEmailProps {
   hideAuthModal?: () => void;
   onSwitchToSignUp: () => void;
   continueWithSocial?: React.ReactNode[];
+  setError: (error: Error | null) => void;
 }

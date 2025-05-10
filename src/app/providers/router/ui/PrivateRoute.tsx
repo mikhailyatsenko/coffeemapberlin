@@ -1,12 +1,12 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from 'shared/api';
+import { useAuthStore } from 'shared/stores/auth';
 
 interface PrivateRouteProps {
   children: JSX.Element;
 }
 
 export const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const location = useLocation();
 
   if (!user) {

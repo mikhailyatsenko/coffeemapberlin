@@ -1,4 +1,4 @@
-import { useAuth } from 'shared/api';
+import { useAuthStore } from 'shared/stores/auth/hooks';
 
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './SuccessfulSignUp.module.scss';
@@ -8,7 +8,7 @@ interface SuccessfulSignUpProps {
 }
 
 export const SuccessfulSignUp = ({ hideAuthModal }: SuccessfulSignUpProps) => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   return (
     <div className={cls.content}>

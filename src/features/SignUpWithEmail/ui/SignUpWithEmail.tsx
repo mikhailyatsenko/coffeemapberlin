@@ -1,18 +1,23 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useAuth } from 'shared/api';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
+import { checkAuth } from 'shared/stores/auth';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchemaSignUpWithEmail } from '../lib/validationSchema';
 import { type SignUpWithEmailData, type SignUpWithEmailProps } from '../types';
 import cls from './SignUpWithEmail.module.scss';
 
-export const SignUpWithEmail = ({ onSuccessfulSignUp, onSwitchToSignIn, continueWithSocial }: SignUpWithEmailProps) => {
-  const { setIsLoading, setError, checkAuth, error: authError } = useAuth();
+export const SignUpWithEmail = ({
+  onSuccessfulSignUp,
+  onSwitchToSignIn,
+  continueWithSocial,
+  setError,
+}: SignUpWithEmailProps) => {
   const form = useForm({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignUpWithEmail) });
-
+  const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,
     setValue,
@@ -76,10 +81,9 @@ export const SignUpWithEmail = ({ onSuccessfulSignUp, onSwitchToSignIn, continue
             {errors.recaptcha && <p>Please complete the reCAPTCHA</p>}
           </div>
           <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} />
-          <RegularButton disabled={!isValid}>Sign up</RegularButton>
+          <RegularButton disabled={!isValid || isLoading}>Sign up</RegularButton>
         </form>
       </FormProvider>
-      {authError?.message}
       <div className={cls.signIn}>
         Have an account?{' '}
         <span
