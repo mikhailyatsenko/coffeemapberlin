@@ -7,7 +7,6 @@ import { PlacesDataProvider } from 'app/providers/PlacesDataProvider';
 import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { client } from 'shared/config/apolloClient';
-import { AuthModalProvider } from 'shared/context/Auth/AuthModalContext';
 import { checkAuth } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 import { AppRouter } from './providers/router';
@@ -35,14 +34,12 @@ const App = () => {
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <LocationProvider>
           <PlacesDataProvider>
-            <AuthModalProvider>
-              {isLoading ? <Loader /> : null}
-              <Navbar />
-              <main>
-                <AppRouter />
-              </main>
-              {!matchPath(AppRoutes.MAIN, location.pathname) && <Footer />}
-            </AuthModalProvider>
+            {isLoading ? <Loader /> : null}
+            <Navbar />
+            <main>
+              <AppRouter />
+            </main>
+            {!matchPath(AppRoutes.MAIN, location.pathname) && <Footer />}
           </PlacesDataProvider>
         </LocationProvider>
       </GoogleOAuthProvider>

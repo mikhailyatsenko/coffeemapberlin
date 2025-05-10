@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { clearAuth, useAuthStore } from 'shared/stores/auth';
+import { showSignIn } from 'shared/stores/modal';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
   const navigate = useNavigate();
-  const { showSignIn } = useAuthModal();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 

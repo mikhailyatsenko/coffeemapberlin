@@ -1,5 +1,4 @@
 import { type ApolloCache } from '@apollo/client';
-import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   GetAllPlacesDocument,
   type GetAllPlacesQuery,
@@ -7,11 +6,11 @@ import {
   type Characteristic,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
+import { showLoginRequired } from 'shared/stores/modal';
 import { type ICharacteristicCounts } from 'shared/types';
 
 export const useToggleCharacteristic = (placeId: string) => {
   const { user } = useAuthStore();
-  const { showSignIn } = useAuthModal();
 
   const [toggleCharacteristic, { error }] = useToggleCharacteristicMutation({
     optimisticResponse: {
@@ -69,7 +68,7 @@ export const useToggleCharacteristic = (placeId: string) => {
 
   const toggleChar = async (characteristic: Characteristic) => {
     if (!user) {
-      showSignIn();
+      showLoginRequired();
       return;
     }
     try {

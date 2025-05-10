@@ -3,15 +3,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useWithGoogle } from 'features/ContinueWithGoogle';
 import { SignInWithEmail } from 'features/SignInWithEmail';
 import { SignUpWithEmail } from 'features/SignUpWithEmail';
-import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import { useAuthStore } from 'shared/stores/auth';
 
+import { showSuccessfulSignUp } from 'shared/stores/modal';
 import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import cls from './LoginPage.module.scss';
 
 export const LoginPage = () => {
   const { user } = useAuthStore();
-  const { showSuccessfulSignUp } = useAuthModal();
   const [error, setError] = useState<Error | null>(null);
   const continueWithGoogle = useWithGoogle({ setError });
   const navigate = useNavigate();
