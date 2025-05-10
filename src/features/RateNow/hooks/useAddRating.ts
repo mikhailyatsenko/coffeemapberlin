@@ -1,5 +1,4 @@
 import { type ApolloCache } from '@apollo/client';
-import { useAuth } from 'shared/api';
 import { useAuthModal } from 'shared/context/Auth/AuthModalContext';
 import {
   type AddRatingMutation,
@@ -9,9 +8,10 @@ import {
   type PlaceReviewsQuery,
   useAddRatingMutation,
 } from 'shared/generated/graphql';
+import { useAuthStore } from 'shared/stores/auth';
 
 export function useAddRating(placeId: string) {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { showSignIn } = useAuthModal();
 
   const [addRating, { loading, error }] = useAddRatingMutation({

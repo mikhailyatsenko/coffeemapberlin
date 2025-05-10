@@ -1,10 +1,10 @@
 import { FavoritesIndicator } from 'entities/FavoritesIndicator';
 import { usePlaces } from 'shared/context/PlacesData/usePlaces';
-import { useAuth } from 'shared/api';
+import { useAuthStore } from 'shared/stores/auth';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 
 export const ShowFavoritePlaces = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
 
   const { setShowFavorite, favoritePlaces } = usePlaces();
   if (!user) return null;

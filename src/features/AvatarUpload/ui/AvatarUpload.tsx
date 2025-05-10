@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
-import { useAuth } from 'shared/api';
 import { useUploadAvatarMutation, useDeleteAvatarMutation } from 'shared/generated/graphql';
+import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 
@@ -11,7 +11,7 @@ interface UploadResponse {
 }
 
 export const AvatarUpload: React.FC = () => {
-  const { user, isLoading: authLoading, checkAuth } = useAuth();
+  const { user } = useAuthStore();
 
   const [isError, setIsError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -22,9 +22,6 @@ export const AvatarUpload: React.FC = () => {
   const [deleteAvatar, { error: deleteError }] = useDeleteAvatarMutation();
 
   const [isUploading, setIsUploading] = useState<boolean>(false);
-
-  if (!user) return null;
-  if (authLoading) return <Loader />;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement> | null) => {
     if (event?.target.files && event.target.files.length > 0) {
@@ -121,8 +118,11 @@ export const AvatarUpload: React.FC = () => {
     setIsUploading(false);
   };
 
+  if (!user) return null;
+
   return (
     <>
+      {isUploading ? <Loader /> : null}
       <UploadAvatarForm
         avatar={user?.avatar || undefined}
         displayName={user?.displayName}
