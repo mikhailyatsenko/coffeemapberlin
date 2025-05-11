@@ -1,17 +1,20 @@
 import { useLocation } from 'react-router-dom';
 import { PlaceCard } from 'features/PlaceCard';
 import { usePlaces } from 'shared/context/PlacesData/usePlaces';
+import { usePlacesStore } from 'shared/stores/places';
 import cls from './PlacesList.module.scss';
 
 export function PlacesList() {
   const location = useLocation();
   const { filterablePlaces, favoritePlaces, showFavorites } = usePlaces();
-  const { searchTerm, setShowFavorite } = usePlaces();
+  const { setShowFavorite } = usePlaces();
+
+  const isFiltered = usePlacesStore((state) => state.isFiltered);
 
   if (!filterablePlaces.length) return null;
 
   return (
-    !searchTerm && (
+    !isFiltered && (
       <>
         <div
           className={`${cls.placesData} ${showFavorites && favoritePlaces?.length && location.pathname !== '/details' ? cls.showFavorites : ''}`}

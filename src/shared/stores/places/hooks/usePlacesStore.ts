@@ -5,4 +5,5 @@ import { type PlacesState } from '../types';
 export const usePlacesStore = create<PlacesState>(() => ({
   places: [],
   favoritePlaces: null,
+  isFiltered: false,
 }));
