@@ -1,28 +1,20 @@
 import React, { useState } from 'react';
 import { PlacesDataContext } from 'shared/context/PlacesData/PlacesContext';
-import { useGetAllPlacesQuery } from 'shared/generated/graphql';
+import { usePlacesStore } from 'shared/stores/places';
 
 export const PlacesDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data, loading } = useGetAllPlacesQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const [minRating, setMinRating] = useState(0);
   const [showFavorites, setShowFavorite] = useState<boolean>(false);
 
-  const places = data?.places ?? [];
-
-  const filterablePlaces = places.filter(
-    (place) =>
-      place.properties.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) &&
-      (place.properties.averageRating || 0) >= minRating,
-  );
+  const places = usePlacesStore((state) => state.places);
 
   const favoritePlaces = places.filter((place) => place.properties.isFavorite);
 
   return (
     <PlacesDataContext.Provider
       value={{
-        places,
-        filterablePlaces,
+        filterablePlaces: places,
         setMinRating,
         setSearchTerm,
         searchTerm,
@@ -30,7 +22,6 @@ export const PlacesDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setShowFavorite,
         showFavorites,
         minRating,
-        loading,
       }}
     >
       {children}

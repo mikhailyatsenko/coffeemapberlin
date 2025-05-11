@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
 import { usePlaces } from 'shared/context/PlacesData/usePlaces';
+import { setPlaces, usePlacesStore } from 'shared/stores/places';
 import cls from './SearchPlaces.module.scss';
 
 export const SearchPlaces = () => {
-  const { setMinRating, setSearchTerm, searchTerm, minRating, filterablePlaces } = usePlaces();
+  const { setMinRating, setSearchTerm, searchTerm, minRating } = usePlaces();
   const [isActive, setIsActive] = useState<boolean>(false);
   const SearchPlacesRef = useRef<HTMLInputElement>(null);
+  const places = usePlacesStore((state) => state.places);
 
   const navigate = useNavigate();
 
@@ -40,6 +42,16 @@ export const SearchPlaces = () => {
     };
   }, [isActive, setSearchTerm]);
 
+  const filteredPlaces = useMemo(() => {
+    return places
+      .filter(
+        (place) =>
+          place.properties.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) &&
+          (place.properties.averageRating || 0) >= minRating,
+      )
+      .sort((a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0));
+  }, [places, searchTerm, minRating]);
+
   const onResultSelectHandler = (placeId: string) => {
     setIsActive(false);
     setSearchTerm('');
@@ -48,10 +60,6 @@ export const SearchPlaces = () => {
       search: createSearchParams({ id: placeId }).toString(),
     });
   };
-
-  const sortedByRatingPlaces = [...filterablePlaces].sort(
-    (a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0),
-  );
 
   return (
     <div
@@ -67,7 +75,7 @@ export const SearchPlaces = () => {
           <RatingFilter filterRating={minRating} setFilterRating={setMinRating} />
         </div>
       )}
-      {isActive && <SearchResultsTab filterdPlaces={sortedByRatingPlaces} onSelect={onResultSelectHandler} />}
+      {isActive && <SearchResultsTab filterdPlaces={filteredPlaces} onSelect={onResultSelectHandler} />}
     </div>
   );
 };
