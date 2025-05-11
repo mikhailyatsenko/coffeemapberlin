@@ -5,7 +5,7 @@ import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
 import { useToggleFavorite } from 'shared/api';
 import { LocationContext } from 'shared/context/Location/LocationContext';
-import { usePlaces } from 'shared/context/PlacesData/usePlaces';
+import { useGetAllPlacesQuery } from 'shared/generated/graphql';
 import { type ICharacteristicCounts } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
@@ -30,10 +30,11 @@ const DetailedPlaceCard: React.FC = () => {
 
   const { toggleFavorite, toastMessage } = useToggleFavorite(placeId);
 
-  const { places } = usePlaces();
+  const { data, loading: placesLoading } = useGetAllPlacesQuery();
+  const places = data?.places ?? [];
   const place = places.find((p) => p.properties.id === placeId);
 
-  const { data: placeReviewsData, loading, error } = usePlaceReviews(placeId);
+  const { data: placeReviewsData, loading: reviewsLoading, error } = usePlaceReviews(placeId);
 
   const reviews = placeReviewsData?.placeReviews.reviews ?? [];
 
@@ -87,7 +88,7 @@ const DetailedPlaceCard: React.FC = () => {
     };
   }, [place?.properties?.name]);
 
-  if (loading) return <Loader />;
+  if (placesLoading || reviewsLoading) return <Loader />;
 
   if (!placeId || !place?.properties) return null;
 
