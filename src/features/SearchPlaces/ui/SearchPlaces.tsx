@@ -3,12 +3,12 @@ import { createSearchParams, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
-import { usePlaces } from 'shared/context/PlacesData/usePlaces';
-import { setPlaces, usePlacesStore } from 'shared/stores/places';
+import { usePlacesStore, setIsFiltered } from 'shared/stores/places';
 import cls from './SearchPlaces.module.scss';
 
 export const SearchPlaces = () => {
-  const { setMinRating, setSearchTerm, searchTerm, minRating } = usePlaces();
+  const [minRating, setMinRating] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isActive, setIsActive] = useState<boolean>(false);
   const SearchPlacesRef = useRef<HTMLInputElement>(null);
   const places = usePlacesStore((state) => state.places);
@@ -41,6 +41,10 @@ export const SearchPlaces = () => {
       document.addEventListener('mouseup', handleClickOutside);
     };
   }, [isActive, setSearchTerm]);
+
+  useEffect(() => {
+    setIsFiltered(searchTerm.length > 0 || minRating > 0);
+  }, [searchTerm, minRating]);
 
   const filteredPlaces = useMemo(() => {
     return places
@@ -75,7 +79,7 @@ export const SearchPlaces = () => {
           <RatingFilter filterRating={minRating} setFilterRating={setMinRating} />
         </div>
       )}
-      {isActive && <SearchResultsTab filterdPlaces={filteredPlaces} onSelect={onResultSelectHandler} />}
+      {isActive && <SearchResultsTab filteredPlaces={filteredPlaces} onSelect={onResultSelectHandler} />}
     </div>
   );
 };

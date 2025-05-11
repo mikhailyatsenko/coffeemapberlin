@@ -5,4 +5,5 @@ export type Place = GetAllPlacesQuery['places'][number];
 export interface PlacesState {
   places: Place[];
   favoritePlaces: Place[] | null;
+  isFiltered: boolean;
 }

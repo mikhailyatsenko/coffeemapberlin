@@ -8,3 +8,7 @@ export const setPlaces = (places: Place[]) => {
 export const setFavoritePlaces = (favoritePlaces: Place[]) => {
   usePlacesStore.setState({ favoritePlaces });
 };
+
+export const setIsFiltered = (isFiltered: boolean) => {
+  usePlacesStore.setState({ isFiltered });
+};

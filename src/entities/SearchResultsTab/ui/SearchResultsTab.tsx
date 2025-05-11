@@ -3,14 +3,14 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './SearchResultsTab.module.scss';
 
 interface SearchResultsTabProps {
-  filterdPlaces: PlaceResponse;
+  filteredPlaces: PlaceResponse;
   onSelect: (id: string) => void;
 }
 
-export const SearchResultsTab = ({ filterdPlaces, onSelect }: SearchResultsTabProps) => {
+export const SearchResultsTab = ({ filteredPlaces, onSelect }: SearchResultsTabProps) => {
   return (
     <div className={cls.SearchResultsTab}>
-      {filterdPlaces.map((place) => (
+      {filteredPlaces.map((place) => (
         <div
           onClick={(e) => {
             e.stopPropagation();
