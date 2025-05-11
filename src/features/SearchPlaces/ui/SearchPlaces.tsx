@@ -57,7 +57,6 @@ export const SearchPlaces = () => {
     <div
       onClick={() => {
         setIsActive(true);
-        setSearchTerm(' '); // ' ' to activate onClick SearchResultsTab with all places by default
       }}
       className={`${cls.SearchPlaces} ${isActive ? cls.smallScreensSearch : ''}`}
       ref={SearchPlacesRef}
@@ -68,7 +67,7 @@ export const SearchPlaces = () => {
           <RatingFilter filterRating={minRating} setFilterRating={setMinRating} />
         </div>
       )}
-      {searchTerm && <SearchResultsTab filterdPlaces={sortedByRatingPlaces} onSelect={onResultSelectHandler} />}
+      {isActive && <SearchResultsTab filterdPlaces={sortedByRatingPlaces} onSelect={onResultSelectHandler} />}
     </div>
   );
 };
