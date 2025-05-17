@@ -43,8 +43,12 @@ export const SearchPlaces = () => {
   }, [isActive, setSearchTerm]);
 
   useEffect(() => {
-    setFilteredPlaces({ searchTerm, minRating });
-  }, [searchTerm, minRating]);
+    if (isActive) {
+      setFilteredPlaces({ searchTerm, minRating });
+    } else {
+      setFilteredPlaces(null);
+    }
+  }, [searchTerm, minRating, isActive]);
 
   const onResultSelectHandler = (placeId: string) => {
     setIsActive(false);
