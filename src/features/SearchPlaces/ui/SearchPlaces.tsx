@@ -3,7 +3,7 @@ import { createSearchParams, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
-import { usePlacesStore, setIsFiltered } from 'shared/stores/places';
+import { usePlacesStore, setFilteredPlaces } from 'shared/stores/places';
 import cls from './SearchPlaces.module.scss';
 
 export const SearchPlaces = () => {
@@ -11,7 +11,7 @@ export const SearchPlaces = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isActive, setIsActive] = useState<boolean>(false);
   const SearchPlacesRef = useRef<HTMLInputElement>(null);
-  const places = usePlacesStore((state) => state.places);
+  const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
   const navigate = useNavigate();
 
@@ -43,18 +43,8 @@ export const SearchPlaces = () => {
   }, [isActive, setSearchTerm]);
 
   useEffect(() => {
-    setIsFiltered(searchTerm.length > 0 || minRating > 0);
+    setFilteredPlaces({ searchTerm, minRating });
   }, [searchTerm, minRating]);
-
-  const filteredPlaces = useMemo(() => {
-    return places
-      .filter(
-        (place) =>
-          place.properties.name.toLowerCase().includes(searchTerm.toLowerCase().trim()) &&
-          (place.properties.averageRating || 0) >= minRating,
-      )
-      .sort((a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0));
-  }, [places, searchTerm, minRating]);
 
   const onResultSelectHandler = (placeId: string) => {
     setIsActive(false);
@@ -79,7 +69,9 @@ export const SearchPlaces = () => {
           <RatingFilter filterRating={minRating} setFilterRating={setMinRating} />
         </div>
       )}
-      {isActive && <SearchResultsTab filteredPlaces={filteredPlaces} onSelect={onResultSelectHandler} />}
+      {isActive && filteredPlaces && (
+        <SearchResultsTab filteredPlaces={filteredPlaces} onSelect={onResultSelectHandler} />
+      )}
     </div>
   );
 };
