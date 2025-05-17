@@ -1,24 +1,21 @@
 import { FavoritesIndicator } from 'entities/FavoritesIndicator';
-import { usePlaces } from 'shared/context/PlacesData/usePlaces';
 import { useAuthStore } from 'shared/stores/auth';
+import { setShowFavorites } from 'shared/stores/places';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
+import { type ShowFavoritePlacesProps } from '../types';
 
-export const ShowFavoritePlaces = () => {
+export const ShowFavoritePlaces = ({ favoritesQuantity, showFavorites }: ShowFavoritePlacesProps) => {
   const { user } = useAuthStore();
 
-  const { setShowFavorite, favoritePlaces } = usePlaces();
-  if (!user) return null;
-
-  if (favoritePlaces === null) return null;
+  if (!user || !favoritesQuantity) return null;
 
   const onClickHandler = () => {
-    setShowFavorite((prev) => !prev);
+    setShowFavorites(!showFavorites);
   };
 
-  if (favoritePlaces.length > 0)
-    return (
-      <PortalToBody>
-        <FavoritesIndicator favoritesQuantity={favoritePlaces.length} onClickHandler={onClickHandler} />
-      </PortalToBody>
-    );
+  return (
+    <PortalToBody>
+      <FavoritesIndicator favoritesQuantity={favoritesQuantity} onClickHandler={onClickHandler} />
+    </PortalToBody>
+  );
 };

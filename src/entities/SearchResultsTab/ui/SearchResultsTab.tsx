@@ -1,9 +1,9 @@
-import { type PlaceResponse } from 'shared/types';
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './SearchResultsTab.module.scss';
 
 interface SearchResultsTabProps {
-  filteredPlaces: PlaceResponse;
+  filteredPlaces: GetAllPlacesQuery['places'];
   onSelect: (id: string) => void;
 }
 
