@@ -11,6 +11,7 @@ export function PlacesList({ places }: PlacesListProps) {
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
   return (
+    // TODO: properly display filtered places on small screens
     !filteredPlaces && (
       <>
         <div

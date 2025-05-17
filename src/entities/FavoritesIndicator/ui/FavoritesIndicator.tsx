@@ -1,4 +1,4 @@
-import { usePlaces } from 'shared/context/PlacesData/usePlaces';
+import { usePlacesStore } from 'shared/stores/places';
 import cls from './FavoritesIndicator.module.scss';
 
 interface FavoritesIndicatorProps {
@@ -7,7 +7,8 @@ interface FavoritesIndicatorProps {
 }
 
 export const FavoritesIndicator = ({ favoritesQuantity, onClickHandler }: FavoritesIndicatorProps) => {
-  const { showFavorites } = usePlaces();
+  const showFavorites = usePlacesStore((state) => state.showFavorites);
+
   return !showFavorites ? (
     <div className={`${cls.FavoritesIndicator} ${!showFavorites ? cls.slideLeft : ''}`} onClick={onClickHandler}>
       <div className={cls.favoritesNumber}>{favoritesQuantity}</div>
