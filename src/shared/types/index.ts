@@ -1,5 +1,3 @@
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
-
 export interface CharacteristicData {
   pressed: boolean;
   count: number;
