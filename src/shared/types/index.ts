@@ -30,8 +30,6 @@ export interface PlaceProperties {
   characteristicCounts: ICharacteristicCounts;
 }
 
-export type PlaceResponse = GetAllPlacesQuery['places'];
-
 export interface User {
   id: string;
   displayName: string;

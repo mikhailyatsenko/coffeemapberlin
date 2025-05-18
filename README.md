@@ -9,6 +9,7 @@
 - **Vite**
 - **React**
 - **TypeScript**
+- **Zustand**
 - **Apollo Client**
 - **React Router**
 - **SCSS**
@@ -39,6 +40,3 @@ The backend is built with Express and Mongoose for MongoDB integration.
 
  ## How It Works
 <img src="https://raw.githubusercontent.com/mikhailyatsenko/mikhailyatsenko/main/img/coffeemap-gif.gif" alt="bvg-gif" width="600"/>
-
-
-**I welcome contributions to the project ❤️ **
