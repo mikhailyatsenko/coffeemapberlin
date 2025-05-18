@@ -6,8 +6,8 @@ import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { LocationContext } from 'shared/context/Location/LocationContext';
-import { usePlaces } from 'shared/context/PlacesData/usePlaces';
 import LazyImage from 'shared/lib/LazyImage/LazyImage';
+import { setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
@@ -22,7 +22,7 @@ interface PlaceCardProps {
 export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
   const { setLocation } = useContext(LocationContext);
   const { toggleFavorite, toastMessage } = useToggleFavorite(properties.id);
-  const { setShowFavorite, showFavorites } = usePlaces();
+  const showFavorites = usePlacesStore((state) => state.showFavorites);
   const navigate = useNavigate();
 
   const handleToggleFavorite = async () => {
@@ -112,7 +112,7 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
                   e.preventDefault();
                   if (coordinates && setLocation) {
                     setLocation(coordinates);
-                    if (showFavorites) setShowFavorite(false);
+                    if (showFavorites) setShowFavorites(false);
                   }
                 }}
                 rel="noreferrer"
