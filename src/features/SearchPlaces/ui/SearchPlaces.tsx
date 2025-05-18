@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
