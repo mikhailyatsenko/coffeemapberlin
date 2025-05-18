@@ -25,7 +25,7 @@ export const MainPage = () => {
   }, [places]);
 
   const placesToDisplay = useMemo(() => {
-    if (showFavorites) {
+    if (showFavorites && favoritePlaces.length) {
       return favoritePlaces;
     }
 
