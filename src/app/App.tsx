@@ -2,7 +2,6 @@ import { ApolloProvider } from '@apollo/client';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { useLocation, matchPath } from 'react-router-dom';
-import { LocationProvider } from 'app/providers/LocationProvider';
 import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { client } from 'shared/config/apolloClient';
@@ -31,14 +30,12 @@ const App = () => {
   return (
     <ApolloProvider client={client}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <LocationProvider>
-          {isLoading ? <Loader /> : null}
-          <Navbar />
-          <main>
-            <AppRouter />
-          </main>
-          {!matchPath(RoutePaths.main, location.pathname) && <Footer />}
-        </LocationProvider>
+        {isLoading ? <Loader /> : null}
+        <Navbar />
+        <main>
+          <AppRouter />
+        </main>
+        {!matchPath(RoutePaths.main, location.pathname) && <Footer />}
       </GoogleOAuthProvider>
     </ApolloProvider>
   );
