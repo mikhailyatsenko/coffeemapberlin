@@ -1,13 +1,11 @@
 import { type Position } from 'geojson';
-import { useContext } from 'react';
 import { createSearchParams, NavLink, useNavigate } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
-import { LocationContext } from 'shared/context/Location/LocationContext';
 import LazyImage from 'shared/lib/LazyImage/LazyImage';
-import { setShowFavorites, usePlacesStore } from 'shared/stores/places';
+import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
@@ -20,7 +18,6 @@ interface PlaceCardProps {
 }
 
 export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
-  const { setLocation } = useContext(LocationContext);
   const { toggleFavorite, toastMessage } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const navigate = useNavigate();
@@ -110,8 +107,8 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (coordinates && setLocation) {
-                    setLocation(coordinates);
+                  if (coordinates) {
+                    setCurrentPlacePosition(coordinates);
                     if (showFavorites) setShowFavorites(false);
                   }
                 }}
