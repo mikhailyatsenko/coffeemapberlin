@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
 import { useToggleFavorite } from 'shared/api';
-import { LocationContext } from 'shared/context/Location/LocationContext';
 import { useGetAllPlacesQuery } from 'shared/generated/graphql';
+import { setCurrentPlacePosition } from 'shared/stores/places';
 import { type ICharacteristicCounts } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
@@ -20,7 +20,6 @@ const DetailedPlaceCard: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const { setLocation } = useContext(LocationContext);
   const [isViewInstProfile, setIsViewInstProfile] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showRateNow, setShowRateNow] = useState(false);
@@ -69,10 +68,10 @@ const DetailedPlaceCard: React.FC = () => {
   );
 
   useEffect(() => {
-    if (place?.geometry.coordinates && setLocation) {
-      setLocation(place.geometry.coordinates);
+    if (place?.geometry.coordinates) {
+      setCurrentPlacePosition(place.geometry.coordinates);
     }
-  }, [place?.geometry.coordinates, setLocation]);
+  }, [place?.geometry.coordinates]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleEscKey);
