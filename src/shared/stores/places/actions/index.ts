@@ -1,5 +1,5 @@
 import { usePlacesStore } from '../hooks';
-import { type Place } from '../types';
+import { type PlacesState, type Place } from '../types';
 
 export const setPlaces = (places: Place[]) => {
   usePlacesStore.setState({ places });
@@ -32,4 +32,8 @@ export const setFilteredPlaces = (
       filteredPlaces: filteredPlaces.length > 0 ? filteredPlaces : null,
     };
   });
+};
+
+export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosition']) => {
+  usePlacesStore.setState({ currentPlacePosition: position });
 };

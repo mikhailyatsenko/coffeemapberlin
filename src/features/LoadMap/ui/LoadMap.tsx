@@ -1,10 +1,10 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl';
 import type { MapRef, GeoJSONSource, MapLayerMouseEvent, LngLatLike, MapboxGeoJSONFeature } from 'react-map-gl';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
-import { LocationContext } from 'shared/context/Location/LocationContext';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
+import { usePlacesStore } from 'shared/stores/places';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
@@ -15,7 +15,7 @@ type MyMapboxGeoJSONFeature = Omit<MapboxGeoJSONFeature, 'geometry'> & GetAllPla
 export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
 
-  const { location } = useContext(LocationContext);
+  const currentPlacePosition = usePlacesStore((state) => state.currentPlacePosition);
 
   const [eventFeatureData, setEventFeatureData] = useState<MyMapboxGeoJSONFeature | null>(null);
   const [tooltipCurrentData, setTooltipCurrentData] = useState<
@@ -25,14 +25,14 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const screenWidth = useWidth();
 
   useEffect(() => {
-    if (location) {
+    if (currentPlacePosition) {
       mapRef?.current?.flyTo({
-        center: location as LngLatLike,
+        center: currentPlacePosition as LngLatLike,
         zoom: 15.6,
         offset: [screenWidth < 768 ? 0 : 220, 0],
       });
     }
-  }, [location, screenWidth]);
+  }, [currentPlacePosition, screenWidth]);
 
   const onClick = (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
