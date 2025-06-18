@@ -1,7 +1,14 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: 'http://localhost:3000/coffee',
+  schema: {
+    'http://localhost:3000/coffee': {
+      headers: {
+        'content-type': 'application/json',
+        'apollo-require-preflight': 'true',
+      },
+    },
+  },
   documents: ['src/**/*.tsx', 'src/**/*.ts'],
   generates: {
     'src/shared/generated/graphql.ts': {

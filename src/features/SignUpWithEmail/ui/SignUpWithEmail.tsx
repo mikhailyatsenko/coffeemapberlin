@@ -82,9 +82,9 @@ export const SignUpWithEmail = ({
               }
               onChange={handleCaptchaChange}
             />
-            {errors.recaptcha && <p>Please complete the reCAPTCHA</p>}
+            {errors.recaptcha && <p>{errors.recaptcha.message}</p>}
           </div>
-          <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} />
+          {/* <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} /> */}
           <RegularButton disabled={!isValid || isLoading}>Sign up</RegularButton>
         </form>
       </FormProvider>
