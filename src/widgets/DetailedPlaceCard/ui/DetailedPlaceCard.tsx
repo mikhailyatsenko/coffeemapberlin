@@ -10,7 +10,6 @@ import { type ICharacteristicCounts } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
-import { Loader } from 'shared/ui/Loader';
 import Toast from 'shared/ui/ToastMessage/Toast';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
@@ -86,8 +85,6 @@ const DetailedPlaceCard: React.FC = () => {
       document.title = 'Berlin Coffee Map';
     };
   }, [place?.properties?.name]);
-
-  if (placesLoading || reviewsLoading) return <Loader />;
 
   if (!placeId || !place?.properties) return null;
 

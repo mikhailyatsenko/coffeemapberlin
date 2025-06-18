@@ -15,10 +15,15 @@ export interface ContactFormData {
 
 interface ContactFormProps {
   onSubmit: SubmitHandler<ContactFormData>;
+  defaultValues?: ContactFormData | null;
 }
 
-export const ContactForm = ({ onSubmit }: ContactFormProps) => {
-  const form = useForm<ContactFormData>({ mode: 'onBlur', resolver: yupResolver(validationSchema) });
+export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
+  const form = useForm<ContactFormData>({
+    mode: 'onBlur',
+    resolver: yupResolver(validationSchema),
+    defaultValues: defaultValues || undefined,
+  });
 
   const {
     handleSubmit,
