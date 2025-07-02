@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { AboutPage } from 'pages/AboutPage';
 import { AccountSettingsPage } from 'pages/AccountSettingsPage';
 import { BlogPage } from 'pages/BlogPage';
+import { ConfirmEmailPage } from 'pages/ConfirmEmailPage';
 import { ContactPage } from 'pages/ContactPage';
 import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
@@ -24,7 +25,7 @@ export enum AppRoutes {
   PROFILE = 'profile',
   MY_REVIEWS = 'myReviews',
   LOGIN = 'login',
-
+  CONFIRM_EMAIL = 'confirmEmail',
   NOT_FOUND = 'not_found',
 }
 
@@ -36,7 +37,7 @@ export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.MY_REVIEWS]: 'my-reviews',
   [AppRoutes.PROFILE]: 'profile',
   [AppRoutes.LOGIN]: 'login',
-
+  [AppRoutes.CONFIRM_EMAIL]: 'confirm-email',
   [AppRoutes.NOT_FOUND]: '*',
 };
 
@@ -83,7 +84,10 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
     path: RoutePaths.login,
     element: <LoginPage />,
   },
-
+  [AppRoutes.CONFIRM_EMAIL]: {
+    path: RoutePaths.confirmEmail,
+    element: <ConfirmEmailPage />,
+  },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,
     element: <NotFoundPage />,

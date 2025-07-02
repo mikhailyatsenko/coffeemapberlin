@@ -19,3 +19,7 @@ export const showSuccessfulSignUp = () => {
 export const hideModal = () => {
   useModalStore.setState({ modalContentVariant: ModalContentVariant.Hidden });
 };
+
+export const showConfirmEmail = () => {
+  useModalStore.setState({ modalContentVariant: ModalContentVariant.ConfirmEmail });
+};

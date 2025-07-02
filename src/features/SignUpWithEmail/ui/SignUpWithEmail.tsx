@@ -3,7 +3,6 @@ import { useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
-import { checkAuth } from 'shared/stores/auth';
 import { FormField } from 'shared/ui/FormField';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
@@ -12,7 +11,7 @@ import { type SignUpWithEmailData, type SignUpWithEmailProps } from '../types';
 import cls from './SignUpWithEmail.module.scss';
 
 export const SignUpWithEmail = ({
-  onSuccessfulSignUp,
+  onFormSent,
   onSwitchToSignIn,
   continueWithSocial,
   setError,
@@ -31,18 +30,15 @@ export const SignUpWithEmail = ({
   const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
     try {
       setIsLoading(true);
-      const response = await registerUser({
+      await registerUser({
         variables: {
           email: data.email,
           displayName: data.displayName,
           password: data.password,
         },
       });
-      if (response) {
-        await checkAuth();
-        onSuccessfulSignUp();
-        setIsLoading(false);
-      }
+      onFormSent();
+      setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
       setError(err instanceof Error ? err : new Error('An unknown error occurred during sign up'));
