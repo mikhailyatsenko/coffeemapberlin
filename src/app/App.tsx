@@ -7,6 +7,7 @@ import { Navbar } from 'widgets/Navbar';
 import { client } from 'shared/config/apolloClient';
 import { checkAuth } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
+import { EmailConfirmationHandler } from 'shared/utils';
 import { AppRouter } from './providers/router';
 import { RoutePaths } from './providers/router/lib/routeConfig/routeConfig';
 
@@ -36,6 +37,7 @@ const App = () => {
           <AppRouter />
         </main>
         {!matchPath(RoutePaths.main, location.pathname) && <Footer />}
+        <EmailConfirmationHandler />
       </GoogleOAuthProvider>
     </ApolloProvider>
   );

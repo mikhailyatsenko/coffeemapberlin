@@ -48,7 +48,6 @@ export const REGISTER_USER = gql`
   mutation RegisterUser($email: String!, $displayName: String!, $password: String!) {
     registerUser(email: $email, displayName: $displayName, password: $password) {
       success
-      message
     }
   }
 `;
@@ -232,6 +231,21 @@ export const CONTACT_FORM = gql`
     contactForm(name: $name, email: $email, message: $message) {
       success
       name
+    }
+  }
+`;
+
+export const CONFIRM_EMAIL = gql`
+  mutation ConfirmEmail($token: String!, $email: String!) {
+    confirmEmail(token: $token, email: $email) {
+      user {
+        id
+        displayName
+        email
+        avatar
+        createdAt
+        isGoogleUserUserWithoutPassword
+      }
     }
   }
 `;
