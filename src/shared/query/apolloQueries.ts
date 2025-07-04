@@ -249,3 +249,11 @@ export const CONFIRM_EMAIL = gql`
     }
   }
 `;
+
+export const RESEND_CONFIRM_EMAIL = gql`
+  mutation ResendConfirmationEmail($email: String!) {
+    resendConfirmationEmail(email: $email) {
+      success
+    }
+  }
+`;

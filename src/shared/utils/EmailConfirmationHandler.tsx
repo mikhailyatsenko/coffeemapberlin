@@ -1,33 +1,42 @@
-import { useEffect, useState } from 'react';
+import { type ApolloError } from '@apollo/client';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useConfirmEmailMutation } from 'shared/generated/graphql';
 import { checkAuth } from 'shared/stores/auth';
-import { showSuccessfulSignUp } from 'shared/stores/modal';
+import { showResendConfirmationEmail, showSuccessfulSignUp } from 'shared/stores/modal';
 import Toast from 'shared/ui/ToastMessage/Toast';
 
 export const EmailConfirmationHandler = () => {
   const location = useLocation();
   const { token, email } = (location.state || {}) as { token?: string; email?: string };
-  const [confirmEmailMutation] = useConfirmEmailMutation();
   const [toastMessage, setToastMessage] = useState('');
-  const [handled, setHandled] = useState(false);
+
+  const onCompleted = useCallback(() => {
+    checkAuth();
+    showSuccessfulSignUp();
+  }, []);
+
+  const onError = useCallback((error: ApolloError) => {
+    const alreadyConfirmedError = error.graphQLErrors.find((e) => e.extensions?.code === 'EMAIL_ALREADY_CONFIRMED');
+    if (alreadyConfirmedError) {
+      setToastMessage('Email is already confirmed');
+      return;
+    }
+    const tokenExpired = error.graphQLErrors.some((e) => e.extensions?.code === 'TOKEN_EXPIRED');
+    showResendConfirmationEmail(tokenExpired);
+  }, []);
+
+  const [confirmEmailMutation] = useConfirmEmailMutation({
+    onCompleted,
+    onError,
+  });
 
   useEffect(() => {
-    const confirmEmail = async () => {
-      if (typeof token === 'string' && typeof email === 'string' && !handled) {
-        try {
-          await confirmEmailMutation({ variables: { token, email } });
-          checkAuth();
-          showSuccessfulSignUp();
-        } catch (error: unknown) {
-          setToastMessage(error instanceof Error ? error.message : 'An unknown error occurred');
-        }
-        setHandled(true);
-      }
-    };
-
-    confirmEmail();
-  }, [token, email, handled, confirmEmailMutation]);
+    if (typeof token === 'string' && typeof email === 'string') {
+      confirmEmailMutation({ variables: { token, email } });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, email]);
 
   if (!toastMessage) return null;
 

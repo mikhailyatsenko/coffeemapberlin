@@ -23,3 +23,11 @@ export const hideModal = () => {
 export const showConfirmEmail = () => {
   useModalStore.setState({ modalContentVariant: ModalContentVariant.ConfirmEmail });
 };
+
+export const showResendConfirmationEmail = (isExpired: boolean) => {
+  if (isExpired) {
+    useModalStore.setState({ modalContentVariant: ModalContentVariant.ResendConfirmationEmailByExpired });
+  } else {
+    useModalStore.setState({ modalContentVariant: ModalContentVariant.ResendConfirmationEmailByError });
+  }
+};
