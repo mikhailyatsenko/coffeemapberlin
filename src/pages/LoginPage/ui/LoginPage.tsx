@@ -26,6 +26,11 @@ export const LoginPage = () => {
     }
   }, [user, navigate, from]);
 
+  const signUpFormHandler = () => {
+    navigate('/', { replace: true });
+    showConfirmEmail();
+  };
+
   return (
     <div className={cls.LoginPage}>
       <div className={cls.loginFormWrapper}>
@@ -40,7 +45,7 @@ export const LoginPage = () => {
         ) : (
           <SignUpWithEmail
             setError={setError}
-            onFormSent={showConfirmEmail}
+            onFormSent={signUpFormHandler}
             onSwitchToSignIn={() => {
               setIiSignIn(true);
             }}

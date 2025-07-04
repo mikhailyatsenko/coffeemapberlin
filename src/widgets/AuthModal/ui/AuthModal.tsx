@@ -10,6 +10,7 @@ import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { ConfirmEmail } from '../components/ConfirmEmail';
 import { LoginRequired } from '../components/LoginRequired';
+import { ResendConfirmEmail } from '../components/ResendConfirmEmail';
 import { SuccessfulSignUp } from '../components/SuccessfulSignUp';
 import cls from './AuthModal.module.scss';
 
@@ -52,6 +53,10 @@ export const AuthModal = () => {
         );
       case ModalContentVariant.ConfirmEmail:
         return <ConfirmEmail hideAuthModal={hideModal} />;
+      case ModalContentVariant.ResendConfirmationEmailByExpired:
+        return <ResendConfirmEmail isExpired={true} />;
+      case ModalContentVariant.ResendConfirmationEmailByError:
+        return <ResendConfirmEmail isExpired={false} />;
       default:
         return null;
     }

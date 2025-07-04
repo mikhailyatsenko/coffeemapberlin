@@ -1,0 +1,1 @@
+export { ResendConfirmEmail } from './ResendConfirmEmail';
