@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import {
   type SetNewPasswordFormData,
   type PersonalDataFormData,
@@ -10,13 +11,10 @@ import {
 import { useSetNewPasswordMutation, useUpdatePersonalDataMutation } from 'shared/generated/graphql';
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
-import Toast from 'shared/ui/ToastMessage/Toast';
 import { passwordValidationSchema, personalDataValidationSchema } from '../lib/validationSchema';
 import cls from './AccountSettings.module.scss';
 
 export const AccountSettings = () => {
-  const [toastMessage, setToastMessage] = useState<string>('');
-
   const { user } = useAuthStore();
 
   const passwordForm = useForm<SetNewPasswordFormData>({
@@ -72,7 +70,7 @@ export const AccountSettings = () => {
       });
       if (response) {
         await checkAuth();
-        setToastMessage('Profile updated successfully');
+        toast.success('Profile updated successfully');
       }
     } catch (err) {
       const errorMessage = (err as Error).message || 'Unknown error';
@@ -93,7 +91,7 @@ export const AccountSettings = () => {
       if (response) {
         resetPasswordValues();
         await checkAuth();
-        setToastMessage('Password updated successfully');
+        toast.success('Password updated successfully');
       }
     } catch (err) {
       const errorMessage = (err as Error).message || 'Unknown error';
@@ -118,7 +116,6 @@ export const AccountSettings = () => {
         userEmail={user.email}
         errorSettingPassword={errorSettingPassword}
       />
-      <Toast message={toastMessage} theme="green" />
     </div>
   );
 };

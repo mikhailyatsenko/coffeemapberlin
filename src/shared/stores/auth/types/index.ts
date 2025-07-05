@@ -9,4 +9,5 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
+  isAuthLoading: boolean;
 }

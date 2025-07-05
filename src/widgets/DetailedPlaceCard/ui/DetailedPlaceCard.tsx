@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
@@ -26,13 +27,13 @@ const DetailedPlaceCard: React.FC = () => {
   const detailedCardRef = useRef<HTMLDivElement>(null);
   const placeId = searchParams.get('id');
 
-  const { toggleFavorite, toastMessage } = useToggleFavorite(placeId);
+  const { toggleFavorite } = useToggleFavorite(placeId);
 
-  const { data, loading: placesLoading } = useGetAllPlacesQuery();
+  const { data } = useGetAllPlacesQuery();
   const places = data?.places ?? [];
   const place = places.find((p) => p.properties.id === placeId);
 
-  const { data: placeReviewsData, loading: reviewsLoading, error } = usePlaceReviews(placeId);
+  const { data: placeReviewsData } = usePlaceReviews(placeId);
 
   const reviews = placeReviewsData?.placeReviews.reviews ?? [];
 
@@ -173,7 +174,6 @@ const DetailedPlaceCard: React.FC = () => {
           {/* for Google Rich Results */}
         </div>
       </div>
-      <Toast message={toastMessage || error?.message} />
     </div>
   );
 };
