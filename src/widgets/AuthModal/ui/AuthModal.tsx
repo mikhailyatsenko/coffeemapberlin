@@ -54,9 +54,9 @@ export const AuthModal = () => {
       case ModalContentVariant.ConfirmEmail:
         return <ConfirmEmail hideAuthModal={hideModal} />;
       case ModalContentVariant.ResendConfirmationEmailByExpired:
-        return <ResendConfirmEmail isExpired={true} />;
+        return <ResendConfirmEmail onResend={hideModal} isExpired={true} />;
       case ModalContentVariant.ResendConfirmationEmailByError:
-        return <ResendConfirmEmail isExpired={false} />;
+        return <ResendConfirmEmail onResend={hideModal} isExpired={false} />;
       default:
         return null;
     }

@@ -1,29 +1,28 @@
 import { type ApolloError } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useLocation } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { useSearchParams } from 'react-router-dom';
 import { useResendConfirmationEmailMutation } from 'shared/generated/graphql';
+import { hideModal } from 'shared/stores/modal';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
-import Toast from 'shared/ui/ToastMessage/Toast';
 import { confirmEmailValidationSchema } from '../lib/validationSchema';
 import { type ResendConfirmEmailProps } from '../types';
 import cls from './ResendConfirmEmail.module.scss';
 
-export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
-  const location = useLocation();
-  const { email } = (location.state || {}) as { email?: string };
-
-  const [toastMessage, setToastMessage] = useState('');
+export const ResendConfirmEmail = ({ isExpired, onResend }: ResendConfirmEmailProps) => {
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get('email');
 
   const onCompleted = useCallback(() => {
-    setToastMessage('Confirmation email sent successfully!');
+    toast.success('Confirmation email sent successfully!', { position: 'top-center' });
+    hideModal();
   }, []);
 
   const onError = useCallback((error: ApolloError) => {
-    // TODO: use toast library in all project instead my custom Toast
-    setToastMessage(error?.message || 'Failed to resend confirmation email.');
+    toast.error(error?.message || 'Failed to resend confirmation email.', { position: 'top-center' });
   }, []);
 
   const [resendConfirmationEmailMutation, { loading }] = useResendConfirmationEmailMutation({
@@ -32,7 +31,7 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
   });
 
   const form = useForm<{ email: string }>({
-    defaultValues: { email },
+    defaultValues: { email: email || '' },
     resolver: yupResolver(confirmEmailValidationSchema),
     mode: 'onChange',
   });
@@ -67,7 +66,6 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
           </RegularButton>
         </form>
       </FormProvider>
-      <Toast message={toastMessage} />
     </div>
   );
 };

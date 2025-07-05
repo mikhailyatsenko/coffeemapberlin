@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { UploadAvatarForm } from 'entities/UploadAvatarForm';
 import { useUploadAvatarMutation, useDeleteAvatarMutation } from 'shared/generated/graphql';
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
-import Toast from 'shared/ui/ToastMessage/Toast';
 
 interface UploadResponse {
   fileUrl?: string;
@@ -15,8 +15,6 @@ export const AvatarUpload: React.FC = () => {
 
   const [isError, setIsError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-
-  const [toastMessage, setToastMessage] = useState<string>('');
 
   const [uploadAvatar, { error: uploadError }] = useUploadAvatarMutation();
   const [deleteAvatar, { error: deleteError }] = useDeleteAvatarMutation();
@@ -84,7 +82,7 @@ export const AvatarUpload: React.FC = () => {
       if (data?.uploadAvatar.success) {
         await checkAuth();
         setIsUploading(false);
-        setToastMessage('Avatar uploaded successfully');
+        toast.success('Avatar uploaded successfully');
       }
     } catch (error) {
       setIsError('An unexpected error occurred during avatar upload.');
@@ -109,7 +107,7 @@ export const AvatarUpload: React.FC = () => {
 
       if (data?.deleteAvatar.success) {
         await checkAuth();
-        setToastMessage('Avatar deleted successfully');
+        toast.success('Avatar deleted successfully');
       }
     } catch (error) {
       setIsError('An unexpected error occurred during avatar deletion.');
@@ -132,7 +130,6 @@ export const AvatarUpload: React.FC = () => {
         isError={isError}
         isUploading={isUploading}
       />
-      <Toast message={toastMessage} theme="green" />
     </>
   );
 };

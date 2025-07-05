@@ -23,7 +23,7 @@ export const SuccessfulSignUp = ({ hideAuthModal }: SuccessfulSignUpProps) => {
           hideAuthModal();
         }}
       >
-        Here we go!
+        Here we go 🚀
       </RegularButton>
     </div>
   );
