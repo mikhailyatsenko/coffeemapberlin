@@ -9,7 +9,6 @@ import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'share
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
-import Toast from 'shared/ui/ToastMessage/Toast';
 import cls from './PlaceCard.module.scss';
 
 interface PlaceCardProps {
@@ -18,7 +17,7 @@ interface PlaceCardProps {
 }
 
 export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
-  const { toggleFavorite, toastMessage } = useToggleFavorite(properties.id);
+  const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const navigate = useNavigate();
 
@@ -122,7 +121,6 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
           </div>
         </div>
       </div>
-      <Toast message={toastMessage} />
     </>
   );
 };

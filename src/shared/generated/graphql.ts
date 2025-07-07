@@ -66,6 +66,19 @@ export interface CharacteristicData {
   pressed: Scalars['Boolean']['output'];
 }
 
+export interface ContactForm {
+  __typename?: 'ContactForm';
+  email: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+}
+
+export interface ContactFormResponse {
+  __typename?: 'ContactFormResponse';
+  name: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+}
+
 export interface DeleteReviewResult {
   __typename?: 'DeleteReviewResult';
   averageRating: Scalars['Float']['output'];
@@ -88,11 +101,14 @@ export interface Mutation {
   __typename?: 'Mutation';
   addRating: AddRatingResponse;
   addTextReview: AddTextReviewResponse;
+  confirmEmail: AuthPayload;
+  contactForm: ContactFormResponse;
   deleteAvatar: SuccessResponse;
   deleteReview: DeleteReviewResult;
   loginWithGoogle?: Maybe<AuthPayload>;
   logout?: Maybe<LogoutResponse>;
-  registerUser: AuthPayload;
+  registerUser: SuccessResponse;
+  resendConfirmationEmail: SuccessResponse;
   setNewPassword: SuccessResponse;
   signInWithEmail: AuthPayload;
   toggleCharacteristic: SuccessResponse;
@@ -111,6 +127,17 @@ export interface MutationAddTextReviewArgs {
   text: Scalars['String']['input'];
 }
 
+export interface MutationConfirmEmailArgs {
+  email: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+}
+
+export interface MutationContactFormArgs {
+  email: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}
+
 export interface MutationDeleteReviewArgs {
   deleteOptions: Scalars['String']['input'];
   reviewId: Scalars['ID']['input'];
@@ -124,6 +151,10 @@ export interface MutationRegisterUserArgs {
   displayName: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+}
+
+export interface MutationResendConfirmationEmailArgs {
+  email: Scalars['String']['input'];
 }
 
 export interface MutationSetNewPasswordArgs {
@@ -165,12 +196,6 @@ export interface Place {
   type: Scalars['String']['output'];
 }
 
-export interface PlacePoint {
-  __typename?: 'PlacePoint';
-  id: Scalars['ID']['output'];
-  point: Array<Scalars['Float']['output']>;
-}
-
 export interface PlaceProperties {
   __typename?: 'PlaceProperties';
   address: Scalars['String']['output'];
@@ -197,13 +222,8 @@ export interface Query {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   getUserReviewActivity: UserReviewActivity[];
-  placePoint: PlacePoint;
   placeReviews: PlaceReviews;
   places: Place[];
-}
-
-export interface QueryPlacePointArgs {
-  placeId: Scalars['ID']['input'];
 }
 
 export interface QueryPlaceReviewsArgs {
@@ -313,10 +333,7 @@ export type RegisterUserMutationVariables = Exact<{
 
 export interface RegisterUserMutation {
   __typename?: 'Mutation';
-  registerUser: {
-    __typename?: 'AuthPayload';
-    user: { __typename?: 'User'; id: string; displayName: string; email: string };
-  };
+  registerUser: { __typename?: 'SuccessResponse'; success: boolean };
 }
 
 export type UpdatePersonalDataMutationVariables = Exact<{
@@ -381,15 +398,6 @@ export interface GetAllPlacesQuery {
       };
     };
   }>;
-}
-
-export type GetPlacePointByIdQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-export interface GetPlacePointByIdQuery {
-  __typename?: 'Query';
-  placePoint: { __typename?: 'PlacePoint'; id: string; point: number[] };
 }
 
 export type ToggleFavoriteMutationVariables = Exact<{
@@ -500,6 +508,47 @@ export type DeleteAvatarMutationVariables = Exact<Record<string, never>>;
 export interface DeleteAvatarMutation {
   __typename?: 'Mutation';
   deleteAvatar: { __typename?: 'SuccessResponse'; success: boolean };
+}
+
+export type ContactFormMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+}>;
+
+export interface ContactFormMutation {
+  __typename?: 'Mutation';
+  contactForm: { __typename?: 'ContactFormResponse'; success: boolean; name: string };
+}
+
+export type ConfirmEmailMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+}>;
+
+export interface ConfirmEmailMutation {
+  __typename?: 'Mutation';
+  confirmEmail: {
+    __typename?: 'AuthPayload';
+    user: {
+      __typename?: 'User';
+      id: string;
+      displayName: string;
+      email: string;
+      avatar?: string | null;
+      createdAt?: string | null;
+      isGoogleUserUserWithoutPassword: boolean;
+    };
+  };
+}
+
+export type ResendConfirmationEmailMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+export interface ResendConfirmationEmailMutation {
+  __typename?: 'Mutation';
+  resendConfirmationEmail: { __typename?: 'SuccessResponse'; success: boolean };
 }
 
 export const LoginWithGoogleDocument = gql`
@@ -659,11 +708,7 @@ export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, Curren
 export const RegisterUserDocument = gql`
   mutation RegisterUser($email: String!, $displayName: String!, $password: String!) {
     registerUser(email: $email, displayName: $displayName, password: $password) {
-      user {
-        id
-        displayName
-        email
-      }
+      success
     }
   }
 `;
@@ -913,62 +958,6 @@ export type GetAllPlacesQueryHookResult = ReturnType<typeof useGetAllPlacesQuery
 export type GetAllPlacesLazyQueryHookResult = ReturnType<typeof useGetAllPlacesLazyQuery>;
 export type GetAllPlacesSuspenseQueryHookResult = ReturnType<typeof useGetAllPlacesSuspenseQuery>;
 export type GetAllPlacesQueryResult = Apollo.QueryResult<GetAllPlacesQuery, GetAllPlacesQueryVariables>;
-export const GetPlacePointByIdDocument = gql`
-  query GetPlacePointById($id: ID!) {
-    placePoint(placeId: $id) {
-      id
-      point
-    }
-  }
-`;
-
-/**
- * __useGetPlacePointByIdQuery__
- *
- * To run a query within a React component, call `useGetPlacePointByIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPlacePointByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetPlacePointByIdQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetPlacePointByIdQuery(
-  baseOptions: Apollo.QueryHookOptions<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables> &
-    ({ variables: GetPlacePointByIdQueryVariables; skip?: boolean } | { skip: boolean }),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>(GetPlacePointByIdDocument, options);
-}
-export function useGetPlacePointByIdLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>(
-    GetPlacePointByIdDocument,
-    options,
-  );
-}
-export function useGetPlacePointByIdSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>,
-) {
-  const options = baseOptions === Apollo.skipToken ? baseOptions : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>(
-    GetPlacePointByIdDocument,
-    options,
-  );
-}
-export type GetPlacePointByIdQueryHookResult = ReturnType<typeof useGetPlacePointByIdQuery>;
-export type GetPlacePointByIdLazyQueryHookResult = ReturnType<typeof useGetPlacePointByIdLazyQuery>;
-export type GetPlacePointByIdSuspenseQueryHookResult = ReturnType<typeof useGetPlacePointByIdSuspenseQuery>;
-export type GetPlacePointByIdQueryResult = Apollo.QueryResult<GetPlacePointByIdQuery, GetPlacePointByIdQueryVariables>;
 export const ToggleFavoriteDocument = gql`
   mutation ToggleFavorite($placeId: ID!) {
     toggleFavorite(placeId: $placeId)
@@ -1366,4 +1355,132 @@ export type DeleteAvatarMutationResult = Apollo.MutationResult<DeleteAvatarMutat
 export type DeleteAvatarMutationOptions = Apollo.BaseMutationOptions<
   DeleteAvatarMutation,
   DeleteAvatarMutationVariables
+>;
+export const ContactFormDocument = gql`
+  mutation ContactForm($name: String!, $email: String!, $message: String!) {
+    contactForm(name: $name, email: $email, message: $message) {
+      success
+      name
+    }
+  }
+`;
+export type ContactFormMutationFn = Apollo.MutationFunction<ContactFormMutation, ContactFormMutationVariables>;
+
+/**
+ * __useContactFormMutation__
+ *
+ * To run a mutation, you first call `useContactFormMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useContactFormMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [contactFormMutation, { data, loading, error }] = useContactFormMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      email: // value for 'email'
+ *      message: // value for 'message'
+ *   },
+ * });
+ */
+export function useContactFormMutation(
+  baseOptions?: Apollo.MutationHookOptions<ContactFormMutation, ContactFormMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<ContactFormMutation, ContactFormMutationVariables>(ContactFormDocument, options);
+}
+export type ContactFormMutationHookResult = ReturnType<typeof useContactFormMutation>;
+export type ContactFormMutationResult = Apollo.MutationResult<ContactFormMutation>;
+export type ContactFormMutationOptions = Apollo.BaseMutationOptions<ContactFormMutation, ContactFormMutationVariables>;
+export const ConfirmEmailDocument = gql`
+  mutation ConfirmEmail($token: String!, $email: String!) {
+    confirmEmail(token: $token, email: $email) {
+      user {
+        id
+        displayName
+        email
+        avatar
+        createdAt
+        isGoogleUserUserWithoutPassword
+      }
+    }
+  }
+`;
+export type ConfirmEmailMutationFn = Apollo.MutationFunction<ConfirmEmailMutation, ConfirmEmailMutationVariables>;
+
+/**
+ * __useConfirmEmailMutation__
+ *
+ * To run a mutation, you first call `useConfirmEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useConfirmEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [confirmEmailMutation, { data, loading, error }] = useConfirmEmailMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useConfirmEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<ConfirmEmailMutation, ConfirmEmailMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<ConfirmEmailMutation, ConfirmEmailMutationVariables>(ConfirmEmailDocument, options);
+}
+export type ConfirmEmailMutationHookResult = ReturnType<typeof useConfirmEmailMutation>;
+export type ConfirmEmailMutationResult = Apollo.MutationResult<ConfirmEmailMutation>;
+export type ConfirmEmailMutationOptions = Apollo.BaseMutationOptions<
+  ConfirmEmailMutation,
+  ConfirmEmailMutationVariables
+>;
+export const ResendConfirmationEmailDocument = gql`
+  mutation ResendConfirmationEmail($email: String!) {
+    resendConfirmationEmail(email: $email) {
+      success
+    }
+  }
+`;
+export type ResendConfirmationEmailMutationFn = Apollo.MutationFunction<
+  ResendConfirmationEmailMutation,
+  ResendConfirmationEmailMutationVariables
+>;
+
+/**
+ * __useResendConfirmationEmailMutation__
+ *
+ * To run a mutation, you first call `useResendConfirmationEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResendConfirmationEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resendConfirmationEmailMutation, { data, loading, error }] = useResendConfirmationEmailMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useResendConfirmationEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<ResendConfirmationEmailMutation, ResendConfirmationEmailMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<ResendConfirmationEmailMutation, ResendConfirmationEmailMutationVariables>(
+    ResendConfirmationEmailDocument,
+    options,
+  );
+}
+export type ResendConfirmationEmailMutationHookResult = ReturnType<typeof useResendConfirmationEmailMutation>;
+export type ResendConfirmationEmailMutationResult = Apollo.MutationResult<ResendConfirmationEmailMutation>;
+export type ResendConfirmationEmailMutationOptions = Apollo.BaseMutationOptions<
+  ResendConfirmationEmailMutation,
+  ResendConfirmationEmailMutationVariables
 >;

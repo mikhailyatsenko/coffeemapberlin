@@ -19,3 +19,15 @@ export const showSuccessfulSignUp = () => {
 export const hideModal = () => {
   useModalStore.setState({ modalContentVariant: ModalContentVariant.Hidden });
 };
+
+export const showConfirmEmail = () => {
+  useModalStore.setState({ modalContentVariant: ModalContentVariant.ConfirmEmail });
+};
+
+export const showResendConfirmationEmail = (isExpired: boolean) => {
+  if (isExpired) {
+    useModalStore.setState({ modalContentVariant: ModalContentVariant.ResendConfirmationEmailByExpired });
+  } else {
+    useModalStore.setState({ modalContentVariant: ModalContentVariant.ResendConfirmationEmailByError });
+  }
+};

@@ -5,6 +5,10 @@ export enum ModalContentVariant {
   SignUpWithEmail = 'SignUpWithEmail',
   SignInWithEmail = 'SignInWithEmail',
   SuccessfulSignUp = 'SuccessfulSignUp',
+  ConfirmEmail = 'ConfirmEmail',
+  ResendConfirmationEmailByExpired = 'ResendConfirmationEmailByExpired',
+  ResendConfirmationEmailByError = 'ResendConfirmationEmailByError',
+
   Hidden = 'Hidden',
 }
 

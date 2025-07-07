@@ -1,7 +1,2 @@
-export enum AuthModalContentVariant {
-  LoginRequired = 'LoginRequired',
-  SignUpWithEmail = 'SignUpWithEmail',
-  SignInWithEmail = 'SignInWithEmail',
-  SuccessfulSignUp = 'SuccessfulSignUp',
-  Hidden = 'Hidden',
-}
+export * from './modalVariants';
+export * from './routes';

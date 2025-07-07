@@ -18,7 +18,7 @@ interface TooltipCardOnMapProps {
 export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapProps) => {
   const { id, averageRating, name, address, instagram, image } = properties;
 
-  const { toggleFavorite, toastMessage } = useToggleFavorite(id);
+  const { toggleFavorite } = useToggleFavorite(id);
 
   const handleToggleFavorite = async () => {
     try {
@@ -107,7 +107,6 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
           </div>
         </div>
       </div>
-      <Toast message={toastMessage} />
     </div>
   );
 };

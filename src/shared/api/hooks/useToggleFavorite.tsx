@@ -1,12 +1,11 @@
 import { type ApolloCache } from '@apollo/client';
-import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { GetAllPlacesDocument, useToggleFavoriteMutation, type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import { showLoginRequired } from 'shared/stores/modal';
 
 export const useToggleFavorite = (placeId: string | null) => {
   const { user } = useAuthStore();
-  const [toastMessage, setToastMessage] = useState<string>('');
 
   const [toggleFavoriteMutation] = useToggleFavoriteMutation({
     update(cache, { data }) {
@@ -23,9 +22,9 @@ export const useToggleFavorite = (placeId: string | null) => {
       const updatedPlaces = existingData.places.map((place) => {
         if (place.properties.id === placeId) {
           if (!place.properties.isFavorite) {
-            setToastMessage(`${place.properties.name} was added to favorites`);
+            toast(`${place.properties.name} was added to favorites`);
           } else {
-            setToastMessage(`${place.properties.name} was removed from favorites`);
+            toast(`${place.properties.name} was removed from favorites`);
           }
           return {
             ...place,
@@ -61,5 +60,5 @@ export const useToggleFavorite = (placeId: string | null) => {
     }
   };
 
-  return { toggleFavorite, toastMessage };
+  return { toggleFavorite };
 };
