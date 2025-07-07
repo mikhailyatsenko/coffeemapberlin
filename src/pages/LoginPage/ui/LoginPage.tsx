@@ -5,7 +5,7 @@ import { SignInWithEmail } from 'features/SignInWithEmail';
 import { SignUpWithEmail } from 'features/SignUpWithEmail';
 import { useAuthStore } from 'shared/stores/auth';
 
-import { showSuccessfulSignUp } from 'shared/stores/modal';
+import { showConfirmEmail } from 'shared/stores/modal';
 import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
 import cls from './LoginPage.module.scss';
 
@@ -26,6 +26,11 @@ export const LoginPage = () => {
     }
   }, [user, navigate, from]);
 
+  const signUpFormHandler = () => {
+    navigate('/', { replace: true });
+    showConfirmEmail();
+  };
+
   return (
     <div className={cls.LoginPage}>
       <div className={cls.loginFormWrapper}>
@@ -40,7 +45,7 @@ export const LoginPage = () => {
         ) : (
           <SignUpWithEmail
             setError={setError}
-            onSuccessfulSignUp={showSuccessfulSignUp}
+            onFormSent={signUpFormHandler}
             onSwitchToSignIn={() => {
               setIiSignIn(true);
             }}

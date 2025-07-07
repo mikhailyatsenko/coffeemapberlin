@@ -1,44 +1,38 @@
-import emailjs from 'emailjs-com';
-import { useState } from 'react';
 import { type SubmitHandler } from 'react-hook-form';
 import { ContactForm, type ContactFormData } from 'entities/ContactForm/ui/ContactForm';
-
 import { ErrorResultSendForm } from 'entities/ErrorResultSendForm';
 import { SuccessResultSendForm } from 'entities/SuccessResultSendForm';
+import { useContactFormMutation } from 'shared/generated/graphql';
 import { Loader } from 'shared/ui/Loader';
 
-type FormState = 'loading' | 'success' | 'error' | null;
-
 export const SendContactForm = () => {
-  const [formState, setFormState] = useState<FormState>(null);
+  const [contactForm, { loading, error, data, reset }] = useContactFormMutation();
 
-  const onSubmit: SubmitHandler<ContactFormData> = async (data) => {
-    setFormState('loading');
-    try {
-      await emailjs.send(
-        'service_8iyv26h',
-        'template_ihctmxr',
-        data as unknown as Record<string, unknown>,
-        '3dF_DSrv-gfgwzoVE',
-      );
-      setFormState('success');
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setFormState('error');
-    }
+  const onSubmit: SubmitHandler<ContactFormData> = async (formData) => {
+    await contactForm({
+      variables: {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      },
+    });
   };
 
-  if (formState === 'success') {
-    return <SuccessResultSendForm />;
+  const handleTryAgain = () => {
+    reset();
+  };
+
+  if (error) {
+    return <ErrorResultSendForm handleTryAgain={handleTryAgain} />;
   }
 
-  if (formState === 'error') {
-    return <ErrorResultSendForm />;
+  if (data?.contactForm.success) {
+    return <SuccessResultSendForm name={data.contactForm.name} />;
   }
 
   return (
     <>
-      {formState === 'loading' ? <Loader /> : ''}
+      {loading ? <Loader /> : ''}
       <ContactForm onSubmit={onSubmit} />
     </>
   );

@@ -1,15 +1,15 @@
 import { ApolloProvider } from '@apollo/client';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { useLocation, matchPath } from 'react-router-dom';
 import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { client } from 'shared/config/apolloClient';
-import { checkAuth } from 'shared/stores/auth';
+import { RoutePaths } from 'shared/constants';
+import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 import { AppRouter } from './providers/router';
-import { RoutePaths } from './providers/router/lib/routeConfig/routeConfig';
-
 const App = () => {
   const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
@@ -17,25 +17,22 @@ const App = () => {
     throw new Error(`Missing required environment variable: GOOGLE_CLIENT_ID`);
   }
   const location = useLocation();
-
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthLoading } = useAuthStore();
 
   useEffect(() => {
-    setIsLoading(true);
-    void checkAuth().finally(() => {
-      setIsLoading(false);
-    });
+    void checkAuth();
   }, []);
 
   return (
     <ApolloProvider client={client}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        {isLoading ? <Loader /> : null}
+        {isAuthLoading ? <Loader /> : null}
         <Navbar />
         <main>
           <AppRouter />
         </main>
         {!matchPath(RoutePaths.main, location.pathname) && <Footer />}
+        <Toaster position="bottom-center" />
       </GoogleOAuthProvider>
     </ApolloProvider>
   );

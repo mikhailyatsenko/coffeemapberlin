@@ -8,6 +8,7 @@ import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
 import { DetailedPlaceCard } from 'widgets/DetailedPlaceCard';
+import { AppRoutes, RoutePaths } from 'shared/constants';
 import { PrivateRoute } from '../../ui/PrivateRoute';
 
 export interface AppRouteConfig {
@@ -15,30 +16,6 @@ export interface AppRouteConfig {
   element: ReactNode;
   children?: AppRouteConfig[];
 }
-
-export enum AppRoutes {
-  MAIN = 'main',
-  BLOG = 'blog',
-  ABOUT = 'about',
-  CONTACTS = 'contacts',
-  PROFILE = 'profile',
-  MY_REVIEWS = 'myReviews',
-  LOGIN = 'login',
-
-  NOT_FOUND = 'not_found',
-}
-
-export const RoutePaths: Record<AppRoutes, string> = {
-  [AppRoutes.MAIN]: '/',
-  [AppRoutes.BLOG]: 'blog',
-  [AppRoutes.ABOUT]: 'about',
-  [AppRoutes.CONTACTS]: 'contacts',
-  [AppRoutes.MY_REVIEWS]: 'my-reviews',
-  [AppRoutes.PROFILE]: 'profile',
-  [AppRoutes.LOGIN]: 'login',
-
-  [AppRoutes.NOT_FOUND]: '*',
-};
 
 export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
   [AppRoutes.MAIN]: {
@@ -83,7 +60,10 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
     path: RoutePaths.login,
     element: <LoginPage />,
   },
-
+  [AppRoutes.CONFIRM_EMAIL]: {
+    path: RoutePaths.confirmEmail,
+    element: <MainPage />,
+  },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,
     element: <NotFoundPage />,

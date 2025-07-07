@@ -47,11 +47,7 @@ export const CURRENT_USER_QUERY = gql`
 export const REGISTER_USER = gql`
   mutation RegisterUser($email: String!, $displayName: String!, $password: String!) {
     registerUser(email: $email, displayName: $displayName, password: $password) {
-      user {
-        id
-        displayName
-        email
-      }
+      success
     }
   }
 `;
@@ -135,15 +131,6 @@ export const GET_ALL_PLACES = gql`
           }
         }
       }
-    }
-  }
-`;
-
-export const GET_PLACE_POINT_BY_ID = gql`
-  query GetPlacePointById($id: ID!) {
-    placePoint(placeId: $id) {
-      id
-      point
     }
   }
 `;
@@ -234,6 +221,38 @@ export const UPLOAD_AVATAR = gql`
 export const DELETE_AVATAR = gql`
   mutation DeleteAvatar {
     deleteAvatar {
+      success
+    }
+  }
+`;
+
+export const CONTACT_FORM = gql`
+  mutation ContactForm($name: String!, $email: String!, $message: String!) {
+    contactForm(name: $name, email: $email, message: $message) {
+      success
+      name
+    }
+  }
+`;
+
+export const CONFIRM_EMAIL = gql`
+  mutation ConfirmEmail($token: String!, $email: String!) {
+    confirmEmail(token: $token, email: $email) {
+      user {
+        id
+        displayName
+        email
+        avatar
+        createdAt
+        isGoogleUserUserWithoutPassword
+      }
+    }
+  }
+`;
+
+export const RESEND_CONFIRM_EMAIL = gql`
+  mutation ResendConfirmationEmail($email: String!) {
+    resendConfirmationEmail(email: $email) {
       success
     }
   }

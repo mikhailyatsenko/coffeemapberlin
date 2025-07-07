@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { AuthModal } from 'widgets/AuthModal'; // TODO: fix import according to feature-sliced design
 import { AuthIndicator } from 'features/AuthIndicator';
 import { SearchPlaces } from 'features/SearchPlaces';
-import { AuthModal } from 'widgets/AuthModal';
 import { Logo } from 'shared/ui/Logo';
 import cls from './Navbar.module.scss';
 export const Navbar = () => {

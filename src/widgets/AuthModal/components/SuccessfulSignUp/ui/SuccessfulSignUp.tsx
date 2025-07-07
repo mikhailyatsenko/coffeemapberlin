@@ -12,7 +12,7 @@ export const SuccessfulSignUp = ({ hideAuthModal }: SuccessfulSignUpProps) => {
 
   return (
     <div className={cls.content}>
-      <h2>Hi, {user?.displayName}!</h2>
+      {user?.displayName && <h2>Hi, {user?.displayName}!</h2>}
       <h3>Thanks for joining our community!{'\u00A0'}🎉</h3>
 
       <p>You can now leave reviews and ratings, as well as keep track of your personal list of favorites.</p>
@@ -23,7 +23,7 @@ export const SuccessfulSignUp = ({ hideAuthModal }: SuccessfulSignUpProps) => {
           hideAuthModal();
         }}
       >
-        Here we go!
+        Here we go 🚀
       </RegularButton>
     </div>
   );
