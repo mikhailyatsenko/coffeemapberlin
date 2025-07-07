@@ -12,7 +12,7 @@ import { confirmEmailValidationSchema } from '../lib/validationSchema';
 import { type ResendConfirmEmailProps } from '../types';
 import cls from './ResendConfirmEmail.module.scss';
 
-export const ResendConfirmEmail = ({ isExpired, onResend }: ResendConfirmEmailProps) => {
+export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email');
 
