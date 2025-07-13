@@ -32,7 +32,10 @@
     "src",
     "./.eslintrc.cjs",
     "./vite.config.ts",
-    "./codegen.ts"
+    "./codegen.ts",
+    "jest.config.ts",
+    "setupTests.ts",
+    "__mocks__/svgMock.js"
   ],
   "references": [
     {
