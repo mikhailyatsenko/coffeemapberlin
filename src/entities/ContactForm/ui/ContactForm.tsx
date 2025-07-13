@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { GoogleReCaptcha, GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { FormField } from 'shared/ui/FormField';
 import { WhiteButton } from 'shared/ui/WhiteButton';
@@ -45,14 +45,15 @@ export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
           <FormField labelText={'Email'} fieldName="email" type="email" error={errors.email?.message} />
           <FormField labelText={'Message'} fieldName="message" type="textarea" error={errors.message?.message} />
           <div className={cls.recaptcha}>
-            <ReCAPTCHA
-              sitekey={
+            <GoogleReCaptchaProvider
+              reCaptchaKey={
                 process.env.VITE_ENV === 'development'
                   ? process.env.RE_CAPTCHA_KEY_DEV!
                   : process.env.RE_CAPTCHA_KEY_PROD!
               }
-              onChange={handleCaptchaChange}
-            />
+            >
+              <GoogleReCaptcha onVerify={handleCaptchaChange} />
+            </GoogleReCaptchaProvider>
           </div>
           <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} />
 
