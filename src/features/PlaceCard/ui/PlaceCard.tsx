@@ -43,7 +43,7 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
     <>
       <div onClick={handleClickDetails} className={`${cls.placeCard} `}>
         <div className={cls.image}>
-          <LazyImage src={`./places-images/${properties.image || 'default-place.jpg'}`} alt="Place image" />
+          <LazyImage src={`${properties.image}`} alt="Place image" />
         </div>
         <div className={cls.content}>
           <div className={cls.cardHeader}>
@@ -76,18 +76,20 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
           <div className={cls.address}>
             <p>{properties.address}</p>
             <div className={cls.iconsGroup}>
-              <a
-                className={cls.iconWrapper}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                href={'https://www.instagram.com/' + properties.instagram}
-                target="_blank"
-                rel="noreferrer"
-                title="Open the place's Instagram profile"
-              >
-                <img className={cls.icon} src={instagram} alt="" />
-              </a>
+              {properties.instagram && (
+                <a
+                  className={cls.iconWrapper}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  href={properties.instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Open the place's Instagram profile"
+                >
+                  <img className={cls.icon} src={instagram} alt="" />
+                </a>
+              )}
 
               <a
                 onClick={(e) => {

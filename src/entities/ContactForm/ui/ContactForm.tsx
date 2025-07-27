@@ -33,6 +33,7 @@ export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
   } = form;
 
   const handleCaptchaChange = (value: string | null) => {
+    console.log(value);
     setValue('recaptcha', value || '');
     trigger('recaptcha');
   };

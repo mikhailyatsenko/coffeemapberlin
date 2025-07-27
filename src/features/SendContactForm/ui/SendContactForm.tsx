@@ -14,6 +14,7 @@ export const SendContactForm = () => {
         name: formData.name,
         email: formData.email,
         message: formData.message,
+        recaptcha: formData.recaptcha,
       },
     });
   };

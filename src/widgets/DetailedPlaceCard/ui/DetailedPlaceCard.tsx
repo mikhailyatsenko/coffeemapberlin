@@ -102,7 +102,7 @@ const DetailedPlaceCard: React.FC = () => {
           className={cls.detailsContainer}
         >
           <p className={cls.address}>{address}</p>
-          <InstagramEmbedProfile normalView={isViewInstProfile} username={instagram} />
+          <InstagramEmbedProfile normalView={isViewInstProfile} instaLink={instagram} />
           <button className={cls.closeButton} onClick={handleClose}></button>
           <div className={cls.iconsRow}>
             <div
@@ -112,14 +112,16 @@ const DetailedPlaceCard: React.FC = () => {
             >
               <AddToFavButton isFavorite={Boolean(isFavorite)} />
             </div>
-            <button
-              className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
-              onClick={() => {
-                setIsViewInstProfile((prev) => !prev);
-              }}
-            >
-              {isViewInstProfile ? 'Back to place info' : 'View Instagram'}
-            </button>
+            {instagram && (
+              <button
+                className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
+                onClick={() => {
+                  setIsViewInstProfile((prev) => !prev);
+                }}
+              >
+                {isViewInstProfile ? 'Back to place info' : 'View Instagram'}
+              </button>
+            )}
           </div>
           <h2 className={cls.name}>{name}</h2>
           <div className={cls.charCounts}>
