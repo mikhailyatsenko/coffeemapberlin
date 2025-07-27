@@ -39,7 +39,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         }}
       >
         <div className={cls.image}>
-          <img src={`./places-images/${image || 'default-place.jpg'}`} alt="Place image" />
+          <img src={image || 'default-place.jpg'} alt="Place image" />
         </div>
       </NavLink>
 
@@ -70,18 +70,20 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
             <button className={cls.moreButton}>More details</button>
           </NavLink>
 
-          <a
-            className={cls.iconWrapper}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            href={'https://www.instagram.com/' + instagram}
-            target="_blank"
-            rel="noreferrer"
-            title="Open the place's Instagram profile"
-          >
-            <img className={cls.icon} src={instagramIcon} alt="" />
-          </a>
+          {instagram && (
+            <a
+              className={cls.iconWrapper}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              href={instagram}
+              target="_blank"
+              rel="noreferrer"
+              title="Open the place's Instagram profile"
+            >
+              <img className={cls.icon} src={instagramIcon} alt="" />
+            </a>
+          )}
           <a
             className={cls.iconWrapper}
             onClick={(e) => {
