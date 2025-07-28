@@ -227,8 +227,8 @@ export const DELETE_AVATAR = gql`
 `;
 
 export const CONTACT_FORM = gql`
-  mutation ContactForm($name: String!, $email: String!, $message: String!, $recaptcha: String!) {
-    contactForm(name: $name, email: $email, message: $message, recaptcha: $recaptcha) {
+  mutation ContactForm($name: String!, $email: String!, $message: String!) {
+    contactForm(name: $name, email: $email, message: $message) {
       success
       name
     }

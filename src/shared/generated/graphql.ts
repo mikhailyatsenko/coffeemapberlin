@@ -15,6 +15,7 @@ export interface Scalars {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  JSON: { input: any; output: any };
 }
 
 export interface AddRatingResponse {
@@ -71,7 +72,6 @@ export interface ContactForm {
   email: Scalars['String']['output'];
   message: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  recaptcha: Scalars['String']['output'];
 }
 
 export interface ContactFormResponse {
@@ -91,6 +91,13 @@ export interface Geometry {
   __typename?: 'Geometry';
   coordinates: Array<Scalars['Float']['output']>;
   type: Scalars['String']['output'];
+}
+
+export interface GoogleReview {
+  __typename?: 'GoogleReview';
+  publishedAtDate: Scalars['String']['output'];
+  stars: Scalars['Int']['output'];
+  text: Scalars['String']['output'];
 }
 
 export interface LogoutResponse {
@@ -137,7 +144,6 @@ export interface MutationContactFormArgs {
   email: Scalars['String']['input'];
   message: Scalars['String']['input'];
   name: Scalars['String']['input'];
-  recaptcha: Scalars['String']['input'];
 }
 
 export interface MutationDeleteReviewArgs {
@@ -190,6 +196,12 @@ export interface MutationUploadAvatarArgs {
   userId: Scalars['ID']['input'];
 }
 
+export interface OpeningHour {
+  __typename?: 'OpeningHour';
+  day: Scalars['String']['output'];
+  hours: Scalars['String']['output'];
+}
+
 export interface Place {
   __typename?: 'Place';
   geometry: Geometry;
@@ -200,18 +212,24 @@ export interface Place {
 
 export interface PlaceProperties {
   __typename?: 'PlaceProperties';
+  additionalInfo?: Maybe<Scalars['JSON']['output']>;
   address: Scalars['String']['output'];
   averageRating?: Maybe<Scalars['Float']['output']>;
   characteristicCounts: CharacteristicCounts;
   description: Scalars['String']['output'];
   favoriteCount: Scalars['Int']['output'];
+  googleReview?: Maybe<GoogleReview>;
   id: Scalars['ID']['output'];
   image: Scalars['String']['output'];
   instagram: Scalars['String']['output'];
   isFavorite: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
+  neighborhood?: Maybe<Scalars['String']['output']>;
+  openingHours?: Maybe<OpeningHour[]>;
+  phone?: Maybe<Scalars['String']['output']>;
   ratingCount: Scalars['Int']['output'];
   reviews: Review[];
+  website?: Maybe<Scalars['String']['output']>;
 }
 
 export interface PlaceReviews {
@@ -516,7 +534,6 @@ export type ContactFormMutationVariables = Exact<{
   name: Scalars['String']['input'];
   email: Scalars['String']['input'];
   message: Scalars['String']['input'];
-  recaptcha: Scalars['String']['input'];
 }>;
 
 export interface ContactFormMutation {
@@ -1360,8 +1377,8 @@ export type DeleteAvatarMutationOptions = Apollo.BaseMutationOptions<
   DeleteAvatarMutationVariables
 >;
 export const ContactFormDocument = gql`
-  mutation ContactForm($name: String!, $email: String!, $message: String!, $recaptcha: String!) {
-    contactForm(name: $name, email: $email, message: $message, recaptcha: $recaptcha) {
+  mutation ContactForm($name: String!, $email: String!, $message: String!) {
+    contactForm(name: $name, email: $email, message: $message) {
       success
       name
     }
@@ -1385,7 +1402,6 @@ export type ContactFormMutationFn = Apollo.MutationFunction<ContactFormMutation,
  *      name: // value for 'name'
  *      email: // value for 'email'
  *      message: // value for 'message'
- *      recaptcha: // value for 'recaptcha'
  *   },
  * });
  */
