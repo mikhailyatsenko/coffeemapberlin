@@ -102,7 +102,7 @@ const DetailedPlaceCard: React.FC = () => {
           className={cls.detailsContainer}
         >
           <p className={cls.address}>{address}</p>
-          <InstagramEmbedProfile normalView={isViewInstProfile} instaLink={instagram} />
+          <InstagramEmbedProfile image={image} normalView={isViewInstProfile} instaLink={instagram} />
           <button className={cls.closeButton} onClick={handleClose}></button>
           <div className={cls.iconsRow}>
             <div
