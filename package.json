@@ -21,6 +21,7 @@
     "@apollo/client": "^3.10.8",
     "@hookform/resolvers": "^3.9.0",
     "@react-oauth/google": "^0.12.1",
+    "@types/react-window": "^1.8.8",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "google-auth-library": "^9.11.0",
@@ -35,6 +36,7 @@
     "react-map-gl": "^7.1.7",
     "react-router-dom": "^6.23.0",
     "react-social-media-embed": "^2.5.13",
+    "react-window": "^1.8.11",
     "yup": "^1.4.0",
     "zustand": "^5.0.4"
   },
