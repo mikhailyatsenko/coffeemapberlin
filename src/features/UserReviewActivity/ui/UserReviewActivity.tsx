@@ -1,10 +1,10 @@
 import { ReviewActivityCard } from 'entities/ReviewActivityCard';
-import { useGetUserReviewActivityQuery } from 'shared/generated/graphql';
+import { useUserReviewActivityQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import cls from './UserReviewActivity.module.scss';
 
 export const UserReviewActivity = () => {
-  const { data, loading, error } = useGetUserReviewActivityQuery();
+  const { data, loading, error } = useUserReviewActivityQuery();
   const { user } = useAuthStore();
 
   if (!user) return <p>You need to be logged in to perform this action.</p>;
@@ -17,13 +17,13 @@ export const UserReviewActivity = () => {
     <div className={cls.UserReviewActivity}>
       <h2 className={cls.header}>My reviews and ratings:</h2>
 
-      {data.getUserReviewActivity.length === 0 ? (
+      {data.userReviewActivity.length === 0 ? (
         <p className={cls.infoNoActivity}>
           All your reviews and ratings will be displayed here. You haven&apos;t submitted any reviews or ratings yet.
         </p>
       ) : (
         <ul>
-          {data.getUserReviewActivity.map((activityData) => (
+          {data.userReviewActivity.map((activityData) => (
             <ReviewActivityCard
               key={activityData.placeId}
               userRating={activityData.rating ?? undefined}

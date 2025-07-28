@@ -198,8 +198,8 @@ export const GET_PLACE_REVIEWS = gql`
 `;
 
 export const GET_USER_REVIEW_ACTIVITY = gql`
-  query getUserReviewActivity {
-    getUserReviewActivity {
+  query UserReviewActivity {
+    userReviewActivity {
       rating
       reviewText
       placeId
