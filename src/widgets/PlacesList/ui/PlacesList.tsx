@@ -11,12 +11,12 @@ export function PlacesList({ places }: PlacesListProps) {
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
   return (
-    !filteredPlaces && (
+    (!filteredPlaces || location.pathname !== '/details') && (
       <>
         <div
           className={`${cls.placesData} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
         >
-          <div className={`${cls.PlacesList} ${location.pathname === '/details' ? cls.detailsOpen : ''}`}>
+          <div className={`${cls.PlacesList}`}>
             {places.map((place) => (
               <PlaceCard
                 properties={place.properties}
