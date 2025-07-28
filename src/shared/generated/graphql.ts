@@ -255,9 +255,9 @@ export type PlaceReviews = {
 export type Query = {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
-  getUserReviewActivity: Array<UserReviewActivity>;
   placeReviews: PlaceReviews;
   places: Array<Place>;
+  userReviewActivity: Array<UserReviewActivity>;
 };
 
 
@@ -406,10 +406,10 @@ export type PlaceReviewsQueryVariables = Exact<{
 
 export type PlaceReviewsQuery = { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean }> } };
 
-export type getUserReviewActivityQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserReviewActivityQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type getUserReviewActivityQuery = { __typename?: 'Query', getUserReviewActivity: Array<{ __typename?: 'UserReviewActivity', rating?: number | null, reviewText?: string | null, placeId: string, placeName: string, averageRating?: number | null, createdAt: string }> };
+export type UserReviewActivityQuery = { __typename?: 'Query', userReviewActivity: Array<{ __typename?: 'UserReviewActivity', rating?: number | null, reviewText?: string | null, placeId: string, placeName: string, averageRating?: number | null, createdAt: string }> };
 
 export type UploadAvatarMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -1028,9 +1028,9 @@ export type PlaceReviewsQueryHookResult = ReturnType<typeof usePlaceReviewsQuery
 export type PlaceReviewsLazyQueryHookResult = ReturnType<typeof usePlaceReviewsLazyQuery>;
 export type PlaceReviewsSuspenseQueryHookResult = ReturnType<typeof usePlaceReviewsSuspenseQuery>;
 export type PlaceReviewsQueryResult = Apollo.QueryResult<PlaceReviewsQuery, PlaceReviewsQueryVariables>;
-export const getUserReviewActivityDocument = gql`
-    query getUserReviewActivity {
-  getUserReviewActivity {
+export const UserReviewActivityDocument = gql`
+    query UserReviewActivity {
+  userReviewActivity {
     rating
     reviewText
     placeId
@@ -1042,36 +1042,36 @@ export const getUserReviewActivityDocument = gql`
     `;
 
 /**
- * __usegetUserReviewActivityQuery__
+ * __useUserReviewActivityQuery__
  *
- * To run a query within a React component, call `usegetUserReviewActivityQuery` and pass it any options that fit your needs.
- * When your component renders, `usegetUserReviewActivityQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useUserReviewActivityQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserReviewActivityQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = usegetUserReviewActivityQuery({
+ * const { data, loading, error } = useUserReviewActivityQuery({
  *   variables: {
  *   },
  * });
  */
-export function usegetUserReviewActivityQuery(baseOptions?: Apollo.QueryHookOptions<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>) {
+export function useUserReviewActivityQuery(baseOptions?: Apollo.QueryHookOptions<UserReviewActivityQuery, UserReviewActivityQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>(getUserReviewActivityDocument, options);
+        return Apollo.useQuery<UserReviewActivityQuery, UserReviewActivityQueryVariables>(UserReviewActivityDocument, options);
       }
-export function usegetUserReviewActivityLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>) {
+export function useUserReviewActivityLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserReviewActivityQuery, UserReviewActivityQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>(getUserReviewActivityDocument, options);
+          return Apollo.useLazyQuery<UserReviewActivityQuery, UserReviewActivityQueryVariables>(UserReviewActivityDocument, options);
         }
-export function usegetUserReviewActivitySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>) {
+export function useUserReviewActivitySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UserReviewActivityQuery, UserReviewActivityQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>(getUserReviewActivityDocument, options);
+          return Apollo.useSuspenseQuery<UserReviewActivityQuery, UserReviewActivityQueryVariables>(UserReviewActivityDocument, options);
         }
-export type getUserReviewActivityQueryHookResult = ReturnType<typeof usegetUserReviewActivityQuery>;
-export type getUserReviewActivityLazyQueryHookResult = ReturnType<typeof usegetUserReviewActivityLazyQuery>;
-export type getUserReviewActivitySuspenseQueryHookResult = ReturnType<typeof usegetUserReviewActivitySuspenseQuery>;
-export type getUserReviewActivityQueryResult = Apollo.QueryResult<getUserReviewActivityQuery, getUserReviewActivityQueryVariables>;
+export type UserReviewActivityQueryHookResult = ReturnType<typeof useUserReviewActivityQuery>;
+export type UserReviewActivityLazyQueryHookResult = ReturnType<typeof useUserReviewActivityLazyQuery>;
+export type UserReviewActivitySuspenseQueryHookResult = ReturnType<typeof useUserReviewActivitySuspenseQuery>;
+export type UserReviewActivityQueryResult = Apollo.QueryResult<UserReviewActivityQuery, UserReviewActivityQueryVariables>;
 export const UploadAvatarDocument = gql`
     mutation UploadAvatar($userId: ID!, $fileUrl: String!) {
   uploadAvatar(userId: $userId, fileUrl: $fileUrl) {
