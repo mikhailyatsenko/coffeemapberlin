@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
-import { GoogleReCaptcha, GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
 import { FormField } from 'shared/ui/FormField';
@@ -70,15 +70,14 @@ export const SignUpWithEmail = ({
             error={errors?.repeatPassword?.message}
           />
           <div className={cls.recaptcha}>
-            <GoogleReCaptchaProvider
-              reCaptchaKey={
+            <ReCAPTCHA
+              sitekey={
                 process.env.VITE_ENV === 'development'
                   ? process.env.RE_CAPTCHA_KEY_DEV!
                   : process.env.RE_CAPTCHA_KEY_PROD!
               }
-            >
-              <GoogleReCaptcha onVerify={handleCaptchaChange} />
-            </GoogleReCaptchaProvider>
+              onChange={handleCaptchaChange}
+            />
             {errors.recaptcha && <p>{errors.recaptcha.message}</p>}
           </div>
           {/* <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} /> */}
