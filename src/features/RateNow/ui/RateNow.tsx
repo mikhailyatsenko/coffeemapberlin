@@ -55,16 +55,14 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   if (!showRateNow) {
     if (!hasUserInteracted)
       return (
-        <div className={cls.rateNowCall}>
+        <div
+          onClick={() => {
+            setShowRateNow(true);
+          }}
+          className={cls.rateNowCall}
+        >
           <h5 className={cls.question}>Have you visited this place?</h5>
-          <RegularButton
-            theme={'blank'}
-            onClick={() => {
-              setShowRateNow(true);
-            }}
-          >
-            Share Your Thoughts
-          </RegularButton>
+          <RegularButton theme={'blank'}>Share Your Thoughts</RegularButton>
         </div>
       );
 

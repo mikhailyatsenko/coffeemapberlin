@@ -29,9 +29,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 }) => {
   return (
     <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
+      {id === 'google' && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
       <div className={cls.userInfo}>
         <img
-          src={userAvatar || './user-default-icon.svg'}
+          src={userAvatar || (id === 'google' ? './google-maps.svg' : './user-default-icon.svg')}
           alt={userName}
           className={cls.avatar}
           referrerPolicy="no-referrer"
