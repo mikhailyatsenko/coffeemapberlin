@@ -16,7 +16,7 @@ export function PlacesList({ places }: PlacesListProps) {
         <div
           className={`${cls.placesData} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
         >
-          <div className={`${cls.PlacesList}`}>
+          <div className={`${cls.PlacesList} ${location.pathname === '/details' ? cls.detailsOpen : ''}`}>
             {places.map((place) => (
               <PlaceCard
                 properties={place.properties}
