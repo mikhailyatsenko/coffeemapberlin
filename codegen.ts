@@ -17,6 +17,7 @@ const config: CodegenConfig = {
         withHooks: true,
         withHOC: false,
         withComponent: false,
+        namingConvention: 'keep',
       },
     },
   },
