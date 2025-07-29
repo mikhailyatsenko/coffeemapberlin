@@ -4,7 +4,7 @@ import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
-import LazyImage from 'shared/lib/LazyImage/LazyImage';
+import { LazyImage } from 'shared/lib/LazyImage';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
@@ -43,7 +43,7 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
     <>
       <div onClick={handleClickDetails} className={`${cls.placeCard} `}>
         <div className={cls.image}>
-          <LazyImage src={`${properties.image}`} alt="Place image" />
+          <LazyImage key={properties.id} src={`${properties.image}`} alt="Place image" />
         </div>
         <div className={cls.content}>
           <div className={cls.cardHeader}>

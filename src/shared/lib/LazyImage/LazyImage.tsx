@@ -5,9 +5,10 @@ interface LazyImageProps {
   src: string;
   className?: string;
   alt?: string;
+  key?: string;
 }
 
-const LazyImage: React.FC<LazyImageProps> = ({ src, alt }) => {
+export const LazyImage: React.FC<LazyImageProps> = ({ src, alt, key }) => {
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -41,6 +42,7 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, alt }) => {
     <>
       {isLoading && <LoaderJustIcon />}
       <img
+        key={key}
         ref={imgRef}
         src={isVisible ? src : undefined}
         alt={alt}
@@ -54,5 +56,3 @@ const LazyImage: React.FC<LazyImageProps> = ({ src, alt }) => {
     </>
   );
 };
-
-export default LazyImage;
