@@ -1,4 +1,4 @@
-import { iconCharMap } from 'shared/lib/iconCharMap/iconCharMap';
+import { ICON_CHAR_MAP } from 'shared/constants/iconCharMap';
 import { type CharacteristicData } from 'shared/types';
 import cls from './CharacteristicCountsIcon.module.scss';
 
@@ -19,7 +19,7 @@ export const characteristicsMap = new Map<string, string>([
 ]);
 
 export const CharacteristicCountsIcon = ({ characteristic, characteristicData }: CharacteristicCountsIconsProps) => {
-  const IconComponent = iconCharMap[characteristic as keyof typeof iconCharMap];
+  const IconComponent = ICON_CHAR_MAP[characteristic as keyof typeof ICON_CHAR_MAP];
   if (characteristicData.count === 0) return null;
   return (
     <div

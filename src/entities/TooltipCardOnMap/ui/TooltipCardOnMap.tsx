@@ -3,6 +3,7 @@ import { createSearchParams, NavLink } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
+import { LazyImage } from 'shared/lib/LazyImage';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
@@ -39,7 +40,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         }}
       >
         <div className={cls.image}>
-          <img src={image || 'default-place.jpg'} alt="Place image" />
+          <LazyImage key={id} src={image || 'default-place.jpg'} alt="Place image" />
         </div>
       </NavLink>
 
