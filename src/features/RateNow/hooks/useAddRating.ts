@@ -60,6 +60,7 @@ export function useAddRating(placeId: string) {
         updatedReviews[existingRatingIndex] = {
           ...updatedReviews[existingRatingIndex],
           userRating: newRating,
+          imgCount: existingData.placeReviews.reviews[existingRatingIndex].imgCount,
         };
       } else {
         updatedReviews.push({
@@ -71,6 +72,7 @@ export function useAddRating(placeId: string) {
           createdAt: new Date().toISOString(),
           isOwnReview: true,
           userRating: newRating,
+          imgCount: 0,
         });
       }
 
