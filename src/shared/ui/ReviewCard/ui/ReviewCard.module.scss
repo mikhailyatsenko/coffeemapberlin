@@ -92,3 +92,17 @@
   font-style: italic;
   font-weight: 200;
 }
+
+.reviewImages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reviewImage {
+  cursor: pointer;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+}

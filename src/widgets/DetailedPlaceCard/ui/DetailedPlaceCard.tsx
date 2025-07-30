@@ -4,6 +4,7 @@ import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
 import { useToggleFavorite } from 'shared/api';
+import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { useGetAllPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { type ICharacteristicCounts } from 'shared/types';
@@ -87,7 +88,7 @@ const DetailedPlaceCard: React.FC = () => {
 
   if (!placeId || !place?.properties) return null;
 
-  const { averageRating, description, name, address, instagram, ratingCount, image, characteristicCounts, isFavorite } =
+  const { averageRating, description, name, address, instagram, ratingCount, characteristicCounts, isFavorite } =
     place.properties;
 
   return (
@@ -102,7 +103,11 @@ const DetailedPlaceCard: React.FC = () => {
           className={cls.detailsContainer}
         >
           <p className={cls.address}>{address}</p>
-          <InstagramEmbedProfile image={image} normalView={isViewInstProfile} instaLink={instagram} />
+          <InstagramEmbedProfile
+            image={`${IMAGEKIT_CDN_URL}/places/${placeId}/place-photos/main.jpg`}
+            normalView={isViewInstProfile}
+            instaLink={instagram}
+          />
           <button className={cls.closeButton} onClick={handleClose}></button>
           <div className={cls.iconsRow}>
             <div
@@ -169,7 +174,7 @@ const DetailedPlaceCard: React.FC = () => {
             averageRating={averageRating || 0}
             reviewCount={ratingCount}
             name={name}
-            image={image}
+            image={`${IMAGEKIT_CDN_URL}/places/${placeId}/place-photos/main.jpg`}
           />
           {/* for Google Rich Results */}
         </div>

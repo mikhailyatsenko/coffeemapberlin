@@ -1,11 +1,12 @@
 import { type Position } from 'geojson';
-import { createSearchParams, NavLink } from 'react-router-dom';
+import { NavLink, createSearchParams } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
-import { LazyImage } from 'shared/lib/LazyImage';
+import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 
 import cls from './TooltipCardOnMap.module.scss';
@@ -31,6 +32,10 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
     }
   };
 
+  const imageSrc = image
+    ? `${IMAGEKIT_CDN_URL}/places/${properties.id}/place-photos/main.jpg`
+    : 'places-images/default-place.jpg';
+
   return (
     <div className={cls.TooltipCardOnMap}>
       <NavLink
@@ -40,7 +45,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         }}
       >
         <div className={cls.image}>
-          <LazyImage key={id} src={image || 'default-place.jpg'} alt="Place image" />
+          <ImgWithLoader src={imageSrc} alt="" className={cls.imageContent} />
         </div>
       </NavLink>
 
