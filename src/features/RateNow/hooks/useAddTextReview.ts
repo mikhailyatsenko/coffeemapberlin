@@ -47,6 +47,7 @@ export function useAddTextReview(placeId: string) {
           createdAt: new Date().toISOString(),
           isOwnReview: true,
           userRating: null,
+          imgCount: 0,
         });
       }
 
