@@ -38,6 +38,7 @@
     "react-router-dom": "^6.23.0",
     "react-social-media-embed": "^2.5.13",
     "react-window": "^1.8.11",
+    "yet-another-react-lightbox": "^3.25.0",
     "yup": "^1.4.0",
     "zustand": "^5.0.4"
   },

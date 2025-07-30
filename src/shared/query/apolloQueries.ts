@@ -192,6 +192,7 @@ export const GET_PLACE_REVIEWS = gql`
         createdAt
         userRating
         isOwnReview
+        imgCount
       }
     }
   }

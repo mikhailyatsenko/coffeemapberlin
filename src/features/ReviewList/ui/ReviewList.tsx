@@ -84,10 +84,11 @@ export const ReviewList = ({
       )}
 
       <div ref={handleRef} className={cls.reviewsList}>
-        {sortReviews(reviews).map((review) => (
+        {sortReviews(reviews).map((review, index) => (
           <ReviewCard
-            key={`${review.id}-${review.createdAt}`}
-            id={review.id}
+            key={`${review.id}-${review.createdAt}-${index}`}
+            reviewId={review.id}
+            placeId={placeId}
             rating={review.userRating}
             reviewText={review.text}
             userName={review.userName}
@@ -96,6 +97,8 @@ export const ReviewList = ({
             setShowRateNow={setShowRateNow}
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}
+            imgCount={review.imgCount}
+            userId={review.userId}
           />
         ))}
       </div>
