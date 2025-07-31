@@ -104,7 +104,7 @@ const DetailedPlaceCard: React.FC = () => {
         >
           <p className={cls.address}>{address}</p>
           <InstagramEmbedProfile
-            image={`${IMAGEKIT_CDN_URL}/places/${placeId}/place-photos/main.jpg`}
+            image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
             normalView={isViewInstProfile}
             instaLink={instagram}
           />
@@ -174,7 +174,7 @@ const DetailedPlaceCard: React.FC = () => {
             averageRating={averageRating || 0}
             reviewCount={ratingCount}
             name={name}
-            image={`${IMAGEKIT_CDN_URL}/places/${placeId}/place-photos/main.jpg`}
+            image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
           />
           {/* for Google Rich Results */}
         </div>
