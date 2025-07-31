@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ImgHTMLAttributes } from 'react';
 import { LoaderJustIcon } from 'shared/ui/Loader';
 
 import cls from './ImgWithLoader.module.scss';
 
-interface ImgWithLoaderProps {
+interface ImgWithLoaderProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'onLoad' | 'onError'> {
   src: string;
   alt: string;
   className?: string;
@@ -12,7 +12,15 @@ interface ImgWithLoaderProps {
   onError?: () => void;
 }
 
-export const ImgWithLoader = ({ src, alt, className = '', loading = 'lazy', onLoad, onError }: ImgWithLoaderProps) => {
+export const ImgWithLoader = ({
+  src,
+  alt,
+  className = '',
+  loading = 'lazy',
+  onLoad,
+  onError,
+  ...imgProps
+}: ImgWithLoaderProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleImageLoad = () => {
@@ -39,6 +47,7 @@ export const ImgWithLoader = ({ src, alt, className = '', loading = 'lazy', onLo
         onLoad={handleImageLoad}
         onError={handleImageError}
         className={`${className}`}
+        {...imgProps}
       />
       {!imageLoaded && (
         <div className={cls.fallback}>

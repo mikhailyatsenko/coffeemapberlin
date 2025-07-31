@@ -47,7 +47,7 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
           <ImgWithLoader
             src={
               properties.image
-                ? `${IMAGEKIT_CDN_URL}/places/${properties.id}/place-photos/main.jpg`
+                ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
                 : 'places-images/default-place.jpg'
             }
             alt=""
