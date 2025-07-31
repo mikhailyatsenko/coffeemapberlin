@@ -1,6 +1,8 @@
 import { formatDistanceToNow } from 'date-fns';
-import React, { useState, useMemo } from 'react';
-import Lightbox from 'yet-another-react-lightbox';
+import React, { useState, useMemo, useRef } from 'react';
+import Lightbox, { type ZoomRef } from 'yet-another-react-lightbox';
+import { Zoom } from 'yet-another-react-lightbox/plugins';
+
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import DeleteIcon from '../../../assets/delete-icon.svg?react';
 import EditIcon from '../../../assets/edit-icon.svg?react';
@@ -38,8 +40,8 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   createdAt,
 }) => {
   const [openLightbox, setOpenLightbox] = useState(false);
-  const [index, setIndex] = useState(0);
-
+  const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
+  const zoomRef = useRef<ZoomRef>(null);
   const reviewImages = useMemo(() => getReviewImages(placeId, imgCount), [placeId, imgCount]);
   return (
     <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
@@ -72,22 +74,24 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
                 alt="Review image"
                 className={cls.reviewImage}
                 onClick={() => {
-                  setIndex(idx);
+                  setImgLightboxIndex(idx);
                   setOpenLightbox(true);
                 }}
               />
             ))}
           </div>
           <Lightbox
+            zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 1 }}
+            plugins={[Zoom]}
             open={openLightbox}
             close={() => {
               setOpenLightbox(false);
             }}
             slides={reviewImages.map((url) => ({ src: url }))}
-            index={index}
+            index={imgLightboxIndex}
             on={{
               view: ({ index }) => {
-                setIndex(index);
+                setImgLightboxIndex(index);
               },
             }}
           />
