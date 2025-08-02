@@ -5,8 +5,9 @@ import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
-import { type PlaceProperties } from 'shared/types';
+
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
@@ -14,7 +15,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './PlaceCard.module.scss';
 
 interface PlaceCardProps {
-  properties: PlaceProperties;
+  properties: GetAllPlacesQuery['places'][number]['properties'];
   coordinates: Position;
 }
 
@@ -82,7 +83,9 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
             {Boolean(properties.averageRating) && properties.averageRating}
           </div>
           {properties.description && <div className={cls.description}>{properties.description}</div>}
-          <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
+          {properties.neighborhood && (
+            <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
+          )}
           <div className={cls.address}>
             <p>{properties.address}</p>
             <div className={cls.iconsGroup}>
