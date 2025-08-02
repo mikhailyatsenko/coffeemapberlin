@@ -95,7 +95,9 @@ export type Geometry = {
 
 export type GoogleReview = {
   __typename?: 'GoogleReview';
+  imgCount: Scalars['Int']['output'];
   publishedAtDate: Scalars['String']['output'];
+  reviewId: Scalars['String']['output'];
   stars: Scalars['Int']['output'];
   text: Scalars['String']['output'];
 };
@@ -359,7 +361,7 @@ export type LogoutMutation = { __typename?: 'Mutation', logout?: { __typename?: 
 export type GetAllPlacesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllPlacesQuery = { __typename?: 'Query', places: Array<{ __typename?: 'Place', type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: Array<number> }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, isFavorite: boolean, favoriteCount: number, characteristicCounts: { __typename?: 'CharacteristicCounts', pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } }> };
+export type GetAllPlacesQuery = { __typename?: 'Query', places: Array<{ __typename?: 'Place', type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: Array<number> }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, neighborhood?: string | null, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, isFavorite: boolean, favoriteCount: number, characteristicCounts: { __typename?: 'CharacteristicCounts', pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } }> };
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -729,6 +731,7 @@ export const GetAllPlacesDocument = gql`
       id
       name
       description
+      neighborhood
       address
       image
       instagram

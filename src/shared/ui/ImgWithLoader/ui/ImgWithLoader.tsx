@@ -1,5 +1,5 @@
 import { useEffect, useState, type ImgHTMLAttributes } from 'react';
-import { LoaderJustIcon } from 'shared/ui/Loader';
+import { Spinner } from 'shared/ui/Loader';
 
 import cls from './ImgWithLoader.module.scss';
 
@@ -51,7 +51,7 @@ export const ImgWithLoader = ({
       />
       {!imageLoaded && (
         <div className={cls.fallback}>
-          <LoaderJustIcon />
+          <Spinner />
         </div>
       )}
     </>
