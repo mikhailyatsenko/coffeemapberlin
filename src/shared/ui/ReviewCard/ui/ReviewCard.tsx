@@ -2,8 +2,6 @@ import { formatDistanceToNow } from 'date-fns';
 import React, { useState, useMemo, useRef } from 'react';
 import Lightbox, { type ZoomRef } from 'yet-another-react-lightbox';
 import { Zoom } from 'yet-another-react-lightbox/plugins';
-
-import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import DeleteIcon from '../../../assets/delete-icon.svg?react';
 import EditIcon from '../../../assets/edit-icon.svg?react';
@@ -69,10 +67,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         <>
           <div className={cls.reviewImages}>
             {reviewImages.map((url, idx) => (
-              <ImgWithLoader
+              <img
                 key={url}
-                src={`${url}${!openLightbox ? '?tr=if-ar_gt_1,w-200,if-else,h-200,if-end' : ''}`}
-                alt="Review image"
+                src={`${url}?tr=if-ar_gt_1,w-200,if-else,h-200,if-end`}
+                alt=""
                 className={cls.reviewImage}
                 onClick={() => {
                   setImgLightboxIndex(idx);
