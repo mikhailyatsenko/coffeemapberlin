@@ -1,4 +1,5 @@
 import { useEffect, useState, type ImgHTMLAttributes } from 'react';
+import { clsx } from 'yet-another-react-lightbox';
 import { Spinner } from 'shared/ui/Loader';
 
 import cls from './ImgWithLoader.module.scss';
@@ -46,7 +47,7 @@ export const ImgWithLoader = ({
         loading={loading}
         onLoad={handleImageLoad}
         onError={handleImageError}
-        className={`${className}`}
+        className={clsx(cls.img, className)}
         {...imgProps}
       />
       {!imageLoaded && (

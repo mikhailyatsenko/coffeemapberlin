@@ -10,6 +10,7 @@ import { setCurrentPlacePosition } from 'shared/stores/places';
 import { type ICharacteristicCounts } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon } from 'shared/ui/CharacteristicCountsIcon';
+import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
@@ -102,81 +103,94 @@ const DetailedPlaceCard: React.FC = () => {
           ref={detailedCardRef}
           className={cls.detailsContainer}
         >
-          <p className={cls.address}>{address}</p>
-          <InstagramEmbedProfile
-            image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
-            normalView={isViewInstProfile}
-            instaLink={instagram}
-          />
-          <button className={cls.closeButton} onClick={handleClose}></button>
-          <div className={cls.iconsRow}>
-            <div
-              title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
-              onClick={handleToggleFavorite}
-              className={cls.iconFavWrapper}
-            >
-              <AddToFavButton isFavorite={Boolean(isFavorite)} />
+          {instagram ? (
+            <InstagramEmbedProfile
+              image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
+              normalView={isViewInstProfile}
+              instaLink={instagram}
+            />
+          ) : (
+            <div className={cls.backgroundImgWrapper}>
+              <ImgWithLoader
+                src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
+                alt="Place image"
+                className={cls.backgroundImg}
+              />
             </div>
-            {instagram && (
-              <button
-                className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
-                onClick={() => {
-                  setIsViewInstProfile((prev) => !prev);
-                }}
+          )}
+          <div className={cls.detailsContent}>
+            <p className={cls.address}>{address}</p>
+
+            <button className={cls.closeButton} onClick={handleClose}></button>
+            <div className={cls.iconsRow}>
+              <div
+                title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
+                onClick={handleToggleFavorite}
+                className={cls.iconFavWrapper}
               >
-                {isViewInstProfile ? 'Back to place info' : 'View Instagram'}
-              </button>
+                <AddToFavButton isFavorite={Boolean(isFavorite)} />
+              </div>
+              {instagram && (
+                <button
+                  className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
+                  onClick={() => {
+                    setIsViewInstProfile((prev) => !prev);
+                  }}
+                >
+                  {isViewInstProfile ? 'Back to place info' : 'View Instagram'}
+                </button>
+              )}
+            </div>
+            <h2 className={cls.name}>{name}</h2>
+            <div className={cls.charCounts}>
+              {Object.keys(characteristicCounts)
+                .filter((charKey) => charKey !== '__typename')
+                .map((charKey) => (
+                  <CharacteristicCountsIcon
+                    characteristic={charKey}
+                    characteristicData={characteristicCounts[charKey as keyof ICharacteristicCounts]}
+                    key={charKey}
+                  />
+                ))}
+            </div>
+
+            {!showRateNow && (
+              <HeaderDetailedPlaceCard
+                averageRating={averageRating || 0}
+                description={description}
+                isHeaderVisible={isHeaderVisible}
+              />
             )}
-          </div>
-          <h2 className={cls.name}>{name}</h2>
-          <div className={cls.charCounts}>
-            {Object.keys(characteristicCounts)
-              .filter((charKey) => charKey !== '__typename')
-              .map((charKey) => (
-                <CharacteristicCountsIcon
-                  characteristic={charKey}
-                  characteristicData={characteristicCounts[charKey as keyof ICharacteristicCounts]}
-                  key={charKey}
-                />
-              ))}
-          </div>
 
-          {!showRateNow && (
-            <HeaderDetailedPlaceCard
-              averageRating={averageRating || 0}
-              description={description}
-              isHeaderVisible={isHeaderVisible}
-            />
-          )}
+            {isHeaderVisible && (
+              <RateNow
+                setShowRateNow={setShowRateNow}
+                showRateNow={showRateNow}
+                placeId={placeId}
+                reviews={reviews}
+                characteristicCounts={characteristicCounts}
+              />
+            )}
 
-          {isHeaderVisible && (
-            <RateNow
-              setShowRateNow={setShowRateNow}
+            <ReviewList
               showRateNow={showRateNow}
-              placeId={placeId}
+              setShowRateNow={setShowRateNow}
               reviews={reviews}
-              characteristicCounts={characteristicCounts}
+              placeId={placeId}
+              isCompactView={isHeaderVisible}
+              setCompactView={setIsHeaderVisible}
             />
-          )}
 
-          <ReviewList
-            showRateNow={showRateNow}
-            setShowRateNow={setShowRateNow}
-            reviews={reviews}
-            placeId={placeId}
-            isCompactView={isHeaderVisible}
-            setCompactView={setIsHeaderVisible}
-          />
-
-          {/* for Google Rich Results */}
-          <CoffeeShopSchema
-            address={address}
-            averageRating={averageRating || 0}
-            reviewCount={ratingCount}
-            name={name}
-            image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
-          />
-          {/* for Google Rich Results */}
+            {/* for Google Rich Results */}
+            <CoffeeShopSchema
+              address={address}
+              averageRating={averageRating || 0}
+              reviewCount={ratingCount}
+              name={name}
+              image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
+            />
+            {/* for Google Rich Results */}
+          </div>
         </div>
       </div>
     </div>

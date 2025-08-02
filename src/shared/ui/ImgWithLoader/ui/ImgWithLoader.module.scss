@@ -1,6 +1,12 @@
+.img {
+  position: relative;
+  z-index: 2;
+}
+
 .fallback {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 1;
 }
