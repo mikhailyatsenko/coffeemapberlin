@@ -88,6 +88,7 @@ export const GET_ALL_PLACES = gql`
         id
         name
         description
+        neighborhood
         address
         image
         instagram
