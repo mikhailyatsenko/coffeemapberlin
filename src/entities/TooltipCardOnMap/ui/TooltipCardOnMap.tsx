@@ -4,7 +4,7 @@ import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
-import { type PlaceProperties } from 'shared/types';
+import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
@@ -13,7 +13,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './TooltipCardOnMap.module.scss';
 
 interface TooltipCardOnMapProps {
-  properties: PlaceProperties;
+  properties: GetAllPlacesQuery['places'][number]['properties'];
   coordinates: Position;
 }
 
@@ -66,7 +66,9 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         <div className={cls.rating}>
           <RatingWidget isClickable={false} rating={averageRating} /> {Boolean(averageRating) && averageRating}
         </div>
-        <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
+        {properties.neighborhood && (
+          <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
+        )}
         <div className={cls.address}>{address}</div>
         <div className={cls.iconsGroup}>
           <NavLink
