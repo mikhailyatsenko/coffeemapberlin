@@ -10,9 +10,7 @@ export function PlacesList({ places }: PlacesListProps) {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
-  console.log(location.pathname === '/details');
-
-  if (location.pathname === '/details') {
+  if (location.pathname === '/details' || filteredPlaces) {
     return null;
   }
 
