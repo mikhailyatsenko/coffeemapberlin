@@ -10,31 +10,35 @@ export function PlacesList({ places }: PlacesListProps) {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
+  console.log(location.pathname === '/details');
+
+  if (location.pathname === '/details') {
+    return null;
+  }
+
   return (
-    (!filteredPlaces || location.pathname !== '/details') && (
-      <>
+    <>
+      <div
+        className={`${cls.placesData} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
+      >
+        <div className={`${cls.PlacesList}`}>
+          {places.map((place) => (
+            <PlaceCard
+              properties={place.properties}
+              coordinates={place.geometry.coordinates}
+              key={place.properties.id}
+            />
+          ))}
+        </div>
+      </div>
+      <div className={cls.backdrop}>
         <div
-          className={`${cls.placesData} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
-        >
-          <div className={`${cls.PlacesList} ${location.pathname === '/details' ? cls.detailsOpen : ''}`}>
-            {places.map((place) => (
-              <PlaceCard
-                properties={place.properties}
-                coordinates={place.geometry.coordinates}
-                key={place.properties.id}
-              />
-            ))}
-          </div>
-        </div>
-        <div className={cls.backdrop}>
-          <div
-            onClick={() => {
-              setShowFavorites(false);
-            }}
-            className={cls.closeButton}
-          ></div>
-        </div>
-      </>
-    )
+          onClick={() => {
+            setShowFavorites(false);
+          }}
+          className={cls.closeButton}
+        ></div>
+      </div>
+    </>
   );
 }
