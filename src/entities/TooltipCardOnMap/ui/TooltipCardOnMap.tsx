@@ -6,6 +6,7 @@ import routeToIcon from 'shared/assets/route-to.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 
@@ -65,6 +66,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         <div className={cls.rating}>
           <RatingWidget isClickable={false} rating={averageRating} /> {Boolean(averageRating) && averageRating}
         </div>
+        <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
         <div className={cls.address}>{address}</div>
         <div className={cls.iconsGroup}>
           <NavLink

@@ -8,6 +8,7 @@ import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { type PlaceProperties } from 'shared/types';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './PlaceCard.module.scss';
@@ -80,7 +81,8 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
             <RatingWidget isClickable={false} rating={properties.averageRating} />{' '}
             {Boolean(properties.averageRating) && properties.averageRating}
           </div>
-          <div className={cls.description}>{properties.description}</div>
+          {properties.description && <div className={cls.description}>{properties.description}</div>}
+          <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
           <div className={cls.address}>
             <p>{properties.address}</p>
             <div className={cls.iconsGroup}>

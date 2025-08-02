@@ -1,0 +1,1 @@
+export { BadgePill } from './BadgePill';

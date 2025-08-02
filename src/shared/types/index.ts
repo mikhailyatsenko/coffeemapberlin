@@ -26,6 +26,7 @@ export interface PlaceProperties {
   favoriteCount: number;
   isFavorite: boolean;
   characteristicCounts: ICharacteristicCounts;
+  neighborhood: string;
 }
 
 export interface User {

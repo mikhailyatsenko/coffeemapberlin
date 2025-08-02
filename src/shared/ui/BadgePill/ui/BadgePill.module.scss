@@ -1,0 +1,38 @@
+.badgePill {
+  border-radius: 9999px;
+  font-size: 10px;
+  opacity: 0.8;
+  line-height: 1;
+  font-weight: normal;
+  text-wrap: nowrap;
+  width: fit-content;
+  &.small {
+    padding: 4px 8px;
+  }
+  &.medium {
+    padding: 8px 16px;
+  }
+  &.large {
+    padding: 12px 24px;
+  }
+  &.red {
+    background-color: #ff0000;
+    color: #ffffff;
+  }
+  &.green {
+    background-color: #58af2f;
+    color: #ffffff;
+  }
+  &.blue {
+    background-color: #18a3ee;
+    color: #ffffff;
+  }
+  &.orange {
+    background-color: #ff5d34;
+    color: #ffffff;
+  }
+  &.gray {
+    background-color: #303030;
+    color: #ffffff;
+  }
+}
