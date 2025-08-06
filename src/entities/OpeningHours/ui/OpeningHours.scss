@@ -1,0 +1,83 @@
+.opening-hours {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  &__title {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    text-align: center;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+
+    &:hover {
+      background: #e9ecef;
+      transform: translateY(-1px);
+    }
+
+    &--today {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: 1px solid #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+      .opening-hours__day,
+      .opening-hours__hours {
+        color: white;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__day {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    min-width: 40px;
+  }
+
+  &__hours {
+    font-size: 14px;
+    color: #6c757d;
+    text-align: right;
+    font-weight: 400;
+  }
+
+  // Responsive design
+  @media (max-width: 480px) {
+    padding: 16px;
+
+    &__title {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    &__item {
+      padding: 10px 12px;
+    }
+
+    &__day,
+    &__hours {
+      font-size: 13px;
+    }
+  }
+}
