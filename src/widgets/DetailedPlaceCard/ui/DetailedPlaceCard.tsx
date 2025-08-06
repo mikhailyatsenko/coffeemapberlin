@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
+import { OpeningHours } from 'entities/OpeningHours';
 import { useToggleFavorite } from 'shared/api';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { useGetAllPlacesQuery } from 'shared/generated/graphql';
@@ -171,6 +172,39 @@ const DetailedPlaceCard: React.FC = () => {
                 characteristicCounts={characteristicCounts}
               />
             )}
+
+            <OpeningHours
+              openingHours={[
+                {
+                  day: 'Monday',
+                  hours: '10:30 AM to 5:30 PM',
+                },
+                {
+                  day: 'Tuesday',
+                  hours: '10:30 AM to 5:30 PM',
+                },
+                {
+                  day: 'Wednesday',
+                  hours: '10:30 AM to 5:30 PM',
+                },
+                {
+                  day: 'Thursday',
+                  hours: '10:30 AM to 5:30 PM',
+                },
+                {
+                  day: 'Friday',
+                  hours: '10:30 AM to 5:30 PM',
+                },
+                {
+                  day: 'Saturday',
+                  hours: '10 AM to 5 PM',
+                },
+                {
+                  day: 'Sunday',
+                  hours: '10 AM to 5 PM',
+                },
+              ]}
+            />
 
             <ReviewList
               showRateNow={showRateNow}
