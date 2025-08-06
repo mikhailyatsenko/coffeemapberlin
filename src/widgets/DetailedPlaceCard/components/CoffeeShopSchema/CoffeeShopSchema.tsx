@@ -28,7 +28,7 @@ export const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, im
   }
 
   if (image) {
-    schemaData.image = `${window.location.origin}/places-images/${image}`;
+    schemaData.image = image;
   }
   return <script type="application/ld+json">{JSON.stringify(schemaData)}</script>;
 };
