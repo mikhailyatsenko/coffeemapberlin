@@ -18,6 +18,9 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-mapbox': ['mapbox-gl', 'react-map-gl'],
+          'vendor-apollo': ['@apollo/client', 'graphql', 'graphql-ws'],
+          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
+          'vendor-ui': ['react-hot-toast', 'clsx', 'zustand'],
         },
       },
     },
