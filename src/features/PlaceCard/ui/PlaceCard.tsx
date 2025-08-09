@@ -51,7 +51,7 @@ export const PlaceCard = ({ properties, coordinates, isLcpCandidate = false }: P
             src={
               properties.image
                 ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
-                : 'places-images/default-place.jpg'
+                : '/places-images/default-place.jpg'
             }
             alt=""
             loading={isLcpCandidate ? 'eager' : 'lazy'}
