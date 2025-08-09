@@ -1,3 +1,3 @@
 import { lazy } from 'react';
 
-export const DetailedPlaceCardLazy = lazy(() => import('./DetailedPlaceCard'));
+export const DetailedPlaceCardLazy = lazy(async () => await import('./DetailedPlaceCard'));
