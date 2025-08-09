@@ -25,7 +25,7 @@ export function PlacesList({ places }: PlacesListProps) {
               properties={place.properties}
               coordinates={place.geometry.coordinates}
               key={place.properties.id}
-              isLcpCandidate={index <= 5}
+              isLcpCandidate={index === 0}
             />
           ))}
         </div>
