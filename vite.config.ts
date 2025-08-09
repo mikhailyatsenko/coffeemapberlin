@@ -23,6 +23,8 @@ export default defineConfig({
           'vendor-apollo': ['@apollo/client', 'graphql', 'graphql-ws'],
           'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
           'vendor-ui': ['react-hot-toast', 'clsx', 'zustand'],
+          'vendor-google': ['@react-oauth/google', 'react-google-recaptcha', 'react-google-recaptcha-v3'],
+          'vendor-utils': ['date-fns', 'react-social-media-embed', 'yet-another-react-lightbox'],
         },
       },
     },
