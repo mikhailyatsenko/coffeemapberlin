@@ -12,4 +12,14 @@ export default defineConfig({
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
   },
   base: './',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-mapbox': ['mapbox-gl', 'react-map-gl'],
+        },
+      },
+    },
+  },
 });
