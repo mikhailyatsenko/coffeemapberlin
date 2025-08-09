@@ -13,6 +13,8 @@ export default defineConfig({
   },
   base: './',
   build: {
+    minify: 'terser',
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -22,6 +24,12 @@ export default defineConfig({
           'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
           'vendor-ui': ['react-hot-toast', 'clsx', 'zustand'],
         },
+      },
+    },
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
       },
     },
   },
