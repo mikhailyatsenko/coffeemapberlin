@@ -20,11 +20,12 @@ export function PlacesList({ places }: PlacesListProps) {
         className={`${cls.placesData} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
       >
         <div className={`${cls.PlacesList}`}>
-          {places.map((place) => (
+          {places.map((place, index) => (
             <PlaceCard
               properties={place.properties}
               coordinates={place.geometry.coordinates}
               key={place.properties.id}
+              isLcpCandidate={index <= 5}
             />
           ))}
         </div>
