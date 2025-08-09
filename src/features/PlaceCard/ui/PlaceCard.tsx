@@ -17,9 +17,10 @@ import cls from './PlaceCard.module.scss';
 interface PlaceCardProps {
   properties: GetAllPlacesQuery['places'][number]['properties'];
   coordinates: Position;
+  isLcpCandidate?: boolean;
 }
 
-export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
+export const PlaceCard = ({ properties, coordinates, isLcpCandidate = false }: PlaceCardProps) => {
   const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const navigate = useNavigate();
@@ -53,6 +54,8 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
                 : 'places-images/default-place.jpg'
             }
             alt=""
+            loading={isLcpCandidate ? 'eager' : 'lazy'}
+            fetchPriority={isLcpCandidate ? ('high' as const) : undefined}
           />
         </div>
         <div className={cls.content}>

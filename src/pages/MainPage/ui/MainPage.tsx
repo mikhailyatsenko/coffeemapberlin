@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
@@ -45,10 +45,21 @@ export const MainPage = () => {
     features: placesToDisplay ?? [],
   };
 
+  // Defer map mount to the next frame to improve LCP
+  const [showMap, setShowMap] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      setShowMap(true);
+    });
+    return () => {
+      cancelAnimationFrame(id);
+    };
+  }, []);
+
   return (
     <>
       {loading ? <Loader /> : null}
-      <MainMap placesGeo={placesGeo} />
+      {showMap && <MainMap placesGeo={placesGeo} />}
       <PlacesList places={placesToDisplay} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
       <Outlet />
