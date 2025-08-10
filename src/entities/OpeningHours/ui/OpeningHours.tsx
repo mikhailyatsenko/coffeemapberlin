@@ -26,7 +26,7 @@ const OpeningHoursList: React.FC<{ openingHours: OpeningHoursProps['openingHours
   );
 };
 
-export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours, className = '' }) => {
+export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const todayInfo = useMemo(() => {
@@ -48,9 +48,9 @@ export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours, classN
         <span className="opening-hours-today-label">Today open:</span>
         <span className="opening-hours-today-value">{todayInfo}</span>
       </div>
-      {/* <RegularButton className="opening-hours-button" onClick={handleOpenModal} type="button">
+      <RegularButton className="opening-hours-button" onClick={handleOpenModal} type="button">
         Show all days
-      </RegularButton> */}
+      </RegularButton>
       {modalOpen && (
         <Modal onClose={handleCloseModal} widthOnDesktop={400}>
           <h3 className="opening-hours-title" style={{ marginTop: 0 }}>

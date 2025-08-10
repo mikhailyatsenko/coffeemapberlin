@@ -5,5 +5,4 @@ export interface OpeningHoursItem {
 
 export interface OpeningHoursProps {
   openingHours: OpeningHoursItem[];
-  className?: string;
 }
