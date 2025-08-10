@@ -12,4 +12,27 @@ export default defineConfig({
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
   },
   base: './',
+  build: {
+    minify: 'terser',
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-mapbox': ['mapbox-gl', 'react-map-gl'],
+          'vendor-apollo': ['@apollo/client', 'graphql', 'graphql-ws'],
+          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
+          'vendor-ui': ['react-hot-toast', 'clsx', 'zustand'],
+          'vendor-google': ['@react-oauth/google', 'react-google-recaptcha', 'react-google-recaptcha-v3'],
+          'vendor-utils': ['date-fns', 'react-social-media-embed', 'yet-another-react-lightbox'],
+        },
+      },
+    },
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
 });
