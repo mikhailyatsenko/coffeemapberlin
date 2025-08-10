@@ -162,7 +162,7 @@ const DetailedPlaceCard: React.FC = () => {
                 isHeaderVisible={isHeaderVisible}
               />
             )}
-            {import.meta.env.VITE_ENV !== 'development' && (
+            {import.meta.env.VITE_ENV === 'development' && (
               <OpeningHours
                 openingHours={[
                   {
