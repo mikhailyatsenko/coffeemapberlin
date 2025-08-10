@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useState } from 'react';
 import { RatePlaceWidget, ReviewForm, ToggleCharacteristic } from 'entities/RatePlace';
 import { LeaveOrEditMyReview } from 'entities/RatePlace/ui/LeaveOrEditMyReview/ui/LeaveOrEditMyReview';
@@ -59,10 +60,12 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
           onClick={() => {
             setShowRateNow(true);
           }}
-          className={cls.rateNowCall}
+          className={clsx(cls.rateNowCall, cls.animBg)}
         >
           <h5 className={cls.question}>Have you visited this place?</h5>
-          <RegularButton theme={'blank'}>Share Your Thoughts</RegularButton>
+          <RegularButton color="white" theme={'blank'}>
+            Share Your Thoughts
+          </RegularButton>
         </div>
       );
 

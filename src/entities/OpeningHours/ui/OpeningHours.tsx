@@ -15,11 +15,11 @@ const OpeningHoursList: React.FC<{ openingHours: OpeningHoursProps['openingHours
   }, [openingHours]);
 
   return (
-    <div className="opening-hours__list">
+    <div className="opening-hours-list">
       {sortedOpeningHours.map(({ day, hours }) => (
-        <div key={day} className="opening-hours__item">
-          <span className="opening-hours__day">{DAY_SHORT_NAMES[day as keyof typeof DAY_SHORT_NAMES]}</span>
-          <span className="opening-hours__hours">{hours}</span>
+        <div key={day} className="opening-hours-item">
+          <span className="opening-hours-day">{DAY_SHORT_NAMES[day as keyof typeof DAY_SHORT_NAMES]}</span>
+          <span className="opening-hours-time">{hours}</span>
         </div>
       ))}
     </div>
@@ -43,22 +43,22 @@ export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours, classN
   }, []);
 
   return (
-    <div className={`opening-hours ${className}`}>
-      <div className="opening-hours__today-row">
-        <span className="opening-hours__today-label">Today open:</span>
-        <span className="opening-hours__today-value">{todayInfo}</span>
+    <>
+      <div className="opening-hours-today">
+        <span className="opening-hours-today-label">Today open:</span>
+        <span className="opening-hours-today-value">{todayInfo}</span>
       </div>
-      <RegularButton className="opening-hours__show-all-btn" onClick={handleOpenModal} type="button">
+      {/* <RegularButton className="opening-hours-button" onClick={handleOpenModal} type="button">
         Show all days
-      </RegularButton>
+      </RegularButton> */}
       {modalOpen && (
         <Modal onClose={handleCloseModal} widthOnDesktop={400}>
-          <h3 className="opening-hours__title" style={{ marginTop: 0 }}>
+          <h3 className="opening-hours-title" style={{ marginTop: 0 }}>
             Opening Hours
           </h3>
           <OpeningHoursList openingHours={openingHours} />
         </Modal>
       )}
-    </div>
+    </>
   );
 };

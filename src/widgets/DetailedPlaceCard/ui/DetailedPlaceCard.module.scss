@@ -90,13 +90,13 @@
         display: none;
       }
     }
+    @media (height < 600px) {
+      overflow-y: auto;
+    }
   }
 
   @media (width <= 767px) {
     width: 100%;
-  }
-  @media (height < 600px) {
-    overflow-y: auto;
   }
 }
 
