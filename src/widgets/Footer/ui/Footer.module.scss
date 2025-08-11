@@ -19,3 +19,18 @@
   filter: grayscale(100%);
   opacity: 0.5;
 }
+
+.footerLinks {
+  display: flex;
+  gap: 16px;
+}
+
+.link {
+  color: #8a8a8a;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #bdbdbd;
+  text-decoration: underline;
+}
