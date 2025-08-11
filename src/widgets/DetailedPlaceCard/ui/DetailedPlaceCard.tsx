@@ -191,7 +191,7 @@ const DetailedPlaceCard: React.FC = () => {
                   },
                   {
                     day: 'Sunday',
-                    hours: '10 AM to 5 PM',
+                    hours: 'Closed',
                   },
                 ]}
               />

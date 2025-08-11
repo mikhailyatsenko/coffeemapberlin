@@ -3,10 +3,12 @@ import { AboutPage } from 'pages/AboutPage';
 import { AccountSettingsPage } from 'pages/AccountSettingsPage';
 import { BlogPage } from 'pages/BlogPage';
 import { ContactPage } from 'pages/ContactPage';
+import { DisclaimerPage } from 'pages/DisclaimerPage';
 import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
+import { PrivacyPolicyPage } from 'pages/PrivacyPolicyPage';
 import { DetailedPlaceCard } from 'widgets/DetailedPlaceCard';
 import { AppRoutes, RoutePaths } from 'shared/constants';
 import { PrivateRoute } from '../../ui/PrivateRoute';
@@ -63,6 +65,14 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
   [AppRoutes.CONFIRM_EMAIL]: {
     path: RoutePaths.confirmEmail,
     element: <MainPage />,
+  },
+  [AppRoutes.PRIVACY]: {
+    path: RoutePaths.privacy,
+    element: <PrivacyPolicyPage />,
+  },
+  [AppRoutes.DISCLAIMER]: {
+    path: RoutePaths.disclaimer,
+    element: <DisclaimerPage />,
   },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,

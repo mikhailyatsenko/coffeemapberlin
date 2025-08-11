@@ -8,6 +8,8 @@ export enum AppRoutes {
   LOGIN = 'login',
   CONFIRM_EMAIL = 'confirmEmail',
   NOT_FOUND = 'not_found',
+  PRIVACY = 'privacy',
+  DISCLAIMER = 'disclaimer',
 }
 
 export const RoutePaths: Record<AppRoutes, string> = {
@@ -20,4 +22,6 @@ export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.LOGIN]: 'login',
   [AppRoutes.CONFIRM_EMAIL]: 'confirm-email',
   [AppRoutes.NOT_FOUND]: '*',
+  [AppRoutes.PRIVACY]: 'privacy-policy',
+  [AppRoutes.DISCLAIMER]: 'disclaimer',
 };
