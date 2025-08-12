@@ -5,7 +5,6 @@ import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 dotenv.config();
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tsconfigPaths(), svgr()],
   define: {
@@ -14,18 +13,18 @@ export default defineConfig({
   base: './',
   build: {
     minify: 'terser',
-    cssCodeSplit: true,
+    target: 'esnext',
     rollupOptions: {
       output: {
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-apollo': ['@apollo/client', 'graphql', 'graphql-ws'],
-          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
+          'vendor-apollo': ['@apollo/client', 'graphql'],
+          'vendor-forms': ['react-hook-form', 'yup'],
           'vendor-ui': ['react-hot-toast', 'clsx', 'zustand'],
-          'vendor-google': ['@react-oauth/google', 'react-google-recaptcha', 'react-google-recaptcha-v3'],
-          'vendor-utils': ['date-fns', 'react-social-media-embed', 'yet-another-react-lightbox'],
-          'vendor-react-map-gl': ['react-map-gl'],
         },
+      },
+      treeshake: {
+        moduleSideEffects: false,
       },
     },
     terserOptions: {
