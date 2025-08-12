@@ -1,27 +1,31 @@
 .Footer {
   font-size: 12px;
   text-align: center;
-  height: 90px;
-  padding: 10px 30px;
+  height: fit-content;
+  padding: 20px 40px;
   background-color: #141414;
   color: #626262;
   display: flex;
   align-items: center;
   justify-content: space-between;
   @media (width < 576px) {
+    .footerLinks {
+      margin-left: 0;
+    }
     flex-direction: column;
     justify-content: center;
-    gap: 10px;
+    gap: 16px;
   }
 }
 
 .footerLogo {
   filter: grayscale(100%);
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .footerLinks {
   display: flex;
+  margin-left: auto;
   gap: 16px;
 }
 

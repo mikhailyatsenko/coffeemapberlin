@@ -1,13 +1,12 @@
 import { type ApolloCache } from '@apollo/client';
 import {
-  GetAllPlacesDocument,
-  type GetAllPlacesQuery,
   useToggleCharacteristicMutation,
   type Characteristic,
+  PlaceDocument,
+  type PlaceQuery,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import { showLoginRequired } from 'shared/stores/modal';
-import { type ICharacteristicCounts } from 'shared/types';
 
 export const useToggleCharacteristic = (placeId: string) => {
   const { user } = useAuthStore();
@@ -22,29 +21,29 @@ export const useToggleCharacteristic = (placeId: string) => {
     update(cache, _, { variables }) {
       const characteristic = variables?.characteristic;
       if (characteristic) {
-        updateAllPlacesCache(cache, placeId, characteristic);
+        updatePlaceCache(cache, placeId, characteristic); 
       }
     },
   });
 
-  const updateAllPlacesCache = (
+  const updatePlaceCache = (
     cache: ApolloCache<unknown>,
     placeId: string,
-    characteristic: keyof ICharacteristicCounts,
+    characteristic: Characteristic,
   ) => {
-    const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
-
-    if (existingData?.places) {
-      const updatedPlaces = existingData.places.map((place) => {
-        if (place.properties.id === placeId) {
-          const currentCharacteristic = place.properties.characteristicCounts[characteristic];
-
-          return {
-            ...place,
+    const existingData = cache.readQuery<PlaceQuery>({ query: PlaceDocument, variables: { placeId } });
+    if (existingData?.place) {
+      const currentCharacteristic = existingData.place.properties.characteristicCounts[characteristic];
+      cache.writeQuery<PlaceQuery>({
+        query: PlaceDocument,
+        variables: { placeId },
+        data: {
+          place: {
+            ...existingData.place,
             properties: {
-              ...place.properties,
+              ...existingData.place.properties,
               characteristicCounts: {
-                ...place.properties.characteristicCounts,
+                ...existingData.place.properties.characteristicCounts,
                 [characteristic]: {
                   ...currentCharacteristic,
                   pressed: !currentCharacteristic.pressed,
@@ -54,17 +53,18 @@ export const useToggleCharacteristic = (placeId: string) => {
                 },
               },
             },
-          };
-        }
-        return place;
-      });
-
-      cache.writeQuery({
-        query: GetAllPlacesDocument,
-        data: { places: updatedPlaces },
+          },
+        },
       });
     }
   };
+
+  // Optionally keep GetAllPlaces avg/ratingCount in sync if needed (no charCounts in this query)
+  // const updateAllPlacesCacheAvg = (cache: ApolloCache<unknown>, placeId: string) => {
+  //   const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
+  //   if (!existingData?.places) return;
+  //   cache.writeQuery({ query: GetAllPlacesDocument, data: { places: existingData.places } });
+  // };
 
   const toggleChar = async (characteristic: Characteristic) => {
     if (!user) {

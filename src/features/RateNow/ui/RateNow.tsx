@@ -50,8 +50,10 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
     }
   };
 
+  const { __typename: _omit, ...charCounts } = characteristicCounts;
+
   const hasUserInteracted =
-    !!currentUserReview || Object.values(characteristicCounts).some((characteristic) => characteristic.pressed);
+    !!currentUserReview || Object.values(charCounts).some((characteristic) => characteristic.pressed);
 
   if (!showRateNow) {
     if (!hasUserInteracted)
@@ -63,9 +65,9 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
           className={clsx(cls.rateNowCall, cls.animBg)}
         >
           <h5 className={cls.question}>Have you visited this place?</h5>
-          <RegularButton color="white" theme={'blank'}>
+          <button className={cls.shareYourThoughtsButton} type="button">
             Share Your Thoughts
-          </RegularButton>
+          </button>
         </div>
       );
 

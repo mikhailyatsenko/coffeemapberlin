@@ -1,4 +1,4 @@
-import { type ICharacteristicCounts } from 'shared/types';
+import { type CharacteristicCounts } from 'shared/generated/graphql';
 
 interface Review {
   id: string;
@@ -15,5 +15,5 @@ export interface RateNowProps {
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   reviews: Review[];
   placeId: string;
-  characteristicCounts: ICharacteristicCounts;
+  characteristicCounts: CharacteristicCounts;
 }

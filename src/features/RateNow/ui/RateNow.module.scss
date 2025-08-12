@@ -29,9 +29,17 @@
   }
 }
 
+.shareYourThoughtsButton {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-decoration: underline;
+}
+
 .question {
-  text-align: center;
-  font-weight: 200;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
 }
 .feedbackInteractions {
   display: flex;

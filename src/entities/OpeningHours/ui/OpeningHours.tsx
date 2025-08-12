@@ -1,39 +1,21 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Modal } from 'shared/ui/Modal';
-import { RegularButton } from 'shared/ui/RegularButton';
-import { DAY_ORDER, DAY_SHORT_NAMES } from '../constants';
+import { OpeningHoursList } from '../components/OpeningHoursList/OpeningHoursList';
+
 import { type OpeningHoursProps } from '../types';
-import './OpeningHours.scss';
-
-const OpeningHoursList: React.FC<{ openingHours: OpeningHoursProps['openingHours'] }> = ({ openingHours }) => {
-  const sortedOpeningHours = useMemo(() => {
-    const hoursMap = new Map(openingHours.map((item) => [item.day, item.hours]));
-    return DAY_ORDER.map((day) => ({
-      day,
-      hours: hoursMap.get(day) || 'Closed',
-    }));
-  }, [openingHours]);
-
-  return (
-    <div className="opening-hours-list">
-      {sortedOpeningHours.map(({ day, hours }) => (
-        <div key={day} className="opening-hours-item">
-          <span className="opening-hours-day">{DAY_SHORT_NAMES[day as keyof typeof DAY_SHORT_NAMES]}</span>
-          <span className="opening-hours-time">{hours}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
+import cls from './OpeningHours.module.scss';
 
 export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
+  const todayDay = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  }, []);
+
   const todayInfo = useMemo(() => {
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    const found = openingHours.find((item) => item.day === today);
+    const found = openingHours?.find((item) => item.day === todayDay);
     return found ? found.hours : 'Closed';
-  }, [openingHours]);
+  }, [openingHours, todayDay]);
 
   const handleOpenModal = useCallback(() => {
     setModalOpen(true);
@@ -41,22 +23,30 @@ export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours }) => {
   const handleCloseModal = useCallback(() => {
     setModalOpen(false);
   }, []);
+  if (!openingHours || openingHours.length === 0) return null;
 
   return (
     <>
-      <div className="opening-hours-today">
-        <span className="opening-hours-today-label">Today open:</span>
-        <span className="opening-hours-today-value">{todayInfo}</span>
+      <div className={cls.openingHoursToday}>
+        <div className={cls.openingHoursTodayInfo}>
+          {todayInfo === 'Closed' ? (
+            <span className={cls.openingHoursClosed}>Today closed</span>
+          ) : (
+            <>
+              <span className={cls.openingHoursTodayLabel}>Today open: &nbsp;</span>
+              <span className={cls.openingHoursTodayValue}>{todayInfo}</span>
+            </>
+          )}
+        </div>
+        <button className={cls.openingHoursButton} onClick={handleOpenModal} type="button">
+          Show all days schedule
+        </button>
       </div>
-      <RegularButton className="opening-hours-button" onClick={handleOpenModal} type="button">
-        Show all days
-      </RegularButton>
+
       {modalOpen && (
-        <Modal onClose={handleCloseModal} widthOnDesktop={400}>
-          <h3 className="opening-hours-title" style={{ marginTop: 0 }}>
-            Opening Hours
-          </h3>
-          <OpeningHoursList openingHours={openingHours} />
+        <Modal closeOnEsc={true} onClose={handleCloseModal} widthOnDesktop={400}>
+          <h3 className={cls.openingHoursTitle}>Opening Hours</h3>
+          <OpeningHoursList openingHours={openingHours} todayDay={todayDay} />
         </Modal>
       )}
     </>

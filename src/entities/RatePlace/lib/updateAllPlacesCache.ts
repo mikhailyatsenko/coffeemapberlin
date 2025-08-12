@@ -1,26 +1,26 @@
 import { type ApolloCache } from '@apollo/client';
-import { GetAllPlacesDocument, type GetAllPlacesQuery } from 'shared/generated/graphql';
-
-import { type ICharacteristicCounts } from 'shared/types';
+import { PlaceDocument, type PlaceQuery, type Characteristic } from 'shared/generated/graphql';
 
 export const updateAllPlacesCache = (
   cache: ApolloCache<unknown>,
   placeId: string,
-  characteristic: keyof ICharacteristicCounts,
+  characteristic: Characteristic,
 ) => {
-  const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
+  const existingData = cache.readQuery<PlaceQuery>({ query: PlaceDocument, variables: { placeId } });
 
-  if (existingData?.places) {
-    const updatedPlaces = existingData.places.map((place) => {
-      if (place.properties.id === placeId) {
-        const currentCharacteristic = place.properties.characteristicCounts[characteristic];
+  if (existingData?.place) {
+    const currentCharacteristic = existingData.place.properties.characteristicCounts[characteristic];
 
-        return {
-          ...place,
+    cache.writeQuery<PlaceQuery>({
+      query: PlaceDocument,
+      variables: { placeId },
+      data: {
+        place: {
+          ...existingData.place,
           properties: {
-            ...place.properties,
+            ...existingData.place.properties,
             characteristicCounts: {
-              ...place.properties.characteristicCounts,
+              ...existingData.place.properties.characteristicCounts,
               [characteristic]: {
                 ...currentCharacteristic,
                 pressed: !currentCharacteristic.pressed,
@@ -30,14 +30,8 @@ export const updateAllPlacesCache = (
               },
             },
           },
-        };
-      }
-      return place;
-    });
-
-    cache.writeQuery({
-      query: GetAllPlacesDocument,
-      data: { places: updatedPlaces },
+        },
+      },
     });
   }
 };

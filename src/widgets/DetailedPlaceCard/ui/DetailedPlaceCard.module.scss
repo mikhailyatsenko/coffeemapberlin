@@ -9,7 +9,7 @@
   z-index: 10;
 }
 
-.addressCopmactView {
+.addressCompactView {
   position: fixed;
   top: 0;
   left: 0;
@@ -39,27 +39,6 @@
   animation: ease-out 0.3s fadeIn;
   z-index: 1;
 
-  .backgroundImgWrapper {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    &::before {
-      content: '';
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      background: linear-gradient(to bottom, rgba(70, 22, 3, 0.7) 5%, rgba(0, 0, 0, 0) 50%),
-        linear-gradient(to top, white 35%, rgba(255, 255, 255, 0) 80%);
-      z-index: 3;
-    }
-    .backgroundImg {
-      object-fit: cover;
-      width: 100%;
-    }
-  }
-
   .detailsContent {
     overflow: hidden;
     height: 100%;
@@ -70,6 +49,26 @@
     align-items: center;
     padding: 20px;
     z-index: 2;
+    .backgroundImgWrapper {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      &::before {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(to bottom, rgba(70, 22, 3, 0.7) 5%, rgba(0, 0, 0, 0) 50%),
+          linear-gradient(to top, white 35%, rgba(255, 255, 255, 0) 80%);
+        z-index: 0;
+      }
+      .backgroundImg {
+        object-fit: cover;
+        width: 100%;
+      }
+    }
     .name {
       margin-top: 16px;
       text-align: center;
@@ -90,6 +89,15 @@
         display: none;
       }
     }
+
+    .openingHoursContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
     @media (height < 600px) {
       overflow-y: auto;
     }
@@ -117,7 +125,7 @@
   align-items: center;
   justify-content: end;
   gap: 12px;
-  z-index: 13;
+  z-index: 1;
   .iconFavWrapper {
     cursor: pointer;
     background-color: #f6f6f6;
