@@ -35,18 +35,45 @@ export const GET_PLACE = gql`
       properties {
         id
         ratingCount
-        openingHours { day hours }
+        openingHours {
+          day
+          hours
+        }
         phone
         website
         characteristicCounts {
-          deliciousFilterCoffee { pressed count }
-          pleasantAtmosphere { pressed count }
-          friendlyStaff { pressed count }
-          freeWifi { pressed count }
-          yummyEats { pressed count }
-          affordablePrices { pressed count }
-          petFriendly { pressed count }
-          outdoorSeating { pressed count }
+          deliciousFilterCoffee {
+            pressed
+            count
+          }
+          pleasantAtmosphere {
+            pressed
+            count
+          }
+          friendlyStaff {
+            pressed
+            count
+          }
+          freeWifi {
+            pressed
+            count
+          }
+          yummyEats {
+            pressed
+            count
+          }
+          affordablePrices {
+            pressed
+            count
+          }
+          petFriendly {
+            pressed
+            count
+          }
+          outdoorSeating {
+            pressed
+            count
+          }
         }
       }
     }
