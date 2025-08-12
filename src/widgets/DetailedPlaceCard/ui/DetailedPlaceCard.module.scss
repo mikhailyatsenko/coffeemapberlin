@@ -120,11 +120,10 @@
 .iconsRow {
   position: absolute;
   top: 8px;
-  right: 52px;
+  right: 62px;
   display: flex;
-  align-items: center;
   justify-content: end;
-  gap: 12px;
+  gap: 14px;
   z-index: 1;
   .iconFavWrapper {
     cursor: pointer;
@@ -146,35 +145,9 @@
     }
   }
 
-  .viewInstagramButton {
-    color: #fafafa;
-    font-weight: 200;
-    border: 1px solid white;
-    border-radius: 30px;
-    padding: 0 10px;
+  .instagramIcon {
     height: 28px;
-    background: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: color 0.3s ease;
-    width: fit-content;
-
-    &:hover,
-    &:active {
-      color: #fafafa;
-      border-color: #fafafa;
-      transform: scale(0.99);
-    }
-
-    &:focus {
-      outline: none;
-    }
-    &.darkColor {
-      color: #303030;
-      border-color: #303030;
-    }
+    width: 28px;
   }
   @media (width <= 500px) {
     right: initial;

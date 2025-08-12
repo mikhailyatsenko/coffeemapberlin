@@ -5,12 +5,12 @@ import { ReviewList } from 'features/ReviewList';
 import { HeaderDetailedPlaceCard } from 'entities/HeaderDetailedPlaceCard';
 import { OpeningHours } from 'entities/OpeningHours';
 import { useToggleFavorite } from 'shared/api';
+import instagramIcon from 'shared/assets/instagram.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { useGetAllPlacesQuery, usePlaceQuery, type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { CharacteristicCountsIcon, characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
-import { InstagramEmbedProfile } from 'shared/ui/InstagramEmbed';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
 import cls from './DetailedPlaceCard.module.scss';
@@ -19,7 +19,6 @@ const DetailedPlaceCard: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [isViewInstProfile, setIsViewInstProfile] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showRateNow, setShowRateNow] = useState(false);
 
@@ -92,22 +91,14 @@ const DetailedPlaceCard: React.FC = () => {
           className={cls.detailsContainer}
         >
           <div className={cls.detailsContent}>
-            {instagram ? (
-              <InstagramEmbedProfile
-                image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
-                normalView={isViewInstProfile}
-                instaLink={instagram}
+            <div className={cls.backgroundImgWrapper}>
+              <img
+                loading="lazy"
+                src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
+                alt="Place image"
+                className={cls.backgroundImg}
               />
-            ) : (
-              <div className={cls.backgroundImgWrapper}>
-                <img
-                  loading="lazy"
-                  src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
-                  alt="Place image"
-                  className={cls.backgroundImg}
-                />
-              </div>
-            )}
+            </div>
             <div className={cls.iconsRow}>
               <div
                 title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
@@ -117,14 +108,9 @@ const DetailedPlaceCard: React.FC = () => {
                 <AddToFavButton isFavorite={Boolean(isFavorite)} />
               </div>
               {instagram && (
-                <button
-                  className={`${cls.viewInstagramButton} ${isViewInstProfile ? cls.darkColor : ''}`}
-                  onClick={() => {
-                    setIsViewInstProfile((prev) => !prev);
-                  }}
-                >
-                  {isViewInstProfile ? 'Back to place info' : 'View Instagram'}
-                </button>
+                <a href={instagram} target="_blank" rel="noreferrer" title="Open the place's Instagram profile">
+                  <img className={cls.instagramIcon} src={instagramIcon} alt="" />
+                </a>
               )}
             </div>
             <p className={cls.address}>{address}</p>
@@ -139,7 +125,6 @@ const DetailedPlaceCard: React.FC = () => {
                 />
               ))}
             </div>
-
             {!showRateNow && (
               <HeaderDetailedPlaceCard
                 averageRating={averageRating || 0}
@@ -159,7 +144,6 @@ const DetailedPlaceCard: React.FC = () => {
                 />
               )}
             </div>
-
             <ReviewList
               showRateNow={showRateNow}
               setShowRateNow={setShowRateNow}
@@ -168,7 +152,6 @@ const DetailedPlaceCard: React.FC = () => {
               isCompactView={isHeaderVisible}
               setCompactView={setIsHeaderVisible}
             />
-
             {/* for Google Rich Results */}
             <CoffeeShopSchema
               address={address}
