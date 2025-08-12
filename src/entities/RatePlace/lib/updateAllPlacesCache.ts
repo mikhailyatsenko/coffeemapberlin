@@ -1,11 +1,7 @@
 import { type ApolloCache } from '@apollo/client';
 import { PlaceDocument, type PlaceQuery, type Characteristic } from 'shared/generated/graphql';
 
-export const updateAllPlacesCache = (
-  cache: ApolloCache<unknown>,
-  placeId: string,
-  characteristic: Characteristic,
-) => {
+export const updateAllPlacesCache = (cache: ApolloCache<unknown>, placeId: string, characteristic: Characteristic) => {
   const existingData = cache.readQuery<PlaceQuery>({ query: PlaceDocument, variables: { placeId } });
 
   if (existingData?.place) {

@@ -21,16 +21,12 @@ export const useToggleCharacteristic = (placeId: string) => {
     update(cache, _, { variables }) {
       const characteristic = variables?.characteristic;
       if (characteristic) {
-        updatePlaceCache(cache, placeId, characteristic); 
+        updatePlaceCache(cache, placeId, characteristic);
       }
     },
   });
 
-  const updatePlaceCache = (
-    cache: ApolloCache<unknown>,
-    placeId: string,
-    characteristic: Characteristic,
-  ) => {
+  const updatePlaceCache = (cache: ApolloCache<unknown>, placeId: string, characteristic: Characteristic) => {
     const existingData = cache.readQuery<PlaceQuery>({ query: PlaceDocument, variables: { placeId } });
     if (existingData?.place) {
       const currentCharacteristic = existingData.place.properties.characteristicCounts[characteristic];
