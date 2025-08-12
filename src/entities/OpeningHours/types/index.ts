@@ -4,5 +4,5 @@ export interface OpeningHoursItem {
 }
 
 export interface OpeningHoursProps {
-  openingHours: OpeningHoursItem[];
+  openingHours?: OpeningHoursItem[];
 }

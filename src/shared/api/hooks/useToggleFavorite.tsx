@@ -22,9 +22,9 @@ export const useToggleFavorite = (placeId: string | null) => {
       const updatedPlaces = existingData.places.map((place) => {
         if (place.properties.id === placeId) {
           if (!place.properties.isFavorite) {
-            toast(`${place.properties.name} was added to favorites`);
+            toast(`${place.properties.name} has been added to favorites`);
           } else {
-            toast(`${place.properties.name} was removed from favorites`);
+            toast(`${place.properties.name} has been removed from favorites`);
           }
           return {
             ...place,

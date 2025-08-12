@@ -1,5 +1,5 @@
 import { ICON_CHAR_MAP } from 'shared/constants/iconCharMap';
-import { type CharacteristicData } from 'shared/types';
+import { type CharacteristicData } from 'shared/generated/graphql';
 import cls from './CharacteristicCountsIcon.module.scss';
 
 interface CharacteristicCountsIconsProps {

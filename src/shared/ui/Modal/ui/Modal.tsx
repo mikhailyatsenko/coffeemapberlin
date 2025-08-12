@@ -5,10 +5,13 @@ interface ModalProps {
   children: ReactNode;
   onClose: () => void;
   widthOnDesktop?: 400 | 600 | 800;
+  closeOnEsc?: boolean;
 }
 
-export const Modal = ({ children, onClose, widthOnDesktop = 400 }: ModalProps) => {
+export const Modal = ({ children, onClose, widthOnDesktop = 400, closeOnEsc = false }: ModalProps) => {
   useEffect(() => {
+    if (!closeOnEsc) return;
+
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
@@ -19,7 +22,7 @@ export const Modal = ({ children, onClose, widthOnDesktop = 400 }: ModalProps) =
     return () => {
       document.removeEventListener('keydown', handleEscKey);
     };
-  }, [onClose]);
+  }, [onClose, closeOnEsc]);
 
   const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.currentTarget === event.target) {
