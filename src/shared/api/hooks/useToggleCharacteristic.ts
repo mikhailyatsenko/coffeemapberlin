@@ -55,13 +55,6 @@ export const useToggleCharacteristic = (placeId: string) => {
     }
   };
 
-  // Optionally keep GetAllPlaces avg/ratingCount in sync if needed (no charCounts in this query)
-  // const updateAllPlacesCacheAvg = (cache: ApolloCache<unknown>, placeId: string) => {
-  //   const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
-  //   if (!existingData?.places) return;
-  //   cache.writeQuery({ query: GetAllPlacesDocument, data: { places: existingData.places } });
-  // };
-
   const toggleChar = async (characteristic: Characteristic) => {
     if (!user) {
       showLoginRequired();
