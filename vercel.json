@@ -6,6 +6,7 @@
     "git": {
       "deploymentEnabled": {
         "main": true,
+        "dev": true,
         "**": false
       }
     }
