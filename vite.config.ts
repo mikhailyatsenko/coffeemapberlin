@@ -27,7 +27,6 @@ export default defineConfig({
           'vendor-react-map-gl': ['react-map-gl'],
         },
       },
-      external: ['mapbox-gl'],
     },
     terserOptions: {
       compress: {
