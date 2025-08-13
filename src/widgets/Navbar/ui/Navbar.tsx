@@ -1,6 +1,6 @@
-/* eslint-disable boundaries/element-types */
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+// eslint-disable-next-line boundaries/element-types
 import { AuthModal } from 'widgets/AuthModal'; // TODO: fix import according to feature-sliced design
 import { AuthIndicator } from 'features/AuthIndicator';
 import { SearchPlaces } from 'features/SearchPlaces';
