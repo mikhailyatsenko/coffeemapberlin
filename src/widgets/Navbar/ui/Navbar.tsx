@@ -1,3 +1,4 @@
+/* eslint-disable boundaries/element-types */
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { AuthModal } from 'widgets/AuthModal'; // TODO: fix import according to feature-sliced design
@@ -40,13 +41,13 @@ export const Navbar = () => {
 
       <div className={cls.buttonsRight}>
         {location.pathname === '/' && !isBurgerActive && <SearchPlaces />}
-        <ul className={`${cls.navMenu} ${isBurgerActive ? cls.active : ''}`}>
+        <ul className={`${cls.navMenu} ${isBurgerActive ? `${cls.active} ${cls.navLink}` : ''}`}>
           <li className={cls.navItem}>
             <NavLink
               onClick={() => {
                 setIsBurgerActive(false);
               }}
-              className={({ isActive }) => (isActive ? cls.active : '')}
+              className={({ isActive }) => (isActive ? `${cls.active} ${cls.navLink}` : '')}
               to={'/'}
             >
               Map
@@ -57,7 +58,7 @@ export const Navbar = () => {
               onClick={() => {
                 setIsBurgerActive(false);
               }}
-              className={({ isActive }) => (isActive ? cls.active : '')}
+              className={({ isActive }) => (isActive ? `${cls.active} ${cls.navLink}` : '')}
               to={'about'}
             >
               About
@@ -68,7 +69,7 @@ export const Navbar = () => {
               onClick={() => {
                 setIsBurgerActive(false);
               }}
-              className={({ isActive }) => (isActive ? cls.active : '')}
+              className={({ isActive }) => (isActive ? `${cls.active} ${cls.navLink}` : '')}
               to={'contacts'}
             >
               Contact
@@ -81,7 +82,7 @@ export const Navbar = () => {
           onClick={() => {
             setIsBurgerActive((prevState) => !prevState);
           }}
-          className={`${cls.hamburger} ${isBurgerActive ? cls.active : ''}`}
+          className={`${cls.hamburger} ${isBurgerActive ? `${cls.active} ${cls.navLink}` : ''}`}
         >
           <span className={cls.bar}></span>
           <span className={cls.bar}></span>
