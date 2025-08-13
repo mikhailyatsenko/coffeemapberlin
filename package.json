@@ -4,11 +4,9 @@
   "version": "0.0.1",
   "homepage": "https://3welle.com",
   "type": "module",
-  "sideEffects": false,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "analyze": "node scripts/analyze-bundle.js",
     "lint:ts": "eslint \"**/*.{ts, tsx}\"",
     "lint:ts:fix": "eslint \"**/*.{ts, tsx}\" --fix",
     "lint:css:fix": "stylelint \"**/*.{scss, css}\" --fix",
