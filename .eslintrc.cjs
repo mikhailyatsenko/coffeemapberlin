@@ -31,6 +31,15 @@ module.exports = {
         'prefer-const': 'off',
       },
     },
+    {
+      files: ['vite.config.ts'],
+      parserOptions: {
+        project: ['./tsconfig.node.json'],
+      },
+      env: {
+        node: true,
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: 'latest',
