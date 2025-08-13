@@ -31,7 +31,6 @@
   "include": [
     "src",
     "./.eslintrc.cjs",
-    "./vite.config.ts",
     "./codegen.ts"
   ],
   "references": [

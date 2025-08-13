@@ -24,7 +24,7 @@ export default defineConfig({
           'vendor-ui': ['react-hot-toast', 'clsx', 'zustand'],
           'vendor-google': ['@react-oauth/google', 'react-google-recaptcha', 'react-google-recaptcha-v3'],
           'vendor-utils': ['date-fns', 'yet-another-react-lightbox'],
-          'vendor-react-map-gl': ['react-map-gl'],
+          'vendor-maplibre': ['maplibre-gl', 'react-map-gl/maplibre'],
         },
       },
     },
