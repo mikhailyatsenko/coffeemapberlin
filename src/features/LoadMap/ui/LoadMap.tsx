@@ -1,6 +1,7 @@
+import { type GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
-import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl';
-import type { MapRef, GeoJSONSource, MapLayerMouseEvent, LngLatLike, MapboxGeoJSONFeature } from 'react-map-gl';
+import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl/maplibre';
+import type { MapRef, MapLayerMouseEvent, LngLatLike, MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
@@ -8,23 +9,23 @@ import { usePlacesStore } from 'shared/stores/places';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
-const MAPBOX_TOKEN = process.env.MAPBOX_API;
-
-type MyMapboxGeoJSONFeature = Omit<MapboxGeoJSONFeature, 'geometry'> & GetAllPlacesQuery['places'][number];
+type MyMapFeature = Omit<MapGeoJSONFeature, 'geometry'> & GetAllPlacesQuery['places'][number];
 
 export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
 
   const currentPlacePosition = usePlacesStore((state) => state.currentPlacePosition);
 
-  const [eventFeatureData, setEventFeatureData] = useState<MyMapboxGeoJSONFeature | null>(null);
+  const [eventFeatureData, setEventFeatureData] = useState<MyMapFeature | null>(null);
   const [tooltipCurrentData, setTooltipCurrentData] = useState<
     GetAllPlacesQuery['places'][number]['properties'] | null
   >(null);
+  // const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const screenWidth = useWidth();
 
   useEffect(() => {
+    // if (!isMapLoaded) return;
     if (currentPlacePosition) {
       mapRef?.current?.flyTo({
         center: currentPlacePosition as LngLatLike,
@@ -34,10 +35,10 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
     }
   }, [currentPlacePosition, screenWidth]);
 
-  const onClick = (event: MapLayerMouseEvent) => {
+  const onClick = async (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
 
-    const featureFromEvent = event.features?.[0] as unknown as MyMapboxGeoJSONFeature;
+    const featureFromEvent = event.features?.[0];
 
     if (!featureFromEvent) {
       setEventFeatureData(null);
@@ -46,30 +47,32 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
     switch (featureFromEvent?.layer?.id) {
       case 'clusters': {
-        const clusterId: number = featureFromEvent.properties?.cluster_id;
+        const clusterId: number | undefined = featureFromEvent.properties?.cluster_id;
+        if (clusterId == null) {
+          break;
+        }
 
-        const mapboxSource = mapRef.current!.getSource('places') as GeoJSONSource;
+        const source: GeoJSONSource | undefined = mapRef.current?.getSource('places');
 
-        mapboxSource.getClusterExpansionZoom(clusterId, (err: Error | null, zoom) => {
-          if (!err) {
-            mapRef?.current?.easeTo({
-              center: featureFromEvent.geometry.coordinates as LngLatLike,
-              zoom,
-              duration: 500,
-            });
-          }
-        });
+        const zoom = await source?.getClusterExpansionZoom(clusterId);
+        if (featureFromEvent.geometry.type === 'Point') {
+          mapRef.current?.easeTo({
+            center: featureFromEvent.geometry.coordinates as LngLatLike,
+            zoom,
+            duration: 500,
+          });
+        }
         setEventFeatureData(null);
         break;
       }
       case 'unclustered-point':
         if (featureFromEvent.geometry.type === 'Point') {
-          setEventFeatureData(null);
+          setEventFeatureData(featureFromEvent as unknown as MyMapFeature);
         }
         break;
       case 'place_title':
         if (featureFromEvent.geometry.type === 'Point') {
-          setEventFeatureData(featureFromEvent);
+          setEventFeatureData(featureFromEvent as unknown as MyMapFeature);
         }
         break;
       default:
@@ -88,6 +91,11 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
     }
   }, [eventFeatureData, placesGeo.features]);
 
+  const popupCoordinates =
+    eventFeatureData?.geometry && eventFeatureData.geometry.type === 'Point'
+      ? (eventFeatureData.geometry.coordinates as [number, number])
+      : null;
+
   return (
     <>
       <Map
@@ -98,10 +106,20 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         }}
         minZoom={9}
         maxZoom={18}
-        mapStyle="mapbox://styles/mapbox/streets-v12?optimize=true"
-        mapboxAccessToken={MAPBOX_TOKEN}
+        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         interactiveLayerIds={[unclusteredPointLayer.id!, clusterLayer.id!, namesLayer.id!]}
         onClick={onClick}
+        // onLoad={() => {
+        //   setIsMapLoaded(true);
+        //   const map = mapRef.current?.getMap();
+        //   if (map) {
+        //     try {
+        //       map.showOverdrawInspector = false;
+        //       map.showCollisionBoxes = false;
+        //       map.showTileBoundaries = false;
+        //     } catch {}
+        //   }
+        // }}
         ref={mapRef}
         onMouseEnter={() => {
           const canvas = mapRef.current?.getCanvas();
@@ -129,18 +147,18 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
           <Layer {...unclusteredPointLayer} />
           <Layer {...namesLayer} />
         </Source>
-        {eventFeatureData && tooltipCurrentData && (
+        {eventFeatureData && tooltipCurrentData && popupCoordinates && (
           <Popup
             closeButton={false}
             closeOnClick={false}
             anchor="top"
-            longitude={Number(eventFeatureData.geometry.coordinates[0])}
-            latitude={Number(eventFeatureData.geometry.coordinates[1])}
+            longitude={Number(popupCoordinates[0])}
+            latitude={Number(popupCoordinates[1])}
             onClose={() => {
               setEventFeatureData(null);
             }}
           >
-            <TooltipCardOnMap properties={tooltipCurrentData} coordinates={eventFeatureData.geometry.coordinates} />
+            <TooltipCardOnMap properties={tooltipCurrentData} coordinates={popupCoordinates} />
           </Popup>
         )}
         <NavigationControl position="bottom-right" />
