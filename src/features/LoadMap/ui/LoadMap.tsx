@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl';
+import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl, AttributionControl } from 'react-map-gl';
 import type { MapRef, GeoJSONSource, MapLayerMouseEvent, LngLatLike, MapboxGeoJSONFeature } from 'react-map-gl';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
@@ -115,6 +115,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
             canvas.style.cursor = '';
           }
         }}
+        attributionControl={false}
       >
         <Source
           id="places"
@@ -143,6 +144,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
             <TooltipCardOnMap properties={tooltipCurrentData} coordinates={eventFeatureData.geometry.coordinates} />
           </Popup>
         )}
+        <AttributionControl position="bottom-right" compact />
         <NavigationControl position="bottom-right" />
         <GeolocateControl position="bottom-right" />
       </Map>
