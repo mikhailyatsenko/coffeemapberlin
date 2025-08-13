@@ -1,4 +1,4 @@
-import type { LayerProps } from 'react-map-gl';
+import type { LayerProps } from 'react-map-gl/maplibre';
 
 export const clusterLayer: LayerProps = {
   id: 'clusters',
@@ -20,7 +20,6 @@ export const clusterCountLayer: LayerProps = {
   filter: ['has', 'point_count'],
   layout: {
     'text-field': '{point_count_abbreviated}',
-    'text-font': ['Noto Sans SemiCondensed SemiBold', 'DIN Pro Medium', 'Arial Unicode MS Bold'],
     'text-size': 14,
     'text-allow-overlap': true,
   },
@@ -45,13 +44,12 @@ export const unclusteredPointLayer: LayerProps = {
 export const namesLayer: LayerProps = {
   id: 'place_title',
   type: 'symbol',
-
   source: 'places',
+  filter: ['!', ['has', 'point_count']],
   layout: {
     'text-field': '{name}',
     'text-justify': 'left',
     'text-max-width': 15,
-    'text-font': ['Noto Sans SemiCondensed SemiBold', 'DIN Pro Medium', 'Arial Unicode MS Bold'],
     'text-size': 13,
     'text-allow-overlap': true,
     'text-anchor': 'left',
