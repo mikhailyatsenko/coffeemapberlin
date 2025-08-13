@@ -8,13 +8,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   @media (width < 576px) {
     .footerLinks {
       margin-left: 0;
     }
     flex-direction: column;
     justify-content: center;
-    gap: 16px;
   }
 }
 
