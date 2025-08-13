@@ -106,7 +106,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         }}
         minZoom={9}
         maxZoom={18}
-        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        mapStyle="map/style.json"
         interactiveLayerIds={[unclusteredPointLayer.id!, clusterLayer.id!, namesLayer.id!]}
         onClick={onClick}
         // onLoad={() => {
