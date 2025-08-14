@@ -1,3 +1,4 @@
+import { type GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Map as MapGL, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl/maplibre';
 import type { MapRef, MapLayerMouseEvent, LngLatLike, MapGeoJSONFeature } from 'react-map-gl/maplibre';
