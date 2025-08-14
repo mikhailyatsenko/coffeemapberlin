@@ -1,6 +1,6 @@
 .FavoritesIndicator {
   position: fixed;
-  bottom: 180px;
+  bottom: 200px;
   right: -160px;
   opacity: 0;
   cursor: pointer;
@@ -28,9 +28,6 @@
     .indicatorText {
       clip-path: inset(0 0 0 0);
     }
-  }
-  @media (width <= 640px) {
-    bottom: 200px;
   }
 }
 
