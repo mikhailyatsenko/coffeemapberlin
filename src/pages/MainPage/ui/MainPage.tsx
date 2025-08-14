@@ -39,7 +39,7 @@ export const MainPage = () => {
     return filteredPlaces?.length ? filteredPlaces : places;
   }, [showFavorites, places, filteredPlaces, favoritePlaces]);
 
-  // This is a feature collection of places to properly display on the map using mapbox
+  // This is a feature collection of places to properly display on the map
   const placesGeo = {
     type: 'FeatureCollection' as const,
     features: placesToDisplay ?? [],

@@ -15,6 +15,7 @@ import {
 } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+import { BadgePill } from 'shared/ui/BadgePill';
 import { CharacteristicCountsIcon, characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
@@ -66,6 +67,12 @@ const DetailedPlaceCard: React.FC = () => {
     navigate({ pathname: '/' });
   }, [navigate]);
 
+  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.currentTarget;
+    target.onerror = null;
+    target.src = '/places-images/default-place-img.jpg';
+  }, []);
+
   useEffect(() => {
     if (existPlaceData?.geometry.coordinates) {
       setCurrentPlacePosition(existPlaceData.geometry.coordinates);
@@ -87,7 +94,7 @@ const DetailedPlaceCard: React.FC = () => {
 
   if (!existPlaceData?.properties || !additionalPlaceData?.place) return <NotFoundPlace />;
 
-  const { averageRating, description, name, address, instagram, isFavorite } = existPlaceData.properties;
+  const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = existPlaceData.properties;
 
   const { ratingCount, characteristicCounts, openingHours } = additionalPlaceData.place.properties;
 
@@ -110,6 +117,7 @@ const DetailedPlaceCard: React.FC = () => {
                 src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
                 alt="Place image"
                 className={cls.backgroundImg}
+                onError={handleImageError}
               />
             </div>
             <div className={cls.iconsRow}>
@@ -130,6 +138,7 @@ const DetailedPlaceCard: React.FC = () => {
             <button className={cls.closeButton} onClick={handleClose}></button>
             <h2 className={cls.name}>{name}</h2>
             <div className={cls.charCounts}>
+              {neighborhood && <BadgePill text={neighborhood} color="green" size="small" className={cls.badgePill} />}
               {characteristicKeys.map((charKey) => (
                 <CharacteristicCountsIcon
                   key={charKey}
