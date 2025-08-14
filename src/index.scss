@@ -65,7 +65,7 @@ h4 {
   font-size: 16px;
 }
 
-.mapboxgl-popup-content {
+.maplibregl-popup-content {
   padding: 0 !important;
   background: transparent !important;
   width: fit-content;
@@ -87,8 +87,4 @@ h4 {
   @media (width <= 480px) {
     padding: 30px 16px;
   }
-}
-
-.mapboxgl-map {
-  font-family: 'Roboto Slab', serif;
 }

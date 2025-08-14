@@ -1,6 +1,6 @@
 import { type GeoJSONSource } from 'maplibre-gl';
-import { useEffect, useRef, useState } from 'react';
-import { Map, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl/maplibre';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { Map as MapGL, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl/maplibre';
 import type { MapRef, MapLayerMouseEvent, LngLatLike, MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
@@ -10,6 +10,7 @@ import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } fr
 import { type LoadMapProps } from '../types';
 
 type MyMapFeature = Omit<MapGeoJSONFeature, 'geometry'> & GetAllPlacesQuery['places'][number];
+type PlaceProps = GetAllPlacesQuery['places'][number]['properties'];
 
 export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
@@ -35,7 +36,19 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
     }
   }, [currentPlacePosition, screenWidth]);
 
-  const onClick = async (event: MapLayerMouseEvent) => {
+  const interactiveLayerIds = useMemo(() => [unclusteredPointLayer.id!, clusterLayer.id!, namesLayer.id!], []);
+
+  const sourceData = useMemo(() => placesGeo as GeoJSON.FeatureCollection<GeoJSON.Geometry>, [placesGeo]);
+
+  const idToPropertiesMap = useMemo(() => {
+    const propsById = new Map<PlaceProps['id'], PlaceProps>();
+    for (const feature of placesGeo.features) {
+      propsById.set(feature.properties.id, feature.properties);
+    }
+    return propsById;
+  }, [placesGeo.features]);
+
+  const onClick = useCallback(async (event: MapLayerMouseEvent) => {
     event.originalEvent.stopPropagation();
 
     const featureFromEvent = event.features?.[0];
@@ -78,27 +91,40 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
       default:
         break;
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (eventFeatureData?.properties) {
-      const currentData = placesGeo.features.find(
-        (propsFeature) => propsFeature.properties.id === eventFeatureData?.properties?.id,
-      );
+      const currentData = idToPropertiesMap.get(eventFeatureData.properties.id) ?? null;
       if (currentData) {
-        setTooltipCurrentData(currentData.properties);
+        setTooltipCurrentData(currentData);
       }
     }
-  }, [eventFeatureData, placesGeo.features]);
+  }, [eventFeatureData, idToPropertiesMap]);
 
   const popupCoordinates =
     eventFeatureData?.geometry && eventFeatureData.geometry.type === 'Point'
       ? (eventFeatureData.geometry.coordinates as [number, number])
       : null;
 
+  const handleMouseEnter = useCallback(() => {
+    const canvas = mapRef.current?.getCanvas();
+    if (canvas) {
+      canvas.style.cursor = 'pointer';
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const canvas = mapRef.current?.getCanvas();
+    if (canvas) {
+      canvas.style.cursor = '';
+    }
+  }, []);
+
   return (
     <>
-      <Map
+      <MapGL
+        reuseMaps
         initialViewState={{
           latitude: 52.5182315090094,
           longitude: 13.397000808436752,
@@ -107,7 +133,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         minZoom={9}
         maxZoom={18}
         mapStyle="map/style.json"
-        interactiveLayerIds={[unclusteredPointLayer.id!, clusterLayer.id!, namesLayer.id!]}
+        interactiveLayerIds={interactiveLayerIds}
         onClick={onClick}
         // onLoad={() => {
         //   setIsMapLoaded(true);
@@ -121,27 +147,10 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         //   }
         // }}
         ref={mapRef}
-        onMouseEnter={() => {
-          const canvas = mapRef.current?.getCanvas();
-          if (canvas) {
-            canvas.style.cursor = 'pointer';
-          }
-        }}
-        onMouseLeave={() => {
-          const canvas = mapRef.current?.getCanvas();
-          if (canvas) {
-            canvas.style.cursor = '';
-          }
-        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
-        <Source
-          id="places"
-          type="geojson"
-          data={placesGeo as GeoJSON.FeatureCollection<GeoJSON.Geometry>}
-          cluster={true}
-          clusterMaxZoom={12}
-          clusterRadius={30}
-        >
+        <Source id="places" type="geojson" data={sourceData} cluster={true} clusterMaxZoom={12} clusterRadius={30}>
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
@@ -163,7 +172,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         )}
         <NavigationControl position="bottom-right" />
         <GeolocateControl position="bottom-right" />
-      </Map>
+      </MapGL>
     </>
   );
 };
