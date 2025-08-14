@@ -102,8 +102,8 @@ const DetailedPlaceCard: React.FC = () => {
 
   return (
     <div>
+      <div className={cls.addressCompactView}>{address}</div>
       <div onClick={handleClose} className={cls.backDrop}>
-        <div className={cls.addressCompactView}>{address}</div>
         <div
           onClick={(e) => {
             e.stopPropagation();
