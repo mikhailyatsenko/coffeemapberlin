@@ -13,7 +13,8 @@ export const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, im
     name,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: address,
+      streetAddress: address.split(', ')[0],
+      postalCode: address.split(', ')[1],
       addressLocality: 'Berlin',
       addressCountry: 'DE',
     },
