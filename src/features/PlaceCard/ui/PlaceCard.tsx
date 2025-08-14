@@ -1,4 +1,5 @@
 import { type Position } from 'geojson';
+import { memo } from 'react';
 import { createSearchParams, NavLink, useNavigate } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
@@ -19,7 +20,7 @@ interface PlaceCardProps {
   coordinates: Position;
 }
 
-export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
+const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
   const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const navigate = useNavigate();
@@ -139,3 +140,5 @@ export const PlaceCard = ({ properties, coordinates }: PlaceCardProps) => {
     </>
   );
 };
+
+export const PlaceCard = memo(PlaceCardComponent, (prev, next) => prev.properties === next.properties);
