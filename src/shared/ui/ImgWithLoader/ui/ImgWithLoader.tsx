@@ -11,6 +11,7 @@ interface ImgWithLoaderProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, '
   loading?: 'lazy' | 'eager';
   onLoad?: () => void;
   onError?: () => void;
+  errorFallbackUrl?: string;
 }
 
 export const ImgWithLoader = ({
@@ -20,6 +21,7 @@ export const ImgWithLoader = ({
   loading = 'lazy',
   onLoad,
   onError,
+  errorFallbackUrl,
   ...imgProps
 }: ImgWithLoaderProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -29,9 +31,16 @@ export const ImgWithLoader = ({
     onLoad?.();
   };
 
-  const handleImageError = () => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     setImageLoaded(true); // Hide loader even on error
-    onError?.();
+
+    if (errorFallbackUrl) {
+      const target = e.currentTarget;
+      target.onerror = null;
+      target.src = errorFallbackUrl;
+    } else {
+      onError?.();
+    }
   };
 
   useEffect(() => {

@@ -66,6 +66,12 @@ const DetailedPlaceCard: React.FC = () => {
     navigate({ pathname: '/' });
   }, [navigate]);
 
+  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.currentTarget;
+    target.onerror = null;
+    target.src = '/places-images/default-place-img.jpg';
+  }, []);
+
   useEffect(() => {
     if (existPlaceData?.geometry.coordinates) {
       setCurrentPlacePosition(existPlaceData.geometry.coordinates);
@@ -110,6 +116,7 @@ const DetailedPlaceCard: React.FC = () => {
                 src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
                 alt="Place image"
                 className={cls.backgroundImg}
+                onError={handleImageError}
               />
             </div>
             <div className={cls.iconsRow}>
