@@ -1,4 +1,4 @@
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { type MainMapProps } from 'widgets/Map/types';
 import { LoadMap } from 'features/LoadMap';
 

@@ -6,7 +6,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from '../AccountSettingsForm.module.scss';
 
 interface PasswordSettingsFormProps {
-  passwordForm: UseFormReturn<SetNewPasswordFormData, unknown, undefined>;
+  passwordForm: UseFormReturn<SetNewPasswordFormData, unknown, SetNewPasswordFormData>;
   onSetNewPasswordSubmit: SubmitHandler<SetNewPasswordFormData>;
   errorSettingPassword?: ApolloError;
   userEmail: string;

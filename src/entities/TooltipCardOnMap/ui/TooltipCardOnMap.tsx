@@ -35,7 +35,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
 
   const imageSrc = image
     ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
-    : 'places-images/default-place.jpg';
+    : 'places-images/default-tooltip-img.jpg';
 
   return (
     <div className={cls.TooltipCardOnMap}>
@@ -46,7 +46,12 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         }}
       >
         <div className={cls.image}>
-          <ImgWithLoader src={imageSrc} alt="" className={cls.imageContent} />
+          <ImgWithLoader
+            errorFallbackUrl="/places-images/default-tooltip-img.jpg"
+            src={imageSrc}
+            alt=""
+            className={cls.imageContent}
+          />
         </div>
       </NavLink>
 

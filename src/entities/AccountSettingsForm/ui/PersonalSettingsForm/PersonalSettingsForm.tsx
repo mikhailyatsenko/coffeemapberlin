@@ -6,7 +6,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from '../AccountSettingsForm.module.scss';
 
 interface PersonalSettingsFormProps {
-  personalDataForm: UseFormReturn<PersonalDataFormData, unknown, undefined>;
+  personalDataForm: UseFormReturn<PersonalDataFormData, unknown, PersonalDataFormData>;
   onUpdatePersonalDataSubmit: SubmitHandler<PersonalDataFormData>;
   isButtonPersonalFormDisabled: boolean;
   errorUpdatingPersonalData?: ApolloError;
