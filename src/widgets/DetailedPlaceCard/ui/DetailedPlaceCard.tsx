@@ -96,7 +96,7 @@ const DetailedPlaceCard: React.FC = () => {
 
   const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = existPlaceData.properties;
 
-  const { ratingCount, characteristicCounts, openingHours } = additionalPlaceData.place.properties;
+  const { ratingCount, characteristicCounts, openingHours, phone } = additionalPlaceData.place.properties;
 
   const characteristicKeys = Array.from(characteristicsMap.keys());
 
@@ -121,6 +121,7 @@ const DetailedPlaceCard: React.FC = () => {
               />
             </div>
             <div className={cls.iconsRow}>
+              {/* <div className={cls.phone}> {phone}</div> */}
               <div
                 title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
                 onClick={handleToggleFavorite}
@@ -180,6 +181,7 @@ const DetailedPlaceCard: React.FC = () => {
               averageRating={averageRating || 0}
               reviewCount={ratingCount}
               name={name}
+              phone={phone}
               image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
             />
             {/* for Google Rich Results */}
