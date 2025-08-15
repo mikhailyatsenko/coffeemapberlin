@@ -3,14 +3,23 @@ interface CoffeeShopSchemaProps {
   averageRating: number;
   reviewCount: number;
   address: string;
+  phone?: string | null;
   image?: string;
 }
 
-export const CoffeeShopSchema = ({ name, averageRating, reviewCount, address, image }: CoffeeShopSchemaProps) => {
+export const CoffeeShopSchema = ({
+  name,
+  averageRating,
+  reviewCount,
+  address,
+  image,
+  phone,
+}: CoffeeShopSchemaProps) => {
   const schemaData: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'CafeOrCoffeeShop',
     name,
+    telephone: phone || '',
     address: {
       '@type': 'PostalAddress',
       streetAddress: address.split(', ')[0],

@@ -108,5 +108,8 @@ const ReviewListComponent = ({
 
 export const ReviewList = memo(
   ReviewListComponent,
-  (prevProps, nextProps) => prevProps.reviews === nextProps.reviews && prevProps.showRateNow === nextProps.showRateNow,
+  (prevProps, nextProps) =>
+    prevProps.reviews === nextProps.reviews &&
+    prevProps.showRateNow === nextProps.showRateNow &&
+    prevProps.isCompactView === nextProps.isCompactView,
 );

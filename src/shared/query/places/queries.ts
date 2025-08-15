@@ -27,7 +27,6 @@ export const GET_PLACE = gql`
   query Place($placeId: ID!) {
     place(placeId: $placeId) {
       id
-      type
       geometry {
         type
         coordinates
