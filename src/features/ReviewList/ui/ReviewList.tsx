@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useDeleteReview } from 'shared/api';
 import CollapseIcon from 'shared/assets/collapse-icon.svg?react';
 import { ReviewCard } from 'shared/ui/ReviewCard';
@@ -6,7 +6,7 @@ import { sortReviews } from '../lib/sortReviews';
 import { type ReviewListProps } from '../types';
 import cls from './ReviewList.module.scss';
 
-export const ReviewList = ({
+const ReviewListComponent = ({
   reviews,
   placeId,
   isCompactView,
@@ -105,3 +105,8 @@ export const ReviewList = ({
     </div>
   );
 };
+
+export const ReviewList = memo(
+  ReviewListComponent,
+  (prevProps, nextProps) => prevProps.reviews === nextProps.reviews && prevProps.showRateNow === nextProps.showRateNow,
+);
