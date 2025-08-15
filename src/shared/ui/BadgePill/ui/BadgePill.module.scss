@@ -1,7 +1,6 @@
 .badgePill {
   border-radius: 9999px;
   font-size: 10px;
-  opacity: 0.8;
   line-height: 1;
   font-weight: normal;
   text-wrap: nowrap;
@@ -16,23 +15,23 @@
     padding: 12px 24px;
   }
   &.red {
-    background-color: #ff0000;
+    background-color: #ff0000c6;
     color: #ffffff;
   }
   &.green {
-    background-color: #58af2f;
+    background-color: #58af2fc6;
     color: #ffffff;
   }
   &.blue {
-    background-color: #18a3ee;
+    background-color: #18a3eec6;
     color: #ffffff;
   }
   &.orange {
-    background-color: #ff5d34;
+    background-color: #ff5d34c6;
     color: #ffffff;
   }
   &.gray {
-    background-color: #303030;
+    background-color: #303030c6;
     color: #ffffff;
   }
 }

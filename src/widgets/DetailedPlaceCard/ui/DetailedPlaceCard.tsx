@@ -121,7 +121,6 @@ const DetailedPlaceCard: React.FC = () => {
               />
             </div>
             <div className={cls.iconsRow}>
-              {/* <div className={cls.phone}> {phone}</div> */}
               <div
                 title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
                 onClick={handleToggleFavorite}
@@ -129,9 +128,17 @@ const DetailedPlaceCard: React.FC = () => {
               >
                 <AddToFavButton isFavorite={Boolean(isFavorite)} />
               </div>
+              {phone && (
+                <div className={cls.phone}>
+                  📞
+                  <a href={`tel:${phone}`} type="tel">
+                    {phone}
+                  </a>
+                </div>
+              )}
               {instagram && (
                 <a href={instagram} target="_blank" rel="noreferrer" title="Open the place's Instagram profile">
-                  <img className={cls.instagramIcon} src={instagramIcon} alt="" />
+                  <img className={cls.icon} src={instagramIcon} alt="" />
                 </a>
               )}
             </div>

@@ -122,11 +122,27 @@
 .iconsRow {
   position: absolute;
   top: 8px;
-  right: 62px;
+  right: 48px;
   display: flex;
   justify-content: end;
   gap: 14px;
   z-index: 1;
+
+  .phone {
+    display: flex;
+    align-items: center;
+    font-weight: 200;
+    height: 28px;
+    gap: 6px;
+    font-size: 14px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    background-color: #f6f6f6c7;
+    &:hover {
+      background-color: #f6f6f6;
+    }
+  }
+
   .iconFavWrapper {
     cursor: pointer;
     background-color: #f6f6f6;
@@ -147,7 +163,7 @@
     }
   }
 
-  .instagramIcon {
+  .icon {
     height: 28px;
     width: 28px;
   }
