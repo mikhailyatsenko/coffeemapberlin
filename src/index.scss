@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..500&display=swap');
 
 * {
   box-sizing: border-box;
@@ -7,6 +7,18 @@
   padding: 0;
   font-family: 'Roboto Slab', serif;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 body {
@@ -71,7 +83,6 @@ h4 {
 
 .page-wrapper {
   padding: 60px 0 0;
-  min-height: calc(100dvh - 90px);
 }
 
 .container {
