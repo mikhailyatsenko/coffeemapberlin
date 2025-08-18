@@ -9,6 +9,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-grow: 1;
   @media (width < 576px) {
     .footerLinks {
       margin-left: 0;
