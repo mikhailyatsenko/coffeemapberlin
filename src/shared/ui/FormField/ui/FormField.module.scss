@@ -32,7 +32,7 @@
   }
   &:not(:placeholder-shown) {
     ~ .formLabel {
-      font-weight: 300;
+      font-weight: 700;
       color: #aaaaaa;
     }
   }
@@ -46,7 +46,7 @@
       transition: 0.2s;
       font-size: 14px;
       color: #a6a6a6;
-      font-weight: 300;
+      font-weight: 700;
     }
   }
 }
