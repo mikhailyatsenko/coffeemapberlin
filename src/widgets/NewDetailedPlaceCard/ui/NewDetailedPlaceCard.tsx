@@ -165,13 +165,6 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
 
       <div className={cls.layout}>
         <main className={cls.main}>
-          {openingHours && openingHours.length > 0 ? (
-            <div className={cls.block}>
-              <h2 className={cls.blockTitle}>Opening hours</h2>
-              <OpeningHours openingHours={openingHours ?? []} />
-            </div>
-          ) : null}
-
           <div className={cls.block}>
             <h2 className={cls.blockTitle}>Reviews</h2>
             {showRateNow && (
@@ -244,6 +237,12 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
               </div>
             </div>
           </div>
+          {openingHours && openingHours.length > 0 ? (
+            <div className={cls.block}>
+              <h2 className={cls.blockTitle}>Opening hours</h2>
+              <OpeningHours openingHours={openingHours ?? []} />
+            </div>
+          ) : null}
         </aside>
       </div>
 
