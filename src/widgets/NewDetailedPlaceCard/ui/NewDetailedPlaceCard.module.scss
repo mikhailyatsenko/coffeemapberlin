@@ -26,8 +26,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: fit-content;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
   gap: 2rem;
-  padding: 0 2rem;
   align-items: center;
   .briefInfo {
     display: flex;
@@ -233,22 +236,4 @@
   .blockTitle {
     font-size: 20px;
   }
-}
-
-.header__content {
-  padding-right: 0;
-  order: 2;
-}
-
-.header__image-container {
-  padding-left: 0;
-  order: 1;
-}
-
-.header__image {
-  width: min(280px, 70%);
-}
-
-.header__title {
-  font-size: clamp(1.75rem, 6vw, 2.5rem);
 }
