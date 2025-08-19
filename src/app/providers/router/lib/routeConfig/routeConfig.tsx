@@ -19,7 +19,7 @@ export interface AppRouteConfig {
   children?: AppRouteConfig[];
 }
 
-export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
+export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.MAIN]: {
     path: RoutePaths.main,
     element: <MainPage />,
