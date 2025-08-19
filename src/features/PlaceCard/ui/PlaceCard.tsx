@@ -1,6 +1,6 @@
 import { type Position } from 'geojson';
 import { memo } from 'react';
-import { createSearchParams, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
@@ -23,7 +23,6 @@ interface PlaceCardProps {
 const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
   const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
-  const navigate = useNavigate();
 
   const handleToggleFavorite = async () => {
     try {
@@ -36,16 +35,13 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
     }
   };
 
-  const handleClickDetails = () => {
-    navigate({
-      pathname: '/details',
-      search: createSearchParams({ id: properties.id }).toString(),
-    });
-  };
-
   return (
-    <>
-      <div onClick={handleClickDetails} className={`${cls.placeCard} `}>
+    <NavLink
+      to={{
+        pathname: properties.id,
+      }}
+    >
+      <div className={`${cls.placeCard} `}>
         <div className={cls.image}>
           <ImgWithLoader
             src={
@@ -58,14 +54,8 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
         </div>
         <div className={cls.content}>
           <div className={cls.cardHeader}>
-            <NavLink
-              to={{
-                pathname: '/details',
-                search: createSearchParams({ id: properties.id }).toString(),
-              }}
-            >
-              <h4 className={cls.name}>{properties.name}</h4>
-            </NavLink>
+            <h4 className={cls.name}>{properties.name}</h4>
+
             <div className={cls.iconsGroup}>
               <div
                 title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
@@ -137,7 +127,7 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
           </div>
         </div>
       </div>
-    </>
+    </NavLink>
   );
 };
 
