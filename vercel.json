@@ -1,19 +1,26 @@
 {
-    "version": 2,
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/index.html" }
-    ],
-    "git": {
-      "deploymentEnabled": {
-        "main": true,
-        "dev": true,
-        "**": false
-      }
-    },
-    "routes": [
-      {
-        "src": "/details\\?id=66ae.*",
-        "status": 404
-      }
-    ]
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/details",
+      "has": [
+        {
+          "type": "query",
+          "key": "id",
+          "value": "66ae(.*)"
+        }
+      ],
+      "destination": "/404",
+      "statusCode": 404
+    }
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "dev": true,
+      "**": false
+    }
+  }
 }
