@@ -143,13 +143,13 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
             >
               Rate place
             </button>
-            <div
+            <button
               className={cls.favBtn}
               onClick={handleToggleFavorite}
               title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             >
-              <AddToFavButton isFavorite={Boolean(isFavorite)} />
-            </div>
+              <AddToFavButton size="medium" isFavorite={Boolean(isFavorite)} />
+            </button>
           </div>
         </div>
         <div className={cls.headerImg}>
