@@ -9,5 +9,11 @@
         "dev": true,
         "**": false
       }
-    }
+    },
+    "routes": [
+      {
+        "src": "/details\\?id=66ae.*",
+        "status": 404
+      }
+    ]
 }
