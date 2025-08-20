@@ -63,7 +63,9 @@ export const SignInWithEmail = ({
           <FormField fieldName="email" type="email" labelText="E-mail" error={errors.email?.message} />
           <FormField fieldName="password" type="password" labelText="Password" error={errors.password?.message} />
 
-          <RegularButton disabled={!isValid || isLoading}>Sign in</RegularButton>
+          <RegularButton type="submit" disabled={!isValid || isLoading}>
+            Sign in
+          </RegularButton>
         </form>
       </FormProvider>
       <div className={cls.noAccount}>

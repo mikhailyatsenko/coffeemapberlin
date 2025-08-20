@@ -81,7 +81,9 @@ export const SignUpWithEmail = ({
             {errors.recaptcha && <p>{errors.recaptcha.message}</p>}
           </div>
           {/* <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} /> */}
-          <RegularButton disabled={!isValid || isLoading}>Sign up</RegularButton>
+          <RegularButton type="submit" disabled={!isValid || isLoading}>
+            Sign up
+          </RegularButton>
         </form>
       </FormProvider>
       <div className={cls.signIn}>
