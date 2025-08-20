@@ -9,7 +9,7 @@
         {
           "type": "query",
           "key": "id",
-          "value": "(?<id>.*)"
+          "value": "(?<id>66.*)"
         }
       ],
       "destination": "/$id",
