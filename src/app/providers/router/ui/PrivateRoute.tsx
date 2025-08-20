@@ -11,7 +11,7 @@ export const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const location = useLocation();
 
   if (!user) {
-    return <Navigate to={RoutePaths.login} state={{ from: location }} replace />;
+    return <Navigate to={`/${RoutePaths.login}`} state={{ from: location }} replace />;
   }
 
   return children;

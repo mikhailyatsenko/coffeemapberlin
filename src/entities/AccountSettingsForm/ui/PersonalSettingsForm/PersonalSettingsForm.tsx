@@ -35,7 +35,11 @@ export const PersonalSettingsForm = ({
           />
           <FormField fieldName="email" type="email" labelText="E-mail" error={personalDataErrors.email?.message} />
 
-          <RegularButton className={cls.submitButton} disabled={!isPersonalDataValid || isButtonPersonalFormDisabled}>
+          <RegularButton
+            type="submit"
+            className={cls.submitButton}
+            disabled={!isPersonalDataValid || isButtonPersonalFormDisabled}
+          >
             Save changes
           </RegularButton>
         </form>
