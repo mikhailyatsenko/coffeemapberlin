@@ -50,7 +50,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {userId === 'google' && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
         <div className={cls.userInfo}>
           <img
-            src={userAvatar || (userId === 'google' ? './google-maps.svg' : './user-default-icon.svg')}
+            src={userAvatar || (userId === 'google' ? '/google-maps.svg' : '/user-default-icon.svg')}
             alt={userName}
             className={cls.avatar}
             referrerPolicy="no-referrer"

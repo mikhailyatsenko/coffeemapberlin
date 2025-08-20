@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from 'date-fns';
-import { createSearchParams, NavLink } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { RoutePaths } from 'shared/constants';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './ReviewActivityCard.module.scss';
@@ -19,6 +20,11 @@ export const ReviewActivityCard = ({
   createdAt,
   placeId,
 }: ReviewActivityCardProps) => {
+  const navigate = useNavigate();
+  const onOpenPlaceClick = () => {
+    const path = generatePath(`/${RoutePaths.placePage}`, { id: placeId });
+    navigate({ pathname: path });
+  };
   return (
     <div className={cls.ReviewActivityCard}>
       <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
@@ -41,9 +47,7 @@ export const ReviewActivityCard = ({
         </div>
       )}
 
-      <NavLink to={{ pathname: '/details', search: createSearchParams({ id: placeId }).toString() }}>
-        <RegularButton>Open place&apos;s page</RegularButton>
-      </NavLink>
+      <RegularButton onClick={onOpenPlaceClick}>Open place&apos;s page</RegularButton>
     </div>
   );
 };
