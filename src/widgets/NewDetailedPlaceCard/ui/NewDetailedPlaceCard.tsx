@@ -175,7 +175,7 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
           <div className={cls.block}>
             <h2 className={cls.blockTitle}>Reviews</h2>
 
-            {(isEditingReview || !ownReview) && (
+            {(isEditingReview || !ownReview?.text) && (
               <AddTextReviewForm
                 placeId={placeId}
                 initialValue={isEditingReview ? editInitialText : ''}
