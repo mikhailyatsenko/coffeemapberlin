@@ -162,8 +162,12 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
             <TooltipCardOnMap properties={tooltipCurrentData} coordinates={popupCoordinates} />
           </Popup>
         )}
-        <NavigationControl position="bottom-right" />
-        <GeolocateControl position="bottom-right" />
+        {screenWidth >= 768 && (
+          <>
+            <NavigationControl position="bottom-right" />
+            <GeolocateControl position="bottom-right" />
+          </>
+        )}
       </MapGL>
     </>
   );
