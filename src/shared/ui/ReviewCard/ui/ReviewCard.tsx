@@ -22,6 +22,7 @@ interface ReviewCardProps {
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
   userId: string;
+  onEditReview?: (reviewText: string) => void;
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -37,6 +38,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   setShowRateNow,
   userId,
   createdAt,
+  onEditReview,
 }) => {
   const [openLightbox, setOpenLightbox] = useState(false);
   const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
@@ -103,7 +105,8 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
           <div className={cls.buttons}>
             <EditIcon
               onClick={() => {
-                setShowRateNow(true);
+                if (onEditReview) onEditReview(reviewText || '');
+                else setShowRateNow(true);
               }}
               className={cls.buttonIcon}
               title="Edit my feedback"
