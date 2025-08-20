@@ -43,12 +43,12 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
         <RegularButton
           variant={'ghost'}
           theme={'neutral'}
+          rightIcon={<EditIcon width={16} height={16} />}
           onClick={() => {
             setShowRateNow(true);
           }}
         >
-          Edit my feedback
-          <EditIcon width={16} height={16} />
+          {currentUserReview?.userRating ? `Your given rating: ${currentUserReview?.userRating}` : 'Edit your feedback'}
         </RegularButton>
       ) : (
         <RegularButton

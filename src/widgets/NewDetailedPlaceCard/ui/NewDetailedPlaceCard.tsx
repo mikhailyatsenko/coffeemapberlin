@@ -64,12 +64,6 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
   }, []);
 
   useEffect(() => {
-    if (existPlaceData?.geometry.coordinates) {
-      setCurrentPlacePosition(existPlaceData.geometry.coordinates);
-    }
-  }, [existPlaceData?.geometry.coordinates]);
-
-  useEffect(() => {
     document.title = existPlaceData?.properties?.name
       ? `${existPlaceData.properties.name} | Berlin Coffee Map`
       : 'Berlin Coffee Map';
@@ -97,12 +91,20 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
     navigate({ pathname: '/' });
   }, [navigate]);
 
+  const openOnMap = useCallback(() => {
+    if (existPlaceData?.geometry.coordinates) {
+      // send a new array reference to force store subscribers to react even if values are equal
+      setCurrentPlacePosition([...existPlaceData.geometry.coordinates]);
+    }
+
+    navigate({ pathname: '/' });
+  }, [navigate, existPlaceData?.geometry.coordinates]);
+
   if (isPlacesLoading || isPlaceLoading) return null;
   if (!existPlaceData?.properties || !additionalPlaceData?.place) return null;
 
   const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = existPlaceData.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = additionalPlaceData.place.properties;
-
   return (
     <div className={cls.page}>
       <header className={cls.header}>
@@ -154,6 +156,9 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
           </div>
         </div>
         <div className={cls.headerImg}>
+          {neighborhood ? (
+            <BadgePill text={neighborhood} color="green" size="small" className={cls.neighborhood} />
+          ) : null}
           <ImgWithLoader
             loading="lazy"
             src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-1440,if-else,h-720,if-end`}
@@ -195,9 +200,7 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
         <aside className={cls.sidebar}>
           <div className={cls.block}>
             <h3 className={cls.blockTitle}>Place info</h3>
-            {neighborhood ? (
-              <BadgePill text={neighborhood} color="green" size="small" className={cls.neighborhood} />
-            ) : null}
+
             <div className={cls.infoRow}>
               <span className={cls.infoLabel}>Address</span>
               <span className={cls.infoValue}>{address}</span>
@@ -211,7 +214,7 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
               </div>
             ) : null}
             <div className={cls.actionsCol}>
-              <button className={cls.secondaryBtn} onClick={goBackToMap} type="button">
+              <button className={cls.secondaryBtn} onClick={openOnMap} type="button">
                 Open on map
               </button>
               {instagram ? (
@@ -226,14 +229,14 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
                   Open Instagram
                 </a>
               ) : null}
-              <div
+              {/* <div
                 className={cls.inlineFav}
                 onClick={handleToggleFavorite}
                 title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <AddToFavButton isFavorite={Boolean(isFavorite)} />
                 <span>{isFavorite ? 'In favorites' : 'Add to favorites'}</span>
-              </div>
+              </div> */}
             </div>
           </div>
           {openingHours && openingHours.length > 0 ? (

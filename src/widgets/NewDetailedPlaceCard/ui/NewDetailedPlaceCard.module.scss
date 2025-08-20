@@ -5,10 +5,9 @@
 }
 
 .breadcrumbs {
-  max-width: 1200px;
   margin: 0 auto;
-  width: 100%;
-  padding: 0 16px;
+
+  padding: 16px 0px;
 }
 
 .backBtn {
@@ -53,11 +52,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    aspect-ratio: 1;
+
+    .neighborhood {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+    }
+
     .mainImg {
-      width: min(600px, 100%);
+      width: 100%;
       aspect-ratio: 1;
       object-fit: cover;
       transition: transform 0.3s ease;
+      z-index: 1;
     }
   }
 
@@ -76,7 +85,7 @@
       padding-left: 0;
       order: 1;
       .mainImg {
-        width: min(480px, 90%);
+        width: 100%;
       }
     }
   }
@@ -206,10 +215,6 @@
 .icon {
   width: 16px;
   height: 16px;
-}
-
-.neighborhood {
-  margin-left: 4px;
 }
 
 @media (min-width: 768px) {

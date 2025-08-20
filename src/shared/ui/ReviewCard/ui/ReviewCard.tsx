@@ -103,14 +103,16 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
         {isOwnReview && handleDeleteReview && (
           <div className={cls.buttons}>
-            <EditIcon
-              onClick={() => {
-                if (onEditReview) onEditReview(reviewText || '');
-                else setShowRateNow(true);
-              }}
-              className={cls.buttonIcon}
-              title="Edit my feedback"
-            />
+            {reviewText && (
+              <EditIcon
+                onClick={() => {
+                  if (onEditReview) onEditReview(reviewText || '');
+                  else setShowRateNow(true);
+                }}
+                className={cls.buttonIcon}
+                title="Edit my feedback"
+              />
+            )}
             <DeleteIcon
               onClick={() => {
                 const isConfirmed = window.confirm('Deleting review. Continue?');
