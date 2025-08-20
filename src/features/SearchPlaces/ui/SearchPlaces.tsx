@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { createSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
@@ -54,8 +54,7 @@ export const SearchPlaces = () => {
     setIsActive(false);
     setSearchTerm('');
     navigate({
-      pathname: '/details',
-      search: createSearchParams({ id: placeId }).toString(),
+      pathname: placeId,
     });
   };
 
