@@ -9,7 +9,7 @@
         {
           "type": "query",
           "key": "id",
-          "value": "66b(.*)"
+          "value": "66(.*)"
         }
       ],
       "destination": "/404",
