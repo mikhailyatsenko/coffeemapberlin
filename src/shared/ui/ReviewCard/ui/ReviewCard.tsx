@@ -22,6 +22,7 @@ interface ReviewCardProps {
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
   userId: string;
+  onEditReview?: (reviewText: string) => void;
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -37,6 +38,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   setShowRateNow,
   userId,
   createdAt,
+  onEditReview,
 }) => {
   const [openLightbox, setOpenLightbox] = useState(false);
   const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
@@ -101,13 +103,16 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
         {isOwnReview && handleDeleteReview && (
           <div className={cls.buttons}>
-            <EditIcon
-              onClick={() => {
-                setShowRateNow(true);
-              }}
-              className={cls.buttonIcon}
-              title="Edit my feedback"
-            />
+            {reviewText && (
+              <EditIcon
+                onClick={() => {
+                  if (onEditReview) onEditReview(reviewText || '');
+                  else setShowRateNow(true);
+                }}
+                className={cls.buttonIcon}
+                title="Edit my feedback"
+              />
+            )}
             <DeleteIcon
               onClick={() => {
                 const isConfirmed = window.confirm('Deleting review. Continue?');
