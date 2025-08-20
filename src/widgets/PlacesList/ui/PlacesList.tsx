@@ -20,9 +20,11 @@ const PlacesListComponent = ({ places, isReady }: PlacesListProps) => {
     [places],
   );
 
+  const currentPlacePosition = usePlacesStore((state) => state.currentPlacePosition);
+
   const screenWidth = useWidth();
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || currentPlacePosition) return;
     if (typeof window === 'undefined') return;
 
     if (screenWidth > 767) return;
@@ -54,7 +56,7 @@ const PlacesListComponent = ({ places, isReady }: PlacesListProps) => {
       window.clearTimeout(timer);
       if (backTimerRef.id) window.clearTimeout(backTimerRef.id);
     };
-  }, [isReady, screenWidth, places.length]);
+  }, [isReady, screenWidth, places.length, currentPlacePosition]);
 
   if (filteredPlaces) {
     return null;
