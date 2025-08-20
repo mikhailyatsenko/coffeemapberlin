@@ -48,7 +48,11 @@ export const AuthIndicator: React.FC = () => {
   }, [isProfileCardVisible]);
 
   if (!user) {
-    return <RegularButton onClick={showSignIn}>Sign in</RegularButton>;
+    return (
+      <RegularButton variant="solid" size="sm" theme="primary" onClick={showSignIn}>
+        Sign in
+      </RegularButton>
+    );
   }
 
   return (
