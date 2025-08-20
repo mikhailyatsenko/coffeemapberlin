@@ -1,6 +1,5 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useDeleteReview } from 'shared/api';
-import CollapseIcon from 'shared/assets/collapse-icon.svg?react';
 import { ReviewCard } from 'shared/ui/ReviewCard';
 import { sortReviews } from '../lib/sortReviews';
 import { type ReviewListProps } from '../types';
@@ -72,18 +71,6 @@ const ReviewListComponent = ({
         >
           Reviews ({reviews.length})
         </h4>
-      )}
-
-      {!isCompactView && (
-        <div
-          className={cls.reviewsCollapse}
-          onClick={() => {
-            setCompactView(true);
-          }}
-        >
-          Collapse reviews
-          <CollapseIcon className={cls.collapseIcon} />
-        </div>
       )}
 
       <div ref={handleRef} className={cls.reviewsList}>
