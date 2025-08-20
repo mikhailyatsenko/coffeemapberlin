@@ -37,7 +37,7 @@ const PlacesListComponent = ({ places, isReady }: PlacesListProps) => {
 
     hasShownHintRef.current = true;
 
-    const scrollDistance = 300;
+    const scrollDistance = 280;
     const startHint = () => {
       el.scrollTo({ left: scrollDistance, behavior: 'smooth' });
       const backTimer = window.setTimeout(() => {
@@ -46,7 +46,7 @@ const PlacesListComponent = ({ places, isReady }: PlacesListProps) => {
       return backTimer;
     };
 
-    const delay = 1000; // small delay for layout settle
+    const delay = 500; // small delay for layout settle
     const backTimerRef = { id: 0 as number | undefined };
     const timer = window.setTimeout(() => {
       backTimerRef.id = startHint() as unknown as number;
