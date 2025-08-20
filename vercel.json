@@ -9,11 +9,11 @@
         {
           "type": "query",
           "key": "id",
-          "value": "(?<id>66.*)"
+          "value": "66b(.*)"
         }
       ],
-      "destination": "/$id",
-      "permanent": true
+      "destination": "/404",
+      "statusCode": 404
     },
     {
       "source": "/details",
