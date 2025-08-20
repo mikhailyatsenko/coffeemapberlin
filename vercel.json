@@ -24,7 +24,7 @@
           "value": "(?<id>.*)"
         }
       ],
-      "destination": "/$id",
+      "destination": "place/$id",
       "permanent": true
     }
   ],
