@@ -1,13 +1,13 @@
 import { type ReactNode } from 'react';
 import { AboutPage } from 'pages/AboutPage';
 import { AccountSettingsPage } from 'pages/AccountSettingsPage';
-import { BlogPage } from 'pages/BlogPage';
 import { ContactPage } from 'pages/ContactPage';
 import { DisclaimerPage } from 'pages/DisclaimerPage';
 import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
+import { PlacePage } from 'pages/PlacePage';
 import { PrivacyPolicyPage } from 'pages/PrivacyPolicyPage';
 import { DetailedPlaceCard } from 'widgets/DetailedPlaceCard';
 import { AppRoutes, RoutePaths } from 'shared/constants';
@@ -19,7 +19,7 @@ export interface AppRouteConfig {
   children?: AppRouteConfig[];
 }
 
-export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
+export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.MAIN]: {
     path: RoutePaths.main,
     element: <MainPage />,
@@ -29,10 +29,6 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
         element: <DetailedPlaceCard />,
       },
     ],
-  },
-  [AppRoutes.BLOG]: {
-    path: RoutePaths.blog,
-    element: <BlogPage />,
   },
   [AppRoutes.ABOUT]: {
     path: RoutePaths.about,
@@ -73,6 +69,10 @@ export const routeConfig: Record<AppRoutes, AppRouteConfig> = {
   [AppRoutes.DISCLAIMER]: {
     path: RoutePaths.disclaimer,
     element: <DisclaimerPage />,
+  },
+  [AppRoutes.PLACE_DETAILS]: {
+    path: RoutePaths.placePage,
+    element: <PlacePage />,
   },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,

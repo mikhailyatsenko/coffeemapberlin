@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
+import { RoutePaths } from 'shared/constants';
 import { useAuthStore } from 'shared/stores/auth';
 
 interface PrivateRouteProps {
@@ -10,7 +11,7 @@ export const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const location = useLocation();
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to={RoutePaths.login} state={{ from: location }} replace />;
   }
 
   return children;

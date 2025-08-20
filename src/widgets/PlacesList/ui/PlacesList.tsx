@@ -26,7 +26,7 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
   return (
     <>
       <div
-        className={`${cls.placesData} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
+        className={`${cls.placesListWrapper} ${showFavorites && location.pathname !== '/details' ? cls.showFavorites : ''}`}
       >
         <div className={`${cls.PlacesList}`}>{placeCards}</div>
       </div>

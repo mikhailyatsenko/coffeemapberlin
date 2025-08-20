@@ -21,20 +21,21 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const [tooltipCurrentData, setTooltipCurrentData] = useState<
     GetAllPlacesQuery['places'][number]['properties'] | null
   >(null);
-  // const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const screenWidth = useWidth();
 
   useEffect(() => {
-    // if (!isMapLoaded) return;
-    if (currentPlacePosition) {
-      mapRef?.current?.flyTo({
+    if (!isMapLoaded) return;
+
+    if (currentPlacePosition && mapRef.current) {
+      mapRef.current.flyTo({
         center: currentPlacePosition as LngLatLike,
-        zoom: 15.6,
+        zoom: 17,
         offset: [screenWidth < 768 ? 0 : 220, 0],
       });
     }
-  }, [currentPlacePosition, screenWidth]);
+  }, [currentPlacePosition, screenWidth, isMapLoaded]);
 
   const interactiveLayerIds = useMemo(() => [unclusteredPointLayer.id!, clusterLayer.id!, namesLayer.id!], []);
 
@@ -135,17 +136,9 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         mapStyle="map/style.json"
         interactiveLayerIds={interactiveLayerIds}
         onClick={onClick}
-        // onLoad={() => {
-        //   setIsMapLoaded(true);
-        //   const map = mapRef.current?.getMap();
-        //   if (map) {
-        //     try {
-        //       map.showOverdrawInspector = false;
-        //       map.showCollisionBoxes = false;
-        //       map.showTileBoundaries = false;
-        //     } catch {}
-        //   }
-        // }}
+        onLoad={() => {
+          setIsMapLoaded(true);
+        }}
         ref={mapRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
