@@ -66,7 +66,7 @@
     grid-template-rows: auto auto;
     gap: 2rem;
     text-align: center;
-    padding: 1.5rem;
+
     min-height: auto;
     .briefInfo {
       order: 2;
@@ -81,8 +81,7 @@
     }
   }
 
-  @media (max-width: 480px) {
-    padding: 0rem;
+  @media (width <= 480px) {
     .headerImg {
       .mainImg {
         width: min(400px, 100%);
