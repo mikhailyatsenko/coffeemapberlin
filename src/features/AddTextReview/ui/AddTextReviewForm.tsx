@@ -66,7 +66,8 @@ export const AddTextReviewForm: React.FC<AddTextReviewFormProps> = ({
       <div className={cls.actions}>
         {initialValue && (
           <RegularButton
-            theme="blank"
+            variant="ghost"
+            theme="neutral"
             type="button"
             onClick={() => {
               onCancel?.();
