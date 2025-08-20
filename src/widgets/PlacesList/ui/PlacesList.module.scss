@@ -1,13 +1,13 @@
-.placesData {
+.placesListWrapper {
   position: absolute;
   top: 60px;
   display: flex;
   left: 0;
   max-width: 100%;
+  z-index: 2;
   @media (width <= 767px) {
     top: unset;
     bottom: 10px;
-    left: 10px;
     width: 100%;
 
     &.showFavorites {
@@ -123,7 +123,7 @@
     flex-direction: row;
     overflow-y: hidden;
     overflow-x: scroll;
-    padding: 0;
+    padding: 0 8px;
     gap: 10px;
   }
 
