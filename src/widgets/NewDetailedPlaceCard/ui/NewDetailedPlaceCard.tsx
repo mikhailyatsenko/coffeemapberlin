@@ -1,5 +1,7 @@
+import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AddTextReviewForm } from 'features/AddTextReview';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { OpeningHours } from 'entities/OpeningHours';
@@ -16,6 +18,7 @@ import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { CharacteristicCountsIcon, characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
+import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { Modal } from 'shared/ui/Modal';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { AverageRating } from '../components/AverageRating';
@@ -30,6 +33,8 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
   const navigate = useNavigate();
 
   const [showRateNow, setShowRateNow] = useState(false);
+  const [isEditingReview, setIsEditingReview] = useState(false);
+  const [editInitialText, setEditInitialText] = useState('');
 
   // Precompute static keys to satisfy hooks order (before any early returns)
   const characteristicKeys = useMemo(() => Array.from(characteristicsMap.keys()), []);
@@ -46,7 +51,18 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
   });
 
   const { data: placeReviewsData } = usePlaceReviews(placeId);
-  const reviews = placeReviewsData?.placeReviews.reviews ?? [];
+  const ownReview = placeReviewsData?.placeReviews.ownReview;
+  const displayedReviews = useMemo(() => {
+    const own = placeReviewsData?.placeReviews.ownReview;
+    const others = placeReviewsData?.placeReviews.othersSorted ?? [];
+    if (isEditingReview && own) return others;
+    return own ? [own, ...others] : others;
+  }, [isEditingReview, placeReviewsData]);
+
+  const handleEditReviewInline = useCallback((text: string) => {
+    setEditInitialText(text || '');
+    setIsEditingReview(true);
+  }, []);
 
   useEffect(() => {
     if (existPlaceData?.geometry.coordinates) {
@@ -62,12 +78,6 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
       document.title = 'Berlin Coffee Map';
     };
   }, [existPlaceData?.properties?.name]);
-
-  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.currentTarget;
-    target.onerror = null;
-    target.src = '/places-images/default-place-img.jpg';
-  }, []);
 
   const handleToggleFavorite = useCallback(
     async (e: React.MouseEvent) => {
@@ -104,7 +114,7 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
       </div>
 
       <header className={cls.header}>
-        <div className={cls.briefInfo}>
+        <div className={clsx(cls.briefInfo, cls.block)}>
           <AverageRating averageRating={averageRating} />
 
           <h1 className={cls.title}>{name}</h1>
@@ -143,30 +153,6 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
             >
               Rate place
             </button>
-            <button
-              className={cls.favBtn}
-              onClick={handleToggleFavorite}
-              title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <AddToFavButton size="medium" isFavorite={Boolean(isFavorite)} />
-            </button>
-          </div>
-        </div>
-        <div className={cls.headerImg}>
-          <img
-            loading="lazy"
-            src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-1440,if-else,h-720,if-end`}
-            alt={`${name} main image`}
-            className={cls.mainImg}
-            onError={handleImageError}
-          />
-        </div>
-      </header>
-
-      <div className={cls.layout}>
-        <main className={cls.main}>
-          <div className={cls.block}>
-            <h2 className={cls.blockTitle}>Reviews</h2>
             {showRateNow && (
               <Modal
                 onClose={() => {
@@ -177,18 +163,55 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
                   setShowRateNow={setShowRateNow}
                   showRateNow={showRateNow}
                   placeId={placeId}
-                  reviews={reviews}
+                  reviews={displayedReviews}
                   characteristicCounts={characteristicCounts}
                 />
               </Modal>
             )}
+            <button
+              className={cls.favBtn}
+              onClick={handleToggleFavorite}
+              title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              <AddToFavButton size="medium" isFavorite={Boolean(isFavorite)} />
+            </button>
+          </div>
+        </div>
+        <div className={cls.headerImg}>
+          <ImgWithLoader
+            loading="lazy"
+            src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-1440,if-else,h-720,if-end`}
+            alt={`${name} main image`}
+            className={cls.mainImg}
+            errorFallbackUrl="/places-images/default-place-img.jpg"
+          />
+        </div>
+      </header>
+
+      <div className={cls.layout}>
+        <main className={cls.main}>
+          <div className={cls.block}>
+            <h2 className={cls.blockTitle}>Reviews</h2>
+
+            {(isEditingReview || !ownReview) && (
+              <AddTextReviewForm
+                placeId={placeId}
+                initialValue={isEditingReview ? editInitialText : ''}
+                onSubmitted={() => {
+                  setIsEditingReview(false);
+                }}
+                onCancel={() => {
+                  setIsEditingReview(false);
+                }}
+              />
+            )}
+
             <ReviewList
-              showRateNow={showRateNow}
-              setShowRateNow={setShowRateNow}
-              reviews={reviews}
+              reviews={displayedReviews}
               placeId={placeId}
               isCompactView={false}
               setCompactView={() => {}}
+              onEditReview={handleEditReviewInline}
             />
           </div>
         </main>

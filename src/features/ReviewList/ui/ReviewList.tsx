@@ -11,8 +11,9 @@ const ReviewListComponent = ({
   placeId,
   isCompactView,
   setCompactView,
-  setShowRateNow,
-  showRateNow,
+  setShowRateNow = () => {},
+  showRateNow = false,
+  onEditReview,
 }: ReviewListProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
 
@@ -58,6 +59,8 @@ const ReviewListComponent = ({
       </div>
     );
 
+  const sortedReviews = sortReviews(reviews);
+
   return (
     <div className={cls.reviewsContainer}>
       {isCompactView && (
@@ -84,7 +87,7 @@ const ReviewListComponent = ({
       )}
 
       <div ref={handleRef} className={cls.reviewsList}>
-        {sortReviews(reviews).map((review, index) => (
+        {sortedReviews.map((review, index) => (
           <ReviewCard
             key={`${review.id}-${review.createdAt}-${index}`}
             reviewId={review.id}
@@ -99,6 +102,7 @@ const ReviewListComponent = ({
             createdAt={review.createdAt}
             imgCount={review.imgCount}
             userId={review.userId}
+            onEditReview={onEditReview}
           />
         ))}
       </div>

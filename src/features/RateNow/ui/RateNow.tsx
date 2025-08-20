@@ -8,7 +8,8 @@ import EditIcon from 'shared/assets/edit-icon.svg?react';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
-import { useAddRating, useAddTextReview } from '../hooks';
+import { useAddRating } from '../hooks';
+import { useAddTextReview } from '../hooks/useAddTextReview';
 import { type RateNowProps } from '../types';
 import cls from './RateNow.module.scss';
 
