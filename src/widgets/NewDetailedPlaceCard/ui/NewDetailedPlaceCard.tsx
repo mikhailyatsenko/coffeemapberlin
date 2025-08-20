@@ -22,6 +22,7 @@ import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { AverageRating } from '../components/AverageRating';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
+import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import cls from './NewDetailedPlaceCard.module.scss';
 
 interface NewDetailedPlaceCardProps {
@@ -100,8 +101,8 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
     navigate({ pathname: '/' });
   }, [navigate, existPlaceData?.geometry.coordinates]);
 
-  if (isPlacesLoading || isPlaceLoading) return null;
-  if (!existPlaceData?.properties || !additionalPlaceData?.place) return null;
+  if (isPlacesLoading || isPlaceLoading) return <NewDetailedPlaceCardSkeleton />;
+  if (!existPlaceData?.properties || !additionalPlaceData?.place) return <NewDetailedPlaceCardSkeleton />;
 
   const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = existPlaceData.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = additionalPlaceData.place.properties;

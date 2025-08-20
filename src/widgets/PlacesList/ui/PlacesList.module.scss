@@ -118,6 +118,7 @@
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE и Edge */
   z-index: 1;
+  position: relative;
 
   @media (width <= 767px) {
     flex-direction: row;
@@ -125,6 +126,7 @@
     overflow-x: scroll;
     padding: 0 8px;
     gap: 10px;
+    will-change: transform;
   }
 
   &::-webkit-scrollbar {
