@@ -27,7 +27,6 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   useEffect(() => {
     if (!isMapLoaded) return;
-
     if (currentPlacePosition && mapRef.current) {
       mapRef.current.flyTo({
         center: currentPlacePosition as LngLatLike,

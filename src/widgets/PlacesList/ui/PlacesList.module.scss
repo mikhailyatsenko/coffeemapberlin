@@ -11,6 +11,10 @@
     width: 100%;
 
     &.showFavorites {
+      top: 60px;
+      bottom: unset;
+      left: 0;
+      width: 100%;
       display: flex;
       z-index: 22;
       &::before {
@@ -30,6 +34,12 @@
         );
         pointer-events: none;
         z-index: 23;
+      }
+      .PlacesList {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        gap: 10px;
       }
 
       & + .backdrop {
@@ -126,7 +136,6 @@
     overflow-x: scroll;
     padding: 0 8px;
     gap: 10px;
-    will-change: transform;
   }
 
   &::-webkit-scrollbar {

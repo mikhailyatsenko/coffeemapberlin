@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { useDeleteReview } from 'shared/api';
 import { ReviewCard } from 'shared/ui/ReviewCard';
 import { sortReviews } from '../lib/sortReviews';
@@ -15,29 +15,6 @@ const ReviewListComponent = ({
   onEditReview,
 }: ReviewListProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
-
-  const [reviewsListRef, setReviewsListRef] = useState<HTMLDivElement | null>(null);
-
-  const handleRef = useCallback((node: HTMLDivElement | null) => {
-    setReviewsListRef(node);
-  }, []);
-
-  useEffect(() => {
-    if (!reviewsListRef) return;
-
-    const handleScrollReviewsExpand = () => {
-      const scrollTop = reviewsListRef.scrollTop;
-      if (isCompactView && scrollTop > 180) {
-        setCompactView(false);
-      }
-    };
-
-    reviewsListRef.addEventListener('scroll', handleScrollReviewsExpand);
-
-    return () => {
-      reviewsListRef.removeEventListener('scroll', handleScrollReviewsExpand);
-    };
-  }, [isCompactView, reviewsListRef, setCompactView]);
 
   if (showRateNow) return null;
 
@@ -73,7 +50,7 @@ const ReviewListComponent = ({
         </h4>
       )}
 
-      <div ref={handleRef} className={cls.reviewsList}>
+      <div className={cls.reviewsList}>
         {sortedReviews.map((review, index) => (
           <ReviewCard
             key={`${review.id}-${review.createdAt}-${index}`}
