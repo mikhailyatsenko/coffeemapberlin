@@ -1,11 +1,11 @@
 import { type Position } from 'geojson';
 import { memo } from 'react';
-import { createSearchParams, NavLink, useNavigate } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
-import { IMAGEKIT_CDN_URL } from 'shared/constants';
+import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 
@@ -23,7 +23,6 @@ interface PlaceCardProps {
 const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
   const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
-  const navigate = useNavigate();
 
   const handleToggleFavorite = async () => {
     try {
@@ -36,108 +35,94 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
     }
   };
 
-  const handleClickDetails = () => {
-    navigate({
-      pathname: '/details',
-      search: createSearchParams({ id: properties.id }).toString(),
-    });
+  const handleInstagramClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (properties.instagram) {
+      window.open(properties.instagram, '_blank', 'noopener,noreferrer');
+    }
   };
 
+  const handleDirectionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}&travelmode=walking`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShowOnMapClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (coordinates) {
+      setCurrentPlacePosition(coordinates);
+      if (showFavorites) setShowFavorites(false);
+    }
+  };
+
+  const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
+
   return (
-    <>
-      <div onClick={handleClickDetails} className={`${cls.placeCard} `}>
-        <div className={cls.image}>
-          <ImgWithLoader
-            src={
-              properties.image
-                ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
-                : 'places-images/default-place.jpg'
-            }
-            alt=""
-          />
-        </div>
-        <div className={cls.content}>
-          <div className={cls.cardHeader}>
-            <NavLink
-              to={{
-                pathname: '/details',
-                search: createSearchParams({ id: properties.id }).toString(),
+    <Link to={placePath} className={`${cls.placeCard} `}>
+      <div className={cls.image}>
+        <ImgWithLoader
+          src={
+            properties.image
+              ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
+              : 'places-images/default-place.jpg'
+          }
+          alt=""
+        />
+      </div>
+      <div className={cls.content}>
+        <div className={cls.cardHeader}>
+          <h4 className={cls.name}>{properties.name}</h4>
+
+          <div className={cls.iconsGroup}>
+            <div
+              title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleToggleFavorite();
               }}
+              className={cls.iconWrapper}
             >
-              <h4 className={cls.name}>{properties.name}</h4>
-            </NavLink>
-            <div className={cls.iconsGroup}>
-              <div
-                title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleToggleFavorite();
-                }}
-                className={cls.iconWrapper}
-              >
-                <AddToFavButton isFavorite={properties.isFavorite} />
-              </div>
+              <AddToFavButton isFavorite={properties.isFavorite} />
             </div>
           </div>
-          <div className={cls.rating}>
-            <RatingWidget isClickable={false} rating={properties.averageRating} />{' '}
-            {Boolean(properties.averageRating) && properties.averageRating}
-          </div>
-          {properties.description && <div className={cls.description}>{properties.description}</div>}
-          {properties.neighborhood && (
-            <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
-          )}
-          <div className={cls.address}>
-            <p>{properties.address}</p>
-            <div className={cls.iconsGroup}>
-              {properties.instagram && (
-                <a
-                  className={cls.iconWrapper}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  href={properties.instagram}
-                  target="_blank"
-                  rel="noreferrer"
-                  title="Open the place's Instagram profile"
-                >
-                  <img className={cls.icon} src={instagram} alt="" />
-                </a>
-              )}
-
-              <a
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                href={`https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}&travelmode=walking`}
-                target="_blank"
-                rel="noreferrer"
-                title="Get directions on Google Maps"
+        </div>
+        <div className={cls.rating}>
+          <RatingWidget isClickable={false} rating={properties.averageRating} />{' '}
+          {Boolean(properties.averageRating) && properties.averageRating}
+        </div>
+        {properties.description && <div className={cls.description}>{properties.description}</div>}
+        {properties.neighborhood && (
+          <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
+        )}
+        <div className={cls.address}>
+          <p>{properties.address}</p>
+          <div className={cls.iconsGroup}>
+            {properties.instagram && (
+              <button
                 className={cls.iconWrapper}
+                onClick={handleInstagramClick}
+                title="Open the place's Instagram profile"
               >
-                <img className={cls.icon} src={roteToImage} alt="" />
-              </a>
+                <img className={cls.icon} src={instagram} alt="" />
+              </button>
+            )}
 
-              <a
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  if (coordinates) {
-                    setCurrentPlacePosition(coordinates);
-                    if (showFavorites) setShowFavorites(false);
-                  }
-                }}
-                rel="noreferrer"
-                title="Show location on the map"
-                className={cls.iconWrapper}
-              >
-                <img className={cls.icon} src={showPlacePointOnMap} alt="" />
-              </a>
-            </div>
+            <button onClick={handleDirectionsClick} title="Get directions on Google Maps" className={cls.iconWrapper}>
+              <img className={cls.icon} src={roteToImage} alt="" />
+            </button>
+
+            <button onClick={handleShowOnMapClick} title="Show location on the map" className={cls.iconWrapper}>
+              <img className={cls.icon} src={showPlacePointOnMap} alt="" />
+            </button>
           </div>
         </div>
       </div>
-    </>
+    </Link>
   );
 };
 

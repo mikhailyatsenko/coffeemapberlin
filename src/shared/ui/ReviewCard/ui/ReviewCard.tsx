@@ -22,6 +22,7 @@ interface ReviewCardProps {
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
   userId: string;
+  onEditReview?: (reviewText: string) => void;
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -37,89 +38,94 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   setShowRateNow,
   userId,
   createdAt,
+  onEditReview,
 }) => {
   const [openLightbox, setOpenLightbox] = useState(false);
   const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
   const zoomRef = useRef<ZoomRef>(null);
   const reviewImages = useMemo(() => getReviewImages(placeId, imgCount), [placeId, imgCount]);
   return (
-    <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
-      {userId === 'google' && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
-      <div className={cls.userInfo}>
-        <img
-          src={userAvatar || (userId === 'google' ? './google-maps.svg' : './user-default-icon.svg')}
-          alt={userName}
-          className={cls.avatar}
-          referrerPolicy="no-referrer"
-        />
-        <span className={cls.userName}>{userName}</span>
-        {rating && (
-          <div className={cls.userRate}>
-            <BeanIcon filled />
-            <div className={cls.userRateNumber}>{rating}</div>
-          </div>
-        )}
-      </div>
-
-      <p className={cls.reviewText}>{!reviewText && rating ? `Rated: ${rating}` : reviewText}</p>
-
-      {!!imgCount && (
-        <>
-          <div className={cls.reviewImages}>
-            {reviewImages.map((url, idx) => (
-              <img
-                key={url}
-                src={`${url}?tr=if-ar_gt_1,w-200,if-else,h-200,if-end`}
-                alt=""
-                className={cls.reviewImage}
-                onClick={() => {
-                  setImgLightboxIndex(idx);
-                  setOpenLightbox(true);
-                }}
-              />
-            ))}
-          </div>
-          <Lightbox
-            zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 1 }}
-            plugins={[Zoom]}
-            open={openLightbox}
-            close={() => {
-              setOpenLightbox(false);
-            }}
-            slides={reviewImages.map((url) => ({ src: url }))}
-            index={imgLightboxIndex}
-            on={{
-              view: ({ index }) => {
-                setImgLightboxIndex(index);
-              },
-            }}
+    reviewText && (
+      <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
+        {userId === 'google' && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
+        <div className={cls.userInfo}>
+          <img
+            src={userAvatar || (userId === 'google' ? '/google-maps.svg' : '/user-default-icon.svg')}
+            alt={userName}
+            className={cls.avatar}
+            referrerPolicy="no-referrer"
           />
-        </>
-      )}
+          <span className={cls.userName}>{userName}</span>
+          {rating && (
+            <div className={cls.userRate}>
+              <BeanIcon filled />
+              <div className={cls.userRateNumber}>{rating}</div>
+            </div>
+          )}
+        </div>
 
-      <div className={cls.dateAndButtons}>
-        <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
-        {isOwnReview && handleDeleteReview && (
-          <div className={cls.buttons}>
-            <EditIcon
-              onClick={() => {
-                setShowRateNow(true);
+        <p className={cls.reviewText}>{!reviewText && rating ? `Rated: ${rating}` : reviewText}</p>
+
+        {!!imgCount && (
+          <>
+            <div className={cls.reviewImages}>
+              {reviewImages.map((url, idx) => (
+                <img
+                  key={url}
+                  src={`${url}?tr=if-ar_gt_1,w-200,if-else,h-200,if-end`}
+                  alt=""
+                  className={cls.reviewImage}
+                  onClick={() => {
+                    setImgLightboxIndex(idx);
+                    setOpenLightbox(true);
+                  }}
+                />
+              ))}
+            </div>
+            <Lightbox
+              zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 1 }}
+              plugins={[Zoom]}
+              open={openLightbox}
+              close={() => {
+                setOpenLightbox(false);
               }}
-              className={cls.buttonIcon}
-              title="Edit my feedback"
-            />
-            <DeleteIcon
-              onClick={() => {
-                const isConfirmed = window.confirm('Deleting review. Continue?');
-                if (!isConfirmed) return;
-                handleDeleteReview(reviewId);
+              slides={reviewImages.map((url) => ({ src: url }))}
+              index={imgLightboxIndex}
+              on={{
+                view: ({ index }) => {
+                  setImgLightboxIndex(index);
+                },
               }}
-              className={cls.buttonIcon}
-              title="Delete my review"
             />
-          </div>
+          </>
         )}
+
+        <div className={cls.dateAndButtons}>
+          <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
+          {isOwnReview && handleDeleteReview && (
+            <div className={cls.buttons}>
+              <EditIcon
+                onClick={() => {
+                  if (onEditReview) onEditReview(reviewText || '');
+                  else setShowRateNow(true);
+                }}
+                className={cls.buttonIcon}
+                title="Edit my feedback"
+              />
+
+              <DeleteIcon
+                onClick={() => {
+                  const isConfirmed = window.confirm('Deleting review. Continue?');
+                  if (!isConfirmed) return;
+                  handleDeleteReview(reviewId);
+                }}
+                className={cls.buttonIcon}
+                title="Delete my review"
+              />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    )
   );
 };

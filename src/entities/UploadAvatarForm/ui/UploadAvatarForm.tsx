@@ -66,7 +66,7 @@ export const UploadAvatarForm = ({
                 Upload new picture
               </RegularButton>
               {handleDelete && (
-                <RegularButton theme="blank" onClick={handleDelete}>
+                <RegularButton variant="ghost" theme="error" onClick={handleDelete}>
                   Delete
                 </RegularButton>
               )}
@@ -98,7 +98,7 @@ export const UploadAvatarForm = ({
                 </RegularButton>
               )}
 
-              <RegularButton theme="blank" onClick={handleCancel}>
+              <RegularButton variant="ghost" theme="neutral" onClick={handleCancel}>
                 Cancel
               </RegularButton>
             </>

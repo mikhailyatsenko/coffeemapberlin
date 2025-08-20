@@ -1,5 +1,6 @@
 export enum AppRoutes {
   MAIN = 'main',
+  PLACE_DETAILS = 'details',
   BLOG = 'blog',
   ABOUT = 'about',
   CONTACTS = 'contacts',
@@ -10,10 +11,13 @@ export enum AppRoutes {
   NOT_FOUND = 'not_found',
   PRIVACY = 'privacy',
   DISCLAIMER = 'disclaimer',
+  PLACE_PAGE = 'placePage',
 }
 
 export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.MAIN]: '/',
+  [AppRoutes.PLACE_DETAILS]: '/details',
+  [AppRoutes.PLACE_PAGE]: 'place/:id',
   [AppRoutes.BLOG]: 'blog',
   [AppRoutes.ABOUT]: 'about',
   [AppRoutes.CONTACTS]: 'contacts',

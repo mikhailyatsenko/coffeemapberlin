@@ -1,6 +1,5 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { useDeleteReview } from 'shared/api';
-import CollapseIcon from 'shared/assets/collapse-icon.svg?react';
 import { ReviewCard } from 'shared/ui/ReviewCard';
 import { sortReviews } from '../lib/sortReviews';
 import { type ReviewListProps } from '../types';
@@ -11,33 +10,11 @@ const ReviewListComponent = ({
   placeId,
   isCompactView,
   setCompactView,
-  setShowRateNow,
-  showRateNow,
+  setShowRateNow = () => {},
+  showRateNow = false,
+  onEditReview,
 }: ReviewListProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
-
-  const [reviewsListRef, setReviewsListRef] = useState<HTMLDivElement | null>(null);
-
-  const handleRef = useCallback((node: HTMLDivElement | null) => {
-    setReviewsListRef(node);
-  }, []);
-
-  useEffect(() => {
-    if (!reviewsListRef) return;
-
-    const handleScrollReviewsExpand = () => {
-      const scrollTop = reviewsListRef.scrollTop;
-      if (isCompactView && scrollTop > 180) {
-        setCompactView(false);
-      }
-    };
-
-    reviewsListRef.addEventListener('scroll', handleScrollReviewsExpand);
-
-    return () => {
-      reviewsListRef.removeEventListener('scroll', handleScrollReviewsExpand);
-    };
-  }, [isCompactView, reviewsListRef, setCompactView]);
 
   if (showRateNow) return null;
 
@@ -58,6 +35,8 @@ const ReviewListComponent = ({
       </div>
     );
 
+  const sortedReviews = sortReviews(reviews);
+
   return (
     <div className={cls.reviewsContainer}>
       {isCompactView && (
@@ -71,20 +50,8 @@ const ReviewListComponent = ({
         </h4>
       )}
 
-      {!isCompactView && (
-        <div
-          className={cls.reviewsCollapse}
-          onClick={() => {
-            setCompactView(true);
-          }}
-        >
-          Collapse reviews
-          <CollapseIcon className={cls.collapseIcon} />
-        </div>
-      )}
-
-      <div ref={handleRef} className={cls.reviewsList}>
-        {sortReviews(reviews).map((review, index) => (
+      <div className={cls.reviewsList}>
+        {sortedReviews.map((review, index) => (
           <ReviewCard
             key={`${review.id}-${review.createdAt}-${index}`}
             reviewId={review.id}
@@ -99,6 +66,7 @@ const ReviewListComponent = ({
             createdAt={review.createdAt}
             imgCount={review.imgCount}
             userId={review.userId}
+            onEditReview={onEditReview}
           />
         ))}
       </div>

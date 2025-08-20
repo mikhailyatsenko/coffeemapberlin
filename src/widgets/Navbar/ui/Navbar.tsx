@@ -41,7 +41,7 @@ export const Navbar = () => {
 
       <div className={cls.buttonsRight}>
         {location.pathname === '/' && !isBurgerActive && <SearchPlaces />}
-        <ul className={`${cls.navMenu} ${isBurgerActive ? `${cls.active} ${cls.navLink}` : ''}`}>
+        <ul className={`${cls.navMenu} ${isBurgerActive ? `${cls.active}` : ''}`}>
           <li className={cls.navItem}>
             <NavLink
               onClick={() => {
@@ -82,7 +82,7 @@ export const Navbar = () => {
           onClick={() => {
             setIsBurgerActive((prevState) => !prevState);
           }}
-          className={`${cls.hamburger} ${isBurgerActive ? `${cls.active} ${cls.navLink}` : ''}`}
+          className={`${cls.hamburger}`}
         >
           <span className={cls.bar}></span>
           <span className={cls.bar}></span>
