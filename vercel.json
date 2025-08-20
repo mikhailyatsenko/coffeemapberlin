@@ -17,16 +17,9 @@
       "statusCode": 404
     },
     {
-      "source": "/details",
-      "has": [
-        {
-          "type": "query",
-          "key": "id",
-          "value": "(?<id>.*)"
-        }
-      ],
-      "destination": "/place/$id?",
-      "permanent": true
+      "source": "/details?id=(?<id>.*)",
+      "destination": "/place/$id",
+      "statusCode": 301
     }
   ],
   "headers": [
