@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "redirects": [
@@ -24,11 +25,21 @@
           "value": "(?<id>.*)"
         }
       ],
-      "destination": "/place/$id",
+      "destination": "/place/$id?",
       "permanent": true
     }
   ],
-
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
   "git": {
     "deploymentEnabled": {
       "main": true,

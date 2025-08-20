@@ -11,7 +11,7 @@ export default defineConfig({
   define: {
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
   },
-  base: './',
+  base: '/',
   build: {
     minify: 'terser',
     cssCodeSplit: true,
