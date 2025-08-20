@@ -49,7 +49,7 @@ export const MainPage = () => {
     <>
       {loading ? <Loader /> : null}
       <MainMap placesGeo={placesGeo} />
-      <PlacesList places={placesToDisplay} />
+      <PlacesList places={placesToDisplay} isReady={!loading} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
       <Outlet />
     </>
