@@ -19,7 +19,6 @@ import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { CharacteristicCountsIcon, characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
-import { Modal } from 'shared/ui/Modal';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { AverageRating } from '../components/AverageRating';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
@@ -106,13 +105,6 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
 
   return (
     <div className={cls.page}>
-      <div className={cls.breadcrumbs}>
-        <button className={cls.backBtn} onClick={goBackToMap} aria-label="Back to map">
-          <span>←</span>
-          <span>Back to map</span>
-        </button>
-      </div>
-
       <header className={cls.header}>
         <div className={clsx(cls.briefInfo, cls.block)}>
           <AverageRating averageRating={averageRating} />
@@ -144,30 +136,14 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
 
             {/* </div> */}
 
-            <button
-              className={cls.primaryBtn}
-              onClick={() => {
-                setShowRateNow(true);
-              }}
-              type="button"
-            >
-              Rate place
-            </button>
-            {showRateNow && (
-              <Modal
-                onClose={() => {
-                  setShowRateNow(false);
-                }}
-              >
-                <RateNow
-                  setShowRateNow={setShowRateNow}
-                  showRateNow={showRateNow}
-                  placeId={placeId}
-                  reviews={displayedReviews}
-                  characteristicCounts={characteristicCounts}
-                />
-              </Modal>
-            )}
+            <RateNow
+              setShowRateNow={setShowRateNow}
+              showRateNow={showRateNow}
+              placeId={placeId}
+              reviews={displayedReviews}
+              characteristicCounts={characteristicCounts}
+            />
+
             <button
               className={cls.favBtn}
               onClick={handleToggleFavorite}
@@ -217,8 +193,8 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
         </main>
 
         <aside className={cls.sidebar}>
-          <div className={cls.card}>
-            {/* <h3 className={cls.cardTitle}>Place info</h3> */}
+          <div className={cls.block}>
+            <h3 className={cls.blockTitle}>Place info</h3>
             {neighborhood ? (
               <BadgePill text={neighborhood} color="green" size="small" className={cls.neighborhood} />
             ) : null}
@@ -267,6 +243,13 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
             </div>
           ) : null}
         </aside>
+      </div>
+
+      <div className={cls.breadcrumbs}>
+        <button className={cls.backBtn} onClick={goBackToMap} aria-label="Back to map">
+          <span>←</span>
+          <span>Back to map</span>
+        </button>
       </div>
 
       <CoffeeShopSchema

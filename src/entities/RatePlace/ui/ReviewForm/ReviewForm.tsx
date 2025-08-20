@@ -40,7 +40,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onClose, initi
         <FormField fieldName="reviewText" type="textarea" labelText="Review" autoFocus={true} />
         {errors.reviewText && <p className={cls.formError}>{errors.reviewText.message}</p>}
         <div className={cls.buttons}>
-          <RegularButton theme="blank" type="button" onClick={onClose}>
+          <RegularButton variant="ghost" theme="neutral" type="button" onClick={onClose}>
             &#8612; Back
           </RegularButton>
           <RegularButton type="submit" disabled={!isValid}>
