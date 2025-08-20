@@ -1,6 +1,9 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+// TODO: fix somehow
+// eslint-disable-next-line boundaries/element-types
+import { NotFoundPage } from 'pages/NotFoundPage';
 import { AddTextReviewForm } from 'features/AddTextReview';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
@@ -102,7 +105,7 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
   }, [navigate, existPlaceData?.geometry.coordinates]);
 
   if (isPlacesLoading || isPlaceLoading) return <NewDetailedPlaceCardSkeleton />;
-  if (!existPlaceData?.properties || !additionalPlaceData?.place) return <NewDetailedPlaceCardSkeleton />;
+  if (!existPlaceData?.properties || !additionalPlaceData?.place) return <NotFoundPage />;
 
   const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = existPlaceData.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = additionalPlaceData.place.properties;

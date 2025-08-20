@@ -9,13 +9,26 @@
         {
           "type": "query",
           "key": "id",
-          "value": "66(.*)"
+          "value": "(?<id>.*)"
         }
       ],
-      "destination": "/404",
-      "statusCode": 404
+      "destination": "/$id",
+      "permanent": true
+    },
+    {
+      "source": "/details",
+      "has": [
+        {
+          "type": "query",
+          "key": "id",
+          "value": "(?<id>.*)"
+        }
+      ],
+      "destination": "/$id",
+      "permanent": true
     }
   ],
+
   "git": {
     "deploymentEnabled": {
       "main": true,

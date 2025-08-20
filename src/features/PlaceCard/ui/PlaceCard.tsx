@@ -1,11 +1,11 @@
 import { type Position } from 'geojson';
 import { memo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
-import { IMAGEKIT_CDN_URL } from 'shared/constants';
+import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 
@@ -24,8 +24,6 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
   const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
 
-  const navigate = useNavigate();
-
   const handleToggleFavorite = async () => {
     try {
       await toggleFavorite();
@@ -37,12 +35,34 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
     }
   };
 
-  const onPlaceCardClick = () => {
-    navigate({ pathname: properties.id });
+  const handleInstagramClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (properties.instagram) {
+      window.open(properties.instagram, '_blank', 'noopener,noreferrer');
+    }
   };
 
+  const handleDirectionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}&travelmode=walking`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShowOnMapClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (coordinates) {
+      setCurrentPlacePosition(coordinates);
+      if (showFavorites) setShowFavorites(false);
+    }
+  };
+
+  const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
+
   return (
-    <div onClick={onPlaceCardClick} className={`${cls.placeCard} `}>
+    <Link to={placePath} className={`${cls.placeCard} `}>
       <div className={cls.image}>
         <ImgWithLoader
           src={
@@ -62,6 +82,7 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
               title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
               onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 handleToggleFavorite();
               }}
               className={cls.iconWrapper}
@@ -82,52 +103,26 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
           <p>{properties.address}</p>
           <div className={cls.iconsGroup}>
             {properties.instagram && (
-              <a
+              <button
                 className={cls.iconWrapper}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                href={properties.instagram}
-                target="_blank"
-                rel="noreferrer"
+                onClick={handleInstagramClick}
                 title="Open the place's Instagram profile"
               >
                 <img className={cls.icon} src={instagram} alt="" />
-              </a>
+              </button>
             )}
 
-            <a
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              href={`https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}&travelmode=walking`}
-              target="_blank"
-              rel="noreferrer"
-              title="Get directions on Google Maps"
-              className={cls.iconWrapper}
-            >
+            <button onClick={handleDirectionsClick} title="Get directions on Google Maps" className={cls.iconWrapper}>
               <img className={cls.icon} src={roteToImage} alt="" />
-            </a>
+            </button>
 
-            <a
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (coordinates) {
-                  setCurrentPlacePosition(coordinates);
-                  if (showFavorites) setShowFavorites(false);
-                }
-              }}
-              rel="noreferrer"
-              title="Show location on the map"
-              className={cls.iconWrapper}
-            >
+            <button onClick={handleShowOnMapClick} title="Show location on the map" className={cls.iconWrapper}>
               <img className={cls.icon} src={showPlacePointOnMap} alt="" />
-            </a>
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

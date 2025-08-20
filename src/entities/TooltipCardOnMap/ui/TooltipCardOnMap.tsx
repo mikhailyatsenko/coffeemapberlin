@@ -1,9 +1,9 @@
 import { type Position } from 'geojson';
-import { NavLink, createSearchParams } from 'react-router-dom';
+import { NavLink, generatePath } from 'react-router-dom';
 import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
-import { IMAGEKIT_CDN_URL } from 'shared/constants';
+import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetAllPlacesQuery } from 'shared/generated/graphql';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
@@ -37,12 +37,13 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
     ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
     : 'places-images/default-tooltip-img.jpg';
 
+  const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
+
   return (
     <div className={cls.TooltipCardOnMap}>
       <NavLink
         to={{
-          pathname: '/details',
-          search: createSearchParams({ id: properties.id }).toString(),
+          pathname: placePath,
         }}
       >
         <div className={cls.image}>
@@ -59,8 +60,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         <div className={cls.header}>
           <NavLink
             to={{
-              pathname: '/details',
-              search: createSearchParams({ id: properties.id }).toString(),
+              pathname: placePath,
             }}
           >
             <h4 className={cls.name}>{name}</h4>
@@ -78,8 +78,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
         <div className={cls.iconsGroup}>
           <NavLink
             to={{
-              pathname: '/details',
-              search: createSearchParams({ id: properties.id }).toString(),
+              pathname: placePath,
             }}
           >
             <button className={cls.moreButton}>More details</button>
