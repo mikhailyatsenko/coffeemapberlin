@@ -1,0 +1,170 @@
+.skeletonPage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeletonHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  gap: 2rem;
+  align-items: center;
+}
+
+.briefInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerImg {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.skeletonBlock {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  height: 100%;
+  width: 150%;
+  background: linear-gradient(
+    90deg,
+    rgba(229, 231, 235, 0) 0%,
+    rgba(255, 255, 255, 0.7) 50%,
+    rgba(229, 231, 235, 0) 100%
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.title {
+  height: 32px;
+  width: 60%;
+  border-radius: 8px;
+}
+
+.description {
+  height: 48px;
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.badge {
+  height: 24px;
+  width: 64px;
+  border-radius: 12px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.button {
+  height: 40px;
+  width: 140px;
+  border-radius: 8px;
+}
+
+.squareImage {
+  aspect-ratio: 1;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  grid-template-areas: 'sidebar' 'main';
+}
+
+.sidebar,
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  height: 20px;
+  width: 100%;
+  border-radius: 6px;
+}
+
+@media (width <= 768px) {
+  .skeletonHeader {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .briefInfo {
+    order: 2;
+  }
+
+  .headerImg {
+    order: 1;
+    padding-left: 0;
+  }
+}
+
+@media (width <= 480px) {
+  .headerImg .squareImage {
+    width: min(400px, 100%);
+  }
+}
+
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    grid-template-areas: 'main sidebar';
+  }
+}

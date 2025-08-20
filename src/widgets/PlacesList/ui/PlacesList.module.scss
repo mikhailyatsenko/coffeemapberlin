@@ -1,12 +1,20 @@
-.placesData {
+.placesListWrapper {
   position: absolute;
   top: 60px;
   display: flex;
   left: 0;
   max-width: 100%;
+  z-index: 2;
   @media (width <= 767px) {
-    display: none;
+    top: unset;
+    bottom: 10px;
+    width: 100%;
+
     &.showFavorites {
+      top: 60px;
+      bottom: unset;
+      left: 0;
+      width: 100%;
       display: flex;
       z-index: 22;
       &::before {
@@ -26,6 +34,12 @@
         );
         pointer-events: none;
         z-index: 23;
+      }
+      .PlacesList {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+        gap: 10px;
       }
 
       & + .backdrop {
@@ -114,6 +128,15 @@
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE и Edge */
   z-index: 1;
+  position: relative;
+
+  @media (width <= 767px) {
+    flex-direction: row;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    padding: 0 8px;
+    gap: 10px;
+  }
 
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari */
