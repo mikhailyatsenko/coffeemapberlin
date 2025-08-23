@@ -9,7 +9,6 @@ import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
 import { PlacePage } from 'pages/PlacePage';
 import { PrivacyPolicyPage } from 'pages/PrivacyPolicyPage';
-import { DetailedPlaceCard } from 'widgets/DetailedPlaceCard';
 import { AppRoutes, RoutePaths } from 'shared/constants';
 import { PrivateRoute } from '../../ui/PrivateRoute';
 
@@ -23,12 +22,6 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.MAIN]: {
     path: RoutePaths.main,
     element: <MainPage />,
-    children: [
-      {
-        path: 'details',
-        element: <DetailedPlaceCard />,
-      },
-    ],
   },
   [AppRoutes.ABOUT]: {
     path: RoutePaths.about,

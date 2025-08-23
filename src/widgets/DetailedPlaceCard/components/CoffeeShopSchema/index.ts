@@ -1,1 +1,0 @@
-export { CoffeeShopSchema } from './CoffeeShopSchema';

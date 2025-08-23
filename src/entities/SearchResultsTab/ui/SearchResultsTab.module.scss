@@ -1,15 +1,9 @@
 .SearchResultsTab {
   position: absolute;
   top: 64px;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  gap: 4px;
-  max-height: calc(100vh - 70px);
+
   width: 350px;
-  border-radius: 10px;
-  box-shadow: 0 6px 30px -10px #d5dbed;
-  overflow-y: scroll;
+
   @media (width <= 975px) {
     width: 300px;
   }
@@ -48,24 +42,4 @@
   line-height: 1;
   font-weight: 200;
   font-style: italic;
-}
-
-.resultPlaceActive {
-  animation: displayList 0.3s cubic-bezier(0.6, 0.18, 0.5, 0.99) forwards;
-  transform: translatey(40px);
-  opacity: 0;
-}
-
-@keyframes displayList {
-  0% {
-    opacity: 0;
-    transform: translatey(40px);
-  }
-  20% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-    transform: translatey(0px);
-  }
 }

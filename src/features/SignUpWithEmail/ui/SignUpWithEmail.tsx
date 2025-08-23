@@ -16,7 +16,7 @@ export const SignUpWithEmail = ({
   continueWithSocial,
   setError,
 }: SignUpWithEmailProps) => {
-  const form = useForm({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignUpWithEmail) });
+  const form = useForm({ mode: 'onChange', resolver: yupResolver(validationSchemaSignUpWithEmail) });
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,

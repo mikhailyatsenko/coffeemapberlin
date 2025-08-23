@@ -44,7 +44,10 @@ export const SignInWithEmail = ({
     }
   };
 
-  const form = useForm<SignInWithEmailData>({ mode: 'onBlur', resolver: yupResolver(validationSchemaSignInWithEmail) });
+  const form = useForm<SignInWithEmailData>({
+    mode: 'onChange',
+    resolver: yupResolver(validationSchemaSignInWithEmail),
+  });
 
   const {
     handleSubmit,

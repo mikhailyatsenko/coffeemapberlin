@@ -18,13 +18,13 @@ export const AccountSettings = () => {
   const { user } = useAuthStore();
 
   const passwordForm = useForm<SetNewPasswordFormData>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: yupResolver(passwordValidationSchema),
     context: { isGoogleUserUserWithoutPassword: user?.isGoogleUserUserWithoutPassword },
   });
 
   const personalDataForm = useForm<PersonalDataFormData>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: yupResolver(personalDataValidationSchema),
     defaultValues: {
       displayName: user?.displayName || '',

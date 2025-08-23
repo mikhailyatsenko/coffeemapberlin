@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { clearAuth, useAuthStore } from 'shared/stores/auth';
 import { showSignIn } from 'shared/stores/modal';
 import { Loader } from 'shared/ui/Loader';
@@ -7,7 +7,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,7 +15,7 @@ export const AuthIndicator: React.FC = () => {
     try {
       setIsLoading(true);
       await clearAuth();
-      navigate('/', { replace: true });
+      // navigate('/', { replace: true });
     } catch (error) {
       console.log(error);
     } finally {
@@ -48,7 +48,11 @@ export const AuthIndicator: React.FC = () => {
   }, [isProfileCardVisible]);
 
   if (!user) {
-    return <RegularButton onClick={showSignIn}>Sign in</RegularButton>;
+    return (
+      <RegularButton variant="solid" size="sm" theme="primary" onClick={showSignIn}>
+        Sign in
+      </RegularButton>
+    );
   }
 
   return (
@@ -61,12 +65,12 @@ export const AuthIndicator: React.FC = () => {
           toggleProfileCard();
         }}
       >
-        <img src={user?.avatar || './user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
+        <img src={user?.avatar || '/user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
       </div>
 
       <div className={`${cls.profileCard} ${isProfileCardVisible ? cls.visible : ''}`}>
         <div className={cls.profileCardAvatar}>
-          <img src={user?.avatar || './user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
+          <img src={user?.avatar || '/user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
         </div>
         <p className={cls.profileName}>{user?.displayName}</p>
         <p className={cls.profileEmail}>{user?.email}</p>

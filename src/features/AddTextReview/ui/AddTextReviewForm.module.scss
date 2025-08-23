@@ -13,6 +13,19 @@
   border: 1px solid #e0e0e0;
   resize: vertical;
   font: inherit;
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: 4px 0;
+  padding: 8px 12px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
 }
 
 .actions {
