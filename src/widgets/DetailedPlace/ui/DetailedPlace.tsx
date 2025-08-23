@@ -164,7 +164,7 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
             <BadgePill text={neighborhood} color="green" size="small" className={cls.neighborhood} />
           ) : null}
           <ImgWithLoader
-            loading="lazy"
+            loading="eager"
             src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-1440,if-else,h-720,if-end`}
             alt={`${name} main image`}
             className={cls.mainImg}

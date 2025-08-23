@@ -14,8 +14,13 @@ const PlacesListComponent = ({ places, isReady }: PlacesListProps) => {
 
   const placeCards = useMemo(
     () =>
-      places.map((place) => (
-        <PlaceCard properties={place.properties} coordinates={place.geometry.coordinates} key={place.properties.id} />
+      places.map((place, index) => (
+        <PlaceCard
+          index={index}
+          properties={place.properties}
+          coordinates={place.geometry.coordinates}
+          key={place.properties.id}
+        />
       )),
     [places],
   );
