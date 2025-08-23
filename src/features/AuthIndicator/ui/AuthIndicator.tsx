@@ -65,12 +65,12 @@ export const AuthIndicator: React.FC = () => {
           toggleProfileCard();
         }}
       >
-        <img src={user?.avatar || './user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
+        <img src={user?.avatar || '/user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
       </div>
 
       <div className={`${cls.profileCard} ${isProfileCardVisible ? cls.visible : ''}`}>
         <div className={cls.profileCardAvatar}>
-          <img src={user?.avatar || './user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
+          <img src={user?.avatar || '/user-default-icon.svg'} alt="User avatar" referrerPolicy="no-referrer" />
         </div>
         <p className={cls.profileName}>{user?.displayName}</p>
         <p className={cls.profileEmail}>{user?.email}</p>
