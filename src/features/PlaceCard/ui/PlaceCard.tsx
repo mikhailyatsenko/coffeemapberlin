@@ -18,9 +18,10 @@ import cls from './PlaceCard.module.scss';
 interface PlaceCardProps {
   properties: GetAllPlacesQuery['places'][number]['properties'];
   coordinates: Position;
+  index: number;
 }
 
-const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
+const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) => {
   const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
 
@@ -65,6 +66,7 @@ const PlaceCardComponent = ({ properties, coordinates }: PlaceCardProps) => {
     <Link to={placePath} className={`${cls.placeCard} `}>
       <div className={cls.image}>
         <ImgWithLoader
+          loading={index < 1 ? 'eager' : 'lazy'}
           src={
             properties.image
               ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
