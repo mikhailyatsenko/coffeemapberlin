@@ -20,7 +20,7 @@ interface ContactFormProps {
 
 export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
   const form = useForm<ContactFormData>({
-    mode: 'onBlur',
+    mode: 'onChange',
     resolver: yupResolver(validationSchema),
     defaultValues: defaultValues || undefined,
   });
