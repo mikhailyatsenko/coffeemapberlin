@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
-import { usePlacesStore, setFilteredPlaces } from 'shared/stores/places';
+import { RoutePaths } from 'shared/constants';
+import { setFilteredPlaces, usePlacesStore } from 'shared/stores/places';
 import cls from './SearchPlaces.module.scss';
 
 export const SearchPlaces = () => {
@@ -14,6 +15,14 @@ export const SearchPlaces = () => {
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isActive) {
+      setFilteredPlaces({ searchTerm: searchTerm.trim().toLowerCase(), minRating });
+    } else {
+      setFilteredPlaces(null);
+    }
+  }, [searchTerm, minRating, isActive]);
 
   useEffect(() => {
     if (isActive) {
@@ -38,30 +47,25 @@ export const SearchPlaces = () => {
     document.addEventListener('mouseup', handleClickOutside);
     return () => {
       document.removeEventListener('keydown', handleEscKey);
-      document.addEventListener('mouseup', handleClickOutside);
+      document.removeEventListener('mouseup', handleClickOutside);
     };
   }, [isActive, setSearchTerm]);
 
-  useEffect(() => {
-    if (isActive) {
-      setFilteredPlaces({ searchTerm, minRating });
-    } else {
-      setFilteredPlaces(null);
-    }
-  }, [searchTerm, minRating, isActive]);
-
-  const onResultSelectHandler = (placeId: string) => {
-    setIsActive(false);
-    setSearchTerm('');
-    navigate({
-      pathname: placeId,
-    });
-  };
+  const onResultSelectHandler = useCallback(
+    (placeId: string) => {
+      setIsActive(false);
+      setSearchTerm('');
+      const path = generatePath(`/${RoutePaths.placePage}`, { id: placeId });
+      navigate({ pathname: path });
+    },
+    [navigate],
+  );
 
   return (
     <div
       onClick={() => {
         setIsActive(true);
+        setSearchTerm('');
       }}
       className={`${cls.SearchPlaces} ${isActive ? cls.smallScreensSearch : ''}`}
       ref={SearchPlacesRef}
@@ -72,7 +76,7 @@ export const SearchPlaces = () => {
           <RatingFilter filterRating={minRating} setFilterRating={setMinRating} />
         </div>
       )}
-      {isActive && filteredPlaces && (
+      {isActive && filteredPlaces && filteredPlaces.length > 0 && (
         <SearchResultsTab filteredPlaces={filteredPlaces} onSelect={onResultSelectHandler} />
       )}
     </div>

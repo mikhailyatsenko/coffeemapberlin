@@ -43,7 +43,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit, onClose, initi
           <RegularButton variant="ghost" theme="neutral" type="button" onClick={onClose}>
             &#8612; Back
           </RegularButton>
-          <RegularButton type="submit" disabled={!isValid}>
+          <RegularButton type="submit" variant="solid" disabled={!isValid}>
             Submit Review
           </RegularButton>
         </div>

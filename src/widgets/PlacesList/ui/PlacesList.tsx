@@ -46,7 +46,7 @@ const PlacesListComponent = ({ places, isReady }: PlacesListProps) => {
       return backTimer;
     };
 
-    const delay = 600; // small delay for layout settle
+    const delay = 500; // small delay for layout settle
     const backTimerRef = { id: 0 as number | undefined };
     const timer = window.setTimeout(() => {
       backTimerRef.id = startHint() as unknown as number;

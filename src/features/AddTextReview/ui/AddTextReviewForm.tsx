@@ -1,13 +1,15 @@
 import clsx from 'clsx';
 import { debounce } from 'lodash-es';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAddTextReview } from 'shared/api';
+import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
+import { useAddTextReviewMutation, PlaceReviewsDocument } from 'shared/generated/graphql';
+import { useAuthStore } from 'shared/stores/auth';
+import { showLoginRequired } from 'shared/stores/modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { useAddTextReviewDraftStore } from '../model';
 import { type AddTextReviewFormProps } from '../types';
 import cls from './AddTextReviewForm.module.scss';
 
-export const AddTextReviewForm: React.FC<AddTextReviewFormProps> = ({
+const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   placeId,
   initialValue = '',
   className,
@@ -18,8 +20,29 @@ export const AddTextReviewForm: React.FC<AddTextReviewFormProps> = ({
   const setDraft = useAddTextReviewDraftStore((s) => s.setDraft);
   const clearDraft = useAddTextReviewDraftStore((s) => s.clearDraft);
   const [text, setText] = useState(initialValue || draftText || '');
-  const { handleAddTextReview, loading } = useAddTextReview(placeId);
+  const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuthStore();
+
+  const [addTextReview, { loading, error: apolloError }] = useAddTextReviewMutation({
+    refetchQueries: [
+      {
+        query: PlaceReviewsDocument,
+        variables: { placeId },
+      },
+    ],
+    awaitRefetchQueries: true,
+  });
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Clear local error when Apollo error changes
+  useEffect(() => {
+    if (apolloError) {
+      const errorMessage = apolloError.message || 'Failed to submit review. Please try again.';
+      setError(errorMessage);
+    }
+  }, [apolloError]);
 
   const debouncedSetDraft = useMemo(
     () =>
@@ -59,28 +82,42 @@ export const AddTextReviewForm: React.FC<AddTextReviewFormProps> = ({
       e.preventDefault();
       const trimmed = text.trim();
       if (!trimmed) return;
+
+      // Clear previous error
+      setError(null);
+
       try {
-        debouncedSetDraft.flush?.();
-        await handleAddTextReview(trimmed);
-        setText('');
+        if (!user) {
+          showLoginRequired();
+          return;
+        }
+        await addTextReview({ variables: { placeId, text: trimmed } });
+        // Only clear text and draft if the operation was successful
         clearDraft(placeId);
         onSubmitted?.();
-      } catch (e) {
-        // error already handled in hook
+      } catch (err) {
+        // Apollo errors are handled by useEffect, this is for other errors
+        const errorMessage = err instanceof Error ? err.message : 'Failed to submit review. Please try again.';
+        setError(errorMessage);
+        console.error('Error adding or updating review:', err);
       }
     },
-    [text, handleAddTextReview, onSubmitted, placeId, clearDraft, debouncedSetDraft],
+    [text, user, addTextReview, placeId, clearDraft, onSubmitted],
   );
-
   return (
     <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
       <textarea
+        disabled={loading}
         ref={textareaRef}
         className={cls.textarea}
         value={text}
         onChange={(e) => {
           const next = e.target.value;
           setText(next);
+          // Clear error when user starts typing
+          if (error) {
+            setError(null);
+          }
           if (!initialValue) {
             debouncedSetDraft(next);
           }
@@ -89,6 +126,7 @@ export const AddTextReviewForm: React.FC<AddTextReviewFormProps> = ({
         placeholder={initialValue ? 'Edit your review...' : 'Write your review...'}
         rows={4}
       />
+      {error && <div className={cls.error}>{error}</div>}
       <div className={cls.actions}>
         {initialValue && (
           <RegularButton
@@ -102,10 +140,14 @@ export const AddTextReviewForm: React.FC<AddTextReviewFormProps> = ({
             Cancel
           </RegularButton>
         )}
-        <RegularButton type="submit" disabled={loading || text.trim().length === 0}>
-          {initialValue ? 'Update review' : 'Submit review'}
+        <RegularButton type="submit" variant="solid" disabled={loading || text.trim().length === 0}>
+          {loading ? 'Sending review ...' : initialValue ? 'Update review' : 'Submit review'}
         </RegularButton>
       </div>
     </form>
   );
 };
+
+export const AddTextReviewForm = memo(AddTextReviewFormComponent, (prevProps, nextProps) => {
+  return prevProps.placeId === nextProps.placeId;
+});

@@ -29,7 +29,7 @@ export const setFilteredPlaces = (
       .sort((a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0));
 
     return {
-      filteredPlaces: filteredPlaces.length > 0 ? filteredPlaces : null,
+      filteredPlaces,
     };
   });
 };
