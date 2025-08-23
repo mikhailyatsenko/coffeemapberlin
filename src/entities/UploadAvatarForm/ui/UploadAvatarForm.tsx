@@ -46,7 +46,7 @@ export const UploadAvatarForm = ({
         {!isUploadFormActive && (
           <div className={cls.image}>
             <div className={cls.profileAvatar}>
-              <img src={avatar || './user-default-icon.svg'} alt={`${displayName}'s avatar`} />
+              <img src={avatar || '/user-default-icon.svg'} alt={`${displayName}'s avatar`} />
             </div>
             <div className={cls.pictureRequirements}>
               <h4>Profile picture</h4>
