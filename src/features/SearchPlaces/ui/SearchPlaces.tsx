@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 import { RatingFilter } from 'entities/RatingFilter';
 import { SearchPlacesInput } from 'entities/SearchPlacesInput';
 import { SearchResultsTab } from 'entities/SearchResultsTab';
+import { RoutePaths } from 'shared/constants';
 import { setFilteredPlaces, usePlacesStore } from 'shared/stores/places';
 import cls from './SearchPlaces.module.scss';
 
@@ -54,9 +55,8 @@ export const SearchPlaces = () => {
     (placeId: string) => {
       setIsActive(false);
       setSearchTerm('');
-      navigate({
-        pathname: placeId,
-      });
+      const path = generatePath(`/${RoutePaths.placePage}`, { id: placeId });
+      navigate({ pathname: path });
     },
     [navigate],
   );
