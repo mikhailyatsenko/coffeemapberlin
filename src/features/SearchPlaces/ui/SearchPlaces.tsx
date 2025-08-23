@@ -60,7 +60,7 @@ export const SearchPlaces = () => {
     },
     [navigate],
   );
-  console.log('filered places', filteredPlaces);
+
   return (
     <div
       onClick={() => {
