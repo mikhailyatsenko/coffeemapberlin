@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { clearAuth, useAuthStore } from 'shared/stores/auth';
 import { showSignIn } from 'shared/stores/modal';
 import { Loader } from 'shared/ui/Loader';
@@ -7,7 +7,7 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,7 +15,7 @@ export const AuthIndicator: React.FC = () => {
     try {
       setIsLoading(true);
       await clearAuth();
-      navigate('/', { replace: true });
+      // navigate('/', { replace: true });
     } catch (error) {
       console.log(error);
     } finally {
