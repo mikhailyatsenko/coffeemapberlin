@@ -26,13 +26,13 @@ import { usePlaceReviews } from '../api/usePlaceReviews';
 import { AverageRating } from '../components/AverageRating';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
-import cls from './NewDetailedPlaceCard.module.scss';
+import cls from './DetailedPlace.module.scss';
 
-interface NewDetailedPlaceCardProps {
+interface DetailedPlaceProps {
   placeId: string;
 }
 
-const NewDetailedPlaceCardComponent: React.FC<NewDetailedPlaceCardProps> = ({ placeId }) => {
+const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   const navigate = useNavigate();
 
   const [showRateNow, setShowRateNow] = useState(false);
@@ -271,6 +271,6 @@ const NewDetailedPlaceCardComponent: React.FC<NewDetailedPlaceCardProps> = ({ pl
   );
 };
 
-export const NewDetailedPlaceCard = memo(NewDetailedPlaceCardComponent, (prevProps, nextProps) => {
+export const DetailedPlace = memo(DetailedPlaceComponent, (prevProps, nextProps) => {
   return prevProps.placeId === nextProps.placeId;
 });

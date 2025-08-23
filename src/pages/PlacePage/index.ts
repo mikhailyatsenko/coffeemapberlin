@@ -1,1 +1,1 @@
-export { PlacePage } from './ui/PlacePage';
+export { PlacePageLazy as PlacePage } from './ui/PlacePageLazy';

@@ -1,7 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { NewDetailedPlaceCard } from 'widgets/NewDetailedPlaceCard';
+import { DetailedPlace } from 'widgets/DetailedPlace';
 
-export const PlacePage = () => {
+const PlacePage = () => {
   const { id } = useParams<{ id: string }>();
-  return <NewDetailedPlaceCard placeId={id ?? ''} />;
+  return <DetailedPlace placeId={id ?? ''} />;
 };
+
+export default PlacePage;
