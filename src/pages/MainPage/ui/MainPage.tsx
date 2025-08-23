@@ -47,6 +47,7 @@ export const MainPage = () => {
 
   return (
     <>
+      {/* <ScrollToTop /> */}
       {loading ? <Loader /> : null}
       <MainMap placesGeo={placesGeo} />
       <PlacesList places={placesToDisplay} isReady={!loading} />

@@ -1,18 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/assets/(.*)", "destination": "/assets/$1" },
-    {
-      "source": "/details",
-      "has": [
-        {
-          "type": "query",
-          "key": "id"
-        }
-      ],
-      "destination": "/api/redirect-details"
-    },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
   "redirects": [
     {
       "source": "/details",
@@ -27,11 +13,20 @@
       "statusCode": 404
     }
   ],
-  "functions": {
-    "api/redirect-details.js": {
-      "maxDuration": 10
-    }
-  },
+  "rewrites": [
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    {
+      "source": "/details",
+      "has": [
+        {
+          "type": "query",
+          "key": "id"
+        }
+      ],
+      "destination": "/api/redirect-details"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

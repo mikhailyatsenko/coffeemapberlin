@@ -20,6 +20,10 @@
   overflow: visible;
   transition: background-size 0.3s;
   z-index: 3;
+  @media (width <= 767px) {
+    bottom: initial;
+    top: 80px;
+  }
   &:hover {
     background-size: 0%;
     .favoritesNumber {
