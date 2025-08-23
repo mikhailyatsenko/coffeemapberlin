@@ -10,7 +10,8 @@ interface SearchResultsTabProps {
 }
 
 export const SearchResultsTab = memo(({ filteredPlaces, onSelect }: SearchResultsTabProps) => {
-  const itemSize = 72;
+  // itemSize = card height (72px) + space between cards (4px) = 76px
+  const itemSize = 76;
   const itemCount = filteredPlaces.length;
   const listHeight = useMemo(() => {
     const visibleItems = Math.min(itemCount, 8);
@@ -22,12 +23,15 @@ export const SearchResultsTab = memo(({ filteredPlaces, onSelect }: SearchResult
       const place = filteredPlaces[index];
       return (
         <div
-          style={style}
+          style={{
+            ...style,
+            height: '72px',
+          }}
           onClick={(e) => {
             e.stopPropagation();
             onSelect(place.properties.id);
           }}
-          className={`${cls.resultPlace} ${cls.resultPlaceActive}`}
+          className={`${cls.resultPlace}`}
         >
           <div className={cls.placeName}>{place.properties.name}</div>
           <RatingWidget isClickable={false} rating={place.properties.averageRating} />

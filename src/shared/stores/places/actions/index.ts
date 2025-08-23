@@ -19,36 +19,17 @@ export const setFilteredPlaces = (
     usePlacesStore.setState({ filteredPlaces: null });
     return;
   }
-
-  const term = (filter.searchTerm ?? '').trim().toLowerCase();
-  const minRating = filter.minRating ?? 0;
-
   usePlacesStore.setState((state) => {
-    if (!state.places?.length) {
-      return { filteredPlaces: null };
-    }
-
-    let filtered: Place[];
-    if (term.length > 0 || minRating > 0) {
-      filtered = state.places.filter((place) => {
-        const name = (place.properties.name ?? '').toLowerCase();
-        const rating = place.properties.averageRating ?? 0;
-        const matchesName = term.length === 0 ? true : name.includes(term);
-        const matchesRating = rating >= minRating;
-        return matchesName && matchesRating;
-      });
-    } else {
-      filtered = state.places.slice();
-    }
-
-    if (filtered.length <= 1) {
-      return { filteredPlaces: filtered.length ? filtered : null };
-    }
-
-    const sorted = filtered.sort((a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0));
+    const filteredPlaces = state.places
+      .filter(
+        (place) =>
+          place.properties.name.toLocaleLowerCase().includes(filter.searchTerm.toLocaleLowerCase().trim()) &&
+          (place.properties.averageRating ?? 0) >= filter.minRating,
+      )
+      .sort((a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0));
 
     return {
-      filteredPlaces: sorted.length > 0 ? sorted : null,
+      filteredPlaces,
     };
   });
 };

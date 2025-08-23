@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 // TODO: fix somehow
 // eslint-disable-next-line boundaries/element-types
@@ -32,7 +32,7 @@ interface NewDetailedPlaceCardProps {
   placeId: string;
 }
 
-export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ placeId }) => {
+const NewDetailedPlaceCardComponent: React.FC<NewDetailedPlaceCardProps> = ({ placeId }) => {
   const navigate = useNavigate();
 
   const [showRateNow, setShowRateNow] = useState(false);
@@ -270,3 +270,7 @@ export const NewDetailedPlaceCard: React.FC<NewDetailedPlaceCardProps> = ({ plac
     </div>
   );
 };
+
+export const NewDetailedPlaceCard = memo(NewDetailedPlaceCardComponent, (prevProps, nextProps) => {
+  return prevProps.placeId === nextProps.placeId;
+});
