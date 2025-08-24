@@ -1,24 +1,28 @@
 import { gql } from '@apollo/client';
 
 export const GET_PLACES = gql`
-  query GetAllPlaces {
-    places {
-      type
-      geometry {
-        type
-        coordinates
-      }
-      properties {
+  query GetPlaces($limit: Int, $offset: Int) {
+    places(limit: $limit, offset: $offset) {
+      places {
         id
-        name
-        description
-        neighborhood
-        address
-        image
-        instagram
-        averageRating
-        isFavorite
+        type
+        geometry {
+          type
+          coordinates
+        }
+        properties {
+          id
+          name
+          description
+          address
+          image
+          instagram
+          averageRating
+          isFavorite
+          neighborhood
+        }
       }
+      total
     }
   }
 `;
@@ -33,6 +37,14 @@ export const GET_PLACE = gql`
       }
       properties {
         id
+        name
+        description
+        address
+        image
+        instagram
+        averageRating
+        isFavorite
+        neighborhood
         ratingCount
         openingHours {
           day

@@ -1,7 +1,7 @@
 import { type Position } from 'geojson';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 
-export type Place = GetAllPlacesQuery['places'][number];
+export type Place = GetPlacesQuery['places']['places'][number];
 
 export interface PlacesState {
   places: Place[];

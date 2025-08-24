@@ -2,8 +2,8 @@ import { type ApolloCache } from '@apollo/client';
 
 import {
   type AddRatingMutation,
-  GetAllPlacesDocument,
-  type GetAllPlacesQuery,
+  GetPlacesDocument,
+  type GetPlacesQuery,
   PlaceReviewsDocument,
   type PlaceReviewsQuery,
   useAddRatingMutation,
@@ -24,9 +24,9 @@ export function useAddRating(placeId: string) {
   });
 
   const updateAllPlacesCache = (cache: ApolloCache<unknown>, newData: NonNullable<AddRatingMutation['addRating']>) => {
-    const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
+    const existingData = cache.readQuery<GetPlacesQuery>({ query: GetPlacesDocument });
     if (existingData?.places) {
-      const updatedPlaces = existingData.places.map((place) => {
+      const updatedPlaces = existingData.places.places.map((place) => {
         if (place.properties.id === placeId) {
           return {
             ...place,
@@ -41,7 +41,7 @@ export function useAddRating(placeId: string) {
       });
 
       cache.writeQuery({
-        query: GetAllPlacesDocument,
+        query: GetPlacesDocument,
         data: { places: updatedPlaces },
       });
     }

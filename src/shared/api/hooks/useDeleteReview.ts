@@ -2,9 +2,9 @@ import { type ApolloCache } from '@apollo/client';
 import { useCallback } from 'react';
 import {
   useDeleteReviewMutation,
-  type GetAllPlacesQuery,
+  type GetPlacesQuery,
   type PlaceReviewsQuery,
-  GetAllPlacesDocument,
+  GetPlacesDocument,
   PlaceReviewsDocument,
 } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
@@ -17,7 +17,7 @@ export function useDeleteReview(placeId: string) {
   const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useDeleteReviewMutation({
     update(cache, result, { variables }) {
       if (result.data?.deleteReview) {
-        updateAllPlacesCache(cache as ApolloCache<GetAllPlacesQuery>, result.data.deleteReview);
+        updateAllPlacesCache(cache as ApolloCache<GetPlacesQuery>, result.data.deleteReview);
         const deleteOptions = variables?.deleteOptions as DeleteOptions;
         if (deleteOptions) {
           updatePlaceReviewsCacheAfterDelete(
@@ -31,7 +31,7 @@ export function useDeleteReview(placeId: string) {
   });
 
   const updatePlaceReviewsCacheAfterDelete = (
-    cache: ApolloCache<GetAllPlacesQuery | PlaceReviewsQuery>,
+    cache: ApolloCache<GetPlacesQuery | PlaceReviewsQuery>,
     reviewId: string,
     deleteOptions: DeleteOptions,
   ) => {
@@ -83,12 +83,12 @@ export function useDeleteReview(placeId: string) {
     cache: ApolloCache<unknown>,
     newData: { averageRating: number; ratingCount: number },
   ) => {
-    const existingData = cache.readQuery<GetAllPlacesQuery>({
-      query: GetAllPlacesDocument,
+    const existingData = cache.readQuery<GetPlacesQuery>({
+      query: GetPlacesDocument,
     });
 
     if (existingData?.places) {
-      const updatedPlaces = existingData.places.map((place) => {
+      const updatedPlaces = existingData.places.places.map((place) => {
         if (place.properties.id === placeId) {
           return {
             ...place,
@@ -103,7 +103,7 @@ export function useDeleteReview(placeId: string) {
       });
 
       cache.writeQuery({
-        query: GetAllPlacesDocument,
+        query: GetPlacesDocument,
         data: { places: updatedPlaces },
       });
     }
