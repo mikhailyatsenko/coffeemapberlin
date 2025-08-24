@@ -8,7 +8,6 @@ import { AddTextReviewForm } from 'features/AddTextReview';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { OpeningHours } from 'entities/OpeningHours';
-import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery, type Characteristic } from 'shared/generated/graphql';
@@ -37,8 +36,6 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   // Precompute static keys to satisfy hooks order (before any early returns)
   const characteristicKeys = useMemo(() => Array.from(characteristicsMap.keys()), []);
 
-  const { toggleFavorite } = useToggleFavorite(placeId);
-
   const { data: placeData, loading: isPlaceLoading } = usePlaceQuery({
     variables: { placeId },
     skip: !placeId,
@@ -66,21 +63,6 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
       document.title = 'Berlin Coffee Map';
     };
   }, [placeData?.place?.properties?.name]);
-
-  const handleToggleFavorite = useCallback(
-    async (e: React.MouseEvent) => {
-      e.stopPropagation();
-      try {
-        await toggleFavorite();
-        if (navigator.vibrate) {
-          navigator.vibrate(10);
-        }
-      } catch (error) {
-        console.error('Error toggling favorite:', error);
-      }
-    },
-    [toggleFavorite],
-  );
 
   const goBackToMap = useCallback(() => {
     navigate({ pathname: '/' });
@@ -142,12 +124,8 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
               characteristicCounts={characteristicCounts}
             />
 
-            <button
-              className={cls.favBtn}
-              onClick={handleToggleFavorite}
-              title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <AddToFavButton size="medium" isFavorite={Boolean(isFavorite)} />
+            <button className={cls.favBtn} title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
+              <AddToFavButton placeId={placeId} size="medium" isFavorite={isFavorite} />
             </button>
           </div>
         </div>

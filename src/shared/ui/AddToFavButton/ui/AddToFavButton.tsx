@@ -1,18 +1,37 @@
 import { useEffect, useState } from 'react';
+import { useToggleFavoriteMutation } from 'shared/generated/graphql';
 import cls from './AddToFavButton.module.scss';
 
 interface AddToFavButtonProps {
-  handleFavoriteToggle?: () => void;
+  placeId: string;
   isFavorite: boolean;
   size?: 'small' | 'medium' | 'large';
 }
 
-export const AddToFavButton = ({ handleFavoriteToggle, isFavorite, size = 'small' }: AddToFavButtonProps) => {
+export const AddToFavButton = ({ placeId, isFavorite, size = 'small' }: AddToFavButtonProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isCurrentFavorite, setIsCurrentFavorite] = useState(isFavorite);
 
-  const handleClick = () => {
+  const [toggleFavoriteMutation] = useToggleFavoriteMutation({
+    variables: { placeId },
+  });
+
+  const handleClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
     setIsAnimating(true);
-    if (handleFavoriteToggle) handleFavoriteToggle();
+
+    try {
+      if (navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+      const result = await toggleFavoriteMutation();
+      if (result.data?.toggleFavorite) {
+        setIsCurrentFavorite((prev) => !prev);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   };
 
   useEffect(() => {
@@ -28,7 +47,7 @@ export const AddToFavButton = ({ handleFavoriteToggle, isFavorite, size = 'small
 
   return (
     <div
-      className={`${cls.AddToFavButton} ${isFavorite ? `${cls.filled}` : ''} ${isAnimating ? cls.animate : ''} ${cls[size]}`}
+      className={`${cls.AddToFavButton} ${isCurrentFavorite ? `${cls.filled}` : ''} ${isAnimating ? cls.animate : ''} ${cls[size]}`}
       onClick={handleClick}
     ></div>
   );
