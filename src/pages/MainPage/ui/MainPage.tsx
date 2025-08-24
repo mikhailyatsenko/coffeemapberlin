@@ -6,7 +6,7 @@ import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetAllPlacesQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
 import { usePlacesStore, setPlaces } from 'shared/stores/places';
-import { Loader } from 'shared/ui/Loader';
+import { PageSkeleton } from '../components/PageSkeleton/ui';
 
 export const MainPage = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +19,9 @@ export const MainPage = () => {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const places = usePlacesStore((state) => state.places);
 
-  const { data, loading } = useGetAllPlacesQuery();
+  const { data, loading } = useGetAllPlacesQuery({
+    // fetchPolicy: 'cache-first',
+  });
 
   useEffect(() => {
     if (data) {
@@ -39,6 +41,10 @@ export const MainPage = () => {
     return filteredPlaces?.length ? filteredPlaces : places;
   }, [showFavorites, places, filteredPlaces, favoritePlaces]);
 
+  if (!loading) {
+    return <PageSkeleton />;
+  }
+
   // This is a feature collection of places to properly display on the map
   const placesGeo = {
     type: 'FeatureCollection' as const,
@@ -47,8 +53,6 @@ export const MainPage = () => {
 
   return (
     <>
-      {/* <ScrollToTop /> */}
-      {loading ? <Loader /> : null}
       <MainMap placesGeo={placesGeo} />
       <PlacesList places={placesToDisplay} isReady={!loading} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
