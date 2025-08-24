@@ -41,7 +41,7 @@ export const MainPage = () => {
     return filteredPlaces?.length ? filteredPlaces : places;
   }, [showFavorites, places, filteredPlaces, favoritePlaces]);
 
-  if (!loading) {
+  if (loading) {
     return <PageSkeleton />;
   }
 
