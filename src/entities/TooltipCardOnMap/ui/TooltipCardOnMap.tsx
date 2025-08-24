@@ -4,7 +4,7 @@ import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
@@ -13,7 +13,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './TooltipCardOnMap.module.scss';
 
 interface TooltipCardOnMapProps {
-  properties: GetAllPlacesQuery['places'][number]['properties'];
+  properties: GetPlacesQuery['places']['places'][number]['properties'];
   coordinates: Position;
 }
 

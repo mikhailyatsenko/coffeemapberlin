@@ -11,12 +11,7 @@ import { OpeningHours } from 'entities/OpeningHours';
 import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
-import {
-  useGetAllPlacesQuery,
-  usePlaceQuery,
-  type Characteristic,
-  type GetAllPlacesQuery,
-} from 'shared/generated/graphql';
+import { usePlaceQuery, type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
@@ -44,11 +39,7 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
 
   const { toggleFavorite } = useToggleFavorite(placeId);
 
-  const { data: existData, loading: isPlacesLoading } = useGetAllPlacesQuery();
-  const places = existData?.places ?? [];
-  const existPlaceData = places.find((p: GetAllPlacesQuery['places'][number]) => p.properties.id === placeId);
-
-  const { data: additionalPlaceData, loading: isPlaceLoading } = usePlaceQuery({
+  const { data: placeData, loading: isPlaceLoading } = usePlaceQuery({
     variables: { placeId },
     skip: !placeId,
   });
@@ -68,13 +59,13 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   }, []);
 
   useEffect(() => {
-    document.title = existPlaceData?.properties?.name
-      ? `${existPlaceData.properties.name} | Berlin Coffee Map`
+    document.title = placeData?.place?.properties?.name
+      ? `${placeData?.place.properties.name} | Berlin Coffee Map`
       : 'Berlin Coffee Map';
     return () => {
       document.title = 'Berlin Coffee Map';
     };
-  }, [existPlaceData?.properties?.name]);
+  }, [placeData?.place?.properties?.name]);
 
   const handleToggleFavorite = useCallback(
     async (e: React.MouseEvent) => {
@@ -96,19 +87,20 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   }, [navigate]);
 
   const openOnMap = useCallback(() => {
-    if (existPlaceData?.geometry.coordinates) {
+    if (placeData?.place?.geometry.coordinates) {
       // send a new array reference to force store subscribers to react even if values are equal
-      setCurrentPlacePosition([...existPlaceData.geometry.coordinates]);
+      setCurrentPlacePosition([...placeData?.place.geometry.coordinates]);
     }
 
     navigate({ pathname: '/' });
-  }, [navigate, existPlaceData?.geometry.coordinates]);
+  }, [navigate, placeData?.place?.geometry.coordinates]);
 
-  if (isPlacesLoading || isPlaceLoading) return <NewDetailedPlaceCardSkeleton />;
-  if (!existPlaceData?.properties || !additionalPlaceData?.place) return <NotFoundPage />;
+  if (isPlaceLoading) return <NewDetailedPlaceCardSkeleton />;
+  if (!placeData?.place?.properties) return <NotFoundPage />;
 
-  const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = existPlaceData.properties;
-  const { ratingCount, characteristicCounts, openingHours, phone } = additionalPlaceData.place.properties;
+  const { averageRating, description, name, address, instagram, isFavorite, neighborhood } =
+    placeData?.place.properties;
+  const { ratingCount, characteristicCounts, openingHours, phone } = placeData.place.properties;
   return (
     <div className={cls.page}>
       <header className={cls.header}>

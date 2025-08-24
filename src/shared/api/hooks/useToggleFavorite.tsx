@@ -1,6 +1,6 @@
 import { type ApolloCache } from '@apollo/client';
 import toast from 'react-hot-toast';
-import { GetAllPlacesDocument, useToggleFavoriteMutation, type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { GetPlacesDocument, useToggleFavoriteMutation, type GetPlacesQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import { showLoginRequired } from 'shared/stores/modal';
 
@@ -16,10 +16,10 @@ export const useToggleFavorite = (placeId: string | null) => {
   });
 
   const updateAllPlacesCache = (cache: ApolloCache<unknown>) => {
-    const existingData = cache.readQuery<GetAllPlacesQuery>({ query: GetAllPlacesDocument });
+    const existingData = cache.readQuery<GetPlacesQuery>({ query: GetPlacesDocument });
 
     if (existingData?.places) {
-      const updatedPlaces = existingData.places.map((place) => {
+      const updatedPlaces = existingData.places.places.map((place) => {
         if (place.properties.id === placeId) {
           if (!place.properties.isFavorite) {
             toast(`${place.properties.name} has been added to favorites`);
@@ -38,7 +38,7 @@ export const useToggleFavorite = (placeId: string | null) => {
       });
 
       cache.writeQuery({
-        query: GetAllPlacesDocument,
+        query: GetPlacesDocument,
         data: { places: updatedPlaces },
       });
     }
