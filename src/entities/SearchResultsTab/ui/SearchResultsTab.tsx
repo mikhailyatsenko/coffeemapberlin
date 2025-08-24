@@ -1,11 +1,11 @@
 import { memo, useMemo, useCallback } from 'react';
 import { FixedSizeList as List, type ListChildComponentProps } from 'react-window';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './SearchResultsTab.module.scss';
 
 interface SearchResultsTabProps {
-  filteredPlaces: GetAllPlacesQuery['places'];
+  filteredPlaces: GetPlacesQuery['places']['places'];
   onSelect: (id: string) => void;
 }
 

@@ -6,7 +6,7 @@ import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
@@ -16,7 +16,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './PlaceCard.module.scss';
 
 interface PlaceCardProps {
-  properties: GetAllPlacesQuery['places'][number]['properties'];
+  properties: GetPlacesQuery['places']['places'][number]['properties'];
   coordinates: Position;
   index: number;
 }
