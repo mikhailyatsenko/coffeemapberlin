@@ -1,10 +1,9 @@
 import { type Position } from 'geojson';
 import { NavLink, generatePath } from 'react-router-dom';
-import { useToggleFavorite } from 'shared/api';
 import instagramIcon from 'shared/assets/instagram.svg';
 import routeToIcon from 'shared/assets/route-to.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
@@ -13,25 +12,12 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './TooltipCardOnMap.module.scss';
 
 interface TooltipCardOnMapProps {
-  properties: GetAllPlacesQuery['places'][number]['properties'];
+  properties: GetPlacesQuery['places']['places'][number]['properties'];
   coordinates: Position;
 }
 
 export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapProps) => {
-  const { id, averageRating, name, address, instagram, image } = properties;
-
-  const { toggleFavorite } = useToggleFavorite(id);
-
-  const handleToggleFavorite = async () => {
-    try {
-      await toggleFavorite();
-      if (navigator.vibrate) {
-        navigator.vibrate(10);
-      }
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-    }
-  };
+  const { averageRating, name, address, instagram, image } = properties;
 
   const imageSrc = image
     ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
@@ -111,14 +97,10 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
             <img className={cls.icon} src={routeToIcon} alt="" />
           </a>
           <div
-            onClick={(e) => {
-              e.stopPropagation();
-              handleToggleFavorite();
-            }}
             className={cls.iconWrapper}
             title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
           >
-            <AddToFavButton isFavorite={properties.isFavorite} />
+            <AddToFavButton placeId={properties.id} isFavorite={properties.isFavorite} />
           </div>
         </div>
       </div>

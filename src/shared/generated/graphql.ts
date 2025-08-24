@@ -2,41 +2,41 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type Exact<T extends Record<string, unknown>> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type MakeEmpty<T extends Record<string, unknown>, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
+export interface Scalars {
   ID: { input: string; output: string; }
   String: { input: string; output: string; }
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   JSON: { input: any; output: any; }
-};
+}
 
-export type AddRatingResponse = {
+export interface AddRatingResponse {
   __typename?: 'AddRatingResponse';
   averageRating: Scalars['Float']['output'];
   ratingCount: Scalars['Int']['output'];
   reviewId: Scalars['String']['output'];
   userRating: Scalars['Int']['output'];
-};
+}
 
-export type AddTextReviewResponse = {
+export interface AddTextReviewResponse {
   __typename?: 'AddTextReviewResponse';
   reviewId: Scalars['String']['output'];
   text: Scalars['String']['output'];
-};
+}
 
-export type AuthPayload = {
+export interface AuthPayload {
   __typename?: 'AuthPayload';
   isFirstLogin?: Maybe<Scalars['Boolean']['output']>;
   user: User;
-};
+}
 
 export enum Characteristic {
   affordablePrices = 'affordablePrices',
@@ -46,10 +46,10 @@ export enum Characteristic {
   outdoorSeating = 'outdoorSeating',
   petFriendly = 'petFriendly',
   pleasantAtmosphere = 'pleasantAtmosphere',
-  yummyEats = 'yummyEats'
+  yummyEats = 'yummyEats',
 }
 
-export type CharacteristicCounts = {
+export interface CharacteristicCounts {
   __typename?: 'CharacteristicCounts';
   affordablePrices: CharacteristicData;
   deliciousFilterCoffee: CharacteristicData;
@@ -59,55 +59,55 @@ export type CharacteristicCounts = {
   petFriendly: CharacteristicData;
   pleasantAtmosphere: CharacteristicData;
   yummyEats: CharacteristicData;
-};
+}
 
-export type CharacteristicData = {
+export interface CharacteristicData {
   __typename?: 'CharacteristicData';
   count: Scalars['Int']['output'];
   pressed: Scalars['Boolean']['output'];
-};
+}
 
-export type ContactForm = {
+export interface ContactForm {
   __typename?: 'ContactForm';
   email: Scalars['String']['output'];
   message: Scalars['String']['output'];
   name: Scalars['String']['output'];
-};
+}
 
-export type ContactFormResponse = {
+export interface ContactFormResponse {
   __typename?: 'ContactFormResponse';
   name: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
-};
+}
 
-export type DeleteReviewResult = {
+export interface DeleteReviewResult {
   __typename?: 'DeleteReviewResult';
   averageRating: Scalars['Float']['output'];
   ratingCount: Scalars['Int']['output'];
   reviewId: Scalars['ID']['output'];
-};
+}
 
-export type Geometry = {
+export interface Geometry {
   __typename?: 'Geometry';
   coordinates: Array<Scalars['Float']['output']>;
   type: Scalars['String']['output'];
-};
+}
 
-export type GoogleReview = {
+export interface GoogleReview {
   __typename?: 'GoogleReview';
   imgCount: Scalars['Int']['output'];
   publishedAtDate: Scalars['String']['output'];
   reviewId: Scalars['String']['output'];
   stars: Scalars['Int']['output'];
   text: Scalars['String']['output'];
-};
+}
 
-export type LogoutResponse = {
+export interface LogoutResponse {
   __typename?: 'LogoutResponse';
   message: Scalars['String']['output'];
-};
+}
 
-export type Mutation = {
+export interface Mutation {
   __typename?: 'Mutation';
   addRating: AddRatingResponse;
   addTextReview: AddTextReviewResponse;
@@ -125,108 +125,108 @@ export type Mutation = {
   toggleFavorite: Scalars['Boolean']['output'];
   updatePersonalData: SuccessResponse;
   uploadAvatar: SuccessResponse;
-};
+}
 
 
-export type MutationaddRatingArgs = {
+export interface MutationaddRatingArgs {
   placeId: Scalars['ID']['input'];
   rating: Scalars['Float']['input'];
-};
+}
 
 
-export type MutationaddTextReviewArgs = {
+export interface MutationaddTextReviewArgs {
   placeId: Scalars['ID']['input'];
   text: Scalars['String']['input'];
-};
+}
 
 
-export type MutationconfirmEmailArgs = {
+export interface MutationconfirmEmailArgs {
   email: Scalars['String']['input'];
   token: Scalars['String']['input'];
-};
+}
 
 
-export type MutationcontactFormArgs = {
+export interface MutationcontactFormArgs {
   email: Scalars['String']['input'];
   message: Scalars['String']['input'];
   name: Scalars['String']['input'];
-};
+}
 
 
-export type MutationdeleteReviewArgs = {
+export interface MutationdeleteReviewArgs {
   deleteOptions: Scalars['String']['input'];
   reviewId: Scalars['ID']['input'];
-};
+}
 
 
-export type MutationloginWithGoogleArgs = {
+export interface MutationloginWithGoogleArgs {
   code: Scalars['String']['input'];
-};
+}
 
 
-export type MutationregisterUserArgs = {
+export interface MutationregisterUserArgs {
   displayName: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
-};
+}
 
 
-export type MutationresendConfirmationEmailArgs = {
+export interface MutationresendConfirmationEmailArgs {
   email: Scalars['String']['input'];
-};
+}
 
 
-export type MutationsetNewPasswordArgs = {
+export interface MutationsetNewPasswordArgs {
   newPassword: Scalars['String']['input'];
   oldPassword?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
-};
+}
 
 
-export type MutationsignInWithEmailArgs = {
+export interface MutationsignInWithEmailArgs {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
-};
+}
 
 
-export type MutationtoggleCharacteristicArgs = {
+export interface MutationtoggleCharacteristicArgs {
   characteristic: Characteristic;
   placeId: Scalars['ID']['input'];
-};
+}
 
 
-export type MutationtoggleFavoriteArgs = {
+export interface MutationtoggleFavoriteArgs {
   placeId: Scalars['ID']['input'];
-};
+}
 
 
-export type MutationupdatePersonalDataArgs = {
+export interface MutationupdatePersonalDataArgs {
   displayName?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
-};
+}
 
 
-export type MutationuploadAvatarArgs = {
+export interface MutationuploadAvatarArgs {
   fileUrl: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
-};
+}
 
-export type OpeningHour = {
+export interface OpeningHour {
   __typename?: 'OpeningHour';
   day: Scalars['String']['output'];
   hours: Scalars['String']['output'];
-};
+}
 
-export type Place = {
+export interface Place {
   __typename?: 'Place';
   geometry: Geometry;
   id: Scalars['ID']['output'];
   properties: PlaceProperties;
   type: Scalars['String']['output'];
-};
+}
 
-export type PlaceProperties = {
+export interface PlaceProperties {
   __typename?: 'PlaceProperties';
   additionalInfo?: Maybe<Scalars['JSON']['output']>;
   address: Scalars['String']['output'];
@@ -241,39 +241,51 @@ export type PlaceProperties = {
   isFavorite: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   neighborhood?: Maybe<Scalars['String']['output']>;
-  openingHours?: Maybe<Array<OpeningHour>>;
+  openingHours?: Maybe<OpeningHour[]>;
   phone?: Maybe<Scalars['String']['output']>;
   ratingCount: Scalars['Int']['output'];
-  reviews: Array<Review>;
+  reviews: Review[];
   website?: Maybe<Scalars['String']['output']>;
-};
+}
 
-export type PlaceReviews = {
+export interface PlaceReviews {
   __typename?: 'PlaceReviews';
   id: Scalars['ID']['output'];
-  reviews: Array<Review>;
-};
+  reviews: Review[];
+}
 
-export type Query = {
+export interface PlacesResponse {
+  __typename?: 'PlacesResponse';
+  places: Place[];
+  total: Scalars['Int']['output'];
+}
+
+export interface Query {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
   place: Place;
   placeReviews: PlaceReviews;
-  places: Array<Place>;
-  userReviewActivity: Array<UserReviewActivity>;
-};
+  places: PlacesResponse;
+  userReviewActivity: UserReviewActivity[];
+}
 
 
-export type QueryplaceArgs = {
+export interface QueryplaceArgs {
   placeId: Scalars['ID']['input'];
-};
+}
 
 
-export type QueryplaceReviewsArgs = {
+export interface QueryplaceReviewsArgs {
   placeId: Scalars['ID']['input'];
-};
+}
 
-export type Review = {
+
+export interface QueryplacesArgs {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}
+
+export interface Review {
   __typename?: 'Review';
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -285,14 +297,14 @@ export type Review = {
   userId: Scalars['ID']['output'];
   userName: Scalars['String']['output'];
   userRating?: Maybe<Scalars['Float']['output']>;
-};
+}
 
-export type SuccessResponse = {
+export interface SuccessResponse {
   __typename?: 'SuccessResponse';
   success: Scalars['Boolean']['output'];
-};
+}
 
-export type User = {
+export interface User {
   __typename?: 'User';
   avatar?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['String']['output']>;
@@ -300,9 +312,9 @@ export type User = {
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isGoogleUserUserWithoutPassword: Scalars['Boolean']['output'];
-};
+}
 
-export type UserReviewActivity = {
+export interface UserReviewActivity {
   __typename?: 'UserReviewActivity';
   averageRating?: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['String']['output'];
@@ -310,14 +322,14 @@ export type UserReviewActivity = {
   placeName: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
   reviewText?: Maybe<Scalars['String']['output']>;
-};
+}
 
 export type LoginWithGoogleMutationVariables = Exact<{
   code: Scalars['String']['input'];
 }>;
 
 
-export type LoginWithGoogleMutation = { __typename?: 'Mutation', loginWithGoogle?: { __typename?: 'AuthPayload', isFirstLogin?: boolean | null, user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } | null };
+export interface LoginWithGoogleMutation { __typename?: 'Mutation', loginWithGoogle?: { __typename?: 'AuthPayload', isFirstLogin?: boolean | null, user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } | null }
 
 export type SignInWithEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -325,7 +337,7 @@ export type SignInWithEmailMutationVariables = Exact<{
 }>;
 
 
-export type SignInWithEmailMutation = { __typename?: 'Mutation', signInWithEmail: { __typename?: 'AuthPayload', user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } };
+export interface SignInWithEmailMutation { __typename?: 'Mutation', signInWithEmail: { __typename?: 'AuthPayload', user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } }
 
 export type RegisterUserMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -334,12 +346,12 @@ export type RegisterUserMutationVariables = Exact<{
 }>;
 
 
-export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'SuccessResponse', success: boolean } };
+export interface RegisterUserMutation { __typename?: 'Mutation', registerUser: { __typename?: 'SuccessResponse', success: boolean } }
 
-export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+export type LogoutMutationVariables = Exact<Record<string, never>>;
 
 
-export type LogoutMutation = { __typename?: 'Mutation', logout?: { __typename?: 'LogoutResponse', message: string } | null };
+export interface LogoutMutation { __typename?: 'Mutation', logout?: { __typename?: 'LogoutResponse', message: string } | null }
 
 export type ConfirmEmailMutationVariables = Exact<{
   token: Scalars['String']['input'];
@@ -347,19 +359,19 @@ export type ConfirmEmailMutationVariables = Exact<{
 }>;
 
 
-export type ConfirmEmailMutation = { __typename?: 'Mutation', confirmEmail: { __typename?: 'AuthPayload', user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } };
+export interface ConfirmEmailMutation { __typename?: 'Mutation', confirmEmail: { __typename?: 'AuthPayload', user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } }
 
 export type ResendConfirmationEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
 }>;
 
 
-export type ResendConfirmationEmailMutation = { __typename?: 'Mutation', resendConfirmationEmail: { __typename?: 'SuccessResponse', success: boolean } };
+export interface ResendConfirmationEmailMutation { __typename?: 'Mutation', resendConfirmationEmail: { __typename?: 'SuccessResponse', success: boolean } }
 
-export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+export type CurrentUserQueryVariables = Exact<Record<string, never>>;
 
 
-export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } | null };
+export interface CurrentUserQuery { __typename?: 'Query', currentUser?: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } | null }
 
 export type ContactFormMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -368,14 +380,14 @@ export type ContactFormMutationVariables = Exact<{
 }>;
 
 
-export type ContactFormMutation = { __typename?: 'Mutation', contactForm: { __typename?: 'ContactFormResponse', success: boolean, name: string } };
+export interface ContactFormMutation { __typename?: 'Mutation', contactForm: { __typename?: 'ContactFormResponse', success: boolean, name: string } }
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
 }>;
 
 
-export type ToggleFavoriteMutation = { __typename?: 'Mutation', toggleFavorite: boolean };
+export interface ToggleFavoriteMutation { __typename?: 'Mutation', toggleFavorite: boolean }
 
 export type ToggleCharacteristicMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -383,19 +395,22 @@ export type ToggleCharacteristicMutationVariables = Exact<{
 }>;
 
 
-export type ToggleCharacteristicMutation = { __typename?: 'Mutation', toggleCharacteristic: { __typename?: 'SuccessResponse', success: boolean } };
+export interface ToggleCharacteristicMutation { __typename?: 'Mutation', toggleCharacteristic: { __typename?: 'SuccessResponse', success: boolean } }
 
-export type GetAllPlacesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetPlacesQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
 
-export type GetAllPlacesQuery = { __typename?: 'Query', places: Array<{ __typename?: 'Place', type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: Array<number> }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, neighborhood?: string | null, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean } }> };
+export interface GetPlacesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null } }> } }
 
 export type PlaceQueryVariables = Exact<{
   placeId: Scalars['ID']['input'];
 }>;
 
 
-export type PlaceQuery = { __typename?: 'Query', place: { __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: Array<number> }, properties: { __typename?: 'PlaceProperties', id: string, ratingCount: number, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts: { __typename?: 'CharacteristicCounts', pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } } };
+export interface PlaceQuery { __typename?: 'Query', place: { __typename?: 'Place', id: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, ratingCount: number, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts: { __typename?: 'CharacteristicCounts', deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } } }
 
 export type AddRatingMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -403,7 +418,7 @@ export type AddRatingMutationVariables = Exact<{
 }>;
 
 
-export type AddRatingMutation = { __typename?: 'Mutation', addRating: { __typename?: 'AddRatingResponse', averageRating: number, ratingCount: number, reviewId: string, userRating: number } };
+export interface AddRatingMutation { __typename?: 'Mutation', addRating: { __typename?: 'AddRatingResponse', averageRating: number, ratingCount: number, reviewId: string, userRating: number } }
 
 export type AddTextReviewMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -411,7 +426,7 @@ export type AddTextReviewMutationVariables = Exact<{
 }>;
 
 
-export type AddTextReviewMutation = { __typename?: 'Mutation', addTextReview: { __typename?: 'AddTextReviewResponse', reviewId: string, text: string } };
+export interface AddTextReviewMutation { __typename?: 'Mutation', addTextReview: { __typename?: 'AddTextReviewResponse', reviewId: string, text: string } }
 
 export type DeleteReviewMutationVariables = Exact<{
   reviewId: Scalars['ID']['input'];
@@ -419,19 +434,19 @@ export type DeleteReviewMutationVariables = Exact<{
 }>;
 
 
-export type DeleteReviewMutation = { __typename?: 'Mutation', deleteReview: { __typename?: 'DeleteReviewResult', reviewId: string, averageRating: number, ratingCount: number } };
+export interface DeleteReviewMutation { __typename?: 'Mutation', deleteReview: { __typename?: 'DeleteReviewResult', reviewId: string, averageRating: number, ratingCount: number } }
 
 export type PlaceReviewsQueryVariables = Exact<{
   placeId: Scalars['ID']['input'];
 }>;
 
 
-export type PlaceReviewsQuery = { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean, imgCount: number }> } };
+export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean, imgCount: number }> } }
 
-export type UserReviewActivityQueryVariables = Exact<{ [key: string]: never; }>;
+export type UserReviewActivityQueryVariables = Exact<Record<string, never>>;
 
 
-export type UserReviewActivityQuery = { __typename?: 'Query', userReviewActivity: Array<{ __typename?: 'UserReviewActivity', rating?: number | null, reviewText?: string | null, placeId: string, placeName: string, averageRating?: number | null, createdAt: string }> };
+export interface UserReviewActivityQuery { __typename?: 'Query', userReviewActivity: Array<{ __typename?: 'UserReviewActivity', rating?: number | null, reviewText?: string | null, placeId: string, placeName: string, averageRating?: number | null, createdAt: string }> }
 
 export type UpdatePersonalDataMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -440,7 +455,7 @@ export type UpdatePersonalDataMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePersonalDataMutation = { __typename?: 'Mutation', updatePersonalData: { __typename?: 'SuccessResponse', success: boolean } };
+export interface UpdatePersonalDataMutation { __typename?: 'Mutation', updatePersonalData: { __typename?: 'SuccessResponse', success: boolean } }
 
 export type SetNewPasswordMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -449,7 +464,7 @@ export type SetNewPasswordMutationVariables = Exact<{
 }>;
 
 
-export type SetNewPasswordMutation = { __typename?: 'Mutation', setNewPassword: { __typename?: 'SuccessResponse', success: boolean } };
+export interface SetNewPasswordMutation { __typename?: 'Mutation', setNewPassword: { __typename?: 'SuccessResponse', success: boolean } }
 
 export type UploadAvatarMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -457,12 +472,12 @@ export type UploadAvatarMutationVariables = Exact<{
 }>;
 
 
-export type UploadAvatarMutation = { __typename?: 'Mutation', uploadAvatar: { __typename?: 'SuccessResponse', success: boolean } };
+export interface UploadAvatarMutation { __typename?: 'Mutation', uploadAvatar: { __typename?: 'SuccessResponse', success: boolean } }
 
-export type DeleteAvatarMutationVariables = Exact<{ [key: string]: never; }>;
+export type DeleteAvatarMutationVariables = Exact<Record<string, never>>;
 
 
-export type DeleteAvatarMutation = { __typename?: 'Mutation', deleteAvatar: { __typename?: 'SuccessResponse', success: boolean } };
+export interface DeleteAvatarMutation { __typename?: 'Mutation', deleteAvatar: { __typename?: 'SuccessResponse', success: boolean } }
 
 
 export const LoginWithGoogleDocument = gql`
@@ -833,10 +848,70 @@ export function useToggleCharacteristicMutation(baseOptions?: Apollo.MutationHoo
 export type ToggleCharacteristicMutationHookResult = ReturnType<typeof useToggleCharacteristicMutation>;
 export type ToggleCharacteristicMutationResult = Apollo.MutationResult<ToggleCharacteristicMutation>;
 export type ToggleCharacteristicMutationOptions = Apollo.BaseMutationOptions<ToggleCharacteristicMutation, ToggleCharacteristicMutationVariables>;
-export const GetAllPlacesDocument = gql`
-    query GetAllPlaces {
-  places {
-    type
+export const GetPlacesDocument = gql`
+    query GetPlaces($limit: Int, $offset: Int) {
+  places(limit: $limit, offset: $offset) {
+    places {
+      id
+      type
+      geometry {
+        type
+        coordinates
+      }
+      properties {
+        id
+        name
+        description
+        address
+        image
+        instagram
+        averageRating
+        isFavorite
+        neighborhood
+      }
+    }
+    total
+  }
+}
+    `;
+
+/**
+ * __useGetPlacesQuery__
+ *
+ * To run a query within a React component, call `useGetPlacesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlacesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPlacesQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useGetPlacesQuery(baseOptions?: Apollo.QueryHookOptions<GetPlacesQuery, GetPlacesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPlacesQuery, GetPlacesQueryVariables>(GetPlacesDocument, options);
+      }
+export function useGetPlacesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPlacesQuery, GetPlacesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPlacesQuery, GetPlacesQueryVariables>(GetPlacesDocument, options);
+        }
+export function useGetPlacesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPlacesQuery, GetPlacesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPlacesQuery, GetPlacesQueryVariables>(GetPlacesDocument, options);
+        }
+export type GetPlacesQueryHookResult = ReturnType<typeof useGetPlacesQuery>;
+export type GetPlacesLazyQueryHookResult = ReturnType<typeof useGetPlacesLazyQuery>;
+export type GetPlacesSuspenseQueryHookResult = ReturnType<typeof useGetPlacesSuspenseQuery>;
+export type GetPlacesQueryResult = Apollo.QueryResult<GetPlacesQuery, GetPlacesQueryVariables>;
+export const PlaceDocument = gql`
+    query Place($placeId: ID!) {
+  place(placeId: $placeId) {
+    id
     geometry {
       type
       coordinates
@@ -845,59 +920,12 @@ export const GetAllPlacesDocument = gql`
       id
       name
       description
-      neighborhood
       address
       image
       instagram
       averageRating
       isFavorite
-    }
-  }
-}
-    `;
-
-/**
- * __useGetAllPlacesQuery__
- *
- * To run a query within a React component, call `useGetAllPlacesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllPlacesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllPlacesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetAllPlacesQuery(baseOptions?: Apollo.QueryHookOptions<GetAllPlacesQuery, GetAllPlacesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllPlacesQuery, GetAllPlacesQueryVariables>(GetAllPlacesDocument, options);
-      }
-export function useGetAllPlacesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllPlacesQuery, GetAllPlacesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllPlacesQuery, GetAllPlacesQueryVariables>(GetAllPlacesDocument, options);
-        }
-export function useGetAllPlacesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllPlacesQuery, GetAllPlacesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllPlacesQuery, GetAllPlacesQueryVariables>(GetAllPlacesDocument, options);
-        }
-export type GetAllPlacesQueryHookResult = ReturnType<typeof useGetAllPlacesQuery>;
-export type GetAllPlacesLazyQueryHookResult = ReturnType<typeof useGetAllPlacesLazyQuery>;
-export type GetAllPlacesSuspenseQueryHookResult = ReturnType<typeof useGetAllPlacesSuspenseQuery>;
-export type GetAllPlacesQueryResult = Apollo.QueryResult<GetAllPlacesQuery, GetAllPlacesQueryVariables>;
-export const PlaceDocument = gql`
-    query Place($placeId: ID!) {
-  place(placeId: $placeId) {
-    id
-    type
-    geometry {
-      type
-      coordinates
-    }
-    properties {
-      id
+      neighborhood
       ratingCount
       openingHours {
         day
@@ -906,11 +934,11 @@ export const PlaceDocument = gql`
       phone
       website
       characteristicCounts {
-        pleasantAtmosphere {
+        deliciousFilterCoffee {
           pressed
           count
         }
-        affordablePrices {
+        pleasantAtmosphere {
           pressed
           count
         }
@@ -918,15 +946,15 @@ export const PlaceDocument = gql`
           pressed
           count
         }
+        freeWifi {
+          pressed
+          count
+        }
         yummyEats {
           pressed
           count
         }
-        deliciousFilterCoffee {
-          pressed
-          count
-        }
-        freeWifi {
+        affordablePrices {
           pressed
           count
         }

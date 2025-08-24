@@ -3,14 +3,14 @@ import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Map as MapGL, Source, Layer, Popup, GeolocateControl, NavigationControl } from 'react-map-gl/maplibre';
 import type { MapRef, MapLayerMouseEvent, LngLatLike, MapGeoJSONFeature } from 'react-map-gl/maplibre';
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
 import { usePlacesStore } from 'shared/stores/places';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
-type MyMapFeature = Omit<MapGeoJSONFeature, 'geometry'> & GetAllPlacesQuery['places'][number];
-type PlaceProps = GetAllPlacesQuery['places'][number]['properties'];
+type MyMapFeature = Omit<MapGeoJSONFeature, 'geometry'> & GetPlacesQuery['places']['places'][number];
+type PlaceProps = GetPlacesQuery['places']['places'][number]['properties'];
 
 export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
@@ -19,7 +19,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   const [eventFeatureData, setEventFeatureData] = useState<MyMapFeature | null>(null);
   const [tooltipCurrentData, setTooltipCurrentData] = useState<
-    GetAllPlacesQuery['places'][number]['properties'] | null
+    GetPlacesQuery['places']['places'][number]['properties'] | null
   >(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
@@ -42,8 +42,10 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   const idToPropertiesMap = useMemo(() => {
     const propsById = new Map<PlaceProps['id'], PlaceProps>();
-    for (const feature of placesGeo.features) {
-      propsById.set(feature.properties.id, feature.properties);
+    for (const feature of placesGeo.features as Array<{ properties: PlaceProps }>) {
+      if (feature?.properties?.id) {
+        propsById.set(feature.properties.id, feature.properties);
+      }
     }
     return propsById;
   }, [placesGeo.features]);

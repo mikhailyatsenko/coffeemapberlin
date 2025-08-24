@@ -1,12 +1,12 @@
 import { type Position } from 'geojson';
 import { memo } from 'react';
 import { generatePath, Link } from 'react-router-dom';
-import { useToggleFavorite } from 'shared/api';
+// import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
-import { type GetAllPlacesQuery } from 'shared/generated/graphql';
+import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
@@ -16,25 +16,13 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './PlaceCard.module.scss';
 
 interface PlaceCardProps {
-  properties: GetAllPlacesQuery['places'][number]['properties'];
+  properties: GetPlacesQuery['places']['places'][number]['properties'];
   coordinates: Position;
   index: number;
 }
 
 const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) => {
-  const { toggleFavorite } = useToggleFavorite(properties.id);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
-
-  const handleToggleFavorite = async () => {
-    try {
-      await toggleFavorite();
-      if (navigator.vibrate) {
-        navigator.vibrate(10);
-      }
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-    }
-  };
 
   const handleInstagramClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -82,14 +70,14 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
           <div className={cls.iconsGroup}>
             <div
               title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                handleToggleFavorite();
-              }}
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   e.preventDefault();
+              //   handleToggleFavorite();
+              // }}
               className={cls.iconWrapper}
             >
-              <AddToFavButton isFavorite={properties.isFavorite} />
+              <AddToFavButton placeId={properties.id} isFavorite={properties.isFavorite} />
             </div>
           </div>
         </div>
