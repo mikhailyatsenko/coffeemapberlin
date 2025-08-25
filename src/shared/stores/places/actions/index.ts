@@ -1,8 +1,10 @@
 import { usePlacesStore } from '../hooks';
 import { type PlacesState, type Place } from '../types';
 
-export const setPlaces = (places: Place[]) => {
-  usePlacesStore.setState({ places });
+export const setPlaces = (places: Place[] | ((prev: Place[]) => Place[])) => {
+  usePlacesStore.setState((state) => ({
+    places: typeof places === 'function' ? places(state.places) : places,
+  }));
 };
 
 export const setShowFavorites = (show: boolean) => {
@@ -31,6 +33,23 @@ export const setFilteredPlaces = (
     return {
       filteredPlaces,
     };
+  });
+};
+
+export const toggleFavorite = (placeId: string) => {
+  usePlacesStore.setState((state) => {
+    const updatedPlaces = state.places.map((place) =>
+      place.id === placeId
+        ? {
+            ...place,
+            properties: {
+              ...place.properties,
+              isFavorite: !place.properties.isFavorite,
+            },
+          }
+        : place,
+    );
+    return { places: updatedPlaces };
   });
 };
 
