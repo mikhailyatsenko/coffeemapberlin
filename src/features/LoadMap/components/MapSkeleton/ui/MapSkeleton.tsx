@@ -1,6 +1,6 @@
-import cls from './PageSkeleton.module.scss';
+import cls from './MapSkeleton.module.scss';
 
-const MapSkeleton = () => (
+const Map = () => (
   <div className={cls.mapSkeleton}>
     <div className={cls.loadingText}>Map is preparing...</div>
   </div>
@@ -28,10 +28,10 @@ const MapSkeleton = () => (
 //   </div>
 // );
 
-export const PageSkeleton = () => (
+export const MapSkeleton = () => (
   <div className={cls.mainPageSkeleton}>
     <div className={cls.mapContainer}>
-      <MapSkeleton />
+      <Map />
 
       {/* <div className={cls.floatingList}>
         <PlacesListSkeleton />
