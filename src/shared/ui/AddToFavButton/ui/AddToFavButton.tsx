@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useToggleFavoriteMutation } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import { showLoginRequired } from 'shared/stores/modal';
@@ -8,11 +9,12 @@ import cls from './AddToFavButton.module.scss';
 
 interface AddToFavButtonProps {
   placeId: string;
+  placeName: string;
   isFavorite: boolean;
   size?: 'small' | 'medium' | 'large';
 }
 
-export const AddToFavButton = ({ placeId, isFavorite, size = 'small' }: AddToFavButtonProps) => {
+export const AddToFavButton = ({ placeId, isFavorite, placeName, size = 'small' }: AddToFavButtonProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
 
   const [toggleFavoriteMutation] = useToggleFavoriteMutation({
@@ -41,6 +43,12 @@ export const AddToFavButton = ({ placeId, isFavorite, size = 'small' }: AddToFav
         toggleFavorite(placeId);
         // cache for Place query
         cacheUpdate(placeId);
+
+        if (!isFavorite) {
+          toast(`${placeName} has been added to favorites`);
+        } else {
+          toast(`${placeName} has been removed from favorites`);
+        }
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
