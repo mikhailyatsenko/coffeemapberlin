@@ -8,8 +8,8 @@ import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
-
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
+
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
