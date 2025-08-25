@@ -14,8 +14,14 @@ export default defineConfig({
     tsconfigPaths(),
     svgr(),
     purgeCss({
+      // Сканируем весь код проекта
       content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-      safelist: [/^maplibregl-/],
+      // Safelist для динамических классов и сторонних библиотек
+      safelist: [/^maplibregl-/, /^container/, /^page-wrapper/, /^.*___[a-zA-Z0-9]+$/],
+
+      defaultExtractor: (content) => {
+        return content.match(/[\w-/:]+(?<!:)/g) || [];
+      },
     }) as PluginOption,
   ],
   define: {
