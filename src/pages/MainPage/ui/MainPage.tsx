@@ -5,7 +5,6 @@ import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesQuery, useGetPlacesLazyQuery } from 'shared/generated/graphql';
 
 import { usePlacesStore, setPlaces } from 'shared/stores/places';
-import { PageSkeleton } from '../components/PageSkeleton/ui';
 
 const PAGE_SIZE = 10;
 
@@ -14,7 +13,7 @@ export const MainPage = () => {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const places = usePlacesStore((state) => state.places);
 
-  const { data: initialData, loading: initialLoading } = useGetPlacesQuery({
+  const { data: initialData } = useGetPlacesQuery({
     variables: { limit: PAGE_SIZE, offset: 0 },
     fetchPolicy: 'cache-first',
   });
@@ -48,8 +47,6 @@ export const MainPage = () => {
     return filteredPlaces?.length ? filteredPlaces : places;
   }, [showFavorites, filteredPlaces, places, favoritePlaces]);
 
-  if (initialLoading) return <PageSkeleton />;
-
   const placesGeo = {
     type: 'FeatureCollection' as const,
     features: placesToDisplay ?? [],
@@ -57,8 +54,9 @@ export const MainPage = () => {
 
   return (
     <>
-      {initialLoading ? <PageSkeleton /> : <MainMap placesGeo={placesGeo} />}
-      <PlacesList places={placesToDisplay} isReady={!initialLoading} />
+      {/* {initialLoading && <PageSkeleton />} */}
+      <PlacesList places={placesToDisplay} />
+      <MainMap placesGeo={placesGeo} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
     </>
   );
