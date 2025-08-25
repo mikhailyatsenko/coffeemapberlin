@@ -100,7 +100,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
             className={cls.iconWrapper}
             title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
           >
-            <AddToFavButton placeId={properties.id} isFavorite={properties.isFavorite} />
+            <AddToFavButton placeName={properties.name} placeId={properties.id} isFavorite={properties.isFavorite} />
           </div>
         </div>
       </div>
