@@ -82,6 +82,7 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-purgecss": "^0.2.13",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^4.3.2"
   },
