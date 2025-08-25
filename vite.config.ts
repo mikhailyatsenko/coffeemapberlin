@@ -17,18 +17,7 @@ export default defineConfig({
       content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
       // Safelist для динамических классов, SVG, CSS-модулей и сторонних библиотек
       safelist: {
-        standard: [
-          /^container/, // твои глобальные контейнеры
-          /^page-wrapper/, // глобальные обертки страниц
-          /^logo/, // любые классы для логотипов
-          /^icon/, // иконки
-        ],
-        deep: [
-          /^maplibregl-/, // maplibre
-        ],
-        greedy: [
-          /^.*___[a-zA-Z0-9]+$/, // все CSS-модули (hashed)
-        ],
+        greedy: [/^.*$/], // оставляем всё CSS на время теста
       },
       defaultExtractor: (content) => {
         // Ищем все className="..." и className={styles.xxx} в JSX
