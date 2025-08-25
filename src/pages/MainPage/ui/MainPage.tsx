@@ -1,17 +1,15 @@
 import { useEffect, useMemo } from 'react';
-// import { MainMap } from 'widgets/Map';
+import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesQuery, useGetPlacesLazyQuery } from 'shared/generated/graphql';
 
-// import { useAuthStore } from 'shared/stores/auth';
 import { usePlacesStore, setPlaces } from 'shared/stores/places';
 import { PageSkeleton } from '../components/PageSkeleton/ui';
 
 const PAGE_SIZE = 10;
 
 export const MainPage = () => {
-  // const { user } = useAuthStore();
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const places = usePlacesStore((state) => state.places);
@@ -21,7 +19,7 @@ export const MainPage = () => {
     fetchPolicy: 'cache-first',
   });
 
-  const [fetchMore, { data: moreData }] = useGetPlacesLazyQuery();
+  const [fetchMore, { data: moreData, loading: moreLoading }] = useGetPlacesLazyQuery();
 
   // Initial fetch
   useEffect(() => {
@@ -36,7 +34,6 @@ export const MainPage = () => {
     }
   }, [initialData, fetchMore]);
 
-  // Lazy fetch — добавляем новые места к уже существующим
   useEffect(() => {
     if (!moreData?.places?.places?.length) return;
     setPlaces((prev) => [...prev, ...moreData.places.places]);
@@ -53,16 +50,16 @@ export const MainPage = () => {
 
   if (initialLoading) return <PageSkeleton />;
 
-  // const placesGeo = {
-  //   type: 'FeatureCollection' as const,
-  //   features: placesToDisplay ?? [],
-  // };
+  const placesGeo = {
+    type: 'FeatureCollection' as const,
+    features: placesToDisplay ?? [],
+  };
 
-  // const isShowSkeleton = initialLoading || moreLoading;
+  const isShowSkeleton = initialLoading || moreLoading;
 
   return (
     <>
-      <PageSkeleton />
+      {isShowSkeleton ? <PageSkeleton /> : <MainMap placesGeo={placesGeo} />}
       <PlacesList places={placesToDisplay} isReady={!initialLoading} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
     </>
