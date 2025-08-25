@@ -19,7 +19,7 @@ export const MainPage = () => {
     fetchPolicy: 'cache-first',
   });
 
-  const [fetchMore, { data: moreData, loading: moreLoading }] = useGetPlacesLazyQuery();
+  const [fetchMore, { data: moreData }] = useGetPlacesLazyQuery();
 
   // Initial fetch
   useEffect(() => {
@@ -55,11 +55,9 @@ export const MainPage = () => {
     features: placesToDisplay ?? [],
   };
 
-  const isShowSkeleton = initialLoading || moreLoading;
-
   return (
     <>
-      {isShowSkeleton ? <PageSkeleton /> : <MainMap placesGeo={placesGeo} />}
+      {initialLoading ? <PageSkeleton /> : <MainMap placesGeo={placesGeo} />}
       <PlacesList places={placesToDisplay} isReady={!initialLoading} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
     </>
