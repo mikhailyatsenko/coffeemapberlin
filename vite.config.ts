@@ -14,12 +14,24 @@ export default defineConfig({
     tsconfigPaths(),
     svgr(),
     purgeCss({
-      // Сканируем весь код проекта
       content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-      // Safelist для динамических классов и сторонних библиотек
-      safelist: [/^maplibregl-/, /^container/, /^page-wrapper/, /^.*___[a-zA-Z0-9]+$/],
-
+      // Safelist для динамических классов, SVG, CSS-модулей и сторонних библиотек
+      safelist: {
+        standard: [
+          /^container/, // твои глобальные контейнеры
+          /^page-wrapper/, // глобальные обертки страниц
+          /^logo/, // любые классы для логотипов
+          /^icon/, // иконки
+        ],
+        deep: [
+          /^maplibregl-/, // maplibre
+        ],
+        greedy: [
+          /^.*___[a-zA-Z0-9]+$/, // все CSS-модули (hashed)
+        ],
+      },
       defaultExtractor: (content) => {
+        // Ищем все className="..." и className={styles.xxx} в JSX
         return content.match(/[\w-/:]+(?<!:)/g) || [];
       },
     }) as PluginOption,
