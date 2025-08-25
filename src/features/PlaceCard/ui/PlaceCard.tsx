@@ -77,7 +77,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
               // }}
               className={cls.iconWrapper}
             >
-              <AddToFavButton placeId={properties.id} isFavorite={properties.isFavorite} />
+              <AddToFavButton placeName={properties.name} placeId={properties.id} isFavorite={properties.isFavorite} />
             </div>
           </div>
         </div>
