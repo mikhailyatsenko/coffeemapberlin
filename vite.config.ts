@@ -5,30 +5,11 @@ import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 dotenv.config();
 
-const emptyCss = '\0empty-maplibre-css';
-
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    tsconfigPaths(),
-    svgr(),
-    {
-      name: 'ignore-maplibre-css',
-      load(id) {
-        if (id === emptyCss) {
-          return ''; // возвращаем пустой css
-        }
-      },
-    },
-  ],
+  plugins: [react(), tsconfigPaths(), svgr()],
   define: {
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
-  },
-  resolve: {
-    alias: {
-      'maplibre-gl/dist/maplibre-gl.css': emptyCss,
-    },
   },
   base: '/',
   build: {
