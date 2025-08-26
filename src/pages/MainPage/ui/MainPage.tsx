@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { MainMap } from 'widgets/Map';
+// import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesQuery, useGetPlacesLazyQuery } from 'shared/generated/graphql';
@@ -47,16 +47,16 @@ export const MainPage = () => {
     return filteredPlaces?.length ? filteredPlaces : places;
   }, [showFavorites, filteredPlaces, places, favoritePlaces]);
 
-  const placesGeo = {
-    type: 'FeatureCollection' as const,
-    features: placesToDisplay ?? [],
-  };
+  // const placesGeo = {
+  //   type: 'FeatureCollection' as const,
+  //   features: placesToDisplay ?? [],
+  // };
 
   return (
     <>
       {/* {initialLoading && <PageSkeleton />} */}
       <PlacesList places={placesToDisplay} />
-      <MainMap placesGeo={placesGeo} />
+      {/* <MainMap placesGeo={placesGeo} /> */}
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
     </>
   );
