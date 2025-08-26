@@ -3,13 +3,15 @@
   display: flex;
   flex-shrink: 0;
   width: 460px;
-  max-width: 100%;
   overflow: hidden;
   background: #fff;
   height: fit-content;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: all 0.2s;
+  @media (width <= 767px) {
+    width: 390px;
+  }
 
   &:hover {
     transform: scale(1.01);
