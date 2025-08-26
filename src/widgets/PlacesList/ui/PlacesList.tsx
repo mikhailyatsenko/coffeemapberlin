@@ -4,7 +4,7 @@ import { FixedSizeList as List, VariableSizeList } from 'react-window';
 import { type PlacesListProps } from 'widgets/PlacesList/types';
 import { PlaceCard } from 'features/PlaceCard';
 import { useWidth } from 'shared/hooks';
-import { setShowFavorites, usePlacesStore } from 'shared/stores/places';
+import { usePlacesStore } from 'shared/stores/places';
 import { MOBILE_BREAKPOINT, MOBILE_ITEM_WIDTH } from '../constants';
 import cls from './PlacesList.module.scss';
 
@@ -12,7 +12,6 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
   // Разделяем рефы: один для контейнера, другой для react-window
   const containerRef = useRef<HTMLDivElement | null>(null);
   const virtualListRef = useRef<List | VariableSizeList | null>(null);
-  const showFavorites = usePlacesStore((state) => state.showFavorites);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const width = useWidth();
   const isMobile = width <= MOBILE_BREAKPOINT;
@@ -20,7 +19,7 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
 
   // Кэш для высот элементов на десктопе
   const itemHeightsRef = useRef<Record<number, number>>({});
-  const defaultItemHeight = 200; // дефолтная высота для десктопа
+  const defaultItemHeight = 144; // дефолтная высота для десктопа
 
   useEffect(() => {
     const updateContainerSize = () => {
@@ -28,7 +27,7 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
         const rect = containerRef.current.getBoundingClientRect();
         setContainerSize({
           width: rect.width,
-          height: rect.height || window.innerHeight - 200, // fallback высота
+          height: rect.height || window.innerHeight - 60, // fallback высота
         });
       }
     };
@@ -43,7 +42,7 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
   }, []);
 
   const getItemHeight = useCallback((index: number) => {
-    return itemHeightsRef.current[index] || defaultItemHeight;
+    return itemHeightsRef.current[index] + 8 || defaultItemHeight;
   }, []);
 
   // Функция для установки высоты элемента после рендера
@@ -135,7 +134,7 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
 
   return (
     <>
-      <div className={clsx(cls.placesListWrapper, { [cls.showFavorites]: showFavorites })}>
+      <div className={cls.placesListWrapper}>
         <div
           ref={containerRef}
           className={clsx(cls.PlacesList, {
@@ -145,14 +144,6 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
         >
           {renderVirtualizedList()}
         </div>
-      </div>
-      <div className={cls.backdrop}>
-        <div
-          onClick={() => {
-            setShowFavorites(false);
-          }}
-          className={cls.closeButton}
-        />
       </div>
     </>
   );
