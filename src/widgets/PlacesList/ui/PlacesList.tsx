@@ -1,68 +1,132 @@
 import clsx from 'clsx';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { FixedSizeList as List, VariableSizeList } from 'react-window';
 import { type PlacesListProps } from 'widgets/PlacesList/types';
 import { PlaceCard } from 'features/PlaceCard';
-// import { useWidth } from 'shared/hooks';
-import { setShowFavorites, usePlacesStore } from 'shared/stores/places';
+import { useWidth } from 'shared/hooks';
+import { usePlacesStore } from 'shared/stores/places';
+import { MOBILE_BREAKPOINT, MOBILE_ITEM_WIDTH } from '../constants';
 import cls from './PlacesList.module.scss';
 
 const PlacesListComponent = ({ places }: PlacesListProps) => {
-  const showFavorites = usePlacesStore((state) => state.showFavorites);
+  // Разделяем рефы: один для контейнера, другой для react-window
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const virtualListRef = useRef<List | VariableSizeList | null>(null);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
-  const listRef = useRef<HTMLDivElement | null>(null);
-  // const hasShownHintRef = useRef(false);
+  const width = useWidth();
+  const isMobile = width <= MOBILE_BREAKPOINT;
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  const placeCards = useMemo(
-    () =>
-      places.map((place, index) => (
-        <PlaceCard
-          index={index}
-          properties={place.properties}
-          coordinates={place.geometry.coordinates}
-          key={place.properties.id}
-        />
-      )),
-    [places],
-  );
+  // Кэш для высот элементов на десктопе
+  const itemHeightsRef = useRef<Record<number, number>>({});
+  const defaultItemHeight = 144; // дефолтная высота для десктопа
 
-  // const currentPlacePosition = usePlacesStore((state) => state.currentPlacePosition);
+  useEffect(() => {
+    const updateContainerSize = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setContainerSize({
+          width: rect.width,
+          height: rect.height || window.innerHeight - 60, // fallback высота
+        });
+      }
+    };
 
-  // const screenWidth = useWidth();
-  // hint for scroll possibility
-  // useEffect(() => {
-  //   if (!isReady || currentPlacePosition) return;
-  //   if (typeof window === 'undefined') return;
+    updateContainerSize();
 
-  //   if (screenWidth > 767) return;
+    window.addEventListener('resize', updateContainerSize);
 
-  //   const el = listRef.current;
-  //   if (!el) return;
+    return () => {
+      window.removeEventListener('resize', updateContainerSize);
+    };
+  }, []);
 
-  //   const canScroll = el.scrollWidth > el.clientWidth;
-  //   if (!canScroll) return;
+  const getItemHeight = useCallback((index: number) => {
+    return itemHeightsRef.current[index] + 8 || defaultItemHeight;
+  }, []);
 
-  //   hasShownHintRef.current = true;
+  // Функция для установки высоты элемента после рендера
+  const setItemHeight = useCallback((index: number, height: number) => {
+    itemHeightsRef.current[index] = height;
+  }, []);
 
-  //   const scrollDistance = 280;
-  //   const startHint = () => {
-  //     el.scrollTo({ left: scrollDistance, behavior: 'smooth' });
-  //     const backTimer = window.setTimeout(() => {
-  //       el.scrollTo({ left: 0, behavior: 'smooth' });
-  //     }, 800);
-  //     return backTimer;
-  //   };
+  // Компонент элемента для вертикальной прокрутки (десктоп)
+  const VerticalItem = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const place = places[index];
+    const itemRef = useRef<HTMLDivElement>(null);
 
-  //   const delay = 500; // small delay for layout settle
-  //   const backTimerRef = { id: 0 as number | undefined };
-  //   const timer = window.setTimeout(() => {
-  //     backTimerRef.id = startHint() as unknown as number;
-  //   }, delay);
+    useEffect(() => {
+      if (itemRef.current) {
+        const height = itemRef.current.offsetHeight;
+        if (height !== getItemHeight(index)) {
+          setItemHeight(index, height);
+          // Принудительно обновляем список если высота изменилась
+          if (virtualListRef.current && 'resetAfterIndex' in virtualListRef.current) {
+            virtualListRef.current.resetAfterIndex(index);
+          }
+        }
+      }
+    }, [index]);
 
-  //   return () => {
-  //     window.clearTimeout(timer);
-  //     if (backTimerRef.id) window.clearTimeout(backTimerRef.id);
-  //   };
-  // }, [isReady, screenWidth, places.length, currentPlacePosition]);
+    return (
+      <div style={style}>
+        <div ref={itemRef}>
+          <PlaceCard index={index} properties={place.properties} coordinates={place.geometry.coordinates} />
+        </div>
+      </div>
+    );
+  };
+
+  // Компонент элемента для горизонтальной прокрутки (мобильные)
+  const HorizontalItem = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const place = places[index];
+
+    return (
+      <div style={style}>
+        <div style={{ width: MOBILE_ITEM_WIDTH, height: '100%', padding: '0 8px' }}>
+          <PlaceCard index={index} properties={place.properties} coordinates={place.geometry.coordinates} />
+        </div>
+      </div>
+    );
+  };
+
+  // Виртуальный список без мемоизации
+  const renderVirtualizedList = () => {
+    if (!containerSize.width || !containerSize.height) {
+      return null;
+    }
+
+    if (isMobile) {
+      // Горизонтальная прокрутка для мобильных
+      return (
+        <List
+          ref={virtualListRef as React.RefObject<List>}
+          height={containerSize.height}
+          width={containerSize.width}
+          itemCount={places.length}
+          itemSize={MOBILE_ITEM_WIDTH + 16}
+          layout="horizontal"
+          className={cls.virtualizedList}
+        >
+          {HorizontalItem}
+        </List>
+      );
+    } else {
+      // Вертикальная прокрутка для десктопа с переменной высотой
+      return (
+        <VariableSizeList
+          ref={virtualListRef as React.RefObject<VariableSizeList>}
+          height={containerSize.height}
+          width={containerSize.width}
+          itemCount={places.length}
+          itemSize={getItemHeight}
+          className={cls.virtualizedList}
+        >
+          {VerticalItem}
+        </VariableSizeList>
+      );
+    }
+  };
 
   if (filteredPlaces) {
     return null;
@@ -70,18 +134,16 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
 
   return (
     <>
-      <div className={clsx(cls.placesListWrapper, { [cls.showFavorites]: showFavorites })}>
-        <div ref={listRef} className={clsx(cls.PlacesList)}>
-          {placeCards}
-        </div>
-      </div>
-      <div className={cls.backdrop}>
+      <div className={cls.placesListWrapper}>
         <div
-          onClick={() => {
-            setShowFavorites(false);
-          }}
-          className={cls.closeButton}
-        ></div>
+          ref={containerRef}
+          className={clsx(cls.PlacesList, {
+            [cls.mobile]: isMobile,
+            [cls.desktop]: !isMobile,
+          })}
+        >
+          {renderVirtualizedList()}
+        </div>
       </div>
     </>
   );

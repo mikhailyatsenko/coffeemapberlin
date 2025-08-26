@@ -17,12 +17,17 @@ export default defineConfig({
     cssCodeSplit: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-apollo': ['@apollo/client', 'graphql', 'graphql-ws'],
-          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'yup'],
-          'vendor-utils': ['date-fns', 'yet-another-react-lightbox'],
-          'vendor-maplibre': ['maplibre-gl', 'react-map-gl/maplibre'],
+        manualChunks(id) {
+          if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre') || id.includes('maplibre-styles')) {
+            return 'vendor-maplibre';
+          }
+          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom'))
+            return 'vendor-react';
+          if (id.includes('@apollo/client') || id.includes('graphql') || id.includes('graphql-ws'))
+            return 'vendor-apollo';
+          if (id.includes('react-hook-form') || id.includes('@hookform/resolvers') || id.includes('yup'))
+            return 'vendor-forms';
+          if (id.includes('date-fns') || id.includes('yet-another-react-lightbox')) return 'vendor-utils';
         },
       },
     },

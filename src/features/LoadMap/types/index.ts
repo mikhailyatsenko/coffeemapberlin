@@ -6,4 +6,5 @@ export interface PlacesDataWithGeo {
 }
 export interface LoadMapProps {
   placesGeo: PlacesDataWithGeo;
+  moreDataLoading: boolean;
 }
