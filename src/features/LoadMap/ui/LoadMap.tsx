@@ -9,9 +9,6 @@ import { usePlacesStore } from 'shared/stores/places';
 import { MapSkeleton } from '../components/MapSkeleton';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
-if (typeof window !== 'undefined') {
-  import('../lib/maplibre-styles');
-}
 
 type MyMapFeature = Omit<MapGeoJSONFeature, 'geometry'> & GetPlacesQuery['places']['places'][number];
 type PlaceProps = GetPlacesQuery['places']['places'][number]['properties'];
