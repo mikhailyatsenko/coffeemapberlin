@@ -13,7 +13,7 @@ import { type LoadMapProps } from '../types';
 type MyMapFeature = Omit<MapGeoJSONFeature, 'geometry'> & GetPlacesQuery['places']['places'][number];
 type PlaceProps = GetPlacesQuery['places']['places'][number]['properties'];
 
-export const LoadMap = ({ placesGeo }: LoadMapProps) => {
+export const LoadMap = ({ placesGeo, moreDataLoading }: LoadMapProps) => {
   const mapRef = useRef<MapRef>(null);
 
   const currentPlacePosition = usePlacesStore((state) => state.currentPlacePosition);
@@ -124,10 +124,9 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
     }
   }, []);
 
-  console.log('isMapLoaded', isMapLoaded);
   return (
     <>
-      {!isMapLoaded && <MapSkeleton />}
+      {(!isMapLoaded || moreDataLoading) && <MapSkeleton />}
       <MapGL
         reuseMaps
         initialViewState={{
