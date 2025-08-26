@@ -11,29 +11,37 @@
   <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Berlin Coffee Map</title>
   <meta name="description"
     content="Discover top specialty coffee shops in Berlin. Easily find your perfect coffee shop on our map." />
-    <link rel="stylesheet" href="/maplibre-gl.css" />
-  <!-- DNS prefetch for external resources -->
-  <link rel="dns-prefetch" href="//www.googletagmanager.com">
+
+  <!-- critical CSS -->
+  <link rel="stylesheet" href="/maplibre-gl.css" />
+
+  <!-- fonts preload -->
+  <link rel="preload" href="/fonts/roboto-slab-v35-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/roboto-slab-v35-latin-200.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 </head>
+
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D2TXH1NP41"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D2TXH1NP41"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-  gtag('config', 'G-D2TXH1NP41');
-</script>
+    gtag('config', 'G-D2TXH1NP41');
+  </script>
 
 </body>
 
