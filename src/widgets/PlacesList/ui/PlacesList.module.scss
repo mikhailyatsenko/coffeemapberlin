@@ -1,34 +1,26 @@
-/* Базовые стили для тестирования виртуализации */
-
 .placesListWrapper {
   position: fixed;
-  background: white;
-  border: 2px solid #ccc;
-  z-index: 10;
-
-  /* Десктоп - левая панель */
+  z-index: 1;
+  padding: 10px 10px 0;
   top: 60px;
-  left: 20px;
-  width: 400px;
-  height: calc(100vh - 100px);
+  left: 0;
+  width: 470px; /* 450 + 20 (left+right padding) */
+  height: calc(100vh - 60px);
 }
 
 @media (max-width: 767px) {
   .placesListWrapper {
-    /* Мобильные - нижняя панель */
-    top: auto;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    width: auto;
-    height: 300px;
+    padding: 0;
+    top: unset;
+    bottom: 24px;
+    width: 100%;
+    height: 150px;
   }
 }
 
 .PlacesList {
   width: 100%;
   height: 100%;
-  padding: 10px;
   box-sizing: border-box;
 }
 
@@ -50,11 +42,4 @@
 
 .virtualizedList::-webkit-scrollbar-thumb:hover {
   background: #999;
-}
-
-/* Скрываем скроллбары на мобильных для горизонтального скролла */
-@media (max-width: 767px) {
-  .placesListWrapper:not(.showFavorites) .virtualizedList::-webkit-scrollbar {
-    display: none;
-  }
 }

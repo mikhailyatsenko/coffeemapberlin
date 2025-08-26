@@ -1,5 +1,6 @@
+import clsx from 'clsx';
 import { type Position } from 'geojson';
-import { memo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 // import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
@@ -7,6 +8,7 @@ import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
+import { useWidth } from 'shared/hooks';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 
@@ -23,6 +25,10 @@ interface PlaceCardProps {
 
 const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) => {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
+  const nameRef = useRef<HTMLDivElement>(null);
+
+  const [nameScrollWidth, setNameScrollWidth] = useState<number>();
+  const [shouldNameScroll, setShouldNameScroll] = useState(false);
 
   const handleInstagramClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,6 +56,25 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
 
   const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
 
+  const width = useWidth();
+  const isMobile = width <= 767;
+  useEffect(() => {
+    if (nameRef?.current?.clientWidth) {
+      setNameScrollWidth(nameRef?.current?.scrollWidth);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (nameScrollWidth) {
+      if (isMobile) {
+        // TODO constants
+        setShouldNameScroll(nameScrollWidth > 191);
+      } else {
+        setShouldNameScroll(nameScrollWidth > 251);
+      }
+    }
+  }, [nameScrollWidth, isMobile]);
+  console.log(nameScrollWidth);
   return (
     <Link to={placePath} className={`${cls.placeCard} `}>
       <div className={cls.image}>
@@ -66,7 +91,19 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
       </div>
       <div className={cls.content}>
         <div className={cls.cardHeader}>
-          <h4 className={cls.name}>{properties.name}</h4>
+          <div className={cls.name}>
+            <h4
+              ref={nameRef}
+              style={
+                nameScrollWidth && shouldNameScroll
+                  ? { ['--scroll-distance' as unknown as string]: `${(isMobile ? 191 : 251) - nameScrollWidth}px` }
+                  : undefined
+              }
+              className={clsx({ [cls.marquee]: shouldNameScroll })}
+            >
+              {properties.name}
+            </h4>
+          </div>
 
           <div className={cls.iconsGroup}>
             <div
@@ -90,27 +127,28 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
         {properties.neighborhood && (
           <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
         )}
-        <div className={cls.address}>
-          <p>{properties.address}</p>
-          <div className={cls.iconsGroup}>
-            {properties.instagram && (
-              <button
-                className={cls.iconWrapper}
-                onClick={handleInstagramClick}
-                title="Open the place's Instagram profile"
-              >
-                <img className={cls.icon} src={instagram} alt="" />
-              </button>
-            )}
 
-            <button onClick={handleDirectionsClick} title="Get directions on Google Maps" className={cls.iconWrapper}>
-              <img className={cls.icon} src={roteToImage} alt="" />
-            </button>
-
-            <button onClick={handleShowOnMapClick} title="Show location on the map" className={cls.iconWrapper}>
-              <img className={cls.icon} src={showPlacePointOnMap} alt="" />
-            </button>
+        <div className={cls.iconsGroup}>
+          <div className={cls.address}>
+            <p>{properties.address}</p>
           </div>
+          {properties.instagram && (
+            <button
+              className={cls.iconWrapper}
+              onClick={handleInstagramClick}
+              title="Open the place's Instagram profile"
+            >
+              <img className={cls.icon} src={instagram} alt="" />
+            </button>
+          )}
+
+          <button onClick={handleDirectionsClick} title="Get directions on Google Maps" className={cls.iconWrapper}>
+            <img className={cls.icon} src={roteToImage} alt="" />
+          </button>
+
+          <button onClick={handleShowOnMapClick} title="Show location on the map" className={cls.iconWrapper}>
+            <img className={cls.icon} src={showPlacePointOnMap} alt="" />
+          </button>
         </div>
       </div>
     </Link>
