@@ -126,7 +126,6 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   return (
     <>
-      {!isMapLoaded && <MapSkeleton />}
       <MapGL
         reuseMaps
         initialViewState={{
@@ -146,6 +145,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
+        {isMapLoaded && <MapSkeleton />}
         <Source id="places" type="geojson" data={sourceData} cluster={true} clusterMaxZoom={12} clusterRadius={30}>
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />

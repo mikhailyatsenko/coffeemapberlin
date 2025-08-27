@@ -7,13 +7,7 @@ const Map = () => (
 );
 
 export const MapSkeleton = () => (
-  <div className={cls.mainPageSkeleton}>
-    <div className={cls.mapContainer}>
-      <Map />
-
-      <div className={cls.favoritesButton}>
-        <div className={cls.buttonSkeleton}></div>
-      </div>
-    </div>
+  <div className={cls.PageSkeleton}>
+    <Map />
   </div>
 );
