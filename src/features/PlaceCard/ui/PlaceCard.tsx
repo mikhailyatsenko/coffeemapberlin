@@ -74,7 +74,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
       }
     }
   }, [nameScrollWidth, isMobile]);
-  console.log(nameScrollWidth);
+
   return (
     <Link to={placePath} className={`${cls.placeCard} `}>
       <div className={cls.image}>
