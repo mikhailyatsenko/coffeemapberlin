@@ -126,7 +126,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   return (
     <>
-      {isMapLoaded && <MapSkeleton />}
+      {!isMapLoaded && <MapSkeleton />}
       <MapGL
         reuseMaps
         initialViewState={{
