@@ -6,7 +6,7 @@ import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
 import { usePlacesStore } from 'shared/stores/places';
-// import { MapSkeleton } from '../components/MapSkeleton';
+import { MapSkeleton } from '../components/MapSkeleton';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
@@ -126,7 +126,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   return (
     <>
-      {/* {(!isMapLoaded || moreDataLoading) && <MapSkeleton />} */}
+      {isMapLoaded && <MapSkeleton />}
       <MapGL
         reuseMaps
         initialViewState={{
