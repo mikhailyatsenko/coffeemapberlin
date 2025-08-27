@@ -22,7 +22,6 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, size = 'small' 
     variables: { placeId },
     update: (cache, { data }) => {
       if (data?.toggleFavorite) {
-        // Используем рабочий подход из cacheUpdate.ts
         cache.modify({
           id: `PlaceProperties:${placeId}`,
           fields: {

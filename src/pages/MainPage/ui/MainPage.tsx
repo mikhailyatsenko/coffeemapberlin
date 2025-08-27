@@ -6,7 +6,7 @@ import { usePlacesStore } from 'shared/stores/places';
 import { usePlacesDataLoader } from '../lib/usePlacesDataLoader';
 
 export const MainPage = () => {
-  const { initialLoading, moreDataLoading } = usePlacesDataLoader();
+  const { moreDataLoading } = usePlacesDataLoader();
 
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
@@ -28,7 +28,7 @@ export const MainPage = () => {
 
   return (
     <>
-      {initialLoading && <div>Loading...</div>}
+      {/* {initialLoading && <div>Loading...</div>} */}
       <PlacesList places={placesToDisplay} />
       <MainMap moreDataLoading={moreDataLoading} placesGeo={placesGeo} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
