@@ -144,6 +144,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         ref={mapRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        attributionControl={{ compact: true }}
       >
         {!isMapLoaded && <MapSkeleton />}
         <Source id="places" type="geojson" data={sourceData} cluster={true} clusterMaxZoom={12} clusterRadius={30}>
