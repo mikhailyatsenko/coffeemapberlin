@@ -1,1 +1,0 @@
-export { MapSkeleton } from './MapSkeleton';

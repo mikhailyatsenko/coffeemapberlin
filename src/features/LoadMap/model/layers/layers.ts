@@ -7,7 +7,7 @@ export const clusterLayer: LayerProps = {
   filter: ['has', 'point_count'],
   paint: {
     'circle-color': ['step', ['get', 'point_count'], '#303030', 100, '#f1f075', 750, '#f28cb1'],
-    'circle-radius': ['step', ['get', 'point_count'], 16, 100, 30, 750, 40],
+    'circle-radius': ['step', ['get', 'point_count'], 14, 100, 30, 750, 40],
     'circle-stroke-width': 2,
     'circle-stroke-color': '#ffffff',
   },
