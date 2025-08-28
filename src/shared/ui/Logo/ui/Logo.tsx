@@ -4,7 +4,7 @@ import cls from './Logo.module.scss';
 export const Logo = () => {
   return (
     <div className={cls.Logo}>
-      <img src={logo} alt="logo" />
+      <img width={32} height={32} src={logo} alt="logo" />
       <div className={cls.logoText}>
         <div className={cls.primaryText}>
           3.Welle<sup> berlin</sup>

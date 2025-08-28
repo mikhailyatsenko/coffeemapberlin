@@ -1,6 +1,9 @@
 import { usePlacesStore } from '../hooks';
 import { type PlacesState, type Place } from '../types';
 
+export const PAGE_SIZE = 10;
+export const INITIAL_OFFSET = 0;
+
 export const setPlaces = (places: Place[] | ((prev: Place[]) => Place[])) => {
   usePlacesStore.setState((state) => ({
     places: typeof places === 'function' ? places(state.places) : places,
@@ -55,4 +58,32 @@ export const toggleFavorite = (placeId: string) => {
 
 export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosition']) => {
   usePlacesStore.setState({ currentPlacePosition: position });
+};
+
+// Добавляем новые actions для управления состоянием загрузки
+export const setLoadingState = (
+  loadingState: Partial<
+    Pick<
+      PlacesState,
+      'isInitialLoading' | 'isMoreDataLoading' | 'isInitialLoadComplete' | 'isMoreDataLoaded' | 'fetchMoreInProgress'
+    >
+  >,
+) => {
+  usePlacesStore.setState(loadingState);
+};
+
+export const resetLoadingState = () => {
+  usePlacesStore.setState({
+    isInitialLoading: false,
+    isMoreDataLoading: false,
+    isInitialLoadComplete: false,
+    isMoreDataLoaded: false,
+    fetchMoreInProgress: false,
+  });
+};
+
+// Экшн для ревалидации
+export const revalidatePlaces = () => {
+  resetLoadingState();
+  setPlaces([]);
 };

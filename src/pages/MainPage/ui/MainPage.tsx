@@ -1,42 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
-import { useGetPlacesQuery, useGetPlacesLazyQuery } from 'shared/generated/graphql';
-
-import { usePlacesStore, setPlaces } from 'shared/stores/places';
-
-const PAGE_SIZE = 10;
+import { usePlacesStore } from 'shared/stores/places';
 
 export const MainPage = () => {
+  const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
-  const places = usePlacesStore((state) => state.places);
-
-  const { data: initialData } = useGetPlacesQuery({
-    variables: { limit: PAGE_SIZE, offset: 0 },
-    fetchPolicy: 'cache-first',
-  });
-
-  const [fetchMore, { data: moreData, loading: moreDataLoading }] = useGetPlacesLazyQuery();
-
-  // Initial fetch
-  useEffect(() => {
-    if (!initialData?.places) return;
-
-    setPlaces(initialData.places.places ?? []);
-
-    if (initialData.places.total > PAGE_SIZE) {
-      fetchMore({
-        variables: { limit: initialData.places.total - PAGE_SIZE, offset: PAGE_SIZE },
-      });
-    }
-  }, [initialData, fetchMore]);
-
-  useEffect(() => {
-    if (!moreData?.places?.places?.length) return;
-    setPlaces((prev) => [...prev, ...moreData.places.places]);
-  }, [moreData]);
 
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);
@@ -54,9 +25,9 @@ export const MainPage = () => {
 
   return (
     <>
-      {/* {initialLoading && <PageSkeleton />} */}
+      {/* {initialLoading && <div>Loading...</div>} */}
       <PlacesList places={placesToDisplay} />
-      <MainMap moreDataLoading={moreDataLoading} placesGeo={placesGeo} />
+      <MainMap placesGeo={placesGeo} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
     </>
   );

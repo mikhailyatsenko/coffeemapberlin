@@ -6,7 +6,6 @@ import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
 import { usePlacesStore } from 'shared/stores/places';
-// import { MapSkeleton } from '../components/MapSkeleton';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
@@ -126,7 +125,6 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
 
   return (
     <>
-      {/* {(!isMapLoaded || moreDataLoading) && <MapSkeleton />} */}
       <MapGL
         reuseMaps
         initialViewState={{
@@ -145,8 +143,9 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         ref={mapRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        attributionControl={{ compact: true }}
       >
-        <Source id="places" type="geojson" data={sourceData} cluster={true} clusterMaxZoom={12} clusterRadius={30}>
+        <Source id="places" type="geojson" data={sourceData} cluster={true} clusterMaxZoom={16} clusterRadius={50}>
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
@@ -166,12 +165,8 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
             <TooltipCardOnMap properties={tooltipCurrentData} coordinates={popupCoordinates} />
           </Popup>
         )}
-        {screenWidth >= 768 && (
-          <>
-            <NavigationControl position="bottom-right" />
-            <GeolocateControl position="bottom-right" />
-          </>
-        )}
+        {screenWidth >= 768 && <NavigationControl position="bottom-right" />}
+        <GeolocateControl position={screenWidth >= 768 ? 'bottom-right' : 'top-left'} />
       </MapGL>
     </>
   );
