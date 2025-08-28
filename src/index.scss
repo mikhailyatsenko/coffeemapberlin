@@ -1,5 +1,19 @@
 @font-face {
   font-family: 'Roboto Slab';
+  src: url('/fonts/RobotoSlab/roboto-slab-v35-latin-200.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto Slab';
+  src: url('/fonts/RobotoSlab/roboto-slab-v35-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Roboto Slab';
   src: url('/fonts/RobotoSlab/roboto-slab-v35-latin-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
