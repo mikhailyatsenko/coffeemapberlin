@@ -64,7 +64,7 @@ export const AuthModal = () => {
 
   return (
     <PortalToBody>
-      <Modal onClose={hideModal}>
+      <Modal closeOnEsc={true} onClose={hideModal}>
         <div className={cls.authModalContent}>
           {renderModalContent()}
           <p className={cls.errorMessage}>{error?.message}</p>

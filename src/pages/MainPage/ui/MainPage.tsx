@@ -3,11 +3,8 @@ import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { usePlacesStore } from 'shared/stores/places';
-import { usePlacesDataLoader } from '../lib/usePlacesDataLoader';
 
 export const MainPage = () => {
-  const { moreDataLoading } = usePlacesDataLoader();
-
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
@@ -30,7 +27,7 @@ export const MainPage = () => {
     <>
       {/* {initialLoading && <div>Loading...</div>} */}
       <PlacesList places={placesToDisplay} />
-      <MainMap moreDataLoading={moreDataLoading} placesGeo={placesGeo} />
+      <MainMap placesGeo={placesGeo} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
     </>
   );

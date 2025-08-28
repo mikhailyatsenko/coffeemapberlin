@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { clearAuth, useAuthStore } from 'shared/stores/auth';
 import { showSignIn } from 'shared/stores/modal';
+import { revalidatePlaces } from 'shared/stores/places';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
@@ -14,8 +15,8 @@ export const AuthIndicator: React.FC = () => {
   const logoutHandler = async () => {
     try {
       setIsLoading(true);
+      revalidatePlaces();
       await clearAuth();
-      // navigate('/', { replace: true });
     } catch (error) {
       console.log(error);
     } finally {
