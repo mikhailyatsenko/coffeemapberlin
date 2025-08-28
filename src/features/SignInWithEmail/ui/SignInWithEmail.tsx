@@ -4,6 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { client } from 'shared/config/apolloClient';
 import { useSignInWithEmailMutation } from 'shared/generated/graphql';
 import { checkAuth } from 'shared/stores/auth';
+import { revalidatePlaces } from 'shared/stores/places';
 import { FormField } from 'shared/ui/FormField';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
@@ -31,6 +32,7 @@ export const SignInWithEmail = ({
       });
       if (response) {
         await checkAuth();
+        revalidatePlaces();
         if (hideAuthModal) {
           hideAuthModal();
         }

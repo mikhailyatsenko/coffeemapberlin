@@ -8,4 +8,10 @@ export interface PlacesState {
   filteredPlaces: Place[] | null;
   showFavorites: boolean;
   currentPlacePosition: Position | null;
+  // Добавляем состояние загрузки
+  isInitialLoading: boolean;
+  isMoreDataLoading: boolean;
+  isInitialLoadComplete: boolean;
+  isMoreDataLoaded: boolean;
+  fetchMoreInProgress: boolean;
 }
