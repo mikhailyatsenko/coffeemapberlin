@@ -20,6 +20,7 @@ const App = () => {
   const location = useLocation();
   const { isAuthLoading } = useAuthStore();
 
+  // Load initial 10 places data when the application starts
   const { data: initialData, loading: initialLoading } = useGetPlacesQuery({
     variables: { limit: PAGE_SIZE, offset: INITIAL_OFFSET },
     fetchPolicy: 'cache-first',
@@ -27,6 +28,7 @@ const App = () => {
 
   const [fetchMore, { loading: moreDataLoading }] = useGetPlacesLazyQuery();
 
+  // Handle initial data
   useEffect(() => {
     const state = usePlacesStore.getState();
 
@@ -45,8 +47,6 @@ const App = () => {
     if (totalPlaces > PAGE_SIZE && !state.fetchMoreInProgress) {
       setLoadingState({ fetchMoreInProgress: true });
 
-      console.log('Starting fetchMore for additional places...');
-
       fetchMore({
         variables: {
           limit: totalPlaces - PAGE_SIZE,
@@ -58,7 +58,9 @@ const App = () => {
             const additionalPlaces = result.data.places.places;
             console.log('fetchMore completed, adding', additionalPlaces.length, 'additional places');
 
+            // Check if we haven't already added these places
             setPlaces((prev) => {
+              // If places are already added, don't add them again
               if (prev.length > PAGE_SIZE) {
                 console.log('Places already added, skipping duplicate');
                 return prev;
@@ -73,17 +75,18 @@ const App = () => {
               fetchMoreInProgress: false,
             });
           } else {
+            // If fetchMore didn't return data, reset the flag
             setLoadingState({ fetchMoreInProgress: false });
           }
         })
         .catch((error) => {
           console.error('fetchMore failed:', error);
+          // In case of error, reset the flag
           setLoadingState({ fetchMoreInProgress: false });
         });
     }
   }, [initialData?.places, fetchMore]);
 
-  // Обновляем состояние загрузки в сторе
   useEffect(() => {
     setLoadingState({
       isInitialLoading: initialLoading,

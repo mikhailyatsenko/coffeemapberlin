@@ -60,7 +60,6 @@ export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosit
   usePlacesStore.setState({ currentPlacePosition: position });
 };
 
-// Добавляем новые actions для управления состоянием загрузки
 export const setLoadingState = (
   loadingState: Partial<
     Pick<
@@ -82,7 +81,6 @@ export const resetLoadingState = () => {
   });
 };
 
-// Экшн для ревалидации
 export const revalidatePlaces = () => {
   resetLoadingState();
   setPlaces([]);
