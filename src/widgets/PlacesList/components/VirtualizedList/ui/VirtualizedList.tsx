@@ -4,6 +4,7 @@ import { useWidth } from 'shared/hooks';
 import { MOBILE_BREAKPOINT, MOBILE_ITEM_WIDTH } from '../../../constants';
 import { type VirtualizedListProps } from '../../../types';
 import { VirtualizedItem } from '../../VirtualizedItem';
+import cls from './VirtualizedList.module.scss';
 
 const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProps) => {
   const virtualListRef = useRef<List | VariableSizeList | null>(null);
@@ -40,6 +41,7 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
         itemCount={places.length}
         itemSize={MOBILE_ITEM_WIDTH + 16}
         layout="horizontal"
+        className={cls.virtualizedList}
       >
         {({ index, style }) => (
           <VirtualizedItem
@@ -61,6 +63,7 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
       width={containerSize.width}
       itemCount={places.length}
       itemSize={getItemHeight}
+      className={cls.virtualizedList}
     >
       {({ index, style }) => (
         <VirtualizedItem

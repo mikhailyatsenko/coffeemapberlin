@@ -1,0 +1,9 @@
+.virtualizedList {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari */
+.virtualizedList::-webkit-scrollbar {
+  display: none;
+}

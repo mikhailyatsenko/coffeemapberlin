@@ -27,29 +27,3 @@
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE и Edge */
 }
-
-.virtualizedList {
-  width: 100% !important;
-  height: 100% !important;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* Для WebKit браузеров (Chrome, Safari) */
-.virtualizedList::-webkit-scrollbar {
-  display: none;
-}
-
-/* Альтернативный способ - сделать скроллбар прозрачным */
-.virtualizedList.transparent-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.virtualizedList.transparent-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.virtualizedList.transparent-scrollbar::-webkit-scrollbar-thumb {
-  background: transparent;
-}
