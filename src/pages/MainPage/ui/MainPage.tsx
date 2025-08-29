@@ -25,7 +25,6 @@ export const MainPage = () => {
 
   return (
     <>
-      {/* {initialLoading && <div>Loading...</div>} */}
       <PlacesList places={placesToDisplay} />
       <MainMap placesGeo={placesGeo} />
       <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />

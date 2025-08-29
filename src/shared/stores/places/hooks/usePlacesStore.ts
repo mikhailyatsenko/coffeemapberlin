@@ -7,7 +7,6 @@ export const usePlacesStore = create<PlacesState>(() => ({
   filteredPlaces: null,
   showFavorites: false,
   currentPlacePosition: null,
-  // Добавляем начальное состояние загрузки
   isInitialLoading: false,
   isMoreDataLoading: false,
   isInitialLoadComplete: false,
