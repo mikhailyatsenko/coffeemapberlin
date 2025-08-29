@@ -3,6 +3,7 @@ import { client } from 'shared/config/apolloClient';
 import { useLoginWithGoogleMutation } from 'shared/generated/graphql';
 import { setUser } from 'shared/stores/auth';
 import { hideModal, showSuccessfulSignUp } from 'shared/stores/modal';
+import { revalidatePlaces } from 'shared/stores/places';
 import { mapLoginWithGoogleData } from '../mappers';
 import { type UseWithGoogleProps } from '../types';
 
@@ -24,6 +25,9 @@ export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
             } else {
               hideModal();
             }
+            // First reset places, then Apollo Client will update the cache
+            revalidatePlaces();
+            // Reset Apollo Client cache after revalidation
             await client.resetStore();
           }
         }
