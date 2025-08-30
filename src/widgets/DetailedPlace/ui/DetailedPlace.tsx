@@ -64,10 +64,6 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
     };
   }, [placeData?.place?.properties?.name]);
 
-  const goBackToMap = useCallback(() => {
-    navigate({ pathname: '/' });
-  }, [navigate]);
-
   const openOnMap = useCallback(() => {
     if (placeData?.place?.geometry.coordinates) {
       // send a new array reference to force store subscribers to react even if values are equal
@@ -223,10 +219,10 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
       </div>
 
       <div className={cls.breadcrumbs}>
-        <button className={cls.backBtn} onClick={goBackToMap} aria-label="Back to map">
+        <a href="/" className={cls.backBtn} aria-label="Back to map">
           <span>←</span>
           <span>Back to map</span>
-        </button>
+        </a>
       </div>
 
       <CoffeeShopSchema
