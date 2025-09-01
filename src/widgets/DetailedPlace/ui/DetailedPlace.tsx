@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 // TODO: fix somehow
 // eslint-disable-next-line boundaries/element-types
-import { NotFoundPage } from 'pages/NotFoundPage';
+// import { NotFoundPage } from 'pages/NotFoundPage';
 import { AddTextReviewForm } from 'features/AddTextReview';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
@@ -73,11 +73,11 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
     navigate({ pathname: '/' });
   }, [navigate, placeData?.place?.geometry.coordinates]);
 
-  if (isPlaceLoading) return <NewDetailedPlaceCardSkeleton />;
-  if (!placeData?.place?.properties) return <NotFoundPage />;
+  if (isPlaceLoading || !placeData?.place?.properties) return <NewDetailedPlaceCardSkeleton />;
+  // TODO refine logic
+  // if (!placeData?.place?.properties) return <NotFoundPage />;
 
-  const { averageRating, description, name, address, instagram, isFavorite, neighborhood } =
-    placeData?.place.properties;
+  const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = placeData.place.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = placeData.place.properties;
   return (
     <div className={cls.page}>
