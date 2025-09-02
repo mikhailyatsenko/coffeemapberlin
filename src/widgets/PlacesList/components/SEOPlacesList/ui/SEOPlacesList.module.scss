@@ -1,0 +1,77 @@
+.seoPlacesList {
+  /* Completely hidden from visual users but accessible to search engines */
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.placesSection {
+  /* Semantic structure for search engines */
+  display: block;
+}
+
+.srOnly {
+  /* Screen reader only text */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.placesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.placeItem {
+  margin-bottom: 16px;
+}
+
+.placeArticle {
+  /* Semantic article structure */
+  display: block;
+}
+
+.placeLink {
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}
+
+.placeDescription {
+  margin: 8px 0;
+  font-style: italic;
+}
+
+.placeAddress {
+  margin: 8px 0;
+  font-style: normal;
+}
+
+.placeRating {
+  margin: 4px 0;
+  font-weight: bold;
+}
+
+.placeNeighborhood {
+  margin: 4px 0;
+  font-size: 0.9em;
+  color: #666;
+}
