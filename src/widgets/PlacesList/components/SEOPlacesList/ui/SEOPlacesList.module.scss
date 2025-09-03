@@ -11,11 +11,6 @@
   visibility: hidden;
 }
 
-.placesSection {
-  /* Semantic structure for search engines */
-  display: block;
-}
-
 .srOnly {
   /* Screen reader only text */
   position: absolute;
@@ -33,45 +28,4 @@
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.placeItem {
-  margin-bottom: 16px;
-}
-
-.placeArticle {
-  /* Semantic article structure */
-  display: block;
-}
-
-.placeLink {
-  text-decoration: none;
-  color: inherit;
-  font-weight: bold;
-
-  &:hover,
-  &:focus {
-    text-decoration: underline;
-  }
-}
-
-.placeDescription {
-  margin: 8px 0;
-  font-style: italic;
-}
-
-.placeAddress {
-  margin: 8px 0;
-  font-style: normal;
-}
-
-.placeRating {
-  margin: 4px 0;
-  font-weight: bold;
-}
-
-.placeNeighborhood {
-  margin: 4px 0;
-  font-size: 0.9em;
-  color: #666;
 }

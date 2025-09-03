@@ -50,28 +50,16 @@ const SEOPlacesListComponent = ({ places }: SEOPlacesListProps) => {
     [places],
   );
 
-  // Memoize places list to avoid regeneration
+  // Memoize places list to avoid regeneration - simplified for 460 items
   const placesList = useMemo(
     () =>
       places.map((place) => {
         const placePath = generatePath(`/${RoutePaths.placePage}`, { id: place.properties.id });
         return (
-          <li key={place.properties.id} className={cls.placeItem}>
-            <article className={cls.placeArticle}>
-              <h2>
-                <Link to={placePath} className={cls.placeLink}>
-                  {place.properties.name}
-                </Link>
-              </h2>
-              <p className={cls.placeDescription}>{place.properties.description}</p>
-              <address className={cls.placeAddress}>{place.properties.address}</address>
-              {place.properties.averageRating && (
-                <div className={cls.placeRating}>Rating: {place.properties.averageRating}/5</div>
-              )}
-              {place.properties.neighborhood && (
-                <div className={cls.placeNeighborhood}>Neighborhood: {place.properties.neighborhood}</div>
-              )}
-            </article>
+          <li key={place.properties.id}>
+            <Link to={placePath}>
+              {place.properties.name} - {place.properties.address}
+            </Link>
           </li>
         );
       }),
@@ -84,16 +72,9 @@ const SEOPlacesListComponent = ({ places }: SEOPlacesListProps) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
       <div className={cls.seoPlacesList}>
-        {/* Semantic HTML structure for search engines */}
-        <section className={cls.placesSection}>
-          <h1 className={cls.srOnly}>Coffee Places in Berlin</h1>
-          <p className={cls.srOnly}>
-            Discover the best coffee places in Berlin. Each location is carefully curated and includes ratings,
-            addresses, and detailed information to help you find your perfect cup of coffee.
-          </p>
-
-          <ul className={cls.placesList}>{placesList}</ul>
-        </section>
+        {/* Simplified structure for 460 items */}
+        <h1 className={cls.srOnly}>Coffee Places in Berlin</h1>
+        <ul className={cls.placesList}>{placesList}</ul>
       </div>
     </>
   );
