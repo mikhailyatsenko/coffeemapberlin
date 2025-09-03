@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, Suspense } from 'react';
 import { usePlacesStore } from 'shared/stores/places';
 import { ContainerSizeManager } from '../components/ContainerSizeManager';
 import { SEOPlacesList } from '../components/SEOPlacesList';
@@ -15,8 +15,10 @@ const PlacesListComponent = ({ places }: PlacesListProps) => {
 
   return (
     <div className={cls.placesListWrapper}>
-      {/* Always render SEO content for search engines */}
-      <SEOPlacesList places={places} />
+      {/* Lazy loaded SEO content for search engines */}
+      <Suspense fallback={null}>
+        <SEOPlacesList places={places} />
+      </Suspense>
 
       {/* Virtualized version for users */}
       <div className={cls.PlacesList}>

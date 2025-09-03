@@ -1,2 +1,2 @@
-export { SEOPlacesList } from './ui/SEOPlacesList';
+export { SEOPlacesListLazy as SEOPlacesList } from './ui/SEOPlacesListLazy';
 export type { SEOPlacesListProps } from './types';
