@@ -1,9 +1,6 @@
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-// TODO: fix somehow
-// eslint-disable-next-line boundaries/element-types
-// import { NotFoundPage } from 'pages/NotFoundPage';
 import { AddTextReviewForm } from 'features/AddTextReview';
 import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
@@ -19,6 +16,7 @@ import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { AverageRating } from '../components/AverageRating';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
+import { ErrorPlace } from '../components/ErrorPlace';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import cls from './DetailedPlace.module.scss';
 
@@ -36,12 +34,16 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   // Precompute static keys to satisfy hooks order (before any early returns)
   const characteristicKeys = useMemo(() => Array.from(characteristicsMap.keys()), []);
 
-  const { data: placeData, loading: isPlaceLoading } = usePlaceQuery({
+  const {
+    data: placeData,
+    loading: isPlaceLoading,
+    error: placeError,
+  } = usePlaceQuery({
     variables: { placeId },
     skip: !placeId,
   });
 
-  const { data: placeReviewsData } = usePlaceReviews(placeId);
+  const { data: placeReviewsData } = usePlaceReviews(placeData?.place?.properties ? placeId : null);
   const ownReview = placeReviewsData?.placeReviews.ownReview;
   const displayedReviews = useMemo(() => {
     const own = placeReviewsData?.placeReviews.ownReview;
@@ -73,9 +75,11 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
     navigate({ pathname: '/' });
   }, [navigate, placeData?.place?.geometry.coordinates]);
 
+  if (placeError) {
+    return <ErrorPlace error={placeError} />;
+  }
+
   if (isPlaceLoading || !placeData?.place?.properties) return <NewDetailedPlaceCardSkeleton />;
-  // TODO refine logic
-  // if (!placeData?.place?.properties) return <NotFoundPage />;
 
   const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = placeData.place.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = placeData.place.properties;
