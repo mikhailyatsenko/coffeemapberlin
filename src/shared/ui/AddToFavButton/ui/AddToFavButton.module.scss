@@ -1,4 +1,4 @@
-.AddToFavButton {
+.AddToFavIcon {
   position: relative;
   top: 0.5px;
   background-image: url('../../../assets/favorite-empty.svg');
@@ -113,6 +113,31 @@
       animation: spin 1s linear infinite;
     }
   }
+}
+
+.circle {
+  cursor: pointer;
+  background-color: #f6f6f6;
+  padding: 6px;
+  border: 0px solid #767676;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 0.5px 1.5px;
+  transition: background-color 0.2s;
+}
+
+.square {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 6.5px;
 }
 
 @keyframes topBubbles {

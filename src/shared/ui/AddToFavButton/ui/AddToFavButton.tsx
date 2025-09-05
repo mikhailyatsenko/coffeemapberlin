@@ -12,9 +12,10 @@ interface AddToFavButtonProps {
   placeName: string;
   isFavorite: boolean;
   size?: 'small' | 'medium' | 'large';
+  theme: 'circle' | 'square';
 }
 
-export const AddToFavButton = ({ placeId, isFavorite, placeName, size = 'small' }: AddToFavButtonProps) => {
+export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = 'small' }: AddToFavButtonProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -91,13 +92,18 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, size = 'small' 
   }, [isAnimating]);
 
   return (
-    <div
-      className={clsx(cls.AddToFavButton, cls[size], {
-        [cls.filled]: isFavorite,
-        [cls.animate]: isAnimating,
-        [cls.updating]: isUpdating,
-      })}
+    <button
+      className={cls[theme]}
       onClick={handleClick}
-    ></div>
+      title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
+    >
+      <div
+        className={clsx(cls.AddToFavIcon, cls[size], {
+          [cls.filled]: isFavorite,
+          [cls.animate]: isAnimating,
+          [cls.updating]: isUpdating,
+        })}
+      ></div>
+    </button>
   );
 };

@@ -96,12 +96,13 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
           >
             <img className={cls.icon} src={routeToIcon} alt="" />
           </a>
-          <div
-            className={cls.iconWrapper}
-            title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
-          >
-            <AddToFavButton placeName={properties.name} placeId={properties.id} isFavorite={properties.isFavorite} />
-          </div>
+
+          <AddToFavButton
+            theme="circle"
+            placeName={properties.name}
+            placeId={properties.id}
+            isFavorite={properties.isFavorite}
+          />
         </div>
       </div>
     </div>

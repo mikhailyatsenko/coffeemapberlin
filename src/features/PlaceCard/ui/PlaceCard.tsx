@@ -106,17 +106,12 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
           </div>
 
           <div className={cls.iconsGroup}>
-            <div
-              title={properties.isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   e.preventDefault();
-              //   handleToggleFavorite();
-              // }}
-              className={cls.iconWrapper}
-            >
-              <AddToFavButton placeName={properties.name} placeId={properties.id} isFavorite={properties.isFavorite} />
-            </div>
+            <AddToFavButton
+              theme="circle"
+              placeName={properties.name}
+              placeId={properties.id}
+              isFavorite={properties.isFavorite}
+            />
           </div>
         </div>
         <div className={cls.rating}>

@@ -124,9 +124,7 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
               characteristicCounts={characteristicCounts}
             />
 
-            <button className={cls.favBtn} title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
-              <AddToFavButton placeName={name} placeId={placeId} size="medium" isFavorite={isFavorite} />
-            </button>
+            <AddToFavButton theme="square" placeName={name} placeId={placeId} size="medium" isFavorite={isFavorite} />
           </div>
         </div>
         <div className={cls.headerImg}>
