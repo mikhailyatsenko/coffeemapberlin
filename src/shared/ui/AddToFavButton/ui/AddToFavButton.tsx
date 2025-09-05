@@ -41,7 +41,7 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
   const { user } = useAuthStore();
 
   const handleClick = useCallback(
-    async (e: React.MouseEvent<HTMLDivElement>) => {
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       e.preventDefault();
 
