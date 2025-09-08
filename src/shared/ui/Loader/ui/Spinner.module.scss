@@ -1,12 +1,26 @@
 .spinner {
-  width: 48px;
-  height: 48px;
   border: 5px solid #fff;
   border-bottom-color: #ff3d00;
   border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
+}
+
+.size-sm {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.size-md {
+  width: 48px;
+  height: 48px;
+}
+
+.size-lg {
+  width: 72px;
+  height: 72px;
 }
 
 @keyframes rotation {

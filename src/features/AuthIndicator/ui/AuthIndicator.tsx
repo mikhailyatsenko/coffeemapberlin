@@ -3,13 +3,13 @@ import { NavLink } from 'react-router-dom';
 import { clearAuth, useAuthStore } from 'shared/stores/auth';
 import { showSignIn } from 'shared/stores/modal';
 import { revalidatePlaces } from 'shared/stores/places';
-import { Loader } from 'shared/ui/Loader';
+import { Spinner, Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
   // const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user, isAuthLoading } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const logoutHandler = async () => {
@@ -47,6 +47,10 @@ export const AuthIndicator: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isProfileCardVisible]);
+
+  if (isAuthLoading) {
+    return <Spinner size="sm" />;
+  }
 
   if (!user) {
     return (

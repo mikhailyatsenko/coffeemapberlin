@@ -6,9 +6,9 @@ import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { RoutePaths } from 'shared/constants';
 import { useGetPlacesQuery, useGetPlacesLazyQuery } from 'shared/generated/graphql';
-import { checkAuth, useAuthStore } from 'shared/stores/auth';
+import { checkAuth } from 'shared/stores/auth';
 import { setPlaces, setLoadingState, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
-import { Loader } from 'shared/ui/Loader';
+
 import { AppRouter } from './providers/router';
 
 const App = () => {
@@ -18,7 +18,6 @@ const App = () => {
     throw new Error(`Missing required environment variable: GOOGLE_CLIENT_ID`);
   }
   const location = useLocation();
-  const { isAuthLoading } = useAuthStore();
 
   // Load initial 10 places data when the application starts
   const { data: initialData, loading: initialLoading } = useGetPlacesQuery({
@@ -100,7 +99,6 @@ const App = () => {
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      {isAuthLoading ? <Loader /> : null}
       <Navbar />
       <main>
         <AppRouter />
