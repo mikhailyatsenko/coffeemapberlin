@@ -1,1 +1,1 @@
-export { AccountSettingsPage } from './ui/AccountSettingsPage';
+export { AccountSettingsPageLazy as AccountSettingsPage } from './ui/AccountSettingsPageLazy';

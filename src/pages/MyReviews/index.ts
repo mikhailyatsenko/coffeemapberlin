@@ -1,1 +1,1 @@
-export { MyReviews } from './ui/MyReviews';
+export { MyReviewsLazy as MyReviews } from './ui/MyReviewsLazy';

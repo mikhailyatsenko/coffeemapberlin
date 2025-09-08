@@ -19,15 +19,13 @@ export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
         if (data?.loginWithGoogle) {
           const user = mapLoginWithGoogleData(data);
           if (user) {
-            revalidatePlaces();
             setUser(user);
+            revalidatePlaces();
             if (data.loginWithGoogle.isFirstLogin) {
               showSuccessfulSignUp();
             } else {
               hideModal();
             }
-            // First reset places, then Apollo Client will update the cache
-            // Reset Apollo Client cache after revalidation
             await client.resetStore();
           }
         }
