@@ -3,25 +3,16 @@ import { NavLink } from 'react-router-dom';
 import { clearAuth, useAuthStore } from 'shared/stores/auth';
 import { showSignIn } from 'shared/stores/modal';
 import { revalidatePlaces } from 'shared/stores/places';
-import { Spinner, Loader } from 'shared/ui/Loader';
+import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './AuthIndicator.module.scss';
 
 export const AuthIndicator: React.FC = () => {
-  // const navigate = useNavigate();
   const { user, isAuthLoading } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
 
   const logoutHandler = async () => {
-    try {
-      setIsLoading(true);
-      revalidatePlaces();
-      await clearAuth();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+    revalidatePlaces();
+    await clearAuth();
   };
 
   const [isProfileCardVisible, setIsProfileCardVisible] = useState(false);
@@ -48,10 +39,6 @@ export const AuthIndicator: React.FC = () => {
     };
   }, [isProfileCardVisible]);
 
-  if (isAuthLoading) {
-    return <Spinner size="sm" />;
-  }
-
   if (!user) {
     return (
       <RegularButton variant="solid" size="sm" theme="primary" onClick={showSignIn}>
@@ -62,7 +49,7 @@ export const AuthIndicator: React.FC = () => {
 
   return (
     <div className={cls.authIndicator} ref={authIndicatorRef}>
-      {isLoading ? <Loader /> : null}
+      {isAuthLoading ? <Loader /> : null}
       <div
         className={cls.userAvatar}
         onClick={(e) => {
