@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { type Position } from 'geojson';
 import { memo, useEffect, useRef, useState } from 'react';
-import { generatePath, Link } from 'react-router-dom';
+import { generatePath, useNavigate } from 'react-router-dom';
 // import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
 import roteToImage from 'shared/assets/route-to.svg';
@@ -26,7 +26,7 @@ interface PlaceCardProps {
 const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) => {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const nameRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate();
   const [nameScrollWidth, setNameScrollWidth] = useState<number>();
   const [shouldNameScroll, setShouldNameScroll] = useState(false);
 
@@ -76,7 +76,12 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
   }, [nameScrollWidth, isMobile]);
 
   return (
-    <Link to={placePath} className={`${cls.placeCard} `}>
+    <div
+      onClick={() => {
+        navigate({ pathname: placePath });
+      }}
+      className={`${cls.placeCard} `}
+    >
       <div className={cls.image}>
         <ImgWithLoader
           loading={index < 1 ? 'eager' : 'lazy'}
@@ -151,7 +156,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
           </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

@@ -1,39 +1,87 @@
-Проект должен следовать следует FSD архитектуре.
-Пример структуры модуля:
+# FSD (Feature-Sliced Design) Architecture Rules
 
-src/entities/DatePicker/
-├── components/
-│   ├── Chevron/
+This project follows FSD architecture principles. Each module must be structured according to these rules:
+
+## Module Structure Template
+
+```
+src/entities/ModuleName/
+├── components/          # Internal reusable components
+│   ├── ComponentA/
 │   │   └── ui/
-│   │       ├── Chevron.tsx
+│   │       ├── ComponentA.tsx
 │   │       └── index.ts
-│   ├── Dropdown/
-│   │   └── ui/
-│   │       ├── Dropdown.tsx
-│   │       └── index.ts
-├── constants/
+│   └── ComponentB/
+│       └── ui/
+│           ├── ComponentB.tsx
+│           └── index.ts
+├── constants/          # Module-specific constants
 │   └── index.ts
-├── types/
+├── types/              # TypeScript type definitions
 │   └── index.ts
-├── ui/
-│   ├── DatePicker.tsx
+├── ui/                 # Public API components
+│   ├── ModuleName.tsx
 │   └── index.ts
-└── index.ts
+└── index.ts            # Main entry point
+```
 
+## Directory Rules
 
-Точка входа модуля. Экспортирует публичный API (в данном случае — всё из ui).
-ui/
-Основной публичный компонент (DatePicker.tsx), его стили и index для реэкспорта.
-types/
-Описывает все типы, которые используются в модуле.
-constants/
-Константы и магические числа, связанные с модулем.
-components/
-Внутренние переиспользуемые компоненты, разбитые по папкам (например, Dropdown, Chevron).
-Каждый компонент оформлен как отдельный подмодуль с подпапкой ui/, где лежит сам компонент, index для экспорта и стили.
+### 1. **index.ts** (Root)
+- Main entry point of the module
+- Exports ONLY the public API (typically everything from `ui/`)
+- Never export internal components directly
 
-Чёткое разделение на публичный API (ui, types, constants) и внутренние компоненты (components).
-Каждый внутренний компонент оформлен как мини-модуль с подпапкой ui/.
-Все экспорты делаются через index-файлы.
-Используются отдельные файлы для типов и констант.
-Папка ui — для публичных компонентов, которые будут использоваться снаружи.
+### 2. **ui/** (Public API)
+- Contains main public components that will be used outside the module
+- Each component should have its own file
+- Always include an `index.ts` for re-exports
+- This is the ONLY folder that should be imported from outside
+
+### 3. **types/**
+- All TypeScript interfaces, types, and enums used within the module
+- Single `index.ts` file that exports all types
+- Types should be specific to this module only
+
+### 4. **constants/**
+- Module-specific constants, magic numbers, and configuration
+- Single `index.ts` file that exports all constants
+- No business logic, only static values
+
+### 5. **components/** (Internal)
+- Internal reusable components used only within this module
+- Each component is a mini-module with its own `ui/` subfolder
+- Structure: `ComponentName/ui/ComponentName.tsx` + `ComponentName/ui/index.ts`
+- These components should NOT be imported from outside the module
+
+## Import/Export Rules
+
+1. **All exports must go through index.ts files**
+2. **Only import from the module's root index.ts when using from outside**
+3. **Internal components can import from each other using relative paths**
+4. **Never import internal components from outside the module**
+
+## File Naming Conventions
+
+- Component files: `PascalCase.tsx` (e.g., `DatePicker.tsx`)
+- Index files: `index.ts` (always lowercase)
+- Type files: `index.ts` in `types/` folder
+- Constant files: `index.ts` in `constants/` folder
+
+## Example Usage
+
+```typescript
+// ✅ Correct - importing from public API
+import { DatePicker } from 'entities/DatePicker'
+
+// ❌ Wrong - importing internal component
+import { Chevron } from 'entities/DatePicker/components/Chevron'
+```
+
+## Key Principles
+
+1. **Clear separation** between public API (`ui/`, `types/`, `constants/`) and internal components (`components/`)
+2. **Each internal component** is a mini-module with its own `ui/` subfolder
+3. **All exports** go through index files
+4. **Separate files** for types and constants
+5. **ui/ folder** contains only public components that will be used externally
