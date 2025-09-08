@@ -1,4 +1,4 @@
-import { memo, useRef, useCallback } from 'react';
+import { memo, useRef, useCallback, useEffect } from 'react';
 import { FixedSizeList as List, VariableSizeList } from 'react-window';
 import { useWidth } from 'shared/hooks';
 import { MOBILE_BREAKPOINT, MOBILE_ITEM_WIDTH } from '../../../constants';
@@ -28,6 +28,37 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
     }
   }, []);
 
+  // Simple scroll position management with debounce
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const saveScrollPosition = useCallback((scrollOffset: number) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      sessionStorage.setItem('scroll-list', String(scrollOffset));
+    }, 100);
+  }, []);
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const savedOffset = sessionStorage.getItem('scroll-list');
+      if (savedOffset && virtualListRef.current) {
+        virtualListRef.current.scrollTo(parseInt(savedOffset, 10));
+      }
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      // Clear any pending save timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (!containerSize.width || !containerSize.height) {
     return null;
   }
@@ -42,6 +73,9 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
         itemSize={MOBILE_ITEM_WIDTH + 16}
         layout="horizontal"
         className={cls.virtualizedList}
+        onScroll={({ scrollOffset }) => {
+          saveScrollPosition(scrollOffset);
+        }}
       >
         {({ index, style }) => (
           <VirtualizedItem
@@ -64,6 +98,9 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
       itemCount={places.length}
       itemSize={getItemHeight}
       className={cls.virtualizedList}
+      onScroll={({ scrollOffset }) => {
+        saveScrollPosition(scrollOffset);
+      }}
     >
       {({ index, style }) => (
         <VirtualizedItem
