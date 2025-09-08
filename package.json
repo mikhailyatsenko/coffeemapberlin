@@ -91,7 +91,8 @@
     ],
     "*.{css,scss}": [
       "stylelint --fix"
-    ]
+    ],
+    "!public/maplibre-gl.css": []
   },
   "overrides": {
     "@typescript-eslint/parser": "^8.0.1",
