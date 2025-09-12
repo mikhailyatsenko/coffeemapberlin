@@ -89,7 +89,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
             onClick={(e) => {
               e.stopPropagation();
             }}
-            href={`https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}&travelmode=walking`}
+            href={`https://www.google.com/maps/search/${properties.name}/@${coordinates[1]},${coordinates[0]},18z`}
             target="_blank"
             rel="noreferrer"
             title="Get directions on Google Maps"

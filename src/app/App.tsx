@@ -5,9 +5,7 @@ import { useLocation, matchPath } from 'react-router-dom';
 import { Footer } from 'widgets/Footer';
 import { Navbar } from 'widgets/Navbar';
 import { RoutePaths } from 'shared/constants';
-import { useGetPlacesQuery, useGetPlacesLazyQuery } from 'shared/generated/graphql';
 import { checkAuth } from 'shared/stores/auth';
-import { setPlaces, setLoadingState, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
 
 import { AppRouter } from './providers/router';
 
@@ -18,80 +16,6 @@ const App = () => {
     throw new Error(`Missing required environment variable: GOOGLE_CLIENT_ID`);
   }
   const location = useLocation();
-
-  // Load initial 10 places data when the application starts
-  const { data: initialData, loading: initialLoading } = useGetPlacesQuery({
-    variables: { limit: PAGE_SIZE, offset: INITIAL_OFFSET },
-    fetchPolicy: 'cache-first',
-  });
-
-  const [fetchMore, { loading: moreDataLoading }] = useGetPlacesLazyQuery();
-
-  // Handle initial data
-  useEffect(() => {
-    const state = usePlacesStore.getState();
-
-    if (state.fetchMoreInProgress) {
-      console.log('fetchMore already in progress, skipping');
-      return;
-    }
-
-    if (!initialData?.places || state.isInitialLoadComplete) return;
-
-    const initialPlaces = initialData.places.places ?? [];
-    setPlaces(initialPlaces);
-    setLoadingState({ isInitialLoadComplete: true });
-
-    const totalPlaces = initialData.places.total;
-    if (totalPlaces > PAGE_SIZE && !state.fetchMoreInProgress) {
-      setLoadingState({ fetchMoreInProgress: true });
-
-      fetchMore({
-        variables: {
-          limit: totalPlaces - PAGE_SIZE,
-          offset: PAGE_SIZE,
-        },
-      })
-        .then((result) => {
-          if (result.data?.places?.places?.length) {
-            const additionalPlaces = result.data.places.places;
-            console.log('fetchMore completed, adding', additionalPlaces.length, 'additional places');
-
-            // Check if we haven't already added these places
-            setPlaces((prev) => {
-              // If places are already added, don't add them again
-              if (prev.length > PAGE_SIZE) {
-                console.log('Places already added, skipping duplicate');
-                return prev;
-              }
-
-              console.log('Previous places count:', prev.length, 'Adding:', additionalPlaces.length);
-              return [...prev, ...additionalPlaces];
-            });
-
-            setLoadingState({
-              isMoreDataLoaded: true,
-              fetchMoreInProgress: false,
-            });
-          } else {
-            // If fetchMore didn't return data, reset the flag
-            setLoadingState({ fetchMoreInProgress: false });
-          }
-        })
-        .catch((error) => {
-          console.error('fetchMore failed:', error);
-          // In case of error, reset the flag
-          setLoadingState({ fetchMoreInProgress: false });
-        });
-    }
-  }, [initialData?.places, fetchMore]);
-
-  useEffect(() => {
-    setLoadingState({
-      isInitialLoading: initialLoading,
-      isMoreDataLoading: moreDataLoading,
-    });
-  }, [initialLoading, moreDataLoading]);
 
   useEffect(() => {
     void checkAuth();

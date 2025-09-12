@@ -1,10 +1,11 @@
 import { RatePlaceWidget, ToggleCharacteristic } from 'entities/RatePlace';
 import { useDeleteReview, useToggleCharacteristic } from 'shared/api';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
+import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
+import { revalidatePlaces } from 'shared/stores/places';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
-import { useAddRating } from '../hooks';
 
 import { type RateNowProps } from '../types';
 import cls from './RateNow.module.scss';
@@ -12,10 +13,21 @@ import cls from './RateNow.module.scss';
 export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow, showRateNow }: RateNowProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
 
-  const { handleAddRating, loading: loadingRating } = useAddRating(placeId);
+  const [addRating, { loading: loadingRating }] = useAddRatingMutation({
+    onCompleted() {
+      revalidatePlaces();
+    },
+  });
 
   const onSubmitRating = async (rating: number) => {
-    await handleAddRating(rating);
+    await addRating({
+      variables: { placeId, rating },
+      refetchQueries: [
+        { query: PlaceDocument, variables: { placeId } },
+        { query: PlaceReviewsDocument, variables: { placeId } },
+      ],
+      awaitRefetchQueries: true,
+    });
   };
 
   const { toggleChar } = useToggleCharacteristic(placeId);

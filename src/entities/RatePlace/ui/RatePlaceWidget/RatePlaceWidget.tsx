@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import DeleteIcon from 'shared/assets/delete-icon.svg?react';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
@@ -19,22 +19,6 @@ export const RatePlaceWidget = ({
   reviewId,
 }: RatePlaceWidgetProps) => {
   const [isEditRating, setIsEditRating] = useState(false);
-
-  const ratingWidgetRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isEditRating && ratingWidgetRef.current && !ratingWidgetRef.current.contains(event.target as Node)) {
-        setIsEditRating(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isEditRating]);
 
   return (
     <div className={cls.rateWidget}>
@@ -58,9 +42,7 @@ export const RatePlaceWidget = ({
       ) : (
         <>
           <h3>Rate this place</h3>
-          <div ref={ratingWidgetRef}>
-            <RatingWidget isClickable={true} handleRating={onSubmitRating} />
-          </div>
+          <RatingWidget isClickable={true} handleRating={onSubmitRating} />
         </>
       )}
     </div>

@@ -41,7 +41,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
   const handleDirectionsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}&travelmode=walking`;
+    const url = `https://www.google.com/maps/search/${properties.name}/@${coordinates[1]},${coordinates[0]},18z`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

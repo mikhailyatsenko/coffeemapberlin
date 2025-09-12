@@ -1,13 +1,77 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
-import { usePlacesStore } from 'shared/stores/places';
+import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
+import { setLoadingState, setPlaces, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
 
 export const MainPage = () => {
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
+
+  // Load initial 10 places data when the main page mounts
+  const { data: initialData, loading: initialLoading } = useGetPlacesQuery({
+    variables: { limit: PAGE_SIZE, offset: INITIAL_OFFSET },
+    fetchPolicy: 'cache-first',
+  });
+
+  const [fetchMore, { loading: moreDataLoading }] = useGetPlacesLazyQuery();
+
+  // Handle initial and additional data
+  useEffect(() => {
+    const state = usePlacesStore.getState();
+
+    if (state.fetchMoreInProgress) return;
+
+    if (!initialData?.places || state.isInitialLoadComplete) return;
+
+    const initialPlaces = initialData.places.places ?? [];
+    setPlaces(initialPlaces);
+    setLoadingState({ isInitialLoadComplete: true });
+
+    const totalPlaces = initialData.places.total;
+    if (totalPlaces > PAGE_SIZE && !state.fetchMoreInProgress) {
+      setLoadingState({ fetchMoreInProgress: true });
+
+      fetchMore({
+        variables: {
+          limit: totalPlaces - PAGE_SIZE,
+          offset: PAGE_SIZE,
+        },
+      })
+        .then((result) => {
+          if (result.data?.places?.places?.length) {
+            const additionalPlaces = result.data.places.places;
+
+            setPlaces((prev) => {
+              if (prev.length > PAGE_SIZE) {
+                return prev;
+              }
+              return [...prev, ...additionalPlaces];
+            });
+
+            setLoadingState({
+              isMoreDataLoaded: true,
+              fetchMoreInProgress: false,
+            });
+          } else {
+            setLoadingState({ fetchMoreInProgress: false });
+          }
+        })
+        .catch(() => {
+          setLoadingState({ fetchMoreInProgress: false });
+        });
+    }
+  }, [initialData?.places, fetchMore]);
+
+  // Update loading flags in store
+  useEffect(() => {
+    setLoadingState({
+      isInitialLoading: initialLoading,
+      isMoreDataLoading: moreDataLoading,
+    });
+  }, [initialLoading, moreDataLoading]);
 
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);
