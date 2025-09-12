@@ -45,8 +45,13 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
   useEffect(() => {
     const timer = setTimeout(() => {
       const savedOffset = sessionStorage.getItem('scroll-list');
-      if (savedOffset && virtualListRef.current) {
-        virtualListRef.current.scrollTo(parseInt(savedOffset, 10));
+      if (virtualListRef.current) {
+        console.log('ref');
+        if (savedOffset) {
+          virtualListRef.current.scrollTo(parseInt(savedOffset, 10));
+        } else if (isMobile) {
+          virtualListRef.current.scrollTo(60);
+        }
       }
     }, 0);
 
@@ -57,7 +62,7 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   if (!containerSize.width || !containerSize.height) {
     return null;
