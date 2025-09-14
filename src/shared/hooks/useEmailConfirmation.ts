@@ -1,7 +1,7 @@
 import { type ApolloError } from '@apollo/client';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { RoutePaths } from 'shared/constants';
 import { useConfirmEmailMutation } from 'shared/generated/graphql';
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
@@ -9,8 +9,8 @@ import { showResendConfirmationEmail, showSuccessfulSignUp } from 'shared/stores
 
 export const useEmailConfirmation = (email?: string | null, token?: string | null) => {
   const { user, isAuthLoading } = useAuthStore();
-  const location = useLocation();
   const navigate = useNavigate();
+  const hasProcessedRef = useRef(false);
 
   const onCompleted = useCallback(() => {
     checkAuth();
@@ -40,14 +40,9 @@ export const useEmailConfirmation = (email?: string | null, token?: string | nul
   });
 
   useEffect(() => {
-    if (matchPath(RoutePaths.confirmEmail, location.pathname) && (!email || !token)) {
-      navigate(RoutePaths.main, { replace: true, state: {} });
-    }
-
-    if (token && email && !isAuthLoading) {
-      if (!matchPath(RoutePaths.confirmEmail, location.pathname)) {
-        navigate(RoutePaths.main, { replace: true, state: {} });
-      }
+    // Only process if we have both token and email, not loading, and haven't processed yet
+    if (token && email && !isAuthLoading && !hasProcessedRef.current) {
+      hasProcessedRef.current = true;
 
       if (user) {
         toast('Please log out before verifying email');
@@ -56,7 +51,5 @@ export const useEmailConfirmation = (email?: string | null, token?: string | nul
         confirmEmailMutation({ variables: { token, email } });
       }
     }
-
-    // eslint-disable-next-line
-  }, [token, email, user, isAuthLoading, confirmEmailMutation, navigate, location.pathname]);
+  }, [token, email, user, isAuthLoading, confirmEmailMutation, navigate]);
 };

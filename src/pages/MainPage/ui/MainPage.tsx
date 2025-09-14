@@ -1,14 +1,22 @@
 import { useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
+import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
 import { setLoadingState, setPlaces, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
 
 export const MainPage = () => {
+  const location = useLocation();
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
+
+  // Handle email confirmation from location state
+  const token = location.state?.token as string | null | undefined;
+  const email = location.state?.email as string | null | undefined;
+  useEmailConfirmation(email, token);
 
   // Load initial 10 places data when the main page mounts
   const { data: initialData, loading: initialLoading } = useGetPlacesQuery({

@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { AboutPage } from 'pages/AboutPage';
 import { AccountSettingsPage } from 'pages/AccountSettingsPage';
+import { ConfirmEmailPage } from 'pages/ConfirmEmailPage';
 import { ContactPage } from 'pages/ContactPage';
 import { DisclaimerPage } from 'pages/DisclaimerPage';
 import { LoginPage } from 'pages/LoginPage';
@@ -53,7 +54,7 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   },
   [AppRoutes.CONFIRM_EMAIL]: {
     path: RoutePaths.confirmEmail,
-    element: <MainPage />,
+    element: <ConfirmEmailPage />,
   },
   [AppRoutes.PRIVACY]: {
     path: RoutePaths.privacy,
