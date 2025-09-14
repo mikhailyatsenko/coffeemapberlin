@@ -20,6 +20,7 @@ export const GET_PLACES = gql`
           averageRating
           isFavorite
           neighborhood
+          googleId
         }
       }
       total
@@ -46,6 +47,7 @@ export const GET_PLACE = gql`
         isFavorite
         neighborhood
         ratingCount
+        googleId
         openingHours {
           day
           hours

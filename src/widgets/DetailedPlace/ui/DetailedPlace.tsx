@@ -6,6 +6,7 @@ import { RateNow } from 'features/RateNow';
 import { ReviewList } from 'features/ReviewList';
 import { OpeningHours } from 'entities/OpeningHours';
 import instagramIcon from 'shared/assets/instagram.svg';
+import logo from 'shared/assets/logo.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery, type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
@@ -74,6 +75,16 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
 
     navigate({ pathname: '/' });
   }, [navigate, placeData?.place?.geometry.coordinates]);
+
+  const openOnGoogleMaps = useCallback(() => {
+    if (placeData?.place?.properties?.googleId) {
+      window.open(
+        `https://www.google.com/maps/place/?q=place_id:${placeData?.place.properties.googleId}`,
+        '_blank',
+        'noopener,noreferrer',
+      );
+    }
+  }, [placeData?.place?.properties?.googleId]);
 
   if (placeError) {
     return <ErrorPlace error={placeError} />;
@@ -187,7 +198,12 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
             ) : null}
             <div className={cls.actionsCol}>
               <button className={cls.secondaryBtn} onClick={openOnMap} type="button">
-                Open on map
+                <img className={cls.icon} src={logo} alt="" />
+                Show on 3.Welle map
+              </button>
+              <button className={cls.secondaryBtn} onClick={openOnGoogleMaps} type="button">
+                <img className={cls.icon} src="/google-maps.svg" alt="" />
+                Open on Google Maps
               </button>
               {instagram ? (
                 <a

@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 // import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
-import roteToImage from 'shared/assets/route-to.svg';
+// import roteToImage from 'shared/assets/route-to.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
@@ -38,12 +38,12 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
     }
   };
 
-  const handleDirectionsClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const url = `https://www.google.com/maps/search/${properties.name}/@${coordinates[1]},${coordinates[0]},18z`;
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  // const handleDirectionsClick = (e: React.MouseEvent) => {
+  //   e.stopPropagation();
+  //   e.preventDefault();
+  //   const url = `https://www.google.com/maps/place/?q=place_id:${properties.googleId}`;
+  //   window.open(url, '_blank', 'noopener,noreferrer');
+  // };
 
   const handleShowOnMapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -127,28 +127,29 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
         {properties.neighborhood && (
           <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />
         )}
-
-        <div className={cls.iconsGroup}>
+        <div className={cls.cardFooter}>
           <div className={cls.address}>
             <p>{properties.address}</p>
           </div>
-          {properties.instagram && (
-            <button
-              className={cls.iconWrapper}
-              onClick={handleInstagramClick}
-              title="Open the place's Instagram profile"
-            >
-              <img className={cls.icon} src={instagram} alt="" />
-            </button>
-          )}
+          <div className={cls.iconsGroup}>
+            {properties.instagram && (
+              <button
+                className={cls.iconWrapper}
+                onClick={handleInstagramClick}
+                title="Open the place's Instagram profile"
+              >
+                <img className={cls.icon} src={instagram} alt="" />
+              </button>
+            )}
 
-          <button onClick={handleDirectionsClick} title="Get directions on Google Maps" className={cls.iconWrapper}>
+            {/* <button onClick={handleDirectionsClick} title="Get directions on Google Maps" className={cls.iconWrapper}>
             <img className={cls.icon} src={roteToImage} alt="" />
-          </button>
+          </button> */}
 
-          <button onClick={handleShowOnMapClick} title="Show location on the map" className={cls.iconWrapper}>
-            <img className={cls.icon} src={showPlacePointOnMap} alt="" />
-          </button>
+            <button onClick={handleShowOnMapClick} title="Show location on the map" className={cls.iconWrapper}>
+              <img className={cls.icon} src={showPlacePointOnMap} alt="" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
