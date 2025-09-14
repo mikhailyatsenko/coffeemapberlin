@@ -4,7 +4,7 @@ const config: CodegenConfig = {
   schema: {
     'http://localhost:3000/coffee': {
       headers: {
-        'content-type': 'application/json',
+        'Content-Type': 'application/json',
         'apollo-require-preflight': 'true',
       },
     },

@@ -1,0 +1,109 @@
+.deleteAccountCard {
+  display: block;
+  padding: 30px;
+  width: 100%;
+  background-color: #fdf7f6;
+  border: 2px solid #5c5c5c;
+  border-radius: 10px;
+  margin-top: 20px;
+
+  .deleteTitle {
+    margin-bottom: 10px;
+    text-align: center;
+    color: #d63031;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .deleteDescription {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #636e72;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .deleteButton {
+    display: block;
+    margin: 0 auto;
+    background-color: #d63031;
+    border-color: #d63031;
+
+    &:hover {
+      background-color: #b71c1c;
+      border-color: #b71c1c;
+    }
+
+    &:disabled {
+      background-color: #ff7675;
+      border-color: #ff7675;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.confirmationCard {
+  display: block;
+  padding: 30px;
+  width: 100%;
+  background-color: #fff5f5;
+  border: 2px solid #ff6b6b;
+  border-radius: 10px;
+  margin-top: 20px;
+
+  .confirmationTitle {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #d63031;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .confirmationText {
+    margin-bottom: 25px;
+    text-align: center;
+    color: #2d3436;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .confirmationButtons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  .deleteButton {
+    background-color: #d63031;
+    border-color: #d63031;
+    min-width: 150px;
+
+    &:hover {
+      background-color: #b71c1c;
+      border-color: #b71c1c;
+    }
+
+    &:disabled {
+      background-color: #ff7675;
+      border-color: #ff7675;
+      cursor: not-allowed;
+    }
+  }
+
+  .cancelButton {
+    background-color: #636e72;
+    border-color: #636e72;
+    min-width: 150px;
+
+    &:hover {
+      background-color: #2d3436;
+      border-color: #2d3436;
+    }
+  }
+}

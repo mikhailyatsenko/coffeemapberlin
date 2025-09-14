@@ -8,6 +8,7 @@ import {
   PersonalSettingsForm,
   PasswordSettingsForm,
 } from 'entities/AccountSettingsForm';
+import { DeleteAccount } from 'entities/DeleteAccount';
 import { useSetNewPasswordMutation, useUpdatePersonalDataMutation } from 'shared/generated/graphql';
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
@@ -116,6 +117,7 @@ export const AccountSettings = () => {
         userEmail={user.email}
         errorSettingPassword={errorSettingPassword}
       />
+      <DeleteAccount />
     </div>
   );
 };

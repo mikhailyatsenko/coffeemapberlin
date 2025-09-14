@@ -31,3 +31,11 @@ export const DELETE_AVATAR = gql`
     }
   }
 `;
+
+export const DELETE_ACCOUNT = gql`
+  mutation DeleteAccount {
+    deleteAccount {
+      success
+    }
+  }
+`;
