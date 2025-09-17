@@ -46,6 +46,7 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
     const timer = setTimeout(() => {
       const savedOffset = sessionStorage.getItem('scroll-list');
       if (virtualListRef.current) {
+        console.log('ref');
         if (savedOffset) {
           virtualListRef.current.scrollTo(parseInt(savedOffset, 10));
         } else if (isMobile) {

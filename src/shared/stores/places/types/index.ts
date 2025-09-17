@@ -9,10 +9,6 @@ export interface PlacesState {
   showFavorites: boolean;
   currentPlacePosition: Position | null;
 
-  isInitialLoading: boolean;
-  isMoreDataLoading: boolean;
-  isInitialLoadComplete: boolean;
-  isMoreDataLoaded: boolean;
-  fetchMoreInProgress: boolean;
+  isLoading: boolean;
   lastRevalidation: number;
 }
