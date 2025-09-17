@@ -60,28 +60,13 @@ export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosit
   usePlacesStore.setState({ currentPlacePosition: position });
 };
 
-export const setLoadingState = (
-  loadingState: Partial<
-    Pick<
-      PlacesState,
-      'isInitialLoading' | 'isMoreDataLoading' | 'isInitialLoadComplete' | 'isMoreDataLoaded' | 'fetchMoreInProgress'
-    >
-  >,
-) => {
-  usePlacesStore.setState(loadingState);
-};
-
-export const resetLoadingState = () => {
-  usePlacesStore.setState({
-    isInitialLoading: false,
-    isMoreDataLoading: false,
-    isInitialLoadComplete: false,
-    isMoreDataLoaded: false,
-    fetchMoreInProgress: false,
-  });
+export const setLoading = (isLoading: boolean) => {
+  usePlacesStore.setState({ isLoading });
 };
 
 export const revalidatePlaces = () => {
-  resetLoadingState();
   setPlaces([]);
+  setLoading(false);
+  // Force a re-render by updating a timestamp
+  usePlacesStore.setState({ lastRevalidation: Date.now() });
 };
