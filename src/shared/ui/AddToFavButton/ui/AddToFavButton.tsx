@@ -23,6 +23,7 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
     variables: { placeId },
     update: (cache, { data }) => {
       if (data?.toggleFavorite) {
+        // Update Apollo cache for PlaceProperties
         cache.modify({
           id: `PlaceProperties:${placeId}`,
           fields: {
@@ -32,9 +33,6 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
           },
         });
       }
-    },
-    optimisticResponse: {
-      toggleFavorite: true,
     },
   });
 
@@ -62,6 +60,7 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
 
         const result = await toggleFavoriteMutation();
         if (result.data?.toggleFavorite) {
+          // Update Zustand store for main page
           toggleFavorite(placeId);
 
           if (!isFavorite) {

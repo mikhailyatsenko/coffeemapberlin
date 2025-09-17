@@ -61,27 +61,45 @@ export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosit
 };
 
 export const setLoadingState = (
-  loadingState: Partial<
-    Pick<
-      PlacesState,
-      'isInitialLoading' | 'isMoreDataLoading' | 'isInitialLoadComplete' | 'isMoreDataLoaded' | 'fetchMoreInProgress'
-    >
-  >,
+  loadingState: Partial<Pick<PlacesState, 'isLoading' | 'hasInitialData' | 'lastFetchTime'>>,
 ) => {
   usePlacesStore.setState(loadingState);
 };
 
 export const resetLoadingState = () => {
   usePlacesStore.setState({
-    isInitialLoading: false,
-    isMoreDataLoading: false,
-    isInitialLoadComplete: false,
-    isMoreDataLoaded: false,
-    fetchMoreInProgress: false,
+    isLoading: false,
+    hasInitialData: false,
+    lastFetchTime: null,
   });
 };
 
 export const revalidatePlaces = () => {
   resetLoadingState();
   setPlaces([]);
+  setFilteredPlaces(null);
+  setShowFavorites(false);
+  setCurrentPlacePosition(null);
+};
+
+// Helper functions for the new loading state
+export const startLoading = () => {
+  setLoadingState({ isLoading: true });
+};
+
+export const finishLoading = () => {
+  setLoadingState({
+    isLoading: false,
+    lastFetchTime: new Date(),
+    hasInitialData: true,
+  });
+};
+
+export const isDataStale = (maxAgeMinutes: number = 5): boolean => {
+  const state = usePlacesStore.getState();
+  if (!state.lastFetchTime) return true;
+
+  const now = new Date();
+  const diffMinutes = (now.getTime() - state.lastFetchTime.getTime()) / (1000 * 60);
+  return diffMinutes > maxAgeMinutes;
 };

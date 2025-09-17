@@ -18,6 +18,7 @@ export const checkAuth = async () => {
       query: CurrentUserDocument,
       fetchPolicy: 'network-only',
     });
+
     useAuthStore.setState({ user: data.currentUser, isAuthLoading: false });
   } catch (error) {
     useAuthStore.setState({ ...INITIAL_STATE, isAuthLoading: false });

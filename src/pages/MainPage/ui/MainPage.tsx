@@ -5,13 +5,25 @@ import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
-import { setLoadingState, setPlaces, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
+import { useAuthStore } from 'shared/stores/auth';
+import {
+  setLoadingState,
+  setPlaces,
+  usePlacesStore,
+  startLoading,
+  finishLoading,
+  revalidatePlaces,
+  PAGE_SIZE,
+  INITIAL_OFFSET,
+} from 'shared/stores/places';
 
 export const MainPage = () => {
   const location = useLocation();
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
+  const hasInitialData = usePlacesStore((state) => state.hasInitialData);
+  const { user, isAuthLoading } = useAuthStore();
 
   // Handle email confirmation from location state
   const token = location.state?.token as string | null | undefined;
@@ -26,21 +38,18 @@ export const MainPage = () => {
 
   const [fetchMore, { loading: moreDataLoading }] = useGetPlacesLazyQuery();
 
-  // Handle initial and additional data
+  // Handle initial data loading
   useEffect(() => {
-    const state = usePlacesStore.getState();
-
-    if (state.fetchMoreInProgress) return;
-
-    if (!initialData?.places || state.isInitialLoadComplete) return;
+    if (!initialData?.places || hasInitialData) return;
 
     const initialPlaces = initialData.places.places ?? [];
     setPlaces(initialPlaces);
-    setLoadingState({ isInitialLoadComplete: true });
+    finishLoading();
 
+    // Load additional data if needed
     const totalPlaces = initialData.places.total;
-    if (totalPlaces > PAGE_SIZE && !state.fetchMoreInProgress) {
-      setLoadingState({ fetchMoreInProgress: true });
+    if (totalPlaces > PAGE_SIZE) {
+      startLoading();
 
       fetchMore({
         variables: {
@@ -51,42 +60,35 @@ export const MainPage = () => {
         .then((result) => {
           if (result.data?.places?.places?.length) {
             const additionalPlaces = result.data.places.places;
-
-            setPlaces((prev) => {
-              if (prev.length > PAGE_SIZE) {
-                return prev;
-              }
-              return [...prev, ...additionalPlaces];
-            });
-
-            setLoadingState({
-              isMoreDataLoaded: true,
-              fetchMoreInProgress: false,
-            });
-          } else {
-            setLoadingState({ fetchMoreInProgress: false });
+            setPlaces((prev) => [...prev, ...additionalPlaces]);
           }
+          finishLoading();
         })
         .catch(() => {
-          setLoadingState({ fetchMoreInProgress: false });
+          finishLoading();
         });
     }
-  }, [initialData?.places, fetchMore]);
+  }, [initialData?.places, fetchMore, hasInitialData]);
 
-  // Update loading flags in store
+  // Update loading state based on GraphQL loading states
   useEffect(() => {
-    setLoadingState({
-      isInitialLoading: initialLoading,
-      isMoreDataLoading: moreDataLoading,
-    });
+    setLoadingState({ isLoading: initialLoading || moreDataLoading });
   }, [initialLoading, moreDataLoading]);
+
+  // Revalidate places when auth state changes
+  useEffect(() => {
+    if (!isAuthLoading) {
+      // If user logged in/out, revalidate places to get fresh data
+      revalidatePlaces();
+    }
+  }, [user, isAuthLoading]);
 
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);
   }, [places]);
 
   const placesToDisplay = useMemo(() => {
-    if (showFavorites && favoritePlaces.length) return favoritePlaces;
+    if (showFavorites) return favoritePlaces;
     return filteredPlaces?.length ? filteredPlaces : places;
   }, [showFavorites, filteredPlaces, places, favoritePlaces]);
 
