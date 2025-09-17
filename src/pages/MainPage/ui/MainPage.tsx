@@ -5,7 +5,7 @@ import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
-import { setLoading, setPlaces, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
+import { setLoadingState, setPlaces, usePlacesStore, PAGE_SIZE, INITIAL_OFFSET } from 'shared/stores/places';
 
 export const MainPage = () => {
   const location = useLocation();
@@ -27,31 +27,62 @@ export const MainPage = () => {
 
   const [fetchMore, { loading: moreDataLoading }] = useGetPlacesLazyQuery();
 
+  // Handle initial and additional data
   useEffect(() => {
+    const state = usePlacesStore.getState();
+
+    if (state.fetchMoreInProgress) return;
+
     if (!initialData?.places) return;
+
+    // If places are already loaded and no revalidation happened, skip
+    if (state.isInitialLoadComplete && lastRevalidation === 0) return;
 
     const initialPlaces = initialData.places.places ?? [];
     setPlaces(initialPlaces);
+    setLoadingState({ isInitialLoadComplete: true });
 
-    // Load rest of the places
     const totalPlaces = initialData.places.total;
-    if (totalPlaces > PAGE_SIZE) {
+    if (totalPlaces > PAGE_SIZE && !state.fetchMoreInProgress) {
+      setLoadingState({ fetchMoreInProgress: true });
+
       fetchMore({
         variables: {
           limit: totalPlaces - PAGE_SIZE,
           offset: PAGE_SIZE,
         },
-      }).then((result) => {
-        if (result.data?.places?.places?.length) {
-          const additionalPlaces = result.data.places.places;
-          setPlaces((prev) => [...prev, ...additionalPlaces]);
-        }
-      });
+      })
+        .then((result) => {
+          if (result.data?.places?.places?.length) {
+            const additionalPlaces = result.data.places.places;
+
+            setPlaces((prev) => {
+              if (prev.length > PAGE_SIZE) {
+                return prev;
+              }
+              return [...prev, ...additionalPlaces];
+            });
+
+            setLoadingState({
+              isMoreDataLoaded: true,
+              fetchMoreInProgress: false,
+            });
+          } else {
+            setLoadingState({ fetchMoreInProgress: false });
+          }
+        })
+        .catch(() => {
+          setLoadingState({ fetchMoreInProgress: false });
+        });
     }
   }, [initialData?.places, fetchMore, lastRevalidation]);
 
+  // Update loading flags in store
   useEffect(() => {
-    setLoading(initialLoading || moreDataLoading);
+    setLoadingState({
+      isInitialLoading: initialLoading,
+      isMoreDataLoading: moreDataLoading,
+    });
   }, [initialLoading, moreDataLoading]);
 
   const favoritePlaces = useMemo(() => {
