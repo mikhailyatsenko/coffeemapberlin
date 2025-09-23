@@ -79,12 +79,12 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   const openOnGoogleMaps = useCallback(() => {
     if (placeData?.place?.properties?.googleId) {
       window.open(
-        `https://maps.google.com/maps?q=place_id:${placeData.place.properties.googleId}`,
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeData?.place.properties.name || '')}&query_place_id=${placeData?.place.properties.googleId}`,
         '_blank',
         'noopener,noreferrer',
       );
     }
-  }, [placeData?.place?.properties?.googleId]);
+  }, [placeData?.place?.properties?.googleId, placeData?.place?.properties?.name]);
 
   if (placeError) {
     return <ErrorPlace error={placeError} />;
