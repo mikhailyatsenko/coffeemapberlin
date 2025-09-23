@@ -35,7 +35,6 @@ const VirtualizedListComponent = ({ places, containerSize }: VirtualizedListProp
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
-
     saveTimeoutRef.current = setTimeout(() => {
       sessionStorage.setItem('scroll-list', String(scrollOffset));
     }, 100);
