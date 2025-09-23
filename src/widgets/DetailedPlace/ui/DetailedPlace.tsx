@@ -79,7 +79,7 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   const openOnGoogleMaps = useCallback(() => {
     if (placeData?.place?.properties?.googleId) {
       window.open(
-        `https://www.google.com/maps/place/?q=place_id:${placeData?.place.properties.googleId}`,
+        `https://maps.google.com/maps?q=place_id:${placeData.place.properties.googleId}`,
         '_blank',
         'noopener,noreferrer',
       );
