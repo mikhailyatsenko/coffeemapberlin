@@ -32,13 +32,6 @@ const SEOPlacesListComponent = ({ places }: SEOPlacesListProps) => {
             latitude: place.geometry.coordinates[1],
             longitude: place.geometry.coordinates[0],
           },
-          aggregateRating: place.properties.averageRating
-            ? {
-                '@type': 'AggregateRating',
-                ratingValue: place.properties.averageRating,
-                ratingCount: 1,
-              }
-            : undefined,
           url: `https://berlincoffeemap.com/place/${place.properties.id}`,
           image: place.properties.image
             ? `https://ik.imagekit.io/berlincoffeemap/places-main-img/${place.properties.id}/main.jpg`
