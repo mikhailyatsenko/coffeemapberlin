@@ -83,7 +83,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               ))}
             </div>
             <Lightbox
-              zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 1 }}
+              zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 3 }}
               plugins={[Zoom]}
               open={openLightbox}
               close={() => {

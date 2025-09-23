@@ -1,5 +1,7 @@
 import { throttle } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Lightbox, { type ZoomRef } from 'yet-another-react-lightbox';
+import { Zoom } from 'yet-another-react-lightbox/plugins';
 import LeftArrowIcon from 'shared/assets/left-arrow-icon.svg?react';
 import RightArrowIcon from 'shared/assets/right-arrow-icon.svg?react';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
@@ -15,6 +17,9 @@ interface ImageSliderProps {
 export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, className }) => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [openLightbox, setOpenLightbox] = useState(false);
+  const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
+  const zoomRef = useRef<ZoomRef>(null);
 
   const updateScrollState = useCallback((scroller: Element) => {
     const { scrollLeft, scrollWidth, clientWidth } = scroller;
@@ -66,6 +71,10 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
             alt={`${placeName} image ${index + 1}`}
             className={cls.scrollerImage}
             errorFallbackUrl="/places-images/default-place-img.jpg"
+            onClick={() => {
+              setImgLightboxIndex(index);
+              setOpenLightbox(true);
+            }}
           />
         </figure>
       ))}
@@ -99,6 +108,21 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
           <RightArrowIcon />
         </button>
       )}
+      <Lightbox
+        zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 3 }}
+        plugins={[Zoom]}
+        open={openLightbox}
+        close={() => {
+          setOpenLightbox(false);
+        }}
+        slides={images.map((url) => ({ src: `${IMAGEKIT_CDN_URL}/${url}` }))}
+        index={imgLightboxIndex}
+        on={{
+          view: ({ index }) => {
+            setImgLightboxIndex(index);
+          },
+        }}
+      />
     </div>
   );
 };
