@@ -41,7 +41,7 @@ export const GET_PLACE = gql`
         name
         description
         address
-        image
+        images
         instagram
         averageRating
         isFavorite

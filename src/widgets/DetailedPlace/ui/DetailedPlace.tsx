@@ -13,11 +13,11 @@ import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { CharacteristicCountsIcon, characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
-import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { AverageRating } from '../components/AverageRating';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
 import { ErrorPlace } from '../components/ErrorPlace';
+import { ImageSlider } from '../components/ImageSlider/ui';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import cls from './DetailedPlace.module.scss';
 
@@ -92,7 +92,8 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
 
   if (isPlaceLoading || !placeData?.place?.properties) return <NewDetailedPlaceCardSkeleton />;
 
-  const { averageRating, description, name, address, instagram, isFavorite, neighborhood } = placeData.place.properties;
+  const { averageRating, description, name, address, instagram, isFavorite, neighborhood, images } =
+    placeData.place.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = placeData.place.properties;
   return (
     <div className={cls.page}>
@@ -142,13 +143,8 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
           {neighborhood ? (
             <BadgePill text={neighborhood} color="green" size="small" className={cls.neighborhood} />
           ) : null}
-          <ImgWithLoader
-            loading="eager"
-            src={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-1440,if-else,h-720,if-end`}
-            alt={`${name} main image`}
-            className={cls.mainImg}
-            errorFallbackUrl="/places-images/default-place-img.jpg"
-          />
+
+          <ImageSlider images={images || []} placeName={name} className={cls.mainImg} />
         </div>
       </header>
 
@@ -249,7 +245,7 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
         reviewCount={ratingCount}
         name={name}
         phone={phone}
-        image={`${IMAGEKIT_CDN_URL}/places-main-img/${placeId}/main.jpg?tr=if-ar_gt_1,w-720,if-else,h-720,if-end`}
+        image={images?.length ? `${IMAGEKIT_CDN_URL}/${images[0]}` : undefined}
       />
     </div>
   );

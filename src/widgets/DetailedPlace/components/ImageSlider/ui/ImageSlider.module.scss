@@ -1,0 +1,107 @@
+// Horizontal Media Scroller - Flexbox approach
+.horizontalMediaScroller {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.scrollerItem {
+  scroll-snap-align: start;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrollerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.navArrowLeft,
+.navArrowRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  padding: 16px 4px;
+  z-index: 10;
+  animation: fadeIn 0.3s ease;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+.navArrowLeft {
+  left: 8px;
+}
+
+.navArrowRight {
+  right: 8px;
+}
+
+.horizontalMediaScroller:hover .navArrowLeft,
+.horizontalMediaScroller:hover .navArrowRight {
+  opacity: 1;
+}
+
+@media (width <= 768px) {
+  .navArrowLeft,
+  .navArrowRight {
+    opacity: 0.7;
+  }
+  .horizontalMediaScroller {
+    border-radius: 8px;
+
+    .navArrowLeft,
+    .navArrowRight {
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+    }
+
+    .navArrowLeft {
+      left: 8px;
+    }
+
+    .navArrowRight {
+      right: 8px;
+    }
+  }
+}

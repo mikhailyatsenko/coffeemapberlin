@@ -239,6 +239,7 @@ export interface PlaceProperties {
   googleReview?: Maybe<GoogleReview>;
   id: Scalars['ID']['output'];
   image: Scalars['String']['output'];
+  images?: Maybe<Array<Scalars['String']['output']>>;
   instagram: Scalars['String']['output'];
   isFavorite: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
@@ -412,7 +413,7 @@ export type PlaceQueryVariables = Exact<{
 }>;
 
 
-export interface PlaceQuery { __typename?: 'Query', place: { __typename?: 'Place', id: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, ratingCount: number, googleId?: string | null, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts: { __typename?: 'CharacteristicCounts', deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } } }
+export interface PlaceQuery { __typename?: 'Query', place: { __typename?: 'Place', id: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, images?: string[] | null, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, ratingCount: number, googleId?: string | null, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts: { __typename?: 'CharacteristicCounts', deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } } }
 
 export type AddRatingMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -929,7 +930,7 @@ export const PlaceDocument = gql`
       name
       description
       address
-      image
+      images
       instagram
       averageRating
       isFavorite
