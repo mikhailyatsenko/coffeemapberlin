@@ -68,9 +68,9 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
     if (nameScrollWidth) {
       if (isMobile) {
         // TODO constants
-        setShouldNameScroll(nameScrollWidth > 191);
+        setShouldNameScroll(nameScrollWidth > 198);
       } else {
-        setShouldNameScroll(nameScrollWidth > 251);
+        setShouldNameScroll(nameScrollWidth > 258);
       }
     }
   }, [nameScrollWidth, isMobile]);
@@ -101,7 +101,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
               ref={nameRef}
               style={
                 nameScrollWidth && shouldNameScroll
-                  ? { ['--scroll-distance' as unknown as string]: `${(isMobile ? 191 : 251) - nameScrollWidth}px` }
+                  ? { ['--scroll-distance' as unknown as string]: `${(isMobile ? 198 : 258) - nameScrollWidth}px` }
                   : undefined
               }
               className={clsx({ [cls.marquee]: shouldNameScroll })}

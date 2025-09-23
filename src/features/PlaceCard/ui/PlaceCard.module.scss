@@ -137,7 +137,7 @@
   }
 }
 .marquee {
-  animation: scrollBackForth 3s linear infinite alternate;
+  animation: scrollBackForth 8s linear infinite alternate;
   &:hover {
     animation-play-state: paused;
   }
