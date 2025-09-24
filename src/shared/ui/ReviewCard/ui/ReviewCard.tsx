@@ -23,6 +23,7 @@ interface ReviewCardProps {
   createdAt: string;
   userId: string;
   onEditReview?: (reviewText: string) => void;
+  isGoogleReview: boolean;
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({
