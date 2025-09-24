@@ -1,5 +1,6 @@
 import { client } from 'shared/config/apolloClient';
 import { CurrentUserDocument, LogoutDocument } from 'shared/generated/graphql';
+import { revalidatePlaces } from 'shared/stores/places';
 import { type User } from 'shared/types';
 
 import { INITIAL_STATE } from '../constants';
@@ -8,6 +9,7 @@ import { useAuthStore } from '../hooks';
 export const clearAuth = async () => {
   await client.mutate({ mutation: LogoutDocument });
   await client.resetStore();
+  revalidatePlaces();
   useAuthStore.setState({ ...INITIAL_STATE, isAuthLoading: false });
 };
 

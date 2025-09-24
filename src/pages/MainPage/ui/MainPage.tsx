@@ -5,14 +5,12 @@ import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
-import { useAuthStore } from 'shared/stores/auth';
 import {
   setLoadingState,
   setPlaces,
   usePlacesStore,
   startLoading,
   finishLoading,
-  revalidatePlaces,
   PAGE_SIZE,
   INITIAL_OFFSET,
 } from 'shared/stores/places';
@@ -23,7 +21,6 @@ export const MainPage = () => {
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const hasInitialData = usePlacesStore((state) => state.hasInitialData);
-  const { user, isAuthLoading } = useAuthStore();
 
   // Handle email confirmation from location state
   const token = location.state?.token as string | null | undefined;
@@ -74,14 +71,6 @@ export const MainPage = () => {
   useEffect(() => {
     setLoadingState({ isLoading: initialLoading || moreDataLoading });
   }, [initialLoading, moreDataLoading]);
-
-  // Revalidate places when auth state changes
-  useEffect(() => {
-    if (!isAuthLoading) {
-      // If user logged in/out, revalidate places to get fresh data
-      revalidatePlaces();
-    }
-  }, [user, isAuthLoading]);
 
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);

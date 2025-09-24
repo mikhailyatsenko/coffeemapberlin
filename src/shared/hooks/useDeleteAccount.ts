@@ -11,7 +11,6 @@ export const useDeleteAccount = () => {
       if (data.deleteAccount.success) {
         toast.success('Account deleted successfully');
         revalidatePlaces();
-        // Разлогиниваем пользователя и очищаем состояние
         clearAuth().then(() => {
           navigate('/');
         });

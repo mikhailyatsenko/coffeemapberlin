@@ -5,7 +5,7 @@ import type { MapRef, MapLayerMouseEvent, LngLatLike, MapGeoJSONFeature } from '
 import { TooltipCardOnMap } from 'entities/TooltipCardOnMap';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks';
-import { usePlacesStore } from 'shared/stores/places';
+import { usePlacesStore, setCurrentPlacePosition } from 'shared/stores/places';
 import { clusterLayer, clusterCountLayer, unclusteredPointLayer, namesLayer } from '../model/layers/layers';
 import { type LoadMapProps } from '../types';
 
@@ -33,6 +33,8 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
         zoom: 17,
         offset: [screenWidth < 768 ? 0 : 220, 0],
       });
+      // Clear the position after using it to prevent repeated flyTo calls
+      setCurrentPlacePosition(null);
     }
   }, [currentPlacePosition, screenWidth, isMapLoaded]);
 
