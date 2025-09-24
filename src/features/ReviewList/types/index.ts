@@ -7,7 +7,7 @@ export interface Review {
   userAvatar?: string;
   createdAt: string;
   isOwnReview: boolean;
-  imgCount: number;
+  reviewImages: number;
 }
 
 export interface ReviewListProps {

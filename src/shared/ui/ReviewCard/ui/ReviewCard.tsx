@@ -16,7 +16,7 @@ interface ReviewCardProps {
   userName: string;
   reviewText?: string;
   rating?: number;
-  imgCount: number;
+  reviewImages: number;
   isOwnReview?: boolean;
   handleDeleteReview?: (id: string) => void;
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,7 +32,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   userName,
   reviewText,
   rating,
-  imgCount,
+  reviewImages,
   isOwnReview,
   handleDeleteReview,
   setShowRateNow,
@@ -43,14 +43,16 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   const [openLightbox, setOpenLightbox] = useState(false);
   const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
   const zoomRef = useRef<ZoomRef>(null);
-  const reviewImages = useMemo(() => getReviewImages(placeId, imgCount), [placeId, imgCount]);
+  const reviewImagesList = useMemo(() => getReviewImages(placeId, reviewImages), [placeId, reviewImages]);
   return (
     reviewText && (
       <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
-        {userId === 'google' && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
+        {userId === '000000000000000000000000' && (
+          <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>
+        )}
         <div className={cls.userInfo}>
           <img
-            src={userAvatar || (userId === 'google' ? '/google-maps.svg' : '/user-default-icon.svg')}
+            src={userAvatar || (userId === '000000000000000000000000' ? '/google-maps.svg' : '/user-default-icon.svg')}
             alt={userName}
             className={cls.avatar}
             referrerPolicy="no-referrer"
@@ -66,10 +68,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
         <p className={cls.reviewText}>{!reviewText && rating ? `Rated: ${rating}` : reviewText}</p>
 
-        {!!imgCount && (
+        {!!reviewImagesList && (
           <>
             <div className={cls.reviewImages}>
-              {reviewImages.map((url, idx) => (
+              {reviewImagesList.map((url, idx) => (
                 <img
                   key={url}
                   src={`${url}?tr=if-ar_gt_1,w-200,if-else,h-200,if-end`}
@@ -89,7 +91,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
               close={() => {
                 setOpenLightbox(false);
               }}
-              slides={reviewImages.map((url) => ({ src: url }))}
+              slides={reviewImagesList.map((url) => ({ src: url }))}
               index={imgLightboxIndex}
               on={{
                 view: ({ index }) => {

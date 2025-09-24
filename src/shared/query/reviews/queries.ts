@@ -13,7 +13,7 @@ export const PLACE_REVIEWS = gql`
         createdAt
         userRating
         isOwnReview
-        imgCount
+        reviewImages
       }
     }
   }

@@ -64,7 +64,7 @@ const ReviewListComponent = ({
             setShowRateNow={setShowRateNow}
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}
-            imgCount={review.imgCount}
+            reviewImages={review.reviewImages}
             userId={review.userId}
             onEditReview={onEditReview}
           />

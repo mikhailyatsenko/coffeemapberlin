@@ -93,15 +93,6 @@ export interface Geometry {
   type: Scalars['String']['output'];
 }
 
-export interface GoogleReview {
-  __typename?: 'GoogleReview';
-  imgCount: Scalars['Int']['output'];
-  publishedAtDate: Scalars['String']['output'];
-  reviewId: Scalars['String']['output'];
-  stars: Scalars['Int']['output'];
-  text: Scalars['String']['output'];
-}
-
 export interface LogoutResponse {
   __typename?: 'LogoutResponse';
   message: Scalars['String']['output'];
@@ -236,7 +227,6 @@ export interface PlaceProperties {
   description: Scalars['String']['output'];
   favoriteCount: Scalars['Int']['output'];
   googleId?: Maybe<Scalars['String']['output']>;
-  googleReview?: Maybe<GoogleReview>;
   id: Scalars['ID']['output'];
   image: Scalars['String']['output'];
   images?: Maybe<Array<Scalars['String']['output']>>;
@@ -292,9 +282,9 @@ export interface Review {
   __typename?: 'Review';
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  imgCount: Scalars['Int']['output'];
   isOwnReview: Scalars['Boolean']['output'];
   placeId: Scalars['ID']['output'];
+  reviewImages: Scalars['Int']['output'];
   text?: Maybe<Scalars['String']['output']>;
   userAvatar?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
@@ -444,7 +434,7 @@ export type PlaceReviewsQueryVariables = Exact<{
 }>;
 
 
-export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean, imgCount: number }> } }
+export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean, reviewImages: number }> } }
 
 export type UserReviewActivityQueryVariables = Exact<Record<string, never>>;
 
@@ -1135,7 +1125,7 @@ export const PlaceReviewsDocument = gql`
       createdAt
       userRating
       isOwnReview
-      imgCount
+      reviewImages
     }
   }
 }
