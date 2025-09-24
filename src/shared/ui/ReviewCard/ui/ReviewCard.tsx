@@ -43,7 +43,10 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   const [openLightbox, setOpenLightbox] = useState(false);
   const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
   const zoomRef = useRef<ZoomRef>(null);
-  const reviewImagesList = useMemo(() => getReviewImages(placeId, reviewImages), [placeId, reviewImages]);
+  const reviewImagesList = useMemo(
+    () => getReviewImages(placeId, reviewId, reviewImages),
+    [placeId, reviewId, reviewImages],
+  );
   return (
     reviewText && (
       <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
