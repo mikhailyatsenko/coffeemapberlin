@@ -14,6 +14,7 @@ export const PLACE_REVIEWS = gql`
         userRating
         isOwnReview
         reviewImages
+        isGoogleReview
       }
     }
   }

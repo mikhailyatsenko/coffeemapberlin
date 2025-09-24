@@ -28,6 +28,7 @@ interface ReviewCardProps {
 export const ReviewCard: React.FC<ReviewCardProps> = ({
   placeId,
   reviewId,
+  isGoogleReview,
   userAvatar,
   userName,
   reviewText,
@@ -50,17 +51,18 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   return (
     reviewText && (
       <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
-        {userId === '000000000000000000000000' && (
-          <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>
-        )}
+        {isGoogleReview && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
         <div className={cls.userInfo}>
           <img
-            src={userAvatar || (userId === '000000000000000000000000' ? '/google-maps.svg' : '/user-default-icon.svg')}
+            src={
+              userAvatar ||
+              (isGoogleReview || userId === '000000000000000000000000' ? '/google-maps.svg' : '/user-default-icon.svg')
+            }
             alt={userName}
             className={cls.avatar}
             referrerPolicy="no-referrer"
           />
-          <span className={cls.userName}>{userName}</span>
+          <span className={cls.userName}>{userId === '000000000000000000000000' ? 'Google Maps User' : userName}</span>
           {rating && (
             <div className={cls.userRate}>
               <BeanIcon filled />

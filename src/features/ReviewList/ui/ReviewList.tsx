@@ -55,6 +55,7 @@ const ReviewListComponent = ({
           <ReviewCard
             key={`${review.id}-${review.createdAt}-${index}`}
             reviewId={review.id}
+            isGoogleReview={review.isGoogleReview}
             placeId={placeId}
             rating={review.userRating}
             reviewText={review.text}

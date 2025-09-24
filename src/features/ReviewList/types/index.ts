@@ -8,6 +8,7 @@ export interface Review {
   createdAt: string;
   isOwnReview: boolean;
   reviewImages: number;
+  isGoogleReview: boolean;
 }
 
 export interface ReviewListProps {

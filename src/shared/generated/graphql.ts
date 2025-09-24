@@ -282,6 +282,7 @@ export interface Review {
   __typename?: 'Review';
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isGoogleReview: Scalars['Boolean']['output'];
   isOwnReview: Scalars['Boolean']['output'];
   placeId: Scalars['ID']['output'];
   reviewImages: Scalars['Int']['output'];
@@ -434,7 +435,7 @@ export type PlaceReviewsQueryVariables = Exact<{
 }>;
 
 
-export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean, reviewImages: number }> } }
+export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, isOwnReview: boolean, reviewImages: number, isGoogleReview: boolean }> } }
 
 export type UserReviewActivityQueryVariables = Exact<Record<string, never>>;
 
@@ -1126,6 +1127,7 @@ export const PlaceReviewsDocument = gql`
       userRating
       isOwnReview
       reviewImages
+      isGoogleReview
     }
   }
 }
