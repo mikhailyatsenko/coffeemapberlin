@@ -29,7 +29,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
 
   // Track scroll state for arrow visibility
   useEffect(() => {
-    if (!images || images.length <= 1) return;
+    if (!images?.length) return;
 
     const scroller = document.querySelector(`.${cls.horizontalMediaScroller}`);
     if (!scroller) return;
@@ -49,7 +49,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
     };
   }, [images, updateScrollState]);
 
-  if (!images || images.length <= 1) {
+  if (!images?.length) {
     return (
       <ImgWithLoader
         loading="eager"
