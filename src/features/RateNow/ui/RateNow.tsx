@@ -2,6 +2,8 @@ import { RatePlaceWidget, ToggleCharacteristic } from 'entities/RatePlace';
 import { useDeleteReview, useToggleCharacteristic } from 'shared/api';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
 import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
+import { useAuthStore } from 'shared/stores/auth';
+import { showLoginRequired } from 'shared/stores/modal';
 import { revalidatePlaces } from 'shared/stores/places';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
@@ -12,7 +14,7 @@ import cls from './RateNow.module.scss';
 
 export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow, showRateNow }: RateNowProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
-
+  const { user } = useAuthStore();
   const [addRating, { loading: loadingRating }] = useAddRatingMutation({
     onCompleted() {
       revalidatePlaces();
@@ -20,6 +22,10 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
   });
 
   const onSubmitRating = async (rating: number) => {
+    if (!user) {
+      showLoginRequired();
+      return;
+    }
     await addRating({
       variables: { placeId, rating },
       refetchQueries: [
