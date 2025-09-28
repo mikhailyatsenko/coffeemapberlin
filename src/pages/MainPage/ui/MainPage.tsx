@@ -5,6 +5,9 @@ import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
+import { useAuthStore } from 'shared/stores/auth';
+import { useGuestFavoritesStore } from 'shared/stores/guestFavorites';
+
 import {
   setLoadingState,
   setPlaces,
@@ -13,6 +16,7 @@ import {
   finishLoading,
   PAGE_SIZE,
   INITIAL_OFFSET,
+  setShowFavorites,
 } from 'shared/stores/places';
 
 export const MainPage = () => {
@@ -21,6 +25,8 @@ export const MainPage = () => {
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const hasInitialData = usePlacesStore((state) => state.hasInitialData);
+  const { user } = useAuthStore();
+  const guestFavIds = useGuestFavoritesStore((s) => s.ids);
 
   // Handle email confirmation from location state
   const token = location.state?.token as string | null | undefined;
@@ -77,9 +83,18 @@ export const MainPage = () => {
   }, [places]);
 
   const placesToDisplay = useMemo(() => {
-    if (showFavorites) return favoritePlaces;
+    if (showFavorites) {
+      if (!user && guestFavIds.length) {
+        const favIdsSet = new Set(guestFavIds);
+        return places.filter((obj) => favIdsSet.has(obj.id));
+      }
+      if (favoritePlaces.length) {
+        return favoritePlaces;
+      }
+      setShowFavorites(false);
+    }
     return filteredPlaces?.length ? filteredPlaces : places;
-  }, [showFavorites, filteredPlaces, places, favoritePlaces]);
+  }, [showFavorites, filteredPlaces, places, user, favoritePlaces, guestFavIds]);
 
   const placesGeo = {
     type: 'FeatureCollection' as const,
@@ -90,7 +105,10 @@ export const MainPage = () => {
     <>
       <PlacesList places={placesToDisplay} />
       <MainMap placesGeo={placesGeo} />
-      <ShowFavoritePlaces showFavorites={showFavorites} favoritesQuantity={favoritePlaces.length} />
+      <ShowFavoritePlaces
+        showFavorites={showFavorites}
+        favoritesQuantity={favoritePlaces.length || (!user ? guestFavIds.length : 0)}
+      />
     </>
   );
 };

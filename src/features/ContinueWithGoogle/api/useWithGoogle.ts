@@ -1,4 +1,5 @@
 import { useGoogleLogin } from '@react-oauth/google';
+import { useState } from 'react';
 import { client } from 'shared/config/apolloClient';
 import { useLoginWithGoogleMutation } from 'shared/generated/graphql';
 import { setUser } from 'shared/stores/auth';
@@ -9,10 +10,12 @@ import { type UseWithGoogleProps } from '../types';
 
 export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
   const [loginWithGoogle] = useLoginWithGoogleMutation();
+  const [isLoading, setIsLoading] = useState(false);
   const continueWithGoogle = useGoogleLogin({
     flow: 'auth-code',
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
       try {
         setError(null);
         const { data } = await loginWithGoogle({ variables: { code: tokenResponse.code } });
@@ -31,6 +34,8 @@ export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An unknown error occurred during login'));
+      } finally {
+        setIsLoading(false);
       }
     },
     onError: () => {
@@ -38,5 +43,5 @@ export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
     },
   });
 
-  return continueWithGoogle;
+  return { continueWithGoogle, isLoading };
 };

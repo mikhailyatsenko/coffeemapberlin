@@ -6,6 +6,7 @@ import { SignUpWithEmail } from 'features/SignUpWithEmail';
 import { hideModal, showConfirmEmail, showSignIn, showSignUp, useModalStore } from 'shared/stores/modal';
 import { ModalContentVariant } from 'shared/stores/modal/constants';
 import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLoginButton';
+import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { ConfirmEmail } from '../components/ConfirmEmail';
@@ -17,7 +18,7 @@ import cls from './AuthModal.module.scss';
 
 export const AuthModal = () => {
   const [error, setError] = useState<Error | null>(null);
-  const continueWithGoogle = useWithGoogle({ setError });
+  const { continueWithGoogle, isLoading } = useWithGoogle({ setError });
   const modalContentVariant = useModalStore((state) => state.modalContentVariant);
 
   useEffect(() => {
@@ -31,7 +32,13 @@ export const AuthModal = () => {
   const renderModalContent = () => {
     switch (modalContentVariant) {
       case ModalContentVariant.LoginRequired:
-        return <LoginRequired setError={setError} onSwitchToSignUp={showSignUp} onSwitchToSignIn={showSignIn} />;
+        return (
+          <LoginRequired
+            onContinueWithGoogle={continueWithGoogle}
+            onSwitchToSignUp={showSignUp}
+            onSwitchToSignIn={showSignIn}
+          />
+        );
       case ModalContentVariant.GuestFavoritesInfo:
         return <GuestFavoritesInfo onClose={hideModal} onSignIn={showSignIn} />;
       case ModalContentVariant.SignUpWithEmail:
@@ -67,12 +74,16 @@ export const AuthModal = () => {
 
   return (
     <PortalToBody>
-      <Modal closeOnEsc={true} onClose={hideModal}>
-        <div className={cls.authModalContent}>
-          {renderModalContent()}
-          <p className={cls.errorMessage}>{error?.message}</p>
-        </div>
-      </Modal>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Modal closeOnEsc={true} onClose={hideModal}>
+          <div className={cls.authModalContent}>
+            {renderModalContent()}
+            <p className={cls.errorMessage}>{error?.message}</p>
+          </div>
+        </Modal>
+      )}
     </PortalToBody>
   );
 };

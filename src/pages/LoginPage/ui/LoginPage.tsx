@@ -12,7 +12,7 @@ import cls from './LoginPage.module.scss';
 export const LoginPage = () => {
   const { user } = useAuthStore();
   const [error, setError] = useState<Error | null>(null);
-  const continueWithGoogle = useWithGoogle({ setError });
+  const { continueWithGoogle } = useWithGoogle({ setError });
   const navigate = useNavigate();
   const location = useLocation();
 
