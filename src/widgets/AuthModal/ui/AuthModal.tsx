@@ -9,6 +9,7 @@ import { GOOGLE_LOGIN_BUTTON_KEY, GoogleLoginButton } from 'shared/ui/GoogleLogi
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { ConfirmEmail } from '../components/ConfirmEmail';
+import { GuestFavoritesInfo } from '../components/GuestFavoritesInfo';
 import { LoginRequired } from '../components/LoginRequired';
 import { ResendConfirmEmail } from '../components/ResendConfirmEmail';
 import { SuccessfulSignUp } from '../components/SuccessfulSignUp';
@@ -31,6 +32,8 @@ export const AuthModal = () => {
     switch (modalContentVariant) {
       case ModalContentVariant.LoginRequired:
         return <LoginRequired setError={setError} onSwitchToSignUp={showSignUp} onSwitchToSignIn={showSignIn} />;
+      case ModalContentVariant.GuestFavoritesInfo:
+        return <GuestFavoritesInfo onClose={hideModal} onSignIn={showSignIn} />;
       case ModalContentVariant.SignUpWithEmail:
         return (
           <SignUpWithEmail

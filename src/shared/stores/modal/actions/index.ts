@@ -31,3 +31,7 @@ export const showResendConfirmationEmail = (isExpired: boolean) => {
     useModalStore.setState({ modalContentVariant: ModalContentVariant.ResendConfirmationEmailByError });
   }
 };
+
+export const showGuestFavoritesInfo = () => {
+  useModalStore.setState({ modalContentVariant: ModalContentVariant.GuestFavoritesInfo });
+};

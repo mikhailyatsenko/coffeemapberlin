@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useToggleFavoriteMutation } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { showLoginRequired } from 'shared/stores/modal';
+import { useGuestFavoritesStore, markGuestInfoShown, toggleGuestFavorite } from 'shared/stores/guestFavorites';
+import { showGuestFavoritesInfo } from 'shared/stores/modal';
 import { toggleFavorite } from 'shared/stores/places';
 import cls from './AddToFavButton.module.scss';
 
@@ -37,6 +38,9 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
   });
 
   const { user } = useAuthStore();
+  const guestFavIds = useGuestFavoritesStore((s) => s.ids);
+  const infoShown = useGuestFavoritesStore((s) => s.infoShown);
+  const effectiveIsFavorite = user ? isFavorite : guestFavIds.includes(placeId);
 
   const handleClick = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,7 +48,24 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
       e.preventDefault();
 
       if (!user) {
-        showLoginRequired();
+        // Guest: toggle in guest store and mirror to places store
+        // TODO: fix animation when unAuth
+        setIsAnimating(true);
+        toggleGuestFavorite(placeId);
+        toggleFavorite(placeId);
+        if (navigator.vibrate) {
+          navigator.vibrate(10);
+        }
+
+        if (!effectiveIsFavorite) {
+          toast.success(`${placeName} has been added to favorites`);
+        } else {
+          toast.success(`${placeName} has been removed from favorites`);
+        }
+        if (!infoShown) {
+          markGuestInfoShown();
+          showGuestFavoritesInfo();
+        }
         return;
       }
 
@@ -60,10 +81,8 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
 
         const result = await toggleFavoriteMutation();
         if (result.data?.toggleFavorite) {
-          // Update Zustand store for main page
           toggleFavorite(placeId);
-
-          if (!isFavorite) {
+          if (!effectiveIsFavorite) {
             toast.success(`${placeName} has been added to favorites`);
           } else {
             toast.success(`${placeName} has been removed from favorites`);
@@ -76,10 +95,12 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
         setIsUpdating(false);
       }
     },
-    [user, isUpdating, toggleFavoriteMutation, placeId, isFavorite, placeName],
+    [user, isUpdating, toggleFavoriteMutation, placeId, effectiveIsFavorite, placeName, infoShown],
   );
 
   useEffect(() => {
+    console.log('isAnimating', isAnimating);
+
     if (isAnimating) {
       const timer = setTimeout(() => {
         setIsAnimating(false);
@@ -94,11 +115,11 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
     <button
       className={cls[theme]}
       onClick={handleClick}
-      title={isFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
+      title={effectiveIsFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
     >
       <div
         className={clsx(cls.AddToFavIcon, cls[size], {
-          [cls.filled]: isFavorite,
+          [cls.filled]: effectiveIsFavorite,
           [cls.animate]: isAnimating,
           [cls.updating]: isUpdating,
         })}
