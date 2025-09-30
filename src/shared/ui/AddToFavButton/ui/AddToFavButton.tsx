@@ -46,12 +46,13 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       e.preventDefault();
-
-      window.gtag('event', 'add_to_favorites_click', {
-        item_id: placeId,
-        item_name: 'clic on favorites',
-        category: 'engagement',
-      });
+      if (process.env.VITE_ENV !== 'development') {
+        window.gtag('event', 'add_to_favorites_click', {
+          item_id: placeId,
+          item_name: 'click on favorites',
+          category: 'engagement',
+        });
+      }
 
       if (!user) {
         // Guest: toggle in guest store and mirror to places store
