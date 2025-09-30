@@ -47,6 +47,12 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
       e.stopPropagation();
       e.preventDefault();
 
+      window.gtag('event', 'add_to_favorites_click', {
+        item_id: placeId,
+        item_name: 'clic on favorites',
+        category: 'engagement',
+      });
+
       if (!user) {
         // Guest: toggle in guest store and mirror to places store
         // TODO: fix animation when unAuth
