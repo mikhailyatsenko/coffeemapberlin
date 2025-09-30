@@ -1,16 +1,4 @@
-export interface Review {
-  id: string;
-  text?: string;
-  userId: string;
-  userRating?: number;
-  userName: string;
-  userAvatar?: string;
-  createdAt: string;
-  isOwnReview: boolean;
-  reviewImages: number;
-  isGoogleReview: boolean;
-}
-
+import { type Review } from 'shared/generated/graphql';
 export interface ReviewListProps {
   showRateNow?: boolean;
   setShowRateNow?: React.Dispatch<React.SetStateAction<boolean>>;

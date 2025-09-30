@@ -1,8 +1,9 @@
 import { type PlaceReviewsQuery } from 'shared/generated/graphql';
 
-export const mapPlaceReviews = (data: PlaceReviewsQuery) => {
+export const mapPlaceReviews = (data: PlaceReviewsQuery, placeId: string) => {
   const normalized = data?.placeReviews.reviews.map((review) => ({
     ...review,
+    placeId,
     userAvatar: review.userAvatar ?? undefined,
     text: review.text ?? undefined,
     userRating: review.userRating ?? undefined,

@@ -106,3 +106,10 @@
   object-fit: cover;
   border-radius: 4px;
 }
+
+.charCounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}

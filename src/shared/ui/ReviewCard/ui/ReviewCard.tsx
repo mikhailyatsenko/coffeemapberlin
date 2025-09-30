@@ -2,13 +2,14 @@ import { formatDistanceToNow } from 'date-fns';
 import React, { useState, useMemo, useRef } from 'react';
 import Lightbox, { type ZoomRef } from 'yet-another-react-lightbox';
 import { Zoom } from 'yet-another-react-lightbox/plugins';
+import { type Characteristic } from 'shared/generated/graphql';
+import { CharacteristicIcon } from 'shared/ui/CharacteristicIcon';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import DeleteIcon from '../../../assets/delete-icon.svg?react';
 import EditIcon from '../../../assets/edit-icon.svg?react';
 import { getReviewImages } from '../utils/getReviewImages';
 import cls from './ReviewCard.module.scss';
 import 'yet-another-react-lightbox/styles.css';
-
 interface ReviewCardProps {
   placeId: string;
   reviewId: string;
@@ -24,6 +25,7 @@ interface ReviewCardProps {
   userId: string;
   onEditReview?: (reviewText: string) => void;
   isGoogleReview: boolean;
+  characteristics?: Characteristic[];
 }
 
 export const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -41,6 +43,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   userId,
   createdAt,
   onEditReview,
+  characteristics,
 }) => {
   const [openLightbox, setOpenLightbox] = useState(false);
   const [imgLightboxIndex, setImgLightboxIndex] = useState(0);
@@ -107,7 +110,11 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             />
           </>
         )}
-
+        <div className={cls.charCounts}>
+          {characteristics?.map((characteristic) => (
+            <CharacteristicIcon key={characteristic} characteristic={characteristic} />
+          ))}
+        </div>
         <div className={cls.dateAndButtons}>
           <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
           {isOwnReview && handleDeleteReview && (

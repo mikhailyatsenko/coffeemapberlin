@@ -12,6 +12,7 @@ export const PLACE_REVIEWS = gql`
         userAvatar
         createdAt
         userRating
+        characteristics
         isOwnReview
         reviewImages
         isGoogleReview

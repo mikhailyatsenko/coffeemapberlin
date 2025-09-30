@@ -57,17 +57,18 @@ const ReviewListComponent = ({
             reviewId={review.id}
             isGoogleReview={review.isGoogleReview}
             placeId={placeId}
-            rating={review.userRating}
-            reviewText={review.text}
+            rating={review.userRating ?? undefined}
+            reviewText={review.text ?? undefined}
             userName={review.userName}
             isOwnReview={review.isOwnReview}
-            userAvatar={review.userAvatar}
+            userAvatar={review.userAvatar ?? undefined}
             setShowRateNow={setShowRateNow}
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}
             reviewImages={review.reviewImages}
             userId={review.userId}
             onEditReview={onEditReview}
+            characteristics={review.characteristics ?? undefined}
           />
         ))}
       </div>

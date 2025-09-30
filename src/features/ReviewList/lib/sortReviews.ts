@@ -1,4 +1,5 @@
-import { type Review } from '../types';
+// import { type Review } from '../types';
+import { type Review } from 'shared/generated/graphql';
 
 export const sortReviews = (reviews: Review[]) => {
   return [...reviews].sort((a, b) => {

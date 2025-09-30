@@ -8,7 +8,8 @@ import { OpeningHours } from 'entities/OpeningHours';
 import instagramIcon from 'shared/assets/instagram.svg';
 import logo from 'shared/assets/logo.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
-import { usePlaceQuery, type Characteristic } from 'shared/generated/graphql';
+import { usePlaceQuery } from 'shared/generated/graphql';
+import { type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
@@ -21,11 +22,7 @@ import { ImageSlider } from '../components/ImageSlider/ui';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import cls from './DetailedPlace.module.scss';
 
-interface DetailedPlaceProps {
-  placeId: string;
-}
-
-const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
+const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   const navigate = useNavigate();
 
   const [showRateNow, setShowRateNow] = useState(false);
@@ -70,7 +67,7 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   const openOnMap = useCallback(() => {
     if (placeData?.place?.geometry.coordinates) {
       // send a new array reference to force store subscribers to react even if values are equal
-      setCurrentPlacePosition(placeData?.place.geometry.coordinates);
+      setCurrentPlacePosition(placeData.place.geometry.coordinates as [number, number]);
     }
 
     navigate({ pathname: '/' });
@@ -79,7 +76,9 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
   const openOnGoogleMaps = useCallback(() => {
     if (placeData?.place?.properties?.googleId) {
       window.open(
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeData?.place.properties.name || '')}&query_place_id=${placeData?.place.properties.googleId}`,
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          placeData.place.properties.name || '',
+        )}&query_place_id=${placeData.place.properties.googleId}`,
         '_blank',
         'noopener,noreferrer',
       );
@@ -114,20 +113,6 @@ const DetailedPlaceComponent: React.FC<DetailedPlaceProps> = ({ placeId }) => {
 
           {description && <div className={cls.description}>{description}</div>}
           <div className={cls.headerActions}>
-            {/* <div className={cls.block}> */}
-            {/* <div className={cls.tags}>
-                {characteristicKeys.map((charKey) => (
-                  <BadgePill
-                    key={charKey}
-                    text={characteristicsMap.get(charKey) || charKey}
-                    color="gray"
-                    size="small"
-                  />
-                ))}
-              </div> */}
-
-            {/* </div> */}
-
             <RateNow
               setShowRateNow={setShowRateNow}
               showRateNow={showRateNow}

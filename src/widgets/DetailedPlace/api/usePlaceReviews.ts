@@ -13,8 +13,9 @@ export const usePlaceReviews = (placeId: string | null) => {
   // for proper memo ReviewList component
   const mappedData = useMemo(() => {
     if (!data) return undefined;
-    return mapPlaceReviews(data);
-  }, [data]);
+    if (!placeId) return undefined;
+    return mapPlaceReviews(data, placeId);
+  }, [data, placeId]);
 
   return { data: mappedData, error, loading };
 };
