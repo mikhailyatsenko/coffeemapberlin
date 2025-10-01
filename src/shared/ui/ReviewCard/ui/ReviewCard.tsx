@@ -22,7 +22,6 @@ interface ReviewCardProps {
   handleDeleteReview?: (id: string) => void;
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
-  userId: string;
   onEditReview?: (reviewText: string) => void;
   isGoogleReview: boolean;
   characteristics?: Characteristic[];
@@ -40,7 +39,6 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   isOwnReview,
   handleDeleteReview,
   setShowRateNow,
-  userId,
   createdAt,
   onEditReview,
   characteristics,
@@ -58,15 +56,12 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {isGoogleReview && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
         <div className={cls.userInfo}>
           <img
-            src={
-              userAvatar ||
-              (isGoogleReview || userId === '000000000000000000000000' ? '/google-maps.svg' : '/user-default-icon.svg')
-            }
+            src={userAvatar || (isGoogleReview ? '/google-maps.svg' : '/user-default-icon.svg')}
             alt={userName}
             className={cls.avatar}
             referrerPolicy="no-referrer"
           />
-          <span className={cls.userName}>{userId === '000000000000000000000000' ? 'Google Maps User' : userName}</span>
+          <span className={cls.userName}>{userName}</span>
           {rating && (
             <div className={cls.userRate}>
               <BeanIcon filled />

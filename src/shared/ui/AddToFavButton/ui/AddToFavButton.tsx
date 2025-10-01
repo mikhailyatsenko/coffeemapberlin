@@ -55,11 +55,9 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
       }
 
       if (!user) {
-        // Guest: toggle in guest store and mirror to places store
-        // TODO: fix animation when unAuth
         setIsAnimating(true);
         toggleGuestFavorite(placeId);
-        toggleFavorite(placeId);
+
         if (navigator.vibrate) {
           navigator.vibrate(10);
         }

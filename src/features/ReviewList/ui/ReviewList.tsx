@@ -66,7 +66,6 @@ const ReviewListComponent = ({
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}
             reviewImages={review.reviewImages}
-            userId={review.userId}
             onEditReview={onEditReview}
             characteristics={review.characteristics ?? undefined}
           />
