@@ -10,9 +10,9 @@ export const ConfirmEmailPage = () => {
   useEffect(() => {
     if (token && email) {
       navigate('/', { state: { token, email }, replace: true });
-    } else {
-      navigate('/', { replace: true });
+      return;
     }
+    navigate('/', { replace: true });
   }, [token, email, navigate]);
 
   return null;

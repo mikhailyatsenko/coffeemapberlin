@@ -9,6 +9,7 @@ interface FormFieldProps {
   labelText?: string;
   autoComplete?: string;
   autoFocus?: boolean;
+  className?: string;
 }
 export const FormField: React.FC<FormFieldProps> = ({
   fieldName,

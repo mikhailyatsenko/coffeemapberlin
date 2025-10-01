@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useResendConfirmationEmailMutation } from 'shared/generated/graphql';
 import { hideModal } from 'shared/stores/modal';
 import { FormField } from 'shared/ui/FormField';
@@ -13,8 +13,11 @@ import { type ResendConfirmEmailProps } from '../types';
 import cls from './ResendConfirmEmail.module.scss';
 
 export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
-  const [searchParams] = useSearchParams();
-  const email = searchParams.get('email');
+  const location = useLocation();
+  const { email } = (location.state ?? {}) as {
+    token?: string;
+    email?: string;
+  };
 
   const onCompleted = useCallback(() => {
     toast.success('Confirmation email sent successfully!', { position: 'top-center' });
@@ -57,10 +60,15 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
     <div className={cls.content}>
       <h3>{isExpired ? 'The link has expired' : 'The link is invalid'}</h3>
 
-      <p>Please enter your email to resend the confirmation email.</p>
+      <p>Resend the confirmation email{`${isExpired ? ` on ${email}` : ``}?`}</p>
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormField fieldName="email" type="email" error={errors.email?.message} />
+        <form className={cls.form} onSubmit={handleSubmit(onSubmit)}>
+          <FormField
+            type={isExpired ? 'hidden' : 'email'}
+            className={cls.emailField}
+            fieldName="email"
+            error={errors.email?.message}
+          />
           <RegularButton disabled={!form.formState.isValid || loading} type="submit">
             Resend
           </RegularButton>
