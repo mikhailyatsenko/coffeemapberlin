@@ -58,6 +58,7 @@ export const CONFIRM_EMAIL = gql`
         createdAt
         isGoogleUserUserWithoutPassword
       }
+      emailChanged
     }
   }
 `;

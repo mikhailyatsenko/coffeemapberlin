@@ -2,7 +2,7 @@ import { type ApolloError } from '@apollo/client';
 import { useEffect, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 // no navigation from this hook
-import { useConfirmEmailMutation } from 'shared/generated/graphql';
+import { type ConfirmEmailMutation, useConfirmEmailMutation } from 'shared/generated/graphql';
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { showResendConfirmationEmail, showSuccessfulSignUp } from 'shared/stores/modal';
 
@@ -10,16 +10,20 @@ export const useEmailConfirmation = (email?: string | null, token?: string | nul
   const { user, isAuthLoading } = useAuthStore();
   const hasProcessedRef = useRef(false);
 
-  const onCompleted = useCallback(() => {
+  const onCompleted = useCallback((data: ConfirmEmailMutation) => {
     void checkAuth();
-    showSuccessfulSignUp();
+    if (data.confirmEmail.emailChanged) {
+      toast.success('Email changed successfully', { position: 'top-center' });
+    } else {
+      showSuccessfulSignUp();
+    }
   }, []);
 
   const onError = useCallback(
     (error: ApolloError) => {
       const alreadyConfirmedError = error.graphQLErrors.find((e) => e.extensions?.code === 'EMAIL_ALREADY_CONFIRMED');
       if (alreadyConfirmedError) {
-        toast('Email is already confirmed');
+        toast.error('Email is already confirmed', { position: 'top-center' });
         return;
       }
       const tokenExpired = error.graphQLErrors.some((e) => e.extensions?.code === 'TOKEN_EXPIRED');
@@ -41,11 +45,13 @@ export const useEmailConfirmation = (email?: string | null, token?: string | nul
     if (token && email && !isAuthLoading && !hasProcessedRef.current) {
       hasProcessedRef.current = true;
 
-      if (user) {
-        toast('Please log out before verifying email');
-      } else {
-        confirmEmailMutation({ variables: { token, email } });
-      }
+      // TODO: think about possibility show toast below only for new registered users,
+      // skipping users that just changed email
+      // if (user) {
+      //   toast.error('Please log out before verifying email', { position: 'top-center' });
+      // } else {
+      confirmEmailMutation({ variables: { token, email } });
+      // }
     }
   }, [token, email, user, isAuthLoading, confirmEmailMutation]);
 };

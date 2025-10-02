@@ -4,6 +4,7 @@ export const UPDATE_PERSONAL_DATA = gql`
   mutation UpdatePersonalData($userId: ID!, $displayName: String, $email: String) {
     updatePersonalData(userId: $userId, displayName: $displayName, email: $email) {
       success
+      pendingEmail
     }
   }
 `;

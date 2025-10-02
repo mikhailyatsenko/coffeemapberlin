@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import {
@@ -12,11 +12,14 @@ import { DeleteAccount } from 'entities/DeleteAccount';
 import { useSetNewPasswordMutation, useUpdatePersonalDataMutation } from 'shared/generated/graphql';
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
+import { PendingEmailInfoModal } from '../components/PendingEmailInfoModal/ui';
 import { passwordValidationSchema, personalDataValidationSchema } from '../lib/validationSchema';
 import cls from './AccountSettings.module.scss';
 
 export const AccountSettings = () => {
   const { user } = useAuthStore();
+  const [isPendingEmailModalOpen, setIsPendingEmailModalOpen] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
   const passwordForm = useForm<SetNewPasswordFormData>({
     mode: 'onChange',
@@ -70,8 +73,12 @@ export const AccountSettings = () => {
         },
       });
       if (response) {
-        await checkAuth();
+        if (response.data?.updatePersonalData.pendingEmail) {
+          setPendingEmail(response.data.updatePersonalData.pendingEmail);
+          setIsPendingEmailModalOpen(true);
+        }
         toast.success('Profile updated successfully');
+        await checkAuth();
       }
     } catch (err) {
       const errorMessage = (err as Error).message || 'Unknown error';
@@ -104,6 +111,14 @@ export const AccountSettings = () => {
   return (
     <div className={cls.settingsSection}>
       {loadingPassword || loadingPersonalData ? <Loader /> : null}
+      {isPendingEmailModalOpen ? (
+        <PendingEmailInfoModal
+          pendingEmail={pendingEmail}
+          onClose={() => {
+            setIsPendingEmailModalOpen(false);
+          }}
+        />
+      ) : null}
       <PersonalSettingsForm
         isButtonPersonalFormDisabled={isButtonPersonalFormDisabled}
         onUpdatePersonalDataSubmit={onUpdatePersonalDataSubmit}

@@ -34,6 +34,7 @@ export interface AddTextReviewResponse {
 
 export interface AuthPayload {
   __typename?: 'AuthPayload';
+  emailChanged?: Maybe<Scalars['Boolean']['output']>;
   isFirstLogin?: Maybe<Scalars['Boolean']['output']>;
   user: User;
 }
@@ -296,6 +297,7 @@ export interface Review {
 
 export interface SuccessResponse {
   __typename?: 'SuccessResponse';
+  pendingEmail?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 }
 
@@ -354,7 +356,7 @@ export type ConfirmEmailMutationVariables = Exact<{
 }>;
 
 
-export interface ConfirmEmailMutation { __typename?: 'Mutation', confirmEmail: { __typename?: 'AuthPayload', user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } }
+export interface ConfirmEmailMutation { __typename?: 'Mutation', confirmEmail: { __typename?: 'AuthPayload', emailChanged?: boolean | null, user: { __typename?: 'User', id: string, displayName: string, email: string, avatar?: string | null, createdAt?: string | null, isGoogleUserUserWithoutPassword: boolean } } }
 
 export type ResendConfirmationEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -450,7 +452,7 @@ export type UpdatePersonalDataMutationVariables = Exact<{
 }>;
 
 
-export interface UpdatePersonalDataMutation { __typename?: 'Mutation', updatePersonalData: { __typename?: 'SuccessResponse', success: boolean } }
+export interface UpdatePersonalDataMutation { __typename?: 'Mutation', updatePersonalData: { __typename?: 'SuccessResponse', success: boolean, pendingEmail?: string | null } }
 
 export type SetNewPasswordMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -640,6 +642,7 @@ export const ConfirmEmailDocument = gql`
       createdAt
       isGoogleUserUserWithoutPassword
     }
+    emailChanged
   }
 }
     `;
@@ -1215,6 +1218,7 @@ export const UpdatePersonalDataDocument = gql`
     mutation UpdatePersonalData($userId: ID!, $displayName: String, $email: String) {
   updatePersonalData(userId: $userId, displayName: $displayName, email: $email) {
     success
+    pendingEmail
   }
 }
     `;
