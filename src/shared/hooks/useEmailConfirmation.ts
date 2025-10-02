@@ -7,7 +7,7 @@ import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { showResendConfirmationEmail, showSuccessfulSignUp } from 'shared/stores/modal';
 
 export const useEmailConfirmation = (email?: string | null, token?: string | null) => {
-  const { user, isAuthLoading } = useAuthStore();
+  const { isAuthLoading } = useAuthStore();
   const hasProcessedRef = useRef(false);
 
   const onCompleted = useCallback((data: ConfirmEmailMutation) => {
@@ -19,21 +19,15 @@ export const useEmailConfirmation = (email?: string | null, token?: string | nul
     }
   }, []);
 
-  const onError = useCallback(
-    (error: ApolloError) => {
-      const alreadyConfirmedError = error.graphQLErrors.find((e) => e.extensions?.code === 'EMAIL_ALREADY_CONFIRMED');
-      if (alreadyConfirmedError) {
-        toast.error('Email is already confirmed', { position: 'top-center' });
-        return;
-      }
-      const tokenExpired = error.graphQLErrors.some((e) => e.extensions?.code === 'TOKEN_EXPIRED');
-      if (!user) {
-        console.log('tokenExpired', tokenExpired);
-        showResendConfirmationEmail(tokenExpired);
-      }
-    },
-    [user],
-  );
+  const onError = useCallback((error: ApolloError) => {
+    const alreadyConfirmedError = error.graphQLErrors.find((e) => e.extensions?.code === 'EMAIL_ALREADY_CONFIRMED');
+    if (alreadyConfirmedError) {
+      toast.error('Email is already confirmed', { position: 'top-center' });
+      return;
+    }
+    const tokenExpired = error.graphQLErrors.some((e) => e.extensions?.code === 'TOKEN_EXPIRED');
+    showResendConfirmationEmail(tokenExpired);
+  }, []);
 
   const [confirmEmailMutation] = useConfirmEmailMutation({
     onCompleted,
@@ -53,5 +47,5 @@ export const useEmailConfirmation = (email?: string | null, token?: string | nul
       confirmEmailMutation({ variables: { token, email } });
       // }
     }
-  }, [token, email, user, isAuthLoading, confirmEmailMutation]);
+  }, [token, email, isAuthLoading, confirmEmailMutation]);
 };
