@@ -10,6 +10,7 @@ import { MyReviews } from 'pages/MyReviews';
 import { NotFoundPage } from 'pages/NotFoundPage';
 import { PlacePage } from 'pages/PlacePage';
 import { PrivacyPolicyPage } from 'pages/PrivacyPolicyPage';
+import { ResetPasswordPage } from 'pages/ResetPasswordPage';
 import { AppRoutes, RoutePaths } from 'shared/constants';
 import { PrivateRoute } from '../../ui/PrivateRoute';
 
@@ -55,6 +56,10 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.CONFIRM_EMAIL]: {
     path: RoutePaths.confirmEmail,
     element: <ConfirmEmailPage />,
+  },
+  [AppRoutes.RESET_PASSWORD]: {
+    path: RoutePaths.resetPassword,
+    element: <ResetPasswordPage />,
   },
   [AppRoutes.PRIVACY]: {
     path: RoutePaths.privacy,

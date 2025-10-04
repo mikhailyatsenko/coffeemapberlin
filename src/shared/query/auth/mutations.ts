@@ -70,3 +70,27 @@ export const RESEND_CONFIRMATION_EMAIL = gql`
     }
   }
 `;
+
+export const REQUEST_PASSWORD_RESET = gql`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email) {
+      success
+    }
+  }
+`;
+
+export const VALIDATE_PASSWORD_RESET_TOKEN = gql`
+  mutation ValidatePasswordResetToken($email: String!, $token: String!) {
+    validatePasswordResetToken(email: $email, token: $token) {
+      success
+    }
+  }
+`;
+
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword($email: String!, $token: String!, $newPassword: String!) {
+    resetPassword(email: $email, token: $token, newPassword: $newPassword) {
+      success
+    }
+  }
+`;

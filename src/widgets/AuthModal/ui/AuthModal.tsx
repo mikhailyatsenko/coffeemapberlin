@@ -12,6 +12,7 @@ import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { ConfirmEmail } from '../components/ConfirmEmail';
 import { GuestFavoritesInfo } from '../components/GuestFavoritesInfo';
 import { LoginRequired } from '../components/LoginRequired';
+import { RequestPasswordReset } from '../components/RequestPasswordReset';
 import { ResendConfirmEmail } from '../components/ResendConfirmEmail';
 import { SuccessfulSignUp } from '../components/SuccessfulSignUp';
 import cls from './AuthModal.module.scss';
@@ -67,6 +68,8 @@ export const AuthModal = () => {
         return <ResendConfirmEmail onResend={hideModal} isExpired={true} />;
       case ModalContentVariant.ResendConfirmationEmailByError:
         return <ResendConfirmEmail onResend={hideModal} isExpired={false} />;
+      case ModalContentVariant.RequestPasswordReset:
+        return <RequestPasswordReset onSent={hideModal} />;
       default:
         return null;
     }

@@ -4,6 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { client } from 'shared/config/apolloClient';
 import { useSignInWithEmailMutation } from 'shared/generated/graphql';
 import { checkAuth } from 'shared/stores/auth';
+import { showRequestPasswordReset } from 'shared/stores/modal';
 import { revalidatePlaces } from 'shared/stores/places';
 import { FormField } from 'shared/ui/FormField';
 import { Loader } from 'shared/ui/Loader';
@@ -73,6 +74,15 @@ export const SignInWithEmail = ({
           </RegularButton>
         </form>
       </FormProvider>
+      <div className={cls.forgotPassword}>
+        <span
+          onClick={() => {
+            showRequestPasswordReset();
+          }}
+        >
+          Forgot password?
+        </span>
+      </div>
       <div className={cls.noAccount}>
         No account?{' '}
         <span

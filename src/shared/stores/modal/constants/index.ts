@@ -9,6 +9,7 @@ export enum ModalContentVariant {
   ConfirmEmail = 'ConfirmEmail',
   ResendConfirmationEmailByExpired = 'ResendConfirmationEmailByExpired',
   ResendConfirmationEmailByError = 'ResendConfirmationEmailByError',
+  RequestPasswordReset = 'RequestPasswordReset',
 
   Hidden = 'Hidden',
 }
