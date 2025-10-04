@@ -50,6 +50,19 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
     }
   };
 
+  const handleRatePlaceClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (process.env.VITE_ENV !== 'development') {
+      window.gtag('event', 'rate_place_click', {
+        item_id: placeId,
+        item_name: 'click on rate place',
+        category: 'engagement',
+      });
+    }
+    setShowRateNow(true);
+  };
+
   const { __typename: _omit, ...charCounts } = characteristicCounts;
 
   const hasUserInteracted =
@@ -62,20 +75,12 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
           variant={'ghost'}
           theme={'neutral'}
           rightIcon={<EditIcon width={16} height={16} />}
-          onClick={() => {
-            setShowRateNow(true);
-          }}
+          onClick={handleRatePlaceClick}
         >
           {currentUserReview?.userRating ? `Your given rating: ${currentUserReview?.userRating}` : 'Edit your feedback'}
         </RegularButton>
       ) : (
-        <RegularButton
-          className={cls.primaryBtn}
-          onClick={() => {
-            setShowRateNow(true);
-          }}
-          type="button"
-        >
+        <RegularButton className={cls.primaryBtn} onClick={handleRatePlaceClick} type="button">
           Rate place
         </RegularButton>
       )}
