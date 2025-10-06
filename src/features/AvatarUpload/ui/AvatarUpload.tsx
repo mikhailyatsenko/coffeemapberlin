@@ -5,11 +5,6 @@ import { useUploadAvatarMutation, useDeleteAvatarMutation } from 'shared/generat
 import { checkAuth, useAuthStore } from 'shared/stores/auth';
 import { Loader } from 'shared/ui/Loader';
 
-interface UploadResponse {
-  fileUrl?: string;
-  error?: string;
-}
-
 export const AvatarUpload: React.FC = () => {
   const { user } = useAuthStore();
 
@@ -21,10 +16,25 @@ export const AvatarUpload: React.FC = () => {
 
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
+  const fileToBase64 = async (file: File): Promise<string> => {
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result.split(',')[1]);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement> | null) => {
     if (event?.target.files && event.target.files.length > 0) {
-      if (event.target.files[0].size > 200 * 1024) {
-        setIsError('File size exceeds 200KB. Please upload a smaller file.');
+      console.log(event.target.files[0].size);
+      if (event.target.files[0].size > 5 * 1024 * 1024) {
+        setIsError('File size exceeds 5MB. Please upload a smaller file.');
         return;
       }
       setFile(event.target.files[0]);
@@ -36,53 +46,33 @@ export const AvatarUpload: React.FC = () => {
     if (!file || !user) return;
 
     setIsUploading(true);
-
-    const formData = new FormData();
-    formData.append('userId', user.id);
-    formData.append('avatar', file);
+    setIsError(null);
 
     try {
-      const response = await fetch(
-        process.env.VITE_ENV === 'development'
-          ? 'http://localhost:3000/upload-avatar'
-          : 'https://yatsenko.site/upload-avatar',
-        {
-          method: 'POST',
-          body: formData,
-          credentials: 'include',
-        },
-      );
-
-      const responseData: UploadResponse = await response.json();
-
-      if (responseData.error) {
-        setIsError(responseData.error);
-        setIsUploading(false);
-        return;
-      }
-
-      if (!responseData.fileUrl) {
-        setIsError('Failed to get file URL from server');
-        setIsUploading(false);
-        return;
-      }
+      const fileBuffer = await fileToBase64(file);
 
       const { data } = await uploadAvatar({
         variables: {
           userId: user.id,
-          fileUrl: responseData.fileUrl,
+          fileBuffer,
+          fileName: file.name,
         },
       });
 
       if (uploadError?.message) {
-        setIsUploading(false);
         setIsError(uploadError.message);
+        setIsUploading(false);
+        return;
       }
 
       if (data?.uploadAvatar.success) {
         await checkAuth();
         setIsUploading(false);
         toast.success('Avatar uploaded successfully');
+        setFile(null);
+      } else {
+        setIsError('Failed to upload avatar');
+        setIsUploading(false);
       }
     } catch (error) {
       setIsError('An unexpected error occurred during avatar upload.');
@@ -91,10 +81,11 @@ export const AvatarUpload: React.FC = () => {
   };
 
   const handleDeleteAvatar = async () => {
-    const isConfirmed = window.confirm('Deleting avatar. Continue?');
+    const isConfirmed = window.confirm('Delete avatar. Continue?');
     if (!isConfirmed) return;
 
     setIsUploading(true);
+    setIsError(null);
 
     try {
       const { data } = await deleteAvatar();
@@ -108,8 +99,11 @@ export const AvatarUpload: React.FC = () => {
       if (data?.deleteAvatar.success) {
         await checkAuth();
         toast.success('Avatar deleted successfully');
+      } else {
+        setIsError('Failed to delete avatar');
       }
     } catch (error) {
+      console.error('Delete error:', error);
       setIsError('An unexpected error occurred during avatar deletion.');
     }
 

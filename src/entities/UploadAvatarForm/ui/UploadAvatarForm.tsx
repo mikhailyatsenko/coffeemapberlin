@@ -50,7 +50,7 @@ export const UploadAvatarForm = ({
             </div>
             <div className={cls.pictureRequirements}>
               <h4>Profile picture</h4>
-              <p>PNG, JPEG under 200KB</p>
+              <p>PNG, JPEG under 5MB</p>
             </div>
           </div>
         )}

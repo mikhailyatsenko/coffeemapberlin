@@ -119,7 +119,7 @@ export interface Mutation {
   toggleCharacteristic: SuccessResponse;
   toggleFavorite: Scalars['Boolean']['output'];
   updatePersonalData: SuccessResponse;
-  uploadAvatar: SuccessResponse;
+  uploadAvatar: UploadAvatarResponse;
   validatePasswordResetToken: SuccessResponse;
 }
 
@@ -216,7 +216,8 @@ export interface MutationupdatePersonalDataArgs {
 
 
 export interface MutationuploadAvatarArgs {
-  fileUrl: Scalars['String']['input'];
+  fileBuffer: Scalars['String']['input'];
+  fileName: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
 }
 
@@ -319,6 +320,13 @@ export interface Review {
 export interface SuccessResponse {
   __typename?: 'SuccessResponse';
   pendingEmail?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+}
+
+export interface UploadAvatarResponse {
+  __typename?: 'UploadAvatarResponse';
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  fileId?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 }
 
@@ -510,11 +518,12 @@ export interface SetNewPasswordMutation { __typename?: 'Mutation', setNewPasswor
 
 export type UploadAvatarMutationVariables = Exact<{
   userId: Scalars['ID']['input'];
-  fileUrl: Scalars['String']['input'];
+  fileBuffer: Scalars['String']['input'];
+  fileName: Scalars['String']['input'];
 }>;
 
 
-export interface UploadAvatarMutation { __typename?: 'Mutation', uploadAvatar: { __typename?: 'SuccessResponse', success: boolean } }
+export interface UploadAvatarMutation { __typename?: 'Mutation', uploadAvatar: { __typename?: 'UploadAvatarResponse', success: boolean, fileId?: string | null, avatarUrl?: string | null } }
 
 export type DeleteAvatarMutationVariables = Exact<Record<string, never>>;
 
@@ -1437,9 +1446,11 @@ export type SetNewPasswordMutationHookResult = ReturnType<typeof useSetNewPasswo
 export type SetNewPasswordMutationResult = Apollo.MutationResult<SetNewPasswordMutation>;
 export type SetNewPasswordMutationOptions = Apollo.BaseMutationOptions<SetNewPasswordMutation, SetNewPasswordMutationVariables>;
 export const UploadAvatarDocument = gql`
-    mutation UploadAvatar($userId: ID!, $fileUrl: String!) {
-  uploadAvatar(userId: $userId, fileUrl: $fileUrl) {
+    mutation UploadAvatar($userId: ID!, $fileBuffer: String!, $fileName: String!) {
+  uploadAvatar(userId: $userId, fileBuffer: $fileBuffer, fileName: $fileName) {
     success
+    fileId
+    avatarUrl
   }
 }
     `;
@@ -1459,7 +1470,8 @@ export type UploadAvatarMutationFn = Apollo.MutationFunction<UploadAvatarMutatio
  * const [uploadAvatarMutation, { data, loading, error }] = useUploadAvatarMutation({
  *   variables: {
  *      userId: // value for 'userId'
- *      fileUrl: // value for 'fileUrl'
+ *      fileBuffer: // value for 'fileBuffer'
+ *      fileName: // value for 'fileName'
  *   },
  * });
  */

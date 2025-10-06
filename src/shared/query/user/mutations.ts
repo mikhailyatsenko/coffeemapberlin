@@ -18,9 +18,11 @@ export const SET_NEW_PASSWORD = gql`
 `;
 
 export const UPLOAD_AVATAR = gql`
-  mutation UploadAvatar($userId: ID!, $fileUrl: String!) {
-    uploadAvatar(userId: $userId, fileUrl: $fileUrl) {
+  mutation UploadAvatar($userId: ID!, $fileBuffer: String!, $fileName: String!) {
+    uploadAvatar(userId: $userId, fileBuffer: $fileBuffer, fileName: $fileName) {
       success
+      fileId
+      avatarUrl
     }
   }
 `;
