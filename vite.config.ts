@@ -18,7 +18,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre') || id.includes('maplibre-styles')) {
+          if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre')) {
             return 'vendor-maplibre';
           }
           if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom'))

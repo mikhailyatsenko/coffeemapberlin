@@ -1,5 +1,4 @@
 import './index.scss';
-import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { ApolloProvider } from '@apollo/client';
 import ReactDOM from 'react-dom/client';

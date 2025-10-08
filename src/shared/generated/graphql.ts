@@ -120,6 +120,7 @@ export interface Mutation {
   toggleFavorite: Scalars['Boolean']['output'];
   updatePersonalData: SuccessResponse;
   uploadAvatar: UploadAvatarResponse;
+  uploadReviewImages: UploadReviewImagesResponse;
   validatePasswordResetToken: SuccessResponse;
 }
 
@@ -219,6 +220,12 @@ export interface MutationuploadAvatarArgs {
   fileBuffer: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
+}
+
+
+export interface MutationuploadReviewImagesArgs {
+  images: Array<Scalars['String']['input']>;
+  placeId: Scalars['ID']['input'];
 }
 
 
@@ -327,6 +334,13 @@ export interface UploadAvatarResponse {
   __typename?: 'UploadAvatarResponse';
   avatarUrl?: Maybe<Scalars['String']['output']>;
   fileId?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+}
+
+export interface UploadReviewImagesResponse {
+  __typename?: 'UploadReviewImagesResponse';
+  count: Scalars['Int']['output'];
+  filePaths: Array<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 }
 
@@ -485,6 +499,14 @@ export type DeleteReviewMutationVariables = Exact<{
 
 
 export interface DeleteReviewMutation { __typename?: 'Mutation', deleteReview: { __typename?: 'DeleteReviewResult', reviewId: string, averageRating: number, ratingCount: number } }
+
+export type UploadReviewImagesMutationVariables = Exact<{
+  placeId: Scalars['ID']['input'];
+  images: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export interface UploadReviewImagesMutation { __typename?: 'Mutation', uploadReviewImages: { __typename?: 'UploadReviewImagesResponse', success: boolean, count: number, filePaths: string[] } }
 
 export type PlaceReviewsQueryVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1273,6 +1295,42 @@ export function useDeleteReviewMutation(baseOptions?: Apollo.MutationHookOptions
 export type DeleteReviewMutationHookResult = ReturnType<typeof useDeleteReviewMutation>;
 export type DeleteReviewMutationResult = Apollo.MutationResult<DeleteReviewMutation>;
 export type DeleteReviewMutationOptions = Apollo.BaseMutationOptions<DeleteReviewMutation, DeleteReviewMutationVariables>;
+export const UploadReviewImagesDocument = gql`
+    mutation UploadReviewImages($placeId: ID!, $images: [String!]!) {
+  uploadReviewImages(placeId: $placeId, images: $images) {
+    success
+    count
+    filePaths
+  }
+}
+    `;
+export type UploadReviewImagesMutationFn = Apollo.MutationFunction<UploadReviewImagesMutation, UploadReviewImagesMutationVariables>;
+
+/**
+ * __useUploadReviewImagesMutation__
+ *
+ * To run a mutation, you first call `useUploadReviewImagesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadReviewImagesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadReviewImagesMutation, { data, loading, error }] = useUploadReviewImagesMutation({
+ *   variables: {
+ *      placeId: // value for 'placeId'
+ *      images: // value for 'images'
+ *   },
+ * });
+ */
+export function useUploadReviewImagesMutation(baseOptions?: Apollo.MutationHookOptions<UploadReviewImagesMutation, UploadReviewImagesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadReviewImagesMutation, UploadReviewImagesMutationVariables>(UploadReviewImagesDocument, options);
+      }
+export type UploadReviewImagesMutationHookResult = ReturnType<typeof useUploadReviewImagesMutation>;
+export type UploadReviewImagesMutationResult = Apollo.MutationResult<UploadReviewImagesMutation>;
+export type UploadReviewImagesMutationOptions = Apollo.BaseMutationOptions<UploadReviewImagesMutation, UploadReviewImagesMutationVariables>;
 export const PlaceReviewsDocument = gql`
     query PlaceReviews($placeId: ID!) {
   placeReviews(placeId: $placeId) {
