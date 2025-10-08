@@ -29,13 +29,3 @@ export const DELETE_REVIEW = gql`
     }
   }
 `;
-
-export const UPLOAD_REVIEW_IMAGES = gql`
-  mutation UploadReviewImages($placeId: ID!, $images: [String!]!) {
-    uploadReviewImages(placeId: $placeId, images: $images) {
-      success
-      count
-      filePaths
-    }
-  }
-`;
