@@ -90,9 +90,9 @@
       "eslint --fix --max-warnings=0 --no-ignore"
     ],
     "*.{css,scss}": [
-      "stylelint --fix"
+      "stylelint --fix --allow-empty-input"
     ],
-    "!public/maplibre-gl.css": []
+    "!public/css/maplibre.css": []
   },
   "overrides": {
     "@typescript-eslint/parser": "^8.0.1",
