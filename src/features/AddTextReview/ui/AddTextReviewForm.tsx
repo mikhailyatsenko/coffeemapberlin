@@ -1,12 +1,15 @@
 import clsx from 'clsx';
 import { debounce } from 'lodash-es';
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
+import { client } from 'shared/config/apolloClient';
 import { useAddTextReviewMutation, PlaceReviewsDocument } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import { showLoginRequired } from 'shared/stores/modal';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { UploadReviewImages } from '../components/UploadReviewImages/ui/UploadReviewImages';
 import { useAddTextReviewDraftStore } from '../model';
-import { type AddTextReviewFormProps } from '../types';
+import { type ImageUploadProgress, type AddTextReviewFormProps } from '../types';
+import { handleImgUpload } from '../utils/handleImgUpload';
 import cls from './AddTextReviewForm.module.scss';
 
 const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
@@ -21,16 +24,13 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const clearDraft = useAddTextReviewDraftStore((s) => s.clearDraft);
   const [text, setText] = useState(initialValue || draftText || '');
   const [error, setError] = useState<string | null>(null);
+  const [imgsToUpload, setImgsToUpload] = useState<File[]>([]);
+  const [filesProgress, setFilesProgress] = useState<ImageUploadProgress[]>([]);
+  const [isImgUploadingProcessing] = useState(false);
 
   const { user } = useAuthStore();
 
   const [addTextReview, { loading, error: apolloError }] = useAddTextReviewMutation({
-    refetchQueries: [
-      {
-        query: PlaceReviewsDocument,
-        variables: { placeId },
-      },
-    ],
     awaitRefetchQueries: true,
   });
 
@@ -91,10 +91,22 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           showLoginRequired();
           return;
         }
-        await addTextReview({ variables: { placeId, text: trimmed } });
-        // Only clear text and draft if the operation was successful
+
+        const result = await addTextReview({
+          variables: { placeId, text: trimmed, reviewImages: imgsToUpload.length },
+        });
+        const reviewId = result.data?.addTextReview?.reviewId;
+        if (reviewId && imgsToUpload.length > 0) {
+          await handleImgUpload(imgsToUpload, placeId, reviewId, setFilesProgress);
+          console.log('completed');
+        }
+
         clearDraft(placeId);
         onSubmitted?.();
+
+        await client.refetchQueries({
+          include: [PlaceReviewsDocument],
+        });
       } catch (err) {
         // Apollo errors are handled by useEffect, this is for other errors
         const errorMessage = err instanceof Error ? err.message : 'Failed to submit review. Please try again.';
@@ -102,7 +114,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         console.error('Error adding or updating review:', err);
       }
     },
-    [text, user, addTextReview, placeId, clearDraft, onSubmitted],
+    [text, user, imgsToUpload, addTextReview, placeId, clearDraft, onSubmitted],
   );
   return (
     <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
@@ -126,8 +138,15 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         placeholder={initialValue ? 'Edit your review...' : 'Write your review...'}
         rows={4}
       />
+
       {error && <div className={cls.error}>{error}</div>}
       <div className={cls.actions}>
+        <UploadReviewImages
+          setImgsToUpload={setImgsToUpload}
+          filesProgress={filesProgress}
+          setFilesProgress={setFilesProgress}
+          isProcessing={isImgUploadingProcessing}
+        />
         {initialValue && (
           <RegularButton
             variant="ghost"
@@ -141,7 +160,11 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           </RegularButton>
         )}
         <RegularButton type="submit" variant="solid" disabled={loading || text.trim().length === 0}>
-          {loading ? 'Sending review ...' : initialValue ? 'Update review' : 'Submit review'}
+          {loading || isImgUploadingProcessing
+            ? 'Sending review ...'
+            : initialValue
+              ? 'Update review'
+              : 'Submit review'}
         </RegularButton>
       </div>
     </form>

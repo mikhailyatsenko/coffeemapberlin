@@ -20,6 +20,7 @@
   "dependencies": {
     "@apollo/client": "^3.10.8",
     "@hookform/resolvers": "^3.9.0",
+    "@imagekit/react": "5.0.1",
     "@react-oauth/google": "^0.12.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

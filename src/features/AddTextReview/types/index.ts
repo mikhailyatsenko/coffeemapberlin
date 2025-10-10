@@ -5,3 +5,10 @@ export interface AddTextReviewFormProps {
   onSubmitted?: () => void;
   onCancel?: () => void;
 }
+
+export interface ImageUploadProgress {
+  name: string;
+  progress: number; // 0-100
+  localUrl: string;
+  error?: string;
+}
