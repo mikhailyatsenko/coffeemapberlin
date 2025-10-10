@@ -1,10 +1,15 @@
+.UploadReviewImages {
+  display: flex;
+  flex: 1;
+}
+
 .imageGrid {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 6px;
   list-style: none;
   padding: 0;
-  margin: 0 0 16px 0;
 }
 
 .imageItem {
@@ -14,7 +19,7 @@
 .imageWrapper {
   position: relative;
   width: 100%;
-  padding-bottom: 100%; /* Квадратное соотношение сторон */
+  padding-bottom: 100%;
   border-radius: 8px;
   overflow: hidden;
   background-color: #f0f0f0;
@@ -83,4 +88,10 @@
   padding: 8px;
   text-align: center;
   z-index: 1;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
