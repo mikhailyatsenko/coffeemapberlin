@@ -1,19 +1,17 @@
 import React, { useRef } from 'react';
-import { type ImageUploadProgress } from 'features/AddTextReview/types';
+import { type ImagesWrapper } from 'features/AddTextReview/types';
 import { resizeAndConvertToJpeg } from 'shared/lib/image/processImage';
 import { RegularButton } from 'shared/ui/RegularButton';
 
 interface UploadReviewImagesProps {
-  setImgsToUpload: (imgs: File[]) => void;
-  filesProgress: ImageUploadProgress[];
-  setFilesProgress: (filesProgress: ImageUploadProgress[]) => void;
+  imagesWrappers: ImagesWrapper[];
+  setImagesWrappers: (imagesWrapper: ImagesWrapper[]) => void;
   isProcessing: boolean;
 }
 
 export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
-  setImgsToUpload,
-  filesProgress,
-  setFilesProgress,
+  imagesWrappers,
+  setImagesWrappers,
   isProcessing,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -36,11 +34,11 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
           return new File([resized], img.name, { type: resized.type || 'image/jpeg' });
         }),
       );
-      setImgsToUpload(resizedFiles);
-      setFilesProgress(limited.map((f) => ({ name: f.name, progress: 0, localUrl: URL.createObjectURL(f) })));
+      setImagesWrappers(
+        resizedFiles.map((f) => ({ name: f.name, file: f, progress: 0, localUrl: URL.createObjectURL(f) })),
+      );
     } catch (error) {
-      setImgsToUpload([]);
-      setFilesProgress([]);
+      setImagesWrappers([]);
     }
   };
 
@@ -48,16 +46,16 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
     <div>
       <input ref={inputRef} type="file" accept="image/*" multiple onChange={onChange} style={{ display: 'none' }} />
 
-      {!!filesProgress.length && (
+      {!!imagesWrappers.length && (
         <ul>
-          {filesProgress.map((f) => (
+          {imagesWrappers.map((f) => (
             <li key={f.name}>
               <img className="" src={f.localUrl} alt={f.name} />
             </li>
           ))}
         </ul>
       )}
-      {!filesProgress.length && (
+      {!imagesWrappers.length && (
         <RegularButton
           leftIcon={<span>📎</span>}
           size="sm"

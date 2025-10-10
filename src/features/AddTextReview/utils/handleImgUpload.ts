@@ -5,7 +5,7 @@ import {
   ImageKitUploadNetworkError,
   upload,
 } from '@imagekit/react';
-import { type ImageUploadProgress } from '../types';
+import { type ImagesWrapper } from '../types';
 
 const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'https://yatsenko.site/';
 
@@ -33,20 +33,20 @@ const authenticator = async () => {
 };
 
 export const handleImgUpload = async (
-  fileInput: File[],
+  imagesWrappers: ImagesWrapper[],
   placeId: string,
   reviewId: string,
-  setFilesProgress: React.Dispatch<React.SetStateAction<ImageUploadProgress[]>>,
+  setImagesWrappers: React.Dispatch<React.SetStateAction<ImagesWrapper[]>>,
 ) => {
   // Access the file input element using the ref
   const abortController = new AbortController();
-  if (!fileInput || fileInput.length === 0) {
+  if (!imagesWrappers || imagesWrappers.length === 0) {
     console.error('No files to upload');
     alert('Please select a file to upload');
     return;
   }
-  for (let i = 0; i < fileInput.length; i++) {
-    const file = fileInput[i];
+  for (let i = 0; i < imagesWrappers.length; i++) {
+    const file = imagesWrappers[i].file;
 
     // Retrieve authentication parameters for the upload.
     let authParams;
@@ -71,7 +71,7 @@ export const handleImgUpload = async (
         useUniqueFileName: false,
         // Progress callback to update upload progress state
         onProgress: (event: ProgressEvent) => {
-          setFilesProgress((prev) =>
+          setImagesWrappers((prev) =>
             prev.map((item, index) => (index === i ? { ...item, progress: (event.loaded / event.total) * 100 } : item)),
           );
         },

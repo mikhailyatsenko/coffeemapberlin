@@ -8,7 +8,7 @@ import { showLoginRequired } from 'shared/stores/modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { UploadReviewImages } from '../components/UploadReviewImages/ui/UploadReviewImages';
 import { useAddTextReviewDraftStore } from '../model';
-import { type ImageUploadProgress, type AddTextReviewFormProps } from '../types';
+import { type ImagesWrapper, type AddTextReviewFormProps } from '../types';
 import { handleImgUpload } from '../utils/handleImgUpload';
 import cls from './AddTextReviewForm.module.scss';
 
@@ -24,8 +24,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const clearDraft = useAddTextReviewDraftStore((s) => s.clearDraft);
   const [text, setText] = useState(initialValue || draftText || '');
   const [error, setError] = useState<string | null>(null);
-  const [imgsToUpload, setImgsToUpload] = useState<File[]>([]);
-  const [filesProgress, setFilesProgress] = useState<ImageUploadProgress[]>([]);
+  const [imagesWrappers, setImagesWrappers] = useState<ImagesWrapper[]>([]);
   const [isImgUploadingProcessing] = useState(false);
 
   const { user } = useAuthStore();
@@ -93,11 +92,11 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         }
 
         const result = await addTextReview({
-          variables: { placeId, text: trimmed, reviewImages: imgsToUpload.length },
+          variables: { placeId, text: trimmed, reviewImages: imagesWrappers.length },
         });
         const reviewId = result.data?.addTextReview?.reviewId;
-        if (reviewId && imgsToUpload.length > 0) {
-          await handleImgUpload(imgsToUpload, placeId, reviewId, setFilesProgress);
+        if (reviewId && imagesWrappers.length > 0) {
+          await handleImgUpload(imagesWrappers, placeId, reviewId, setImagesWrappers);
           console.log('completed');
         }
 
@@ -114,7 +113,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         console.error('Error adding or updating review:', err);
       }
     },
-    [text, user, imgsToUpload, addTextReview, placeId, clearDraft, onSubmitted],
+    [text, user, imagesWrappers, addTextReview, placeId, clearDraft, onSubmitted],
   );
   return (
     <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
@@ -142,9 +141,8 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
       {error && <div className={cls.error}>{error}</div>}
       <div className={cls.actions}>
         <UploadReviewImages
-          setImgsToUpload={setImgsToUpload}
-          filesProgress={filesProgress}
-          setFilesProgress={setFilesProgress}
+          imagesWrappers={imagesWrappers}
+          setImagesWrappers={setImagesWrappers}
           isProcessing={isImgUploadingProcessing}
         />
         {initialValue && (

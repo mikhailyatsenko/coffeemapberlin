@@ -6,8 +6,9 @@ export interface AddTextReviewFormProps {
   onCancel?: () => void;
 }
 
-export interface ImageUploadProgress {
+export interface ImagesWrapper {
   name: string;
+  file: File;
   progress: number; // 0-100
   localUrl: string;
   error?: string;
