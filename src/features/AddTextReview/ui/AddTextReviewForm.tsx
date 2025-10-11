@@ -115,56 +115,97 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
     },
     [text, user, imagesWrappers, addTextReview, placeId, clearDraft, onSubmitted],
   );
+  // Generate unique IDs for accessibility
+  const textareaId = `review-text-${placeId}`;
+  const errorId = `review-error-${placeId}`;
+  const imagesId = `review-images-${placeId}`;
+
   return (
     <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
-      <textarea
-        disabled={loading}
-        ref={textareaRef}
-        className={cls.textarea}
-        value={text}
-        onChange={(e) => {
-          const next = e.target.value;
-          setText(next);
-          // Clear error when user starts typing
-          if (error) {
-            setError(null);
-          }
-          if (!initialValue) {
-            debouncedSetDraft(next);
-          }
-        }}
-        maxLength={1000}
-        placeholder={initialValue ? 'Edit your review...' : 'Write your review...'}
-        rows={4}
-      />
+      <fieldset>
+        <legend className="sr-only">Review Form</legend>
 
-      {error && <div className={cls.error}>{error}</div>}
-      <div className={cls.actions}>
-        <UploadReviewImages
-          imagesWrappers={imagesWrappers}
-          setImagesWrappers={setImagesWrappers}
-          isProcessing={isImgUploadingProcessing}
-        />
-        {initialValue && (
-          <RegularButton
-            variant="ghost"
-            theme="neutral"
-            type="button"
-            onClick={() => {
-              onCancel?.();
+        <div className={cls.textareaContainer}>
+          <label htmlFor={textareaId} className={cls.textareaLabel}>
+            {initialValue ? 'Edit your review' : 'Write your review'}
+            <span className={cls.required} aria-label="required">
+              *
+            </span>
+          </label>
+          <textarea
+            id={textareaId}
+            disabled={loading}
+            ref={textareaRef}
+            className={cls.textarea}
+            value={text}
+            onChange={(e) => {
+              const next = e.target.value;
+              setText(next);
+              // Clear error when user starts typing
+              if (error) {
+                setError(null);
+              }
+              if (!initialValue) {
+                debouncedSetDraft(next);
+              }
             }}
-          >
-            Cancel
-          </RegularButton>
+            maxLength={1000}
+            placeholder={initialValue ? 'Edit your review...' : 'Write your review...'}
+            rows={4}
+            aria-describedby={`${errorId} ${imagesId}`}
+            aria-required="true"
+            aria-invalid={error ? 'true' : 'false'}
+          />
+          <div className={cls.bottomArea}>
+            <UploadReviewImages
+              imagesWrappers={imagesWrappers}
+              setImagesWrappers={setImagesWrappers}
+              isProcessing={isImgUploadingProcessing}
+            />
+
+            <div className={cls.characterCount}>{text.length}/1000 characters</div>
+          </div>
+        </div>
+
+        {error && (
+          <div id={errorId} className={cls.error} role="alert" aria-live="polite">
+            {error}
+          </div>
         )}
-        <RegularButton type="submit" variant="solid" disabled={loading || text.trim().length === 0}>
-          {loading || isImgUploadingProcessing
-            ? 'Sending review ...'
-            : initialValue
-              ? 'Update review'
-              : 'Submit review'}
-        </RegularButton>
-      </div>
+
+        <div className={cls.actions}>
+          {initialValue && (
+            <RegularButton
+              variant="ghost"
+              theme="neutral"
+              type="button"
+              onClick={() => {
+                onCancel?.();
+              }}
+            >
+              Cancel
+            </RegularButton>
+          )}
+          <RegularButton
+            type="submit"
+            variant="solid"
+            disabled={loading || text.trim().length === 0}
+            aria-describedby={loading || isImgUploadingProcessing ? 'loading-status' : undefined}
+          >
+            {loading || isImgUploadingProcessing
+              ? 'Sending review ...'
+              : initialValue
+                ? 'Update review'
+                : 'Submit review'}
+          </RegularButton>
+        </div>
+
+        {(loading || isImgUploadingProcessing) && (
+          <div id="loading-status" className="sr-only" aria-live="polite">
+            {loading ? 'Submitting review...' : 'Processing images...'}
+          </div>
+        )}
+      </fieldset>
     </form>
   );
 };

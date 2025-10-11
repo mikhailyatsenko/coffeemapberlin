@@ -1,19 +1,16 @@
-.UploadReviewImages {
-  display: flex;
-  flex: 1;
-}
-
 .imageGrid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  width: fit-content;
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   list-style: none;
-  padding: 0;
+  padding: 8px;
+  border-radius: 8px;
+  padding: 8px;
 }
 
 .imageItem {
-  position: relative;
+  width: 60px;
 }
 
 .imageWrapper {

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { type ImagesWrapper } from 'features/AddTextReview/types';
-import { resizeAndConvertToJpeg } from 'shared/lib/image/processImage';
+import { resizeAndConvert } from 'shared/lib/image/processImage';
 import { RegularButton } from 'shared/ui/RegularButton';
 import styles from './UploadReviewImages.module.scss';
 
@@ -31,8 +31,10 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
     try {
       const resizedFiles = await Promise.all(
         limited.map(async (img) => {
-          const resized = await resizeAndConvertToJpeg(img);
-          return new File([resized], img.name, { type: resized.type || 'image/jpeg' });
+          const resized = await resizeAndConvert(img);
+
+          const originalName = img.name.replace(/\.[^/.]+$/, '');
+          return new File([resized] as BlobPart[], `${originalName}.jpg`, { type: resized.type || 'image/webp' });
         }),
       );
 
@@ -54,18 +56,15 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
   const handleRemoveImage = (index: number) => {
     const imageToRemove = imagesWrappers[index];
 
-    // Освобождаем URL
     if (imageToRemove.localUrl) {
       URL.revokeObjectURL(imageToRemove.localUrl);
     }
 
-    // Удаляем из массива
     const newImages = imagesWrappers.filter((_, i) => i !== index);
     setImagesWrappers(newImages);
   };
 
   const handleRemoveAll = () => {
-    // Освобождаем все URL
     imagesWrappers.forEach((img) => {
       if (img.localUrl) {
         URL.revokeObjectURL(img.localUrl);
@@ -74,8 +73,6 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
 
     setImagesWrappers([]);
   };
-
-  // Очистка URL при размонтировании
   useEffect(() => {
     return () => {
       imagesWrappers.forEach((img) => {
@@ -87,59 +84,91 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
   }, [imagesWrappers]);
 
   return (
-    <div className={styles.UploadReviewImages}>
-      <input ref={inputRef} type="file" accept="image/*" multiple onChange={onChange} style={{ display: 'none' }} />
+    <div role="group" aria-labelledby="images-label">
+      <div id="images-label" className="sr-only">
+        Review Images
+      </div>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={onChange}
+        style={{ display: 'none' }}
+        aria-label="Upload images for review"
+      />
 
       {!!imagesWrappers.length && (
         <>
-          <ul className={styles.imageGrid}>
+          <ul
+            className={styles.imageGrid}
+            role="list"
+            aria-label={`${imagesWrappers.length} image${imagesWrappers.length !== 1 ? 's' : ''} selected`}
+          >
             {imagesWrappers.map((f, index) => (
-              <li key={f.name} className={styles.imageItem}>
+              <li key={f.name} className={styles.imageItem} role="listitem">
                 <div className={styles.imageWrapper}>
-                  <img className={styles.thumbnail} src={f.localUrl} alt={f.name} />
+                  <img
+                    className={styles.thumbnail}
+                    src={f.localUrl}
+                    alt={`Review image ${index + 1}: ${f.name}`}
+                    loading="lazy"
+                  />
 
-                  {/* Прогресс бар */}
                   {!f.error && (
-                    <div className={styles.progressBar}>
+                    <div
+                      className={styles.progressBar}
+                      role="progressbar"
+                      aria-valuenow={f.progress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`Upload progress for ${f.name}: ${f.progress}%`}
+                    >
                       <div className={styles.progressFill} style={{ width: `${f.progress}%` }} />
                     </div>
                   )}
 
-                  {/* Индикатор ошибки */}
                   {f.error && (
-                    <div className={styles.errorOverlay}>
+                    <div className={styles.errorOverlay} role="alert" aria-live="polite">
                       <span>{f.error}</span>
                     </div>
                   )}
 
-                  {/* Кнопка удаления */}
                   <button
                     className={styles.removeButton}
                     onClick={() => {
                       handleRemoveImage(index);
                     }}
-                    aria-label="Remove image"
+                    aria-label={`Remove image ${index + 1}: ${f.name}`}
                     type="button"
                   >
-                    ✕
+                    <span aria-hidden="true">✕</span>
                   </button>
                 </div>
               </li>
             ))}
           </ul>
 
-          <div className={styles.actions}>
-            <RegularButton onClick={handleRemoveAll} variant="ghost" size="sm">
+          <div className={styles.actions} role="group" aria-label="Image actions">
+            <RegularButton
+              leftIcon={<span aria-hidden="true">❌</span>}
+              onClick={handleRemoveAll}
+              variant="ghost"
+              size="sm"
+              aria-label="Remove all images"
+            >
               Remove all
             </RegularButton>
 
             {imagesWrappers?.length < 10 && (
               <RegularButton
-                leftIcon={<span>📎</span>}
+                leftIcon={<span aria-hidden="true">📎</span>}
                 size="sm"
                 variant="ghost"
                 onClick={handlePick}
                 disabled={isProcessing}
+                aria-label={`Add more images (${10 - imagesWrappers.length} remaining)`}
               >
                 Add more
               </RegularButton>
@@ -150,11 +179,12 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
 
       {!imagesWrappers.length && (
         <RegularButton
-          leftIcon={<span>📎</span>}
+          leftIcon={<span aria-hidden="true">📎</span>}
           size="sm"
           variant="ghost"
           onClick={handlePick}
           disabled={isProcessing}
+          aria-label="Add images to review (up to 10 images allowed)"
         >
           <b>{isProcessing ? 'Processing images...' : 'Add images'}</b> (up to 10)
         </RegularButton>
