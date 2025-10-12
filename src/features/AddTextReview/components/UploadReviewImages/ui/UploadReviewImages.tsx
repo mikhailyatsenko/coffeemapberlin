@@ -135,16 +135,18 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
                     </div>
                   )}
 
-                  <button
-                    className={styles.removeButton}
-                    onClick={() => {
-                      handleRemoveImage(index);
-                    }}
-                    aria-label={`Remove image ${index + 1}: ${f.name}`}
-                    type="button"
-                  >
-                    <span aria-hidden="true">✕</span>
-                  </button>
+                  {!isProcessing && (
+                    <button
+                      className={styles.removeButton}
+                      onClick={() => {
+                        handleRemoveImage(index);
+                      }}
+                      aria-label={`Remove image ${index + 1}: ${f.name}`}
+                      type="button"
+                    >
+                      <span aria-hidden="true">✕</span>
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
@@ -157,6 +159,7 @@ export const UploadReviewImages: React.FC<UploadReviewImagesProps> = ({
               variant="ghost"
               size="sm"
               aria-label="Remove all images"
+              disabled={isProcessing}
             >
               Remove all
             </RegularButton>

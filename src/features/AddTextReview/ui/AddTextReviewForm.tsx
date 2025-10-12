@@ -25,13 +25,16 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const [text, setText] = useState(initialValue || draftText || '');
   const [error, setError] = useState<string | null>(null);
   const [imagesWrappers, setImagesWrappers] = useState<ImagesWrapper[]>([]);
-  const [isImgUploadingProcessing] = useState(false);
+  const [isImgUploadingProcessing, setIsImgUploadingProcessing] = useState(false);
 
   const { user } = useAuthStore();
 
-  const [addTextReview, { loading, error: apolloError }] = useAddTextReviewMutation({
+  const [addTextReview, { loading: isAddTextLoading, error: apolloError }] = useAddTextReviewMutation({
     awaitRefetchQueries: true,
   });
+
+  // Combined loading state for better UX
+  const isFormLoading = isAddTextLoading || isImgUploadingProcessing;
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -76,11 +79,30 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
     };
   }, [debouncedSetDraft]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Clean up image URLs to prevent memory leaks
+      imagesWrappers.forEach((img) => {
+        if (img.localUrl) {
+          URL.revokeObjectURL(img.localUrl);
+        }
+      });
+    };
+  }, [imagesWrappers]);
+
+  const overallUploadProgress = useMemo(() => {
+    return Math.round(imagesWrappers.reduce((acc, img) => acc + img.progress, 0) / imagesWrappers.length);
+  }, [imagesWrappers]);
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       const trimmed = text.trim();
       if (!trimmed) return;
+
+      // Prevent double submission
+      if (isFormLoading) return;
 
       // Clear previous error
       setError(null);
@@ -96,8 +118,15 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         });
         const reviewId = result.data?.addTextReview?.reviewId;
         if (reviewId && imagesWrappers.length > 0) {
-          await handleImgUpload(imagesWrappers, placeId, reviewId, setImagesWrappers);
-          console.log('completed');
+          try {
+            await handleImgUpload(imagesWrappers, placeId, reviewId, setImagesWrappers, setIsImgUploadingProcessing);
+            console.log('Image upload completed');
+          } catch (uploadError) {
+            console.error('Image upload failed:', uploadError);
+            // Reset upload state on error
+            setIsImgUploadingProcessing(false);
+            // Don't throw - let the form submission continue
+          }
         }
 
         clearDraft(placeId);
@@ -113,12 +142,14 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         console.error('Error adding or updating review:', err);
       }
     },
-    [text, user, imagesWrappers, addTextReview, placeId, clearDraft, onSubmitted],
+    [text, user, imagesWrappers, addTextReview, placeId, clearDraft, onSubmitted, isFormLoading],
   );
   // Generate unique IDs for accessibility
   const textareaId = `review-text-${placeId}`;
   const errorId = `review-error-${placeId}`;
   const imagesId = `review-images-${placeId}`;
+
+  console.log('isImgUploadingProcessing', isImgUploadingProcessing);
 
   return (
     <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
@@ -134,7 +165,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           </label>
           <textarea
             id={textareaId}
-            disabled={loading}
+            disabled={isFormLoading}
             ref={textareaRef}
             className={cls.textarea}
             value={text}
@@ -160,7 +191,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
             <UploadReviewImages
               imagesWrappers={imagesWrappers}
               setImagesWrappers={setImagesWrappers}
-              isProcessing={isImgUploadingProcessing}
+              isProcessing={isFormLoading}
             />
 
             <div className={cls.characterCount}>{text.length}/1000 characters</div>
@@ -179,6 +210,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
               variant="ghost"
               theme="neutral"
               type="button"
+              disabled={isFormLoading}
               onClick={() => {
                 onCancel?.();
               }}
@@ -189,20 +221,22 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           <RegularButton
             type="submit"
             variant="solid"
-            disabled={loading || text.trim().length === 0}
-            aria-describedby={loading || isImgUploadingProcessing ? 'loading-status' : undefined}
+            disabled={isFormLoading || text.trim().length === 0}
+            aria-describedby={isFormLoading ? 'loading-status' : undefined}
           >
-            {loading || isImgUploadingProcessing
+            {isAddTextLoading
               ? 'Sending review ...'
-              : initialValue
-                ? 'Update review'
-                : 'Submit review'}
+              : isImgUploadingProcessing
+                ? `Uploading images... ${overallUploadProgress}%`
+                : initialValue
+                  ? 'Update review'
+                  : 'Submit review'}
           </RegularButton>
         </div>
 
-        {(loading || isImgUploadingProcessing) && (
+        {isFormLoading && (
           <div id="loading-status" className="sr-only" aria-live="polite">
-            {loading ? 'Submitting review...' : 'Processing images...'}
+            {isAddTextLoading ? 'Submitting review...' : `Processing images... ${overallUploadProgress}%`}
           </div>
         )}
       </fieldset>
