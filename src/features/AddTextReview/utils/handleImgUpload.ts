@@ -7,7 +7,7 @@ import {
 } from '@imagekit/react';
 import { type ImagesWrapper } from '../types';
 
-const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'https://yatsenko.site/';
+const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'https://yatsenko.site';
 
 const authenticator = async (signal?: AbortSignal) => {
   try {
