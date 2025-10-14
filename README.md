@@ -35,8 +35,8 @@ The application on frontend follows the "Feature-Sliced Design" methodology. For
 The backend is built with Express and Mongoose for MongoDB integration.
 
 
-## Source
- You can access the backend [here](https://github.com/mikhailyatsenko/berlin-coffee-backend).
+### Backend:
+[![berlin-coffee-backend](https://github-readme-stats.vercel.app/api/pin/?username=mikhailyatsenko&repo=berlin-coffee-backend&theme=transparent&show_icons=true)](https://github.com/mikhailyatsenko/berlin-coffee-backend)
 
  ## How It Works
 <img src="https://raw.githubusercontent.com/mikhailyatsenko/mikhailyatsenko/main/img/coffeemap-gif.gif" alt="bvg-gif" width="600"/>
