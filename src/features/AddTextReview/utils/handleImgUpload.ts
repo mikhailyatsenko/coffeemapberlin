@@ -95,7 +95,6 @@ export const handleImgUpload = async (
         } else if (error instanceof ImageKitServerError) {
           errorMessage = 'Server error';
         }
-
         throw new Error(errorMessage);
       }
     });
