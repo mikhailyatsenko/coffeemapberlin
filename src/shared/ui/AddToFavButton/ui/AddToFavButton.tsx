@@ -104,8 +104,6 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
   );
 
   useEffect(() => {
-    console.log('isAnimating', isAnimating);
-
     if (isAnimating) {
       const timer = setTimeout(() => {
         setIsAnimating(false);

@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { debounce } from 'lodash-es';
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
+import toast from 'react-hot-toast';
+import { useDeleteReview } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
 import { useAddTextReviewMutation, PlaceReviewsDocument } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
@@ -26,12 +28,14 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [imagesWrappers, setImagesWrappers] = useState<ImagesWrapper[]>([]);
   const [isImgUploadingProcessing, setIsImgUploadingProcessing] = useState(false);
-
+  const abortControllerRef = useRef<AbortController | null>(null);
   const { user } = useAuthStore();
 
   const [addTextReview, { loading: isAddTextLoading, error: apolloError }] = useAddTextReviewMutation({
     awaitRefetchQueries: true,
   });
+
+  const { handleDeleteReview } = useDeleteReview(placeId);
 
   // Combined loading state for better UX
   const isFormLoading = isAddTextLoading || isImgUploadingProcessing;
@@ -95,17 +99,29 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
     return Math.round(imagesWrappers.reduce((acc, img) => acc + img.progress, 0) / imagesWrappers.length);
   }, [imagesWrappers]);
 
+  const cleanupReview = useCallback(
+    async (reviewId: string, reason: string) => {
+      console.log(`Cleaning up review ${reviewId}: ${reason}`);
+      try {
+        await handleDeleteReview(reviewId, 'deleteReviewText');
+      } catch (error) {
+        console.error('Failed to delete review during cleanup:', error);
+      }
+    },
+    [handleDeleteReview],
+  );
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       const trimmed = text.trim();
       if (!trimmed) return;
 
-      // Prevent double submission
       if (isFormLoading) return;
 
-      // Clear previous error
       setError(null);
+
+      abortControllerRef.current = new AbortController();
 
       try {
         if (!user) {
@@ -115,17 +131,35 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
 
         const result = await addTextReview({
           variables: { placeId, text: trimmed, reviewImages: imagesWrappers.length },
+          context: {
+            fetchOptions: {
+              signal: abortControllerRef.current.signal,
+            },
+          },
         });
+
         const reviewId = result.data?.addTextReview?.reviewId;
+
         if (reviewId && imagesWrappers.length > 0) {
           try {
-            await handleImgUpload(imagesWrappers, placeId, reviewId, setImagesWrappers, setIsImgUploadingProcessing);
-            console.log('Image upload completed');
+            await handleImgUpload(
+              imagesWrappers,
+              placeId,
+              reviewId,
+              setImagesWrappers,
+              setIsImgUploadingProcessing,
+              abortControllerRef.current.signal,
+            );
           } catch (uploadError) {
+            if (uploadError instanceof Error && uploadError.name === 'AbortError') {
+              await cleanupReview(reviewId, 'user cancelled during image upload');
+              setIsImgUploadingProcessing(false);
+              return;
+            }
+            await cleanupReview(reviewId, 'image upload failed');
             console.error('Image upload failed:', uploadError);
-            // Reset upload state on error
             setIsImgUploadingProcessing(false);
-            // Don't throw - let the form submission continue
+            return;
           }
         }
 
@@ -136,20 +170,39 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           include: [PlaceReviewsDocument],
         });
       } catch (err) {
-        // Apollo errors are handled by useEffect, this is for other errors
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
+
         const errorMessage = err instanceof Error ? err.message : 'Failed to submit review. Please try again.';
         setError(errorMessage);
         console.error('Error adding or updating review:', err);
+      } finally {
+        abortControllerRef.current = null;
       }
     },
-    [text, user, imagesWrappers, addTextReview, placeId, clearDraft, onSubmitted, isFormLoading],
+    [text, isFormLoading, user, addTextReview, placeId, imagesWrappers, clearDraft, onSubmitted, cleanupReview],
   );
+
+  const handleCancelSubmission = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setIsImgUploadingProcessing(false);
+      toast.error('Submission cancelled by user');
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
   // Generate unique IDs for accessibility
   const textareaId = `review-text-${placeId}`;
   const errorId = `review-error-${placeId}`;
   const imagesId = `review-images-${placeId}`;
-
-  console.log('isImgUploadingProcessing', isImgUploadingProcessing);
 
   return (
     <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
@@ -216,6 +269,17 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
               }}
             >
               Cancel
+            </RegularButton>
+          )}
+          {isFormLoading && (
+            <RegularButton
+              variant="outline"
+              theme="error"
+              type="button"
+              onClick={handleCancelSubmission}
+              aria-label="Cancel submission and image upload"
+            >
+              Cancel Upload
             </RegularButton>
           )}
           <RegularButton

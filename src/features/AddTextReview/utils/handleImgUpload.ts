@@ -9,11 +9,12 @@ import { type ImagesWrapper } from '../types';
 
 const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'https://yatsenko.site/';
 
-const authenticator = async () => {
+const authenticator = async (signal?: AbortSignal) => {
   try {
     // Perform the request to the upload authentication endpoint.
     const response = await fetch(BASE_URL + '/imagekit/auth', {
       headers: {},
+      signal,
     });
     if (!response.ok) {
       // If the server response is not successful, extract the error text for debugging.
@@ -38,50 +39,41 @@ export const handleImgUpload = async (
   reviewId: string,
   setImagesWrappers: React.Dispatch<React.SetStateAction<ImagesWrapper[]>>,
   setIsImgUploadingProcessing?: React.Dispatch<React.SetStateAction<boolean>>,
+  signal?: AbortSignal,
 ) => {
-  const abortController = new AbortController();
-
   if (!imagesWrappers || imagesWrappers.length === 0) {
     console.error('No files to upload');
     return;
   }
 
-  // Set loading state to true and reset progress
   setIsImgUploadingProcessing?.(true);
 
   try {
-    // Get all authentication tokens upfront for parallel uploads
-    const authPromises = imagesWrappers.map(async () => await authenticator());
-    const authResults = await Promise.allSettled(authPromises);
+    if (signal?.aborted) {
+      throw new DOMException('Upload cancelled', 'AbortError');
+    }
 
-    // Upload all images in parallel
+    const authPromises = imagesWrappers.map(async () => await authenticator(signal));
+    const authResults = await Promise.all(authPromises);
+
+    if (signal?.aborted) {
+      throw new DOMException('Upload cancelled', 'AbortError');
+    }
+
     const uploadPromises = imagesWrappers.map(async (imageWrapper, i) => {
       const file = imageWrapper.file;
-      const authResult = authResults[i];
-
-      // Check if authentication was successful
-      if (authResult.status === 'rejected') {
-        console.error('Failed to authenticate for upload:', authResult.reason);
-        setImagesWrappers((prev) =>
-          prev.map((item, index) => (index === i ? { ...item, error: 'Authentication failed' } : item)),
-        );
-        return;
-      }
-
-      const { signature, expire, token, publicKey } = authResult.value;
+      const { signature, expire, token, publicKey } = authResults[i];
 
       try {
         await upload({
-          // Authentication parameters
           expire,
           token,
           signature,
           publicKey,
           file,
           folder: `3welle/review-images/${placeId}/${reviewId}`,
-          fileName: `image_${i + 1}.jpg`, // Optionally set a custom file name
+          fileName: `image_${i + 1}.jpg`,
           useUniqueFileName: false,
-          // Progress callback to update upload progress state
           onProgress: (event: ProgressEvent) => {
             setImagesWrappers((prev) =>
               prev.map((item, index) =>
@@ -89,42 +81,33 @@ export const handleImgUpload = async (
               ),
             );
           },
-          // Abort signal to allow cancellation of the upload if needed.
-          abortSignal: abortController.signal,
+          abortSignal: signal,
         });
       } catch (error) {
-        // Handle specific error types provided by the ImageKit SDK.
         let errorMessage = 'Upload failed';
-
+        setImagesWrappers([]);
         if (error instanceof ImageKitAbortError) {
-          console.error('Upload aborted:', error.reason);
-          errorMessage = 'Upload was cancelled';
+          throw new DOMException('Upload cancelled', 'AbortError');
         } else if (error instanceof ImageKitInvalidRequestError) {
-          console.error('Invalid request:', error.message);
           errorMessage = 'Invalid request';
         } else if (error instanceof ImageKitUploadNetworkError) {
-          console.error('Network error:', error.message);
           errorMessage = 'Network error';
         } else if (error instanceof ImageKitServerError) {
-          console.error('Server error:', error.message);
           errorMessage = 'Server error';
-        } else {
-          console.error('Upload error:', error);
-          errorMessage = 'Upload failed';
         }
 
-        // Update the specific image with error
-        setImagesWrappers((prev) => prev.map((item, index) => (index === i ? { ...item, error: errorMessage } : item)));
+        throw new Error(errorMessage);
       }
     });
 
-    // Wait for all uploads to complete
-    await Promise.allSettled(uploadPromises);
-
+    await Promise.all(uploadPromises);
     setIsImgUploadingProcessing?.(false);
   } catch (error) {
-    // Handle any unexpected errors
-    console.error('Unexpected error during upload process:', error);
     setIsImgUploadingProcessing?.(false);
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+    console.error('Unexpected error:', error);
+    throw error instanceof Error ? error : new Error('Unexpected upload error');
   }
 };
