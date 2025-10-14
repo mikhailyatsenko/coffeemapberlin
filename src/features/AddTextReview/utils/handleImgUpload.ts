@@ -5,6 +5,7 @@ import {
   ImageKitUploadNetworkError,
   upload,
 } from '@imagekit/react';
+import toast from 'react-hot-toast';
 import { type ImagesWrapper } from '../types';
 
 const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'https://yatsenko.site';
@@ -27,6 +28,7 @@ const authenticator = async (signal?: AbortSignal) => {
     const { signature, expire, token, publicKey } = data;
     return { signature, expire, token, publicKey };
   } catch (error) {
+    toast.error('Uploading photos failed');
     // Log the original error for debugging before rethrowing a new error.
     console.error('Authentication error:', error);
     throw new Error('Authentication request failed');
