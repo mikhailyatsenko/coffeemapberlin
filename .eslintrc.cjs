@@ -14,6 +14,11 @@ module.exports = {
   ],
   overrides: [
     {
+      files: ['api/**/*.js'],
+      parserOptions: { project: null },
+      env: { node: true },
+    },
+    {
       env: {
         node: true,
       },

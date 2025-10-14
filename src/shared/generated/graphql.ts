@@ -132,6 +132,7 @@ export interface MutationaddRatingArgs {
 
 export interface MutationaddTextReviewArgs {
   placeId: Scalars['ID']['input'];
+  reviewImages?: InputMaybe<Scalars['Int']['input']>;
   text: Scalars['String']['input'];
 }
 
@@ -473,6 +474,7 @@ export interface AddRatingMutation { __typename?: 'Mutation', addRating: { __typ
 export type AddTextReviewMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
   text: Scalars['String']['input'];
+  reviewImages?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
@@ -1203,8 +1205,8 @@ export type AddRatingMutationHookResult = ReturnType<typeof useAddRatingMutation
 export type AddRatingMutationResult = Apollo.MutationResult<AddRatingMutation>;
 export type AddRatingMutationOptions = Apollo.BaseMutationOptions<AddRatingMutation, AddRatingMutationVariables>;
 export const AddTextReviewDocument = gql`
-    mutation AddTextReview($placeId: ID!, $text: String!) {
-  addTextReview(placeId: $placeId, text: $text) {
+    mutation AddTextReview($placeId: ID!, $text: String!, $reviewImages: Int) {
+  addTextReview(placeId: $placeId, text: $text, reviewImages: $reviewImages) {
     reviewId
     text
   }
@@ -1227,6 +1229,7 @@ export type AddTextReviewMutationFn = Apollo.MutationFunction<AddTextReviewMutat
  *   variables: {
  *      placeId: // value for 'placeId'
  *      text: // value for 'text'
+ *      reviewImages: // value for 'reviewImages'
  *   },
  * });
  */
