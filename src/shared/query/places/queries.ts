@@ -28,6 +28,22 @@ export const GET_PLACES = gql`
   }
 `;
 
+export const GET_FAVORITE_PLACES = gql`
+  query GetFavoritePlaces {
+    favoritePlaces {
+      id
+      name
+      address
+      image
+      instagram
+      averageRating
+      isFavorite
+      neighborhood
+      googleId
+    }
+  }
+`;
+
 export const GET_PLACE = gql`
   query Place($placeId: ID!) {
     place(placeId: $placeId) {

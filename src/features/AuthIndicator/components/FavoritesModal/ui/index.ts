@@ -1,0 +1,1 @@
+export { FavoritesModal } from './FavoritesModal';

@@ -88,6 +88,25 @@ export interface DeleteReviewResult {
   reviewId: Scalars['ID']['output'];
 }
 
+export interface FavoritePlace {
+  __typename?: 'FavoritePlace';
+  address: Scalars['String']['output'];
+  averageRating?: Maybe<Scalars['Float']['output']>;
+  googleId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  image: Scalars['String']['output'];
+  instagram: Scalars['String']['output'];
+  isFavorite: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  neighborhood?: Maybe<Scalars['String']['output']>;
+}
+
+export interface FavoritePlacesResponse {
+  __typename?: 'FavoritePlacesResponse';
+  places: FavoritePlace[];
+  total: Scalars['Int']['output'];
+}
+
 export interface Geometry {
   __typename?: 'Geometry';
   coordinates: Array<Scalars['Float']['output']>;
@@ -280,6 +299,7 @@ export interface PlacesResponse {
 export interface Query {
   __typename?: 'Query';
   currentUser?: Maybe<User>;
+  favoritePlaces: FavoritePlace[];
   place: Place;
   placeReviews: PlaceReviews;
   places: PlacesResponse;
@@ -455,6 +475,11 @@ export type GetPlacesQueryVariables = Exact<{
 
 
 export interface GetPlacesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, googleId?: string | null } }> } }
+
+export type GetFavoritePlacesQueryVariables = Exact<Record<string, never>>;
+
+
+export interface GetFavoritePlacesQuery { __typename?: 'Query', favoritePlaces: Array<{ __typename?: 'FavoritePlace', id: string, name: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, googleId?: string | null }> }
 
 export type PlaceQueryVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1070,6 +1095,53 @@ export type GetPlacesQueryHookResult = ReturnType<typeof useGetPlacesQuery>;
 export type GetPlacesLazyQueryHookResult = ReturnType<typeof useGetPlacesLazyQuery>;
 export type GetPlacesSuspenseQueryHookResult = ReturnType<typeof useGetPlacesSuspenseQuery>;
 export type GetPlacesQueryResult = Apollo.QueryResult<GetPlacesQuery, GetPlacesQueryVariables>;
+export const GetFavoritePlacesDocument = gql`
+    query GetFavoritePlaces {
+  favoritePlaces {
+    id
+    name
+    address
+    image
+    instagram
+    averageRating
+    isFavorite
+    neighborhood
+    googleId
+  }
+}
+    `;
+
+/**
+ * __useGetFavoritePlacesQuery__
+ *
+ * To run a query within a React component, call `useGetFavoritePlacesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFavoritePlacesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFavoritePlacesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFavoritePlacesQuery(baseOptions?: Apollo.QueryHookOptions<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>(GetFavoritePlacesDocument, options);
+      }
+export function useGetFavoritePlacesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>(GetFavoritePlacesDocument, options);
+        }
+export function useGetFavoritePlacesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>(GetFavoritePlacesDocument, options);
+        }
+export type GetFavoritePlacesQueryHookResult = ReturnType<typeof useGetFavoritePlacesQuery>;
+export type GetFavoritePlacesLazyQueryHookResult = ReturnType<typeof useGetFavoritePlacesLazyQuery>;
+export type GetFavoritePlacesSuspenseQueryHookResult = ReturnType<typeof useGetFavoritePlacesSuspenseQuery>;
+export type GetFavoritePlacesQueryResult = Apollo.QueryResult<GetFavoritePlacesQuery, GetFavoritePlacesQueryVariables>;
 export const PlaceDocument = gql`
     query Place($placeId: ID!) {
   place(placeId: $placeId) {

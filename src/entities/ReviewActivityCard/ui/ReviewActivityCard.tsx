@@ -10,7 +10,7 @@ interface ReviewActivityCardProps {
   reviewText?: string;
   userRating?: number;
   placeName: string;
-  createdAt: string;
+  createdAt?: string;
   placeId: string;
 }
 export const ReviewActivityCard = ({
@@ -27,7 +27,7 @@ export const ReviewActivityCard = ({
   };
   return (
     <div className={cls.ReviewActivityCard}>
-      <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
+      {createdAt && <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>}
       <h3 className={cls.name}>{placeName}</h3>
 
       {userRating && (

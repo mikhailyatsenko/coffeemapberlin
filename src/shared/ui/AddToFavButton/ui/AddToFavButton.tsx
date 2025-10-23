@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useToggleFavoriteMutation } from 'shared/generated/graphql';
+import { GET_FAVORITE_PLACES } from 'shared/query/places/queries';
 import { useAuthStore } from 'shared/stores/auth';
 import { useGuestFavoritesStore, markGuestInfoShown, toggleGuestFavorite } from 'shared/stores/guestFavorites';
 import { showGuestFavoritesInfo } from 'shared/stores/modal';
@@ -35,6 +36,7 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
         });
       }
     },
+    refetchQueries: [GET_FAVORITE_PLACES],
   });
 
   const { user } = useAuthStore();

@@ -1,0 +1,70 @@
+.listContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 1px 0;
+  max-height: calc(90dvh - 100px);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+.placeCard {
+  cursor: pointer;
+  position: relative;
+  margin: 0 auto;
+  border: #ff4b34 1px solid;
+  border-radius: 8px;
+  padding: 10px;
+  width: 360px;
+  max-width: 90%;
+  display: flex;
+  gap: 6px;
+  &:hover {
+    transform: scale(1.01);
+  }
+  .image {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    z-index: 1;
+  }
+  .favBtn {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 2;
+  }
+  .placeCardDetails {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    .placeName {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      font-weight: 500;
+    }
+    .placeAddress {
+      margin-top: auto;
+      font-size: 14px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+}
+
+.title {
+  margin-bottom: 10px;
+  font-size: 16px;
+  text-align: center;
+}
