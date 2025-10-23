@@ -57,7 +57,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
 
   useEffect(() => {
     document.title = placeData?.place?.properties?.name
-      ? `${placeData?.place.properties.name} | Berlin Coffee Map`
+      ? `${placeData?.place.properties.name} | Reviews, Photos, Contacts`
       : 'Berlin Coffee Map';
     return () => {
       document.title = 'Berlin Coffee Map';
