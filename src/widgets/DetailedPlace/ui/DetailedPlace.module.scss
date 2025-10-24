@@ -162,6 +162,12 @@
   margin-bottom: 12px;
 }
 
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .charCounts {
   display: flex;
   flex-wrap: wrap;

@@ -1,4 +1,4 @@
-export type BadgePillColor = 'red' | 'green' | 'blue' | 'orange' | 'gray';
+export type BadgePillColor = 'red' | 'green' | 'blue' | 'orange' | 'gray' | 'purple';
 export type BadgePillSize = 'small' | 'medium' | 'large';
 
 export interface BadgePillProps {

@@ -68,6 +68,7 @@ export const GET_PLACE = gql`
           day
           hours
         }
+        additionalInfo
         phone
         website
         characteristicCounts {

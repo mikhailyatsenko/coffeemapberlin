@@ -41,6 +41,29 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     skip: !placeId,
   });
 
+  // Extract all tags with true values from additionalInfo
+  const tags = useMemo(() => {
+    if (!placeData?.place?.properties?.additionalInfo) return [];
+
+    const allTags: string[] = [];
+
+    Object.values(placeData.place.properties.additionalInfo as Record<string, unknown>).forEach((category: unknown) => {
+      if (Array.isArray(category)) {
+        category.forEach((item: unknown) => {
+          if (typeof item === 'object' && item !== null) {
+            Object.entries(item as Record<string, unknown>).forEach(([key, value]) => {
+              if (value === true) {
+                allTags.push(key);
+              }
+            });
+          }
+        });
+      }
+    });
+
+    return allTags;
+  }, [placeData?.place?.properties?.additionalInfo]);
+
   const { data: placeReviewsData } = usePlaceReviews(placeData?.place?.properties ? placeId : null);
   const ownReview = placeReviewsData?.placeReviews.ownReview;
   const displayedReviews = useMemo(() => {
@@ -214,6 +237,16 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
               <OpeningHours openingHours={openingHours ?? []} />
             </div>
           ) : null}
+          {tags.length > 0 && (
+            <div className={cls.block}>
+              <h3 className={cls.blockTitle}>Features</h3>
+              <div className={cls.tagsContainer}>
+                {tags.map((tag, index) => (
+                  <BadgePill key={index} text={tag} color="purple" size="small" />
+                ))}
+              </div>
+            </div>
+          )}
         </aside>
       </div>
 
