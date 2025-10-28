@@ -6,18 +6,16 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 dotenv.config();
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => ({
+export default defineConfig({
   plugins: [react(), tsconfigPaths(), svgr()],
   define: {
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
   },
   base: '/',
-  optimizeDeps: command === 'build' ? { exclude: ['maplibre-gl'] } : {},
   build: {
     minify: 'terser',
     cssCodeSplit: true,
     rollupOptions: {
-      external: ['maplibre-gl'],
       output: {
         manualChunks(id) {
           if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre')) {
@@ -40,4 +38,4 @@ export default defineConfig(({ command, mode }) => ({
       },
     },
   },
-}));
+});
