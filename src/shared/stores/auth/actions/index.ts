@@ -7,10 +7,10 @@ import { INITIAL_STATE } from '../constants';
 import { useAuthStore } from '../hooks';
 
 export const clearAuth = async () => {
+  useAuthStore.setState({ ...INITIAL_STATE, isAuthLoading: false });
   await client.mutate({ mutation: LogoutDocument });
   await client.resetStore();
   revalidatePlaces();
-  useAuthStore.setState({ ...INITIAL_STATE, isAuthLoading: false });
 };
 
 export const checkAuth = async () => {

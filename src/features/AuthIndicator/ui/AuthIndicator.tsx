@@ -12,7 +12,7 @@ import cls from './AuthIndicator.module.scss';
 export const AuthIndicator: React.FC = () => {
   const { user, isAuthLoading } = useAuthStore();
 
-  const { data: favoritePlacesData } = useGetFavoritePlacesQuery();
+  const { data: favoritePlacesData } = useGetFavoritePlacesQuery({ skip: !user });
   const favoritePlaces = favoritePlacesData?.favoritePlaces || [];
 
   const logoutHandler = async () => {
