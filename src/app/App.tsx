@@ -24,9 +24,7 @@ const App = () => {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Navbar />
-      <main>
-        <AppRouter />
-      </main>
+      <AppRouter />
       {!matchPath(RoutePaths.main, location.pathname) && <Footer />}
       <Toaster position="bottom-center" />
     </GoogleOAuthProvider>

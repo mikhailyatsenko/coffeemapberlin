@@ -103,8 +103,10 @@ export const MainPage = () => {
 
   return (
     <>
-      <PlacesList places={placesToDisplay} />
-      <MainMap placesGeo={placesGeo} />
+      <main>
+        <PlacesList places={placesToDisplay} />
+        <MainMap placesGeo={placesGeo} />
+      </main>
       <ShowFavoritePlaces
         showFavorites={showFavorites}
         favoritesQuantity={favoritePlaces.length || (!user ? guestFavIds.length : 0)}

@@ -7,7 +7,7 @@ export const AboutPage = () => {
     document.title = 'About | Berlin Coffee Map';
   }, []);
   return (
-    <section className={`${cls.AboutPage} container`} style={{ textAlign: 'center' }}>
+    <main className={`${cls.AboutPage} container`} style={{ textAlign: 'center' }}>
       <h1>Who are we?</h1>
       <p className={cls.text}>
         We&apos;re passionate coffee enthusiasts on a mission to help Berlin residents and visitors find great coffee.
@@ -24,6 +24,6 @@ export const AboutPage = () => {
           contact form.
         </Link>
       </p>
-    </section>
+    </main>
   );
 };
