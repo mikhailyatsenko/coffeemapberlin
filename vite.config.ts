@@ -7,7 +7,15 @@ dotenv.config();
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths(), svgr()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [['babel-plugin-react-compiler', { runtimeModule: 'react-compiler-runtime' }]],
+      },
+    }),
+    tsconfigPaths(),
+    svgr(),
+  ],
   define: {
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
   },
