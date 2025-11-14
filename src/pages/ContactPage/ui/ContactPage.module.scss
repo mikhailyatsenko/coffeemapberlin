@@ -1,5 +1,6 @@
 .ContactPage {
   display: flex;
+  height: 100%;
   min-height: inherit;
   @media (width <= 767px) {
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3)), url('../../../shared/assets/contacts.jpg');
