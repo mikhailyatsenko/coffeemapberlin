@@ -20,6 +20,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   className,
   onSubmitted,
   onCancel,
+  ...props
 }) => {
   const draftText = useAddTextReviewDraftStore((s) => s.draftsByPlaceId[placeId] ?? '');
   const setDraft = useAddTextReviewDraftStore((s) => s.setDraft);
@@ -205,7 +206,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const imagesId = `review-images-${placeId}`;
 
   return (
-    <form className={clsx(cls.container, className)} onSubmit={handleSubmit}>
+    <form className={clsx(cls.container, className)} onSubmit={handleSubmit} {...props}>
       <fieldset>
         <legend className="sr-only">Review Form</legend>
 

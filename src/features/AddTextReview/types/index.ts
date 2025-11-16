@@ -1,4 +1,4 @@
-export interface AddTextReviewFormProps {
+export interface AddTextReviewFormProps extends React.HTMLAttributes<HTMLFormElement> {
   placeId: string;
   initialValue?: string;
   className?: string;

@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { driver } from 'driver.js';
 import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AddTextReviewForm } from 'features/AddTextReview';
@@ -21,6 +22,7 @@ import { ErrorPlace } from '../components/ErrorPlace';
 import { ImageSlider } from '../components/ImageSlider/ui';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import cls from './DetailedPlace.module.scss';
+import 'driver.js/dist/driver.css';
 
 const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   const navigate = useNavigate();
@@ -108,6 +110,69 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     }
   }, [placeData?.place?.properties?.googleId, placeData?.place?.properties?.name]);
 
+  useEffect(() => {
+    if (isPlaceLoading || !placeData?.place?.properties) {
+      return;
+    }
+
+    const TOUR_STORAGE_KEY = 'detailed-place-tour-completed';
+    const hasSeenTour = localStorage.getItem(TOUR_STORAGE_KEY) === 'true';
+
+    if (hasSeenTour) {
+      return;
+    }
+
+    const driverObj = driver({
+      showProgress: true,
+      showButtons: ['next', 'previous', 'close'],
+      steps: [
+        {
+          element: '#favorite-button',
+          popover: {
+            title: 'Add to favorites',
+            description: 'Save places you love for quick access later',
+          },
+        },
+        {
+          element: '#rate-place',
+          popover: { title: 'Rate this place', description: 'Share your experience and rate the coffee shop' },
+        },
+        {
+          element: '#review-form',
+          popover: {
+            title: 'Write a review',
+            description: 'Share your thoughts and help others discover great coffee',
+          },
+        },
+        {
+          element: '#google-maps',
+          popover: { title: 'Open in Google Maps', description: 'Get directions or view in Google Maps' },
+        },
+      ],
+      onPopoverRender: () => {
+        localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+      },
+      onCloseClick: (_element, _step, opts) => {
+        localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+        opts.driver.destroy();
+      },
+      onNextClick: (_element, _step, opts) => {
+        if (opts.driver.isLastStep()) {
+          localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+          opts.driver.destroy();
+        } else {
+          opts.driver.moveNext();
+        }
+      },
+    });
+
+    driverObj.drive();
+
+    return () => {
+      driverObj.destroy();
+    };
+  }, [isPlaceLoading, placeData?.place?.properties]);
+
   if (placeError) {
     return <ErrorPlace error={placeError} />;
   }
@@ -137,6 +202,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
           {description && <div className={cls.description}>{description}</div>}
           <div className={cls.headerActions}>
             <RateNow
+              id="rate-place"
               setShowRateNow={setShowRateNow}
               showRateNow={showRateNow}
               placeId={placeId}
@@ -144,7 +210,14 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
               characteristicCounts={characteristicCounts}
             />
 
-            <AddToFavButton theme="square" placeName={name} placeId={placeId} size="medium" isFavorite={isFavorite} />
+            <AddToFavButton
+              id="favorite-button"
+              theme="square"
+              placeName={name}
+              placeId={placeId}
+              size="medium"
+              isFavorite={isFavorite}
+            />
           </div>
         </div>
         <div className={cls.headerImg}>
@@ -163,6 +236,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
 
             {(isEditingReview || !ownReview?.text) && (
               <AddTextReviewForm
+                id="review-form"
                 placeId={placeId}
                 initialValue={isEditingReview ? editInitialText : ''}
                 onSubmitted={() => {
@@ -205,7 +279,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
                 <img className={cls.icon} src={logo} alt="" />
                 Show on 3.Welle map
               </button>
-              <button className={cls.secondaryBtn} onClick={openOnGoogleMaps} type="button">
+              <button id="google-maps" className={cls.secondaryBtn} onClick={openOnGoogleMaps} type="button">
                 <img className={cls.icon} src="/google-maps.svg" alt="" />
                 Open on Google Maps
               </button>

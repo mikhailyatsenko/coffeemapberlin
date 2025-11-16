@@ -10,7 +10,7 @@ interface Review {
   createdAt: string;
   isOwnReview: boolean;
 }
-export interface RateNowProps {
+export interface RateNowProps extends React.HTMLAttributes<HTMLDivElement> {
   showRateNow: boolean;
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   reviews: Review[];

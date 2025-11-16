@@ -12,7 +12,14 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import { type RateNowProps } from '../types';
 import cls from './RateNow.module.scss';
 
-export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow, showRateNow }: RateNowProps) => {
+export const RateNow = ({
+  reviews,
+  placeId,
+  characteristicCounts,
+  setShowRateNow,
+  showRateNow,
+  ...props
+}: RateNowProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
   const { user } = useAuthStore();
   const [addRating, { loading: loadingRating }] = useAddRatingMutation({
@@ -69,7 +76,7 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
     !!currentUserReview?.userRating || Object.values(charCounts).some((characteristic) => characteristic.pressed);
 
   return (
-    <>
+    <div {...props}>
       {hasUserInteracted ? (
         <RegularButton
           variant={'ghost'}
@@ -104,6 +111,6 @@ export const RateNow = ({ reviews, placeId, characteristicCounts, setShowRateNow
           </div>
         </Modal>
       )}
-    </>
+    </div>
   );
 };

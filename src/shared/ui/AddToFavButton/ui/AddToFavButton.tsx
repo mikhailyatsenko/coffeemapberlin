@@ -9,7 +9,7 @@ import { showGuestFavoritesInfo } from 'shared/stores/modal';
 import { toggleFavorite } from 'shared/stores/places';
 import cls from './AddToFavButton.module.scss';
 
-interface AddToFavButtonProps {
+interface AddToFavButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   placeId: string;
   placeName: string;
   isFavorite: boolean;
@@ -17,7 +17,14 @@ interface AddToFavButtonProps {
   theme: 'circle' | 'square';
 }
 
-export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = 'small' }: AddToFavButtonProps) => {
+export const AddToFavButton = ({
+  placeId,
+  isFavorite,
+  placeName,
+  theme,
+  size = 'small',
+  ...props
+}: AddToFavButtonProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -121,6 +128,7 @@ export const AddToFavButton = ({ placeId, isFavorite, placeName, theme, size = '
       className={cls[theme]}
       onClick={handleClick}
       title={effectiveIsFavorite ? 'Remove this place from favorites' : 'Add this place to favorites'}
+      {...props}
     >
       <div
         className={clsx(cls.AddToFavIcon, cls[size], {
