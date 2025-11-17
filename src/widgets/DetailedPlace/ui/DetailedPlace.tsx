@@ -173,6 +173,10 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     };
   }, [isPlaceLoading, placeData?.place?.properties]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [placeData?.place.id]);
+
   if (placeError) {
     return <ErrorPlace error={placeError} />;
   }

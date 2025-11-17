@@ -41,6 +41,10 @@ export const NeighborhoodPage = () => {
     return undefined;
   }, [loading, data, places.length, neighborhood, navigate]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [neighborhood]);
+
   if (!neighborhood) {
     return (
       <main className={`${cls.NeighborhoodPage} container`}>
