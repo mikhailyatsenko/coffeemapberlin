@@ -13,6 +13,7 @@ export enum AppRoutes {
   PRIVACY = 'privacy',
   DISCLAIMER = 'disclaimer',
   PLACE_PAGE = 'placePage',
+  NEIGHBORHOOD = 'neighborhood',
 }
 
 export const RoutePaths: Record<AppRoutes, string> = {
@@ -30,4 +31,5 @@ export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.NOT_FOUND]: '*',
   [AppRoutes.PRIVACY]: 'privacy-policy',
   [AppRoutes.DISCLAIMER]: 'disclaimer',
+  [AppRoutes.NEIGHBORHOOD]: 'neighborhood/:neighborhood',
 };

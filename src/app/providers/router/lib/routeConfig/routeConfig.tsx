@@ -7,6 +7,7 @@ import { DisclaimerPage } from 'pages/DisclaimerPage';
 import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
+import { NeighborhoodPage } from 'pages/NeighborhoodPage';
 import { NotFoundPage } from 'pages/NotFoundPage';
 import { PlacePage } from 'pages/PlacePage';
 import { PrivacyPolicyPage } from 'pages/PrivacyPolicyPage';
@@ -72,6 +73,10 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.PLACE_DETAILS]: {
     path: RoutePaths.placePage,
     element: <PlacePage />,
+  },
+  [AppRoutes.NEIGHBORHOOD]: {
+    path: RoutePaths.neighborhood,
+    element: <NeighborhoodPage />,
   },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,

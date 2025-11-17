@@ -1,0 +1,167 @@
+.card {
+  cursor: pointer;
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    max-width: 100%;
+  }
+}
+
+.imageContainer {
+  flex-shrink: 0;
+  width: 300px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 250px;
+  }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.titleSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111111;
+  margin: 0;
+  line-height: 1.3;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+}
+
+.badge {
+  align-self: flex-start;
+}
+
+.ratingSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ratingValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.ratingCount {
+  font-size: 14px;
+  color: #919191;
+  font-weight: 300;
+}
+
+.description {
+  font-size: 15px;
+  font-weight: 300;
+  color: #333333;
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    -webkit-line-clamp: 2;
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #8c4c17;
+  flex: 1;
+}
+
+.addressIcon {
+  font-size: 16px;
+}
+
+.instagramButton {
+  background-color: #f6f6f6;
+  height: 36px;
+  width: 36px;
+  padding: 8px;
+  border: none;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 0.5px 1.5px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #fff;
+  }
+}
+
+.instagramIcon {
+  max-height: 100%;
+  max-width: 100%;
+  filter: grayscale(25%);
+}

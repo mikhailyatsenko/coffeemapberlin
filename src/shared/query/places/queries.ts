@@ -109,3 +109,33 @@ export const GET_PLACE = gql`
     }
   }
 `;
+
+export const GET_FILTERED_PLACES = gql`
+  query FilteredPlaces($neighborhood: String, $minRating: Float) {
+    filteredPlaces(neighborhood: $neighborhood, minRating: $minRating) {
+      places {
+        id
+        type
+        geometry {
+          type
+          coordinates
+        }
+        properties {
+          id
+          name
+          description
+          address
+          image
+          instagram
+          averageRating
+          ratingCount
+          favoriteCount
+          isFavorite
+          googleId
+          neighborhood
+        }
+      }
+      total
+    }
+  }
+`;

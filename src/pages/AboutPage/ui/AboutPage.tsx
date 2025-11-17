@@ -11,8 +11,8 @@ export const AboutPage = () => {
       <h1>Who are we?</h1>
       <p className={cls.text}>
         We&apos;re passionate coffee enthusiasts on a mission to help Berlin residents and visitors find great coffee.
-        We gather information about top specialty coffee shops from open sources and personal experiences, making it
-        easy for you to find your perfect coffee shop on our{' '}
+        We gather information about top coffee shops from open sources and personal experiences, making it easy for you
+        to find your perfect coffee shop on our{' '}
         <Link to={'/'} className={cls.link}>
           map.
         </Link>

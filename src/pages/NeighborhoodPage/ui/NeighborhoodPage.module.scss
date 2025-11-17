@@ -1,0 +1,72 @@
+.NeighborhoodPage {
+  padding-top: 80px;
+  padding-bottom: 40px;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  h1 {
+    font-size: 32px;
+    font-weight: 500;
+    color: #111111;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #919191;
+    font-weight: 300;
+  }
+}
+
+.placesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+
+  p {
+    font-size: 18px;
+    color: #919191;
+  }
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 20px;
+
+  p {
+    font-size: 18px;
+    color: #919191;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    h1 {
+      font-size: 24px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+    }
+  }
+}

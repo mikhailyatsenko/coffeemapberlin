@@ -9,7 +9,7 @@ export const Logo = () => {
         <div className={cls.primaryText}>
           3.Welle<sup> berlin</sup>
         </div>
-        <div className={cls.secondaryText}>specialty coffee map </div>
+        <div className={cls.secondaryText}>Good coffee map </div>
       </div>
     </div>
   );
