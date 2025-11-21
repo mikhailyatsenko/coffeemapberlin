@@ -7,7 +7,7 @@ interface PrivateRouteProps {
   children: ReactNode;
 }
 
-export const PrivateRoute = async ({ children }: PrivateRouteProps) => {
+export const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { user } = useAuthStore();
   const location = useLocation();
 
@@ -15,5 +15,5 @@ export const PrivateRoute = async ({ children }: PrivateRouteProps) => {
     return <Navigate to={`/${RoutePaths.login}`} state={{ from: location }} replace />;
   }
 
-  return await children;
+  return <>{children}</>;
 };

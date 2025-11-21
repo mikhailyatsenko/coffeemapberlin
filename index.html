@@ -25,6 +25,7 @@
       font-style: normal;
       font-display: swap;
     }
+
     @font-face {
       font-family: 'Roboto Slab';
       src: url('/fonts/RobotoSlab/roboto-slab-v35-latin-500.woff2') format('woff2');
@@ -35,11 +36,14 @@
   </style>
 
   <!-- fonts preload -->
-  
+
 
   <!-- Preconnect -->
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-  <link rel="stylesheet" href="/css/maplibre.css">
+  <link rel="preload" href="/css/maplibre.css" as="style" onload="this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="/css/maplibre.css">
+  </noscript>
 </head>
 
 
