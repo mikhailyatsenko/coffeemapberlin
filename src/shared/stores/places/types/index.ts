@@ -10,7 +10,6 @@ export interface PlacesState {
   currentPlacePosition: Position | null;
 
   // Simplified loading state
-  isLoading: boolean;
-  hasInitialData: boolean;
-  lastFetchTime: Date | null;
+  hasInitialBatchLoaded: boolean;
+  hasMoreBatchLoaded: boolean;
 }

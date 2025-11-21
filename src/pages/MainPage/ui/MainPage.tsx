@@ -1,30 +1,32 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MainMap } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
-import { useGetPlacesLazyQuery, useGetPlacesQuery } from 'shared/generated/graphql';
+import { useGetPlacesQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
 import { useAuthStore } from 'shared/stores/auth';
 import { useGuestFavoritesStore } from 'shared/stores/guestFavorites';
 
 import {
-  setLoadingState,
   setPlaces,
   usePlacesStore,
-  startLoading,
-  finishLoading,
   PAGE_SIZE,
   INITIAL_OFFSET,
   setShowFavorites,
+  setInitialBatchLoaded,
+  setMoreBatchLoaded,
+  type Place,
 } from 'shared/stores/places';
+import { Loader } from 'shared/ui/Loader';
 
 export const MainPage = () => {
   const location = useLocation();
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
-  const hasInitialData = usePlacesStore((state) => state.hasInitialData);
+  const hasInitialBatchLoaded = usePlacesStore((state) => state.hasInitialBatchLoaded);
+  const hasMoreBatchLoaded = usePlacesStore((state) => state.hasMoreBatchLoaded);
   const { user } = useAuthStore();
   const guestFavIds = useGuestFavoritesStore((s) => s.ids);
 
@@ -33,50 +35,47 @@ export const MainPage = () => {
   const email = location.state?.email as string | null | undefined;
   useEmailConfirmation(email, token);
 
-  // Load initial 10 places data when the main page mounts
-  const { data: initialData, loading: initialLoading } = useGetPlacesQuery({
+  // Indicate loading only for initial data loading. More data is loading in the background.
+  const appendUniquePlaces = useCallback((incomingPlaces?: Place[] | null) => {
+    if (!incomingPlaces?.length) {
+      return;
+    }
+    setPlaces((prev) => {
+      if (!prev.length) {
+        return incomingPlaces;
+      }
+
+      const existingIds = new Set(prev.map((place) => place.id));
+      const merged = [...prev];
+      console.log('MERGING');
+      incomingPlaces.forEach((place) => {
+        if (!existingIds.has(place.id)) {
+          existingIds.add(place.id);
+          merged.push(place);
+        }
+      });
+
+      return merged;
+    });
+  }, []);
+
+  const { loading: initialLoading } = useGetPlacesQuery({
+    skip: hasInitialBatchLoaded,
     variables: { limit: PAGE_SIZE, offset: INITIAL_OFFSET },
-    fetchPolicy: 'cache-first',
+    onCompleted: (data) => {
+      appendUniquePlaces(data?.places.places);
+      setInitialBatchLoaded(true);
+    },
   });
 
-  const [fetchMore, { loading: moreDataLoading }] = useGetPlacesLazyQuery();
-
-  // Handle initial data loading
-  useEffect(() => {
-    if (!initialData?.places || hasInitialData) return;
-
-    const initialPlaces = initialData.places.places ?? [];
-    setPlaces(initialPlaces);
-    finishLoading();
-
-    // Load additional data if needed
-    const totalPlaces = initialData.places.total;
-    if (totalPlaces > PAGE_SIZE) {
-      startLoading();
-
-      fetchMore({
-        variables: {
-          limit: totalPlaces - PAGE_SIZE,
-          offset: PAGE_SIZE,
-        },
-      })
-        .then((result) => {
-          if (result.data?.places?.places?.length) {
-            const additionalPlaces = result.data.places.places;
-            setPlaces((prev) => [...prev, ...additionalPlaces]);
-          }
-          finishLoading();
-        })
-        .catch(() => {
-          finishLoading();
-        });
-    }
-  }, [initialData?.places, fetchMore, hasInitialData]);
-
-  // Update loading state based on GraphQL loading states
-  useEffect(() => {
-    setLoadingState({ isLoading: initialLoading || moreDataLoading });
-  }, [initialLoading, moreDataLoading]);
+  useGetPlacesQuery({
+    skip: hasMoreBatchLoaded,
+    variables: { offset: PAGE_SIZE },
+    onCompleted: (data) => {
+      appendUniquePlaces(data?.places.places);
+      setMoreBatchLoaded(true);
+    },
+  });
 
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);
@@ -104,6 +103,7 @@ export const MainPage = () => {
   return (
     <>
       <main>
+        {initialLoading && <Loader />}
         <PlacesList places={placesToDisplay} />
         <MainMap placesGeo={placesGeo} />
       </main>

@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { client } from 'shared/config/apolloClient';
 import { useSignInWithEmailMutation } from 'shared/generated/graphql';
@@ -36,7 +36,6 @@ export const SignInWithEmail = ({
         if (hideAuthModal) {
           hideAuthModal();
         }
-        setIsLoading(false);
         await client.resetStore();
         revalidatePlaces();
       }
@@ -59,9 +58,11 @@ export const SignInWithEmail = ({
 
   return (
     <div className={cls.content}>
-      {isLoading ? <Loader /> : null}
+      {isLoading && <Loader />}
       <h2>Sign in</h2>
-      <div className={cls.continueWithSocial}>{continueWithSocial?.map((social) => social)}</div>
+      <div className={cls.continueWithSocial}>
+        {continueWithSocial?.map((social, idx) => <React.Fragment key={idx}>{social}</React.Fragment>)}
+      </div>
       <div className={cls.or}>or</div>
 
       <FormProvider {...form}>

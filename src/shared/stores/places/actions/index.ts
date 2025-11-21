@@ -1,7 +1,7 @@
 import { usePlacesStore } from '../hooks';
 import { type PlacesState, type Place } from '../types';
 
-export const PAGE_SIZE = 10;
+export const PAGE_SIZE = 150;
 export const INITIAL_OFFSET = 0;
 
 export const setPlaces = (places: Place[] | ((prev: Place[]) => Place[])) => {
@@ -12,6 +12,14 @@ export const setPlaces = (places: Place[] | ((prev: Place[]) => Place[])) => {
 
 export const setShowFavorites = (show: boolean) => {
   usePlacesStore.setState({ showFavorites: show });
+};
+
+export const setInitialBatchLoaded = (loaded: boolean) => {
+  usePlacesStore.setState({ hasInitialBatchLoaded: loaded });
+};
+
+export const setMoreBatchLoaded = (loaded: boolean) => {
+  usePlacesStore.setState({ hasMoreBatchLoaded: loaded });
 };
 
 export const setFilteredPlaces = (
@@ -60,46 +68,11 @@ export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosit
   usePlacesStore.setState({ currentPlacePosition: position });
 };
 
-export const setLoadingState = (
-  loadingState: Partial<Pick<PlacesState, 'isLoading' | 'hasInitialData' | 'lastFetchTime'>>,
-) => {
-  usePlacesStore.setState(loadingState);
-};
-
-export const resetLoadingState = () => {
-  usePlacesStore.setState({
-    isLoading: false,
-    hasInitialData: false,
-    lastFetchTime: null,
-  });
-};
-
 export const revalidatePlaces = () => {
-  resetLoadingState();
   setPlaces([]);
   setFilteredPlaces(null);
   setShowFavorites(false);
   setCurrentPlacePosition(null);
-};
-
-// Helper functions for the new loading state
-export const startLoading = () => {
-  setLoadingState({ isLoading: true });
-};
-
-export const finishLoading = () => {
-  setLoadingState({
-    isLoading: false,
-    lastFetchTime: new Date(),
-    hasInitialData: true,
-  });
-};
-
-export const isDataStale = (maxAgeMinutes: number = 5): boolean => {
-  const state = usePlacesStore.getState();
-  if (!state.lastFetchTime) return true;
-
-  const now = new Date();
-  const diffMinutes = (now.getTime() - state.lastFetchTime.getTime()) / (1000 * 60);
-  return diffMinutes > maxAgeMinutes;
+  setInitialBatchLoaded(false);
+  setMoreBatchLoaded(false);
 };

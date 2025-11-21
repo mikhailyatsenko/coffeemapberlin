@@ -7,7 +7,6 @@ export const usePlacesStore = create<PlacesState>(() => ({
   filteredPlaces: null,
   showFavorites: false,
   currentPlacePosition: null,
-  isLoading: false,
-  hasInitialData: false,
-  lastFetchTime: null,
+  hasInitialBatchLoaded: false,
+  hasMoreBatchLoaded: false,
 }));
