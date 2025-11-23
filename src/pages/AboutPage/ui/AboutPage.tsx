@@ -10,16 +10,23 @@ export const AboutPage = () => {
     <main className={`${cls.AboutPage} container`} style={{ textAlign: 'center' }}>
       <h1>Who are we?</h1>
       <p className={cls.text}>
-        We&apos;re passionate coffee enthusiasts on a mission to help Berlin residents and visitors find great coffee.
-        We gather information about top coffee shops from open sources and personal experiences, making it easy for you
-        to find your perfect coffee shop on our{' '}
+        Love delicious coffee? Want to know where to find the best brews in Berlin — or a cozy, atmospheric spot to
+        relax? Maybe both. You’re in the{' '}
         <Link to={'/'} className={cls.link}>
-          map.
+          right place.
         </Link>
       </p>
+
       <p className={cls.text}>
-        As a young project still in development, we welcome your suggestions for improving our service. If you have
-        ideas or know of a café that&apos;s not yet on our map, please contact us through our{' '}
+        Our site helps you discover the perfect coffee places across the city. Browse photos, read honest reviews, and
+        share your own experiences to help others. Save your favorite cafés or mark the ones you want to visit so you
+        never forget a place worth trying.
+      </p>
+
+      <p className={cls.text}>
+        We’re a small team of coffee lovers who are passionate about helping you find the perfect coffee shop in Berlin.
+        We’re always looking for new places to add to our map, so if you know of a good one, please let us know through
+        our{' '}
         <Link to={'/contacts'} className={cls.link}>
           contact form.
         </Link>
