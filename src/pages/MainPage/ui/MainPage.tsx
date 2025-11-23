@@ -36,7 +36,7 @@ export const MainPage = () => {
   useEmailConfirmation(email, token);
 
   // Indicate loading only for initial data loading. More data is loading in the background.
-  const appendUniquePlaces = useCallback((incomingPlaces?: Place[] | null) => {
+  const appendUniquePlaces = useCallback((incomingPlaces?: Place[] | null, isInitial?: boolean) => {
     if (!incomingPlaces?.length) {
       return;
     }
@@ -51,7 +51,11 @@ export const MainPage = () => {
       incomingPlaces.forEach((place) => {
         if (!existingIds.has(place.id)) {
           existingIds.add(place.id);
-          merged.push(place);
+          if (isInitial) {
+            merged.unshift(place);
+          } else {
+            merged.push(place);
+          }
         }
       });
 
