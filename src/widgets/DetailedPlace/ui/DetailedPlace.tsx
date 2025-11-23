@@ -190,7 +190,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     <div className={cls.page}>
       <header className={cls.header}>
         <div className={clsx(cls.briefInfo, cls.block)}>
-          <AverageRating averageRating={averageRating} />
+          <AverageRating ratingCount={ratingCount} averageRating={averageRating} />
 
           <h1 className={cls.title}>{name}</h1>
           <div className={cls.charCounts}>
