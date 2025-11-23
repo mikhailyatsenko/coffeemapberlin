@@ -18,9 +18,15 @@ export const NeighborhoodPage = () => {
     fetchPolicy: 'cache-and-network',
   });
 
+  const normalizeNeighborhoodName = (name: string) => {
+    if (!name) return '';
+    const decoded = decodeURIComponent(name);
+    return decoded.charAt(0).toUpperCase() + decoded.slice(1).toLowerCase();
+  };
+
   const displayNeighborhood =
     data?.filteredPlaces?.places?.[0]?.properties.neighborhood ||
-    (neighborhood ? decodeURIComponent(neighborhood) : '');
+    (neighborhood ? normalizeNeighborhoodName(neighborhood) : '');
   const places = data?.filteredPlaces?.places
     ? [...data.filteredPlaces.places].sort((a, b) => {
         const ratingA = a.properties.averageRating ?? -Infinity;
