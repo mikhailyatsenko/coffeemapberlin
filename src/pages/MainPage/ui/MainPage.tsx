@@ -46,15 +46,20 @@ export const MainPage = () => {
       }
 
       const existingIds = new Set(prev.map((place) => place.id));
-      const newPlaces = incomingPlaces.filter((place) => {
+      const merged = [...prev];
+      console.log('MERGING');
+      incomingPlaces.forEach((place) => {
         if (!existingIds.has(place.id)) {
           existingIds.add(place.id);
-          return true;
+          if (isInitial) {
+            merged.unshift(place);
+          } else {
+            merged.push(place);
+          }
         }
-        return false;
       });
 
-      return isInitial ? [...newPlaces, ...prev] : [...prev, ...newPlaces];
+      return merged;
     });
   }, []);
 
