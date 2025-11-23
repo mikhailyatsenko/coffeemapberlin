@@ -26,9 +26,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre')) {
-            return 'vendor-maplibre';
-          }
+          // if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre')) {
+          //   return 'vendor-maplibre';
+          // }
           if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom'))
             return 'vendor-react';
           if (id.includes('@apollo/client') || id.includes('graphql') || id.includes('graphql-ws'))

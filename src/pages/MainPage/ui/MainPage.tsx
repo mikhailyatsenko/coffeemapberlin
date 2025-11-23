@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MainMap } from 'widgets/Map';
+import { MainMapLazy } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
 import { useGetPlacesQuery } from 'shared/generated/graphql';
@@ -104,7 +104,9 @@ export const MainPage = () => {
       <main>
         {initialLoading && <Loader />}
         <PlacesList places={placesToDisplay} />
-        <MainMap placesGeo={placesGeo} />
+        <Suspense fallback={null}>
+          <MainMapLazy placesGeo={placesGeo} />
+        </Suspense>
       </main>
       <ShowFavoritePlaces
         showFavorites={showFavorites}
