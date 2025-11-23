@@ -62,7 +62,7 @@ export const MainPage = () => {
     skip: hasInitialBatchLoaded,
     variables: { limit: PAGE_SIZE, offset: INITIAL_OFFSET },
     onCompleted: (data) => {
-      appendUniquePlaces(data?.places.places);
+      appendUniquePlaces(data?.places.places, true);
       setInitialBatchLoaded(true);
     },
   });
