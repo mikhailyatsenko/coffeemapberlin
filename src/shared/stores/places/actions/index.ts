@@ -1,7 +1,7 @@
 import { usePlacesStore } from '../hooks';
 import { type PlacesState, type Place } from '../types';
 
-export const PAGE_SIZE = 150;
+export const PAGE_SIZE = 80;
 export const INITIAL_OFFSET = 0;
 
 export const setPlaces = (places: Place[] | ((prev: Place[]) => Place[])) => {
