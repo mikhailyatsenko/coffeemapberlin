@@ -84,7 +84,6 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
     >
       <div className={cls.image}>
         <ImgWithLoader
-          loading={index < 1 ? 'eager' : 'lazy'}
           fetchPriority={index < 1 ? 'high' : 'auto'}
           src={
             properties.image
