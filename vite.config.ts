@@ -21,7 +21,7 @@ export default defineConfig({
   },
   base: '/',
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
+    include: ['react', 'react-dom', 'react-router-dom', 'maplibre-gl', 'react-map-gl/maplibre'],
     esbuildOptions: {
       target: 'es2020',
     },
@@ -32,6 +32,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          // Prioritize maplibre as it's critical for LCP
           if (id.includes('maplibre-gl') || id.includes('react-map-gl/maplibre')) {
             return 'vendor-maplibre';
           }
@@ -42,6 +43,14 @@ export default defineConfig({
           if (id.includes('react-hook-form') || id.includes('@hookform/resolvers') || id.includes('yup'))
             return 'vendor-forms';
           if (id.includes('date-fns') || id.includes('yet-another-react-lightbox')) return 'vendor-utils';
+        },
+        // Optimize chunk loading order
+        chunkFileNames: (chunkInfo) => {
+          // Ensure maplibre chunk has predictable name for potential preloading
+          if (chunkInfo.name === 'vendor-maplibre') {
+            return 'assets/vendor-maplibre-[hash].js';
+          }
+          return 'assets/[name]-[hash].js';
         },
       },
     },
