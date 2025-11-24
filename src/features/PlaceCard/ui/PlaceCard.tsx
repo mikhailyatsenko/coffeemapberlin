@@ -85,7 +85,6 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
       <div className={cls.image}>
         <ImgWithLoader
           fetchPriority={index < 1 ? 'high' : 'auto'}
-          loading={index < 2 ? 'eager' : 'lazy'}
           src={
             properties.image
               ? `${IMAGEKIT_CDN_URL}/places-main-img/${properties.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
