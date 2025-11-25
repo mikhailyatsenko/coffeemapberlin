@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preconnect" href="https://tiles.basemaps.cartocdn.com" crossorigin>
 
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -35,15 +38,13 @@
     }
   </style>
 
+
   <!-- fonts preload -->
+  <link rel="preload" href="/css/maplibre.css" as="style" onload="this.rel='stylesheet'">
   <link rel="preload" href="/fonts/RobotoSlab/roboto-slab-v35-latin-200.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/RobotoSlab/roboto-slab-v35-latin-500.woff2" as="font" type="font/woff2" crossorigin>
 
 
-  <!-- Preconnect -->
-  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
-  <link rel="preload" href="/css/maplibre.css" as="style" onload="this.rel='stylesheet'">
   <noscript>
     <link rel="stylesheet" href="/css/maplibre.css">
   </noscript>

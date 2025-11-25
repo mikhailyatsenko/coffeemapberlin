@@ -52,7 +52,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
   if (!images?.length) {
     return (
       <ImgWithLoader
-        loading="eager"
+        fetchPriority="high"
         src={images?.length ? `${IMAGEKIT_CDN_URL}/${images[0]}` : '/places-images/default-place-img.jpg'}
         alt={`${placeName} main image`}
         className={className}

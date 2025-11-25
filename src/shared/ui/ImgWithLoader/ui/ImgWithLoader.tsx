@@ -18,7 +18,7 @@ export const ImgWithLoader = ({
   src,
   alt,
   className = '',
-  loading = 'lazy',
+  loading = undefined,
   onLoad,
   onError,
   errorFallbackUrl,
