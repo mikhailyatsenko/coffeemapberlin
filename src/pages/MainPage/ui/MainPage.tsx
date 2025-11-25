@@ -1,9 +1,14 @@
-import { useCallback, useMemo, Suspense } from 'react';
+import { useCallback, useMemo, Suspense, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MainMapLazy } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
-import { useGetPlacesQuery } from 'shared/generated/graphql';
+import {
+  type GetOnlyGeoPlacesQuery,
+  useGetOnlyGeoPlacesQuery,
+  useGetPlacesQuery,
+  useGetPlacesLazyQuery,
+} from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
 import { useAuthStore } from 'shared/stores/auth';
 import { useGuestFavoritesStore } from 'shared/stores/guestFavorites';
@@ -29,6 +34,8 @@ export const MainPage = () => {
   const hasMoreBatchLoaded = usePlacesStore((state) => state.hasMoreBatchLoaded);
   const { user } = useAuthStore();
   const guestFavIds = useGuestFavoritesStore((s) => s.ids);
+
+  const [onlyCoordinates, setOnlyCoordinates] = useState<GetOnlyGeoPlacesQuery['places']['places']>();
 
   // Handle email confirmation from location state
   const token = location.state?.token as string | null | undefined;
@@ -67,14 +74,29 @@ export const MainPage = () => {
     },
   });
 
-  useGetPlacesQuery({
-    skip: hasMoreBatchLoaded,
-    variables: { offset: PAGE_SIZE },
-    onCompleted: (data) => {
-      appendUniquePlaces(data?.places.places);
+  const [getPlaces, { data }] = useGetPlacesLazyQuery({ variables: { offset: PAGE_SIZE } });
+
+  useEffect(() => {
+    if (hasInitialBatchLoaded && !hasMoreBatchLoaded) {
+      getPlaces();
       setMoreBatchLoaded(true);
-    },
-  });
+    }
+  }, [getPlaces, hasInitialBatchLoaded, hasMoreBatchLoaded]);
+
+  useEffect(() => {
+    if (hasMoreBatchLoaded && data?.places.places) {
+      appendUniquePlaces(data.places.places);
+      setOnlyCoordinates([]);
+    }
+  }, [appendUniquePlaces, data?.places.places, hasMoreBatchLoaded]);
+  // useGetPlacesQuery({
+  //   skip: hasMoreBatchLoaded,
+  //   variables: { offset: PAGE_SIZE },
+  //   onCompleted: (data) => {
+  //     appendUniquePlaces(data?.places.places);
+  //     setMoreBatchLoaded(true);
+  //   },
+  // });
 
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);
@@ -99,13 +121,33 @@ export const MainPage = () => {
     features: placesToDisplay ?? [],
   };
 
+  useGetOnlyGeoPlacesQuery({
+    skip: hasMoreBatchLoaded,
+    variables: { offset: PAGE_SIZE },
+    onCompleted: (data) => {
+      if (data?.places.places) {
+        console.log(data.places.places);
+        setOnlyCoordinates(data?.places?.places);
+        // const withGeo = createPlacesGeo(data.places.places);
+        // setOnlyGeoPlaces(withGeo);
+      }
+      // setMoreBatchLoaded(true);
+    },
+  });
+
   return (
     <>
       <main>
         {initialLoading && <Loader />}
         <PlacesList places={placesToDisplay} />
+
         <Suspense fallback={null}>
-          <MainMapLazy placesGeo={placesGeo} />
+          <MainMapLazy
+            placesGeo={{
+              ...placesGeo,
+              features: [...placesGeo.features, ...(onlyCoordinates?.length ? onlyCoordinates : [])],
+            }}
+          />
         </Suspense>
       </main>
       <ShowFavoritePlaces

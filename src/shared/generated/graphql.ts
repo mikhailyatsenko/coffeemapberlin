@@ -366,6 +366,7 @@ export interface User {
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isGoogleUserUserWithoutPassword: Scalars['Boolean']['output'];
+  lastActive?: Maybe<Scalars['String']['output']>;
 }
 
 export interface UserReviewActivity {
@@ -482,6 +483,22 @@ export type GetPlacesQueryVariables = Exact<{
 
 
 export interface GetPlacesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, googleId?: string | null } }> } }
+
+export type GetOnlyGeoPlacesQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export interface GetOnlyGeoPlacesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', places: Array<{ __typename?: 'Place', id: string, type: string, properties: { __typename?: 'PlaceProperties', id: string, name: string }, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] } }> } }
+
+export type GetPlacesOnlyWithPropertiesQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export interface GetPlacesOnlyWithPropertiesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, googleId?: string | null } }> } }
 
 export type GetFavoritePlacesQueryVariables = Exact<Record<string, never>>;
 
@@ -1110,6 +1127,115 @@ export type GetPlacesQueryHookResult = ReturnType<typeof useGetPlacesQuery>;
 export type GetPlacesLazyQueryHookResult = ReturnType<typeof useGetPlacesLazyQuery>;
 export type GetPlacesSuspenseQueryHookResult = ReturnType<typeof useGetPlacesSuspenseQuery>;
 export type GetPlacesQueryResult = Apollo.QueryResult<GetPlacesQuery, GetPlacesQueryVariables>;
+export const GetOnlyGeoPlacesDocument = gql`
+    query GetOnlyGeoPlaces($limit: Int, $offset: Int) {
+  places(limit: $limit, offset: $offset) {
+    places {
+      id
+      type
+      properties {
+        id
+        name
+      }
+      geometry {
+        type
+        coordinates
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetOnlyGeoPlacesQuery__
+ *
+ * To run a query within a React component, call `useGetOnlyGeoPlacesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOnlyGeoPlacesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOnlyGeoPlacesQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useGetOnlyGeoPlacesQuery(baseOptions?: Apollo.QueryHookOptions<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>(GetOnlyGeoPlacesDocument, options);
+      }
+export function useGetOnlyGeoPlacesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>(GetOnlyGeoPlacesDocument, options);
+        }
+export function useGetOnlyGeoPlacesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>(GetOnlyGeoPlacesDocument, options);
+        }
+export type GetOnlyGeoPlacesQueryHookResult = ReturnType<typeof useGetOnlyGeoPlacesQuery>;
+export type GetOnlyGeoPlacesLazyQueryHookResult = ReturnType<typeof useGetOnlyGeoPlacesLazyQuery>;
+export type GetOnlyGeoPlacesSuspenseQueryHookResult = ReturnType<typeof useGetOnlyGeoPlacesSuspenseQuery>;
+export type GetOnlyGeoPlacesQueryResult = Apollo.QueryResult<GetOnlyGeoPlacesQuery, GetOnlyGeoPlacesQueryVariables>;
+export const GetPlacesOnlyWithPropertiesDocument = gql`
+    query GetPlacesOnlyWithProperties($limit: Int, $offset: Int) {
+  places(limit: $limit, offset: $offset) {
+    places {
+      id
+      type
+      properties {
+        id
+        name
+        description
+        address
+        image
+        instagram
+        averageRating
+        isFavorite
+        neighborhood
+        googleId
+      }
+    }
+    total
+  }
+}
+    `;
+
+/**
+ * __useGetPlacesOnlyWithPropertiesQuery__
+ *
+ * To run a query within a React component, call `useGetPlacesOnlyWithPropertiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlacesOnlyWithPropertiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPlacesOnlyWithPropertiesQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useGetPlacesOnlyWithPropertiesQuery(baseOptions?: Apollo.QueryHookOptions<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>(GetPlacesOnlyWithPropertiesDocument, options);
+      }
+export function useGetPlacesOnlyWithPropertiesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>(GetPlacesOnlyWithPropertiesDocument, options);
+        }
+export function useGetPlacesOnlyWithPropertiesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>(GetPlacesOnlyWithPropertiesDocument, options);
+        }
+export type GetPlacesOnlyWithPropertiesQueryHookResult = ReturnType<typeof useGetPlacesOnlyWithPropertiesQuery>;
+export type GetPlacesOnlyWithPropertiesLazyQueryHookResult = ReturnType<typeof useGetPlacesOnlyWithPropertiesLazyQuery>;
+export type GetPlacesOnlyWithPropertiesSuspenseQueryHookResult = ReturnType<typeof useGetPlacesOnlyWithPropertiesSuspenseQuery>;
+export type GetPlacesOnlyWithPropertiesQueryResult = Apollo.QueryResult<GetPlacesOnlyWithPropertiesQuery, GetPlacesOnlyWithPropertiesQueryVariables>;
 export const GetFavoritePlacesDocument = gql`
     query GetFavoritePlaces {
   favoritePlaces {

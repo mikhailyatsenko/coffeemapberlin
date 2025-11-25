@@ -28,6 +28,49 @@ export const GET_PLACES = gql`
   }
 `;
 
+export const GET_ONLY_GEO_PLACES = gql`
+  query GetOnlyGeoPlaces($limit: Int, $offset: Int) {
+    places(limit: $limit, offset: $offset) {
+      places {
+        id
+        type
+        properties {
+          id
+          name
+        }
+        geometry {
+          type
+          coordinates
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PLACES_ONLY_WITH_PROPERTIES = gql`
+  query GetPlacesOnlyWithProperties($limit: Int, $offset: Int) {
+    places(limit: $limit, offset: $offset) {
+      places {
+        id
+        type
+        properties {
+          id
+          name
+          description
+          address
+          image
+          instagram
+          averageRating
+          isFavorite
+          neighborhood
+          googleId
+        }
+      }
+      total
+    }
+  }
+`;
+
 export const GET_FAVORITE_PLACES = gql`
   query GetFavoritePlaces {
     favoritePlaces {
