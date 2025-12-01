@@ -1,0 +1,1 @@
+export { JournalArticleCard } from './JournalArticleCard';

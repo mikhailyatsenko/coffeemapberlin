@@ -32,6 +32,34 @@ export interface AddTextReviewResponse {
   text: Scalars['String']['output'];
 }
 
+export interface Article {
+  __typename?: 'Article';
+  author?: Maybe<Scalars['String']['output']>;
+  content?: Maybe<Scalars['String']['output']>;
+  coverImage?: Maybe<UploadFile>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  documentId: Scalars['ID']['output'];
+  featured?: Maybe<Scalars['Boolean']['output']>;
+  gallery?: Maybe<UploadFile[]>;
+  publishedAt?: Maybe<Scalars['String']['output']>;
+  seo?: Maybe<ArticleSeo>;
+  slug: Scalars['String']['output'];
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  viewCount?: Maybe<Scalars['Int']['output']>;
+}
+
+export interface ArticleSeo {
+  __typename?: 'ArticleSeo';
+  canonicalURL?: Maybe<Scalars['String']['output']>;
+  keywords?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  metaDescription?: Maybe<Scalars['String']['output']>;
+  metaImage?: Maybe<UploadFile>;
+  metaTitle?: Maybe<Scalars['String']['output']>;
+}
+
 export interface AuthPayload {
   __typename?: 'AuthPayload';
   emailChanged?: Maybe<Scalars['Boolean']['output']>;
@@ -298,6 +326,8 @@ export interface PlacesResponse {
 
 export interface Query {
   __typename?: 'Query';
+  article?: Maybe<Article>;
+  articles: Article[];
   currentUser?: Maybe<User>;
   favoritePlaces: FavoritePlace[];
   filteredPlaces: PlacesResponse;
@@ -305,6 +335,11 @@ export interface Query {
   placeReviews: PlaceReviews;
   places: PlacesResponse;
   userReviewActivity: UserReviewActivity[];
+}
+
+
+export interface QueryarticleArgs {
+  documentId: Scalars['ID']['input'];
 }
 
 
@@ -358,6 +393,15 @@ export interface UploadAvatarResponse {
   success: Scalars['Boolean']['output'];
 }
 
+export interface UploadFile {
+  __typename?: 'UploadFile';
+  alternativeText?: Maybe<Scalars['String']['output']>;
+  formats?: Maybe<Scalars['JSON']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  url: Scalars['String']['output'];
+  width?: Maybe<Scalars['Int']['output']>;
+}
+
 export interface User {
   __typename?: 'User';
   avatar?: Maybe<Scalars['String']['output']>;
@@ -366,6 +410,7 @@ export interface User {
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isGoogleUserUserWithoutPassword: Scalars['Boolean']['output'];
+  lastActive?: Maybe<Scalars['String']['output']>;
 }
 
 export interface UserReviewActivity {
@@ -459,6 +504,18 @@ export type ContactFormMutationVariables = Exact<{
 
 
 export interface ContactFormMutation { __typename?: 'Mutation', contactForm: { __typename?: 'ContactFormResponse', success: boolean, name: string } }
+
+export type GetArticlesQueryVariables = Exact<Record<string, never>>;
+
+
+export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description?: string | null, content?: string | null, author?: string | null, featured?: boolean | null, tags: string[], viewCount?: number | null, publishedAt?: string | null, createdAt?: string | null, updatedAt?: string | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ArticleSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: Array<string | null> | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
+
+export type GetArticleQueryVariables = Exact<{
+  documentId: Scalars['ID']['input'];
+}>;
+
+
+export interface GetArticleQuery { __typename?: 'Query', article?: { __typename?: 'Article', documentId: string, title: string, slug: string, description?: string | null, content?: string | null, author?: string | null, featured?: boolean | null, tags: string[], viewCount?: number | null, publishedAt?: string | null, createdAt?: string | null, updatedAt?: string | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null, width?: number | null, height?: number | null }> | null, seo?: { __typename?: 'ArticleSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: Array<string | null> | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null } | null }
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -984,6 +1041,151 @@ export function useContactFormMutation(baseOptions?: Apollo.MutationHookOptions<
 export type ContactFormMutationHookResult = ReturnType<typeof useContactFormMutation>;
 export type ContactFormMutationResult = Apollo.MutationResult<ContactFormMutation>;
 export type ContactFormMutationOptions = Apollo.BaseMutationOptions<ContactFormMutation, ContactFormMutationVariables>;
+export const GetArticlesDocument = gql`
+    query GetArticles {
+  articles {
+    documentId
+    title
+    slug
+    description
+    content
+    author
+    featured
+    tags
+    viewCount
+    publishedAt
+    createdAt
+    updatedAt
+    coverImage {
+      url
+      formats
+      width
+      height
+      alternativeText
+    }
+    gallery {
+      url
+      formats
+      alternativeText
+    }
+    seo {
+      metaTitle
+      metaDescription
+      keywords
+      canonicalURL
+      metaImage {
+        url
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetArticlesQuery__
+ *
+ * To run a query within a React component, call `useGetArticlesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetArticlesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetArticlesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetArticlesQuery(baseOptions?: Apollo.QueryHookOptions<GetArticlesQuery, GetArticlesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetArticlesQuery, GetArticlesQueryVariables>(GetArticlesDocument, options);
+      }
+export function useGetArticlesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetArticlesQuery, GetArticlesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetArticlesQuery, GetArticlesQueryVariables>(GetArticlesDocument, options);
+        }
+export function useGetArticlesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetArticlesQuery, GetArticlesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetArticlesQuery, GetArticlesQueryVariables>(GetArticlesDocument, options);
+        }
+export type GetArticlesQueryHookResult = ReturnType<typeof useGetArticlesQuery>;
+export type GetArticlesLazyQueryHookResult = ReturnType<typeof useGetArticlesLazyQuery>;
+export type GetArticlesSuspenseQueryHookResult = ReturnType<typeof useGetArticlesSuspenseQuery>;
+export type GetArticlesQueryResult = Apollo.QueryResult<GetArticlesQuery, GetArticlesQueryVariables>;
+export const GetArticleDocument = gql`
+    query GetArticle($documentId: ID!) {
+  article(documentId: $documentId) {
+    documentId
+    title
+    slug
+    description
+    content
+    author
+    featured
+    tags
+    viewCount
+    publishedAt
+    createdAt
+    updatedAt
+    coverImage {
+      url
+      formats
+      width
+      height
+      alternativeText
+    }
+    gallery {
+      url
+      formats
+      alternativeText
+      width
+      height
+    }
+    seo {
+      metaTitle
+      metaDescription
+      keywords
+      canonicalURL
+      metaImage {
+        url
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetArticleQuery__
+ *
+ * To run a query within a React component, call `useGetArticleQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetArticleQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetArticleQuery({
+ *   variables: {
+ *      documentId: // value for 'documentId'
+ *   },
+ * });
+ */
+export function useGetArticleQuery(baseOptions: Apollo.QueryHookOptions<GetArticleQuery, GetArticleQueryVariables> & ({ variables: GetArticleQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetArticleQuery, GetArticleQueryVariables>(GetArticleDocument, options);
+      }
+export function useGetArticleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetArticleQuery, GetArticleQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetArticleQuery, GetArticleQueryVariables>(GetArticleDocument, options);
+        }
+export function useGetArticleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetArticleQuery, GetArticleQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetArticleQuery, GetArticleQueryVariables>(GetArticleDocument, options);
+        }
+export type GetArticleQueryHookResult = ReturnType<typeof useGetArticleQuery>;
+export type GetArticleLazyQueryHookResult = ReturnType<typeof useGetArticleLazyQuery>;
+export type GetArticleSuspenseQueryHookResult = ReturnType<typeof useGetArticleSuspenseQuery>;
+export type GetArticleQueryResult = Apollo.QueryResult<GetArticleQuery, GetArticleQueryVariables>;
 export const ToggleFavoriteDocument = gql`
     mutation ToggleFavorite($placeId: ID!) {
   toggleFavorite(placeId: $placeId)

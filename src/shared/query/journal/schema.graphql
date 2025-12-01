@@ -1,0 +1,40 @@
+scalar JSON
+
+type Query {
+  articles: [Article!]!
+  article(documentId: ID!): Article
+}
+
+type Article {
+  documentId: ID!
+  title: String!
+  slug: String!
+  description: String
+  content: String
+  author: String
+  featured: Boolean
+  tags: [String!]!
+  viewCount: Int
+  publishedAt: String
+  createdAt: String
+  updatedAt: String
+  coverImage: UploadFile
+  gallery: [UploadFile!]
+  seo: ArticleSeo
+}
+
+type UploadFile {
+  url: String!
+  formats: JSON
+  width: Int
+  height: Int
+  alternativeText: String
+}
+
+type ArticleSeo {
+  metaTitle: String
+  metaDescription: String
+  keywords: [String]
+  canonicalURL: String
+  metaImage: UploadFile
+}

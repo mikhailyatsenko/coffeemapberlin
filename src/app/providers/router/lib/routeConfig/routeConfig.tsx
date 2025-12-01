@@ -4,6 +4,8 @@ import { AccountSettingsPage } from 'pages/AccountSettingsPage';
 import { ConfirmEmailPage } from 'pages/ConfirmEmailPage';
 import { ContactPage } from 'pages/ContactPage';
 import { DisclaimerPage } from 'pages/DisclaimerPage';
+import { JournalArticlePage } from 'pages/JournalArticlePage';
+import { JournalPage } from 'pages/JournalPage';
 import { LoginPage } from 'pages/LoginPage';
 import { MainPage } from 'pages/MainPage';
 import { MyReviews } from 'pages/MyReviews';
@@ -29,6 +31,14 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.ABOUT]: {
     path: RoutePaths.about,
     element: <AboutPage />,
+  },
+  [AppRoutes.JOURNAL]: {
+    path: RoutePaths.journal,
+    element: <JournalPage />,
+  },
+  [AppRoutes.JOURNAL_ARTICLE]: {
+    path: RoutePaths.journalArticle,
+    element: <JournalArticlePage />,
   },
   [AppRoutes.CONTACTS]: {
     path: RoutePaths.contacts,
