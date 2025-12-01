@@ -25,7 +25,7 @@ const formatPublishedDate = (value?: string | null) => {
 const getCoverImageUrl = (article: JournalArticle) => {
   const formats = article.coverImage?.formats as Record<string, { url: string }> | undefined;
 
-  return formats?.medium?.url ?? formats?.small?.url ?? article.coverImage?.url ?? '';
+  return article.coverImage?.url ?? formats?.large?.url ?? formats?.medium?.url ?? formats?.small?.url ?? '';
 };
 
 export const JournalArticleCard = ({ article }: JournalArticleCardProps) => {

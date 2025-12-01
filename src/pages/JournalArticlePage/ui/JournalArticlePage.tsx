@@ -8,9 +8,13 @@ import { useGetArticleQuery, useGetArticlesQuery } from 'shared/generated/graphq
 import cls from './JournalArticlePage.module.scss';
 
 const getCoverImageUrl = (formats: unknown, fallback?: string | null) => {
+  if (fallback) {
+    return fallback;
+  }
+
   const typedFormats = formats as Record<string, { url: string }> | undefined;
 
-  return typedFormats?.large?.url ?? typedFormats?.medium?.url ?? typedFormats?.small?.url ?? fallback ?? '';
+  return typedFormats?.large?.url ?? typedFormats?.medium?.url ?? typedFormats?.small?.url ?? '';
 };
 
 export const JournalArticlePage = () => {
