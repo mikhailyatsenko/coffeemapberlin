@@ -7,7 +7,7 @@ export const Logo = () => {
       <img width={32} height={32} src={logo} alt="logo" />
       <div className={cls.logoText}>
         <div className={cls.primaryText}>
-          3.Welle<sup> berlin</sup>
+          3.Welle<sup> Berlin
         </div>
         <div className={cls.secondaryText}>Good coffee map </div>
       </div>
