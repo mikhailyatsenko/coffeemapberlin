@@ -111,13 +111,13 @@ export const JournalArticlePage = () => {
         </p>
         <h1 className={cls.heroTitle}>{article.title}</h1>
 
-        {article.tags?.length ? (
+        {/* {article.tags?.length ? (
           <div className={cls.meta} aria-label="Article tags">
             {article.tags.map((tag) => (
               <span key={`${article.documentId}-${tag}`}>#{tag}</span>
             ))}
           </div>
-        ) : null}
+        ) : null} */}
       </section>
 
       {coverUrl && (

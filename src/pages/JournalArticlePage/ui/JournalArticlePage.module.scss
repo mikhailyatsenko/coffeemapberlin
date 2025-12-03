@@ -36,6 +36,7 @@
   position: relative;
   aspect-ratio: 16 / 9;
   background: #f3f4f6;
+  margin-bottom: 32px;
 }
 
 .cover img {
@@ -75,6 +76,22 @@
   :global(ol) {
     margin-left: 20px;
     margin-bottom: 16px;
+  }
+
+  :global(ul) {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  :global(ul li) {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+
+  :global(ul li::before) {
+    content: '—';
+    position: absolute;
+    left: 0;
   }
 }
 
