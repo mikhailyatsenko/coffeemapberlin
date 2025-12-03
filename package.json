@@ -33,7 +33,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-google-recaptcha": "^3.1.0",
-    "react-hook-form": "^7.51.5",
+    "react-hook-form": "^7.67.0",
     "react-hot-toast": "^2.5.2",
     "react-map-gl": "8.0.4",
     "react-markdown": "^10.1.0",

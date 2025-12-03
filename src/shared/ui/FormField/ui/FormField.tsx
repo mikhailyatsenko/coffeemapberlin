@@ -1,3 +1,4 @@
+import type { ChangeEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
 import cls from './FormField.module.scss';
 
@@ -10,6 +11,7 @@ interface FormFieldProps {
   autoComplete?: string;
   autoFocus?: boolean;
   className?: string;
+  onValueChange?: (value: string) => void;
 }
 export const FormField: React.FC<FormFieldProps> = ({
   fieldName,
@@ -19,8 +21,16 @@ export const FormField: React.FC<FormFieldProps> = ({
   labelText,
   autoComplete,
   autoFocus,
+  onValueChange,
 }) => {
   const { register } = useFormContext();
+  const registered = register(fieldName);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    registered.onChange(event);
+    onValueChange?.(event.target.value);
+  };
+
   const parameters = {
     placeholder: fieldName,
     type,
@@ -28,7 +38,8 @@ export const FormField: React.FC<FormFieldProps> = ({
     autoComplete,
     autoFocus,
     id: fieldName,
-    ...register(fieldName),
+    ...registered,
+    onChange: handleChange,
   };
   return (
     <div className={`${cls.formGroup} ${type === 'hidden' ? cls.hiddenGroup : ''}`}>

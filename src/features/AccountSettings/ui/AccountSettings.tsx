@@ -38,7 +38,7 @@ export const AccountSettings = () => {
 
   const { reset: resetPasswordValues } = passwordForm;
 
-  const { reset: resetPersonalData, watch: watchPersonalData } = personalDataForm;
+  const { reset: resetPersonalData } = personalDataForm;
 
   const [setNewPassword, { loading: loadingPassword, error: errorSettingPassword }] = useSetNewPasswordMutation();
   const [updatePersonalData, { loading: loadingPersonalData, error: errorUpdatingPersonalData }] =
@@ -56,12 +56,6 @@ export const AccountSettings = () => {
   if (!user) {
     return <p>Please log in to view your profile.</p>;
   }
-
-  const isDisplayNameChanged = watchPersonalData('displayName').trim() !== user?.displayName;
-
-  const isEmailChanged = watchPersonalData('email').trim() !== user?.email;
-
-  const isButtonPersonalFormDisabled = !isDisplayNameChanged && !isEmailChanged;
 
   const onUpdatePersonalDataSubmit: SubmitHandler<PersonalDataFormData> = async (data) => {
     try {
@@ -120,10 +114,11 @@ export const AccountSettings = () => {
         />
       ) : null}
       <PersonalSettingsForm
-        isButtonPersonalFormDisabled={isButtonPersonalFormDisabled}
         onUpdatePersonalDataSubmit={onUpdatePersonalDataSubmit}
         personalDataForm={personalDataForm}
         errorUpdatingPersonalData={errorUpdatingPersonalData}
+        initialDisplayName={user.displayName ?? ''}
+        initialEmail={user.email ?? ''}
       />
       <PasswordSettingsForm
         isGoogleUserUserWithoutPassword={user.isGoogleUserUserWithoutPassword}
