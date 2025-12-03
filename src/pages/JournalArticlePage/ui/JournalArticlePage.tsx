@@ -46,10 +46,54 @@ export const JournalArticlePage = () => {
   const article = detailedArticleData?.article ?? baseArticle;
 
   useEffect(() => {
-    if (article?.title) {
+    if (article?.seo) {
+      // Update title
+      if (article.seo.metaTitle) {
+        document.title = article.seo.metaTitle;
+      } else if (article.title) {
+        document.title = `${article.title} | Journal | Berlin Coffee Map`;
+      }
+
+      // Update meta description
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription && article.seo.metaDescription) {
+        metaDescription.setAttribute('content', article.seo.metaDescription);
+      }
+
+      // Update keywords
+      const metaKeywords = document.querySelector('meta[name="keywords"]');
+      if (metaKeywords && article.seo.keywords?.length) {
+        metaKeywords.setAttribute('content', article.seo.keywords.filter(Boolean).join(', '));
+      }
+
+      // Update canonical URL
+      const canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (canonicalLink && article.seo.canonicalURL) {
+        canonicalLink.setAttribute('href', article.seo.canonicalURL);
+      }
+
+      // Update Open Graph image
+      const ogImage = document.querySelector('meta[property="og:image"]');
+      if (ogImage && article.seo.metaImage?.url) {
+        ogImage.setAttribute('content', article.seo.metaImage.url);
+      }
+
+      // Update Open Graph title
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle && article.seo.metaTitle) {
+        ogTitle.setAttribute('content', article.seo.metaTitle);
+      }
+
+      // Update Open Graph description
+      const ogDescription = document.querySelector('meta[property="og:description"]');
+      if (ogDescription && article.seo.metaDescription) {
+        ogDescription.setAttribute('content', article.seo.metaDescription);
+      }
+    } else if (article?.title) {
+      // Fallback to basic title update if no SEO data
       document.title = `${article.title} | Journal | Berlin Coffee Map`;
     }
-  }, [article?.title]);
+  }, [article?.title, article?.seo]);
 
   if (!slug) {
     return (
