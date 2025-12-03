@@ -183,7 +183,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
 
   if (isPlaceLoading || !placeData?.place?.properties) return <NewDetailedPlaceCardSkeleton />;
 
-  const { averageRating, description, name, address, instagram, isFavorite, neighborhood, images } =
+  const { averageRating, description, name, address, instagram, isFavorite, neighborhood, images, website } =
     placeData.place.properties;
   const { ratingCount, characteristicCounts, openingHours, phone } = placeData.place.properties;
   return (
@@ -297,6 +297,19 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
                 >
                   <img className={cls.icon} src={instagramIcon} alt="" />
                   Open Instagram
+                </a>
+              ) : null}
+
+              {website ? (
+                <a
+                  href={website}
+                  target="_blank"
+                  rel="noreferrer nofollow"
+                  className={cls.secondaryBtn}
+                  title="Open website"
+                >
+                  <span className={cls.icon}>🌐</span>
+                  Open Website
                 </a>
               ) : null}
               {/* <div

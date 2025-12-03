@@ -213,6 +213,10 @@
 .icon {
   width: 18px;
   height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 @media (min-width: 768px) {
