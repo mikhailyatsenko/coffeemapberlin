@@ -308,7 +308,9 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
                   className={cls.secondaryBtn}
                   title="Open website"
                 >
-                  <span className={cls.icon}>🌐</span>
+                  <span className={cls.icon} role="img" aria-label="Website">
+                    🌐
+                  </span>
                   Open Website
                 </a>
               ) : null}
