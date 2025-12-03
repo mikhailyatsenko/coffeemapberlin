@@ -43,11 +43,8 @@ export const FavoritesModal = ({ favoritePlaces, onClose }: FavoritesModalProps)
                     className={cls.image}
                     loading={index < 1 ? 'eager' : 'lazy'}
                     fetchPriority={index < 1 ? 'high' : 'auto'}
-                    src={
-                      place.image
-                        ? `${IMAGEKIT_CDN_URL}/places-main-img/${place.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`
-                        : 'places-images/default-place.jpg'
-                    }
+                    errorFallbackUrl="/places-images/default-tooltip-img.jpg"
+                    src={`${IMAGEKIT_CDN_URL}/places-main-img/${place.id}/main.jpg?tr=if-ar_gt_1,w-320,if-else,h-320,if-end`}
                     alt=""
                   />
                   <div className={cls.favBtn}>
