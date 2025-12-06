@@ -7,14 +7,8 @@ export const GET_JOURNAL_ARTICLES = gql`
       title
       slug
       description
-      content
-      author
-      featured
       tags
-      viewCount
       publishedAt
-      createdAt
-      updatedAt
       coverImage {
         url
         formats

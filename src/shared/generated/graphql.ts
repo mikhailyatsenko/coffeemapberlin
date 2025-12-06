@@ -508,7 +508,7 @@ export interface ContactFormMutation { __typename?: 'Mutation', contactForm: { _
 export type GetArticlesQueryVariables = Exact<Record<string, never>>;
 
 
-export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description?: string | null, content?: string | null, author?: string | null, featured?: boolean | null, tags: string[], viewCount?: number | null, publishedAt?: string | null, createdAt?: string | null, updatedAt?: string | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ArticleSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: Array<string | null> | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
+export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description?: string | null, tags: string[], publishedAt?: string | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ArticleSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: Array<string | null> | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
 
 export type GetArticleQueryVariables = Exact<{
   documentId: Scalars['ID']['input'];
@@ -1048,14 +1048,8 @@ export const GetArticlesDocument = gql`
     title
     slug
     description
-    content
-    author
-    featured
     tags
-    viewCount
     publishedAt
-    createdAt
-    updatedAt
     coverImage {
       url
       formats
