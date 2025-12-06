@@ -11,6 +11,15 @@ export const JournalPage = () => {
 
   useEffect(() => {
     document.title = 'Journal | Berlin Coffee Map';
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute(
+        'content',
+        'Stories, insights, brewing tips, café discoveries, and everything related to the world of coffee.',
+      );
+    }
   }, []);
 
   const articles = data?.articles ?? [];
