@@ -30,7 +30,7 @@ const getCoverImageUrl = (article: JournalArticle) => {
 
 export const JournalArticleCard = ({ article }: JournalArticleCardProps) => {
   const coverImageUrl = getCoverImageUrl(article);
-  const publishedDateSource: string | null = article.publishedAt ?? article.createdAt ?? null;
+  const publishedDateSource: string | null = article.publishedAt ?? null;
   const publishedDate = formatPublishedDate(publishedDateSource);
   const articlePath = generatePath(`/${RoutePaths.journalArticle}`, { slug: article.slug });
 

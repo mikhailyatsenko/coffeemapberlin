@@ -43,7 +43,7 @@ export const JournalArticlePage = () => {
     skip: !baseArticle?.documentId,
   });
 
-  const article = detailedArticleData?.article ?? baseArticle;
+  const article = detailedArticleData?.article;
 
   useEffect(() => {
     if (article?.seo) {
@@ -174,7 +174,7 @@ export const JournalArticlePage = () => {
         <p className={cls.state}>Pouring the full story...</p>
       ) : (
         <article className={cls.content}>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content ?? ''}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{article?.content ?? ''}</ReactMarkdown>
         </article>
       )}
     </main>
