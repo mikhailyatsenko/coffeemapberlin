@@ -52,11 +52,9 @@ export const JournalArticleCard = ({ article }: JournalArticleCardProps) => {
         </div>
         <h3>{article.title}</h3>
         {article.description && <p className={cls.description}>{article.description}</p>}
-        {article.tags?.length > 0 && (
+        {article.tags?.length && article.tags?.length > 0 && (
           <div className={cls.tags} aria-label="Article tags">
-            {article.tags.map((tag) => (
-              <span key={`${article.documentId}-${tag}`}>{tag}</span>
-            ))}
+            {article?.tags?.map((tag) => <span key={`${article.documentId}-${tag}`}>{tag}</span>)}
           </div>
         )}
         <p className={cls.readMore} aria-label="Read full article">

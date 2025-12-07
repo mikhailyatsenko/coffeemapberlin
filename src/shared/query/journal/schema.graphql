@@ -76,7 +76,7 @@ type Article {
   content: String!
   author: String
   featured: Boolean
-  tags: JSON
+  tags: [String]
   viewCount: Int
   publishedAt: DateTime
   createdAt: DateTime

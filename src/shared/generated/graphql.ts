@@ -47,7 +47,7 @@ export interface Article {
   publishedAt?: Maybe<Scalars['DateTime']['output']>;
   seo?: Maybe<ComponentSharedSeo>;
   slug: Scalars['String']['output'];
-  tags?: Maybe<Scalars['JSON']['output']>;
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   viewCount?: Maybe<Scalars['Int']['output']>;
@@ -577,14 +577,14 @@ export interface ContactFormMutation { __typename?: 'Mutation', contactForm: { _
 export type GetArticlesQueryVariables = Exact<Record<string, never>>;
 
 
-export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, tags?: any | null, publishedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
+export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, tags?: Array<string | null> | null, publishedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
 
 export type GetArticleQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
 
 
-export interface GetArticleQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, content: string, author?: string | null, featured?: boolean | null, tags?: any | null, viewCount?: number | null, publishedAt?: any | null, createdAt?: any | null, updatedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null, width?: number | null, height?: number | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
+export interface GetArticleQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, content: string, author?: string | null, featured?: boolean | null, tags?: Array<string | null> | null, viewCount?: number | null, publishedAt?: any | null, createdAt?: any | null, updatedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null, width?: number | null, height?: number | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1207,7 +1207,6 @@ export const GetArticleDocument = gql`
     seo {
       metaTitle
       metaDescription
-      keywords
       canonicalURL
       metaImage {
         url
