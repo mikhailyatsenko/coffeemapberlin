@@ -110,16 +110,6 @@ export const JournalArticlePage = () => {
     );
   }
 
-  if (articleError) {
-    return (
-      <main className={`container`}>
-        <p className={cls.state} role="alert">
-          Something went wrong while loading the article content.
-        </p>
-      </main>
-    );
-  }
-
   const coverUrl = getCoverImageUrl(article.coverImage?.formats, article?.coverImage?.url);
   const publishedDate = article.publishedAt ? new Date(article.publishedAt as string).toLocaleDateString() : undefined;
 
