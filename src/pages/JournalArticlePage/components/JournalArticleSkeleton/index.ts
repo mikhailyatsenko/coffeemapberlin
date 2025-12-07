@@ -1,0 +1,1 @@
+export { JournalArticleSkeleton } from './ui';

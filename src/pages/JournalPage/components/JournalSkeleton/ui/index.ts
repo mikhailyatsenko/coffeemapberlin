@@ -1,0 +1,1 @@
+export { JournalSkeleton } from './JournalSkeleton';

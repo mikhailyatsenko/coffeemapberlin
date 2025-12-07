@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { JournalArticleCard } from 'entities/JournalArticle';
 import { strapiClient } from 'shared/config/strapiClient';
 import { useGetArticlesQuery } from 'shared/generated/graphql';
+import { JournalSkeleton } from '../components';
 import cls from './JournalPage.module.scss';
 
 export const JournalPage = () => {
@@ -26,11 +27,7 @@ export const JournalPage = () => {
 
   const renderContent = () => {
     if (loading) {
-      return (
-        <p className={cls.state} aria-live="polite">
-          Loading fresh stories...
-        </p>
-      );
+      return <JournalSkeleton />;
     }
 
     if (error) {

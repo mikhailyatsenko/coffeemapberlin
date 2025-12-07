@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { strapiClient } from 'shared/config/strapiClient';
 import { RoutePaths } from 'shared/constants';
 import { useGetArticleQuery } from 'shared/generated/graphql';
+import { JournalArticleSkeleton } from '../components';
 import cls from './JournalArticlePage.module.scss';
 
 const getCoverImageUrl = (formats: unknown, fallback?: string | null) => {
@@ -85,11 +86,7 @@ export const JournalArticlePage = () => {
   }
 
   if (isArticleLoading) {
-    return (
-      <main className={`container`}>
-        <p className={cls.state}>Brewing your article...</p>
-      </main>
-    );
+    return <JournalArticleSkeleton />;
   }
 
   if (articleError) {

@@ -23,6 +23,7 @@
   position: relative;
   aspect-ratio: 16 / 9;
   background: linear-gradient(135deg, #ff4b34, #facc15);
+  overflow: hidden;
 }
 
 .thumbnail img {
