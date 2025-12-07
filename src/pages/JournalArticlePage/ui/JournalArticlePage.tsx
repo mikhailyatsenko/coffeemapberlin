@@ -78,7 +78,7 @@ export const JournalArticlePage = () => {
 
   if (!slug) {
     return (
-      <main className={`${cls.JournalArticlePage} container`}>
+      <main className={`container`}>
         <p className={cls.state}>Missing article slug.</p>
       </main>
     );
@@ -86,7 +86,7 @@ export const JournalArticlePage = () => {
 
   if (isArticleLoading) {
     return (
-      <main className={`${cls.JournalArticlePage} container`}>
+      <main className={`container`}>
         <p className={cls.state}>Brewing your article...</p>
       </main>
     );
@@ -94,7 +94,7 @@ export const JournalArticlePage = () => {
 
   if (articleError) {
     return (
-      <main className={`${cls.JournalArticlePage} container`}>
+      <main className={`container`}>
         <p className={cls.state} role="alert">
           We couldn&apos;t open this journal entry. Please try again later.
         </p>
@@ -104,7 +104,7 @@ export const JournalArticlePage = () => {
 
   if (!article) {
     return (
-      <main className={`${cls.JournalArticlePage} container`}>
+      <main className={`container`}>
         <p className={cls.state}>We couldn&apos;t find this article.</p>
       </main>
     );
@@ -112,7 +112,7 @@ export const JournalArticlePage = () => {
 
   if (articleError) {
     return (
-      <main className={`${cls.JournalArticlePage} container`}>
+      <main className={`container`}>
         <p className={cls.state} role="alert">
           Something went wrong while loading the article content.
         </p>
@@ -124,7 +124,7 @@ export const JournalArticlePage = () => {
   const publishedDate = article.publishedAt ? new Date(article.publishedAt as string).toLocaleDateString() : undefined;
 
   return (
-    <main className={`${cls.JournalArticlePage} container`}>
+    <main className={`container`}>
       <Link to={`/${RoutePaths.journal}`} className={cls.breadcrumb}>
         ← Back to Journal
       </Link>
