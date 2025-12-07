@@ -35,8 +35,8 @@ export const GET_JOURNAL_ARTICLES = gql`
 `;
 
 export const GET_JOURNAL_ARTICLE = gql`
-  query GetArticle($documentId: ID!) {
-    article(documentId: $documentId) {
+  query GetArticle($slug: String!) {
+    articles(filters: { slug: { eq: $slug } }) {
       documentId
       title
       slug
@@ -66,7 +66,6 @@ export const GET_JOURNAL_ARTICLE = gql`
       seo {
         metaTitle
         metaDescription
-        keywords
         canonicalURL
         metaImage {
           url

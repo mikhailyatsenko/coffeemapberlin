@@ -15,6 +15,7 @@ export interface Scalars {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
   JSON: { input: any; output: any; }
 }
 
@@ -35,29 +36,37 @@ export interface AddTextReviewResponse {
 export interface Article {
   __typename?: 'Article';
   author?: Maybe<Scalars['String']['output']>;
-  content?: Maybe<Scalars['String']['output']>;
+  cafeReferences?: Maybe<Scalars['JSON']['output']>;
+  content: Scalars['String']['output'];
   coverImage?: Maybe<UploadFile>;
-  createdAt?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description: Scalars['String']['output'];
   documentId: Scalars['ID']['output'];
   featured?: Maybe<Scalars['Boolean']['output']>;
   gallery?: Maybe<UploadFile[]>;
-  publishedAt?: Maybe<Scalars['String']['output']>;
-  seo?: Maybe<ArticleSeo>;
+  publishedAt?: Maybe<Scalars['DateTime']['output']>;
+  seo?: Maybe<ComponentSharedSeo>;
   slug: Scalars['String']['output'];
-  tags: Array<Scalars['String']['output']>;
+  tags?: Maybe<Scalars['JSON']['output']>;
   title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
   viewCount?: Maybe<Scalars['Int']['output']>;
 }
 
-export interface ArticleSeo {
-  __typename?: 'ArticleSeo';
-  canonicalURL?: Maybe<Scalars['String']['output']>;
-  keywords?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  metaDescription?: Maybe<Scalars['String']['output']>;
-  metaImage?: Maybe<UploadFile>;
-  metaTitle?: Maybe<Scalars['String']['output']>;
+export interface ArticleFiltersInput {
+  and?: InputMaybe<Array<InputMaybe<ArticleFiltersInput>>>;
+  author?: InputMaybe<StringFilterInput>;
+  createdAt?: InputMaybe<StringFilterInput>;
+  description?: InputMaybe<StringFilterInput>;
+  documentId?: InputMaybe<IDFilterInput>;
+  featured?: InputMaybe<BooleanFilterInput>;
+  not?: InputMaybe<ArticleFiltersInput>;
+  or?: InputMaybe<Array<InputMaybe<ArticleFiltersInput>>>;
+  publishedAt?: InputMaybe<StringFilterInput>;
+  slug?: InputMaybe<StringFilterInput>;
+  title?: InputMaybe<StringFilterInput>;
+  updatedAt?: InputMaybe<StringFilterInput>;
+  viewCount?: InputMaybe<IntFilterInput>;
 }
 
 export interface AuthPayload {
@@ -65,6 +74,11 @@ export interface AuthPayload {
   emailChanged?: Maybe<Scalars['Boolean']['output']>;
   isFirstLogin?: Maybe<Scalars['Boolean']['output']>;
   user: User;
+}
+
+export interface BooleanFilterInput {
+  eq?: InputMaybe<Scalars['Boolean']['input']>;
+  ne?: InputMaybe<Scalars['Boolean']['input']>;
 }
 
 export enum Characteristic {
@@ -94,6 +108,15 @@ export interface CharacteristicData {
   __typename?: 'CharacteristicData';
   count: Scalars['Int']['output'];
   pressed: Scalars['Boolean']['output'];
+}
+
+export interface ComponentSharedSeo {
+  __typename?: 'ComponentSharedSeo';
+  canonicalURL?: Maybe<Scalars['String']['output']>;
+  keywords?: Maybe<Scalars['String']['output']>;
+  metaDescription?: Maybe<Scalars['String']['output']>;
+  metaImage?: Maybe<UploadFile>;
+  metaTitle?: Maybe<Scalars['String']['output']>;
 }
 
 export interface ContactForm {
@@ -139,6 +162,24 @@ export interface Geometry {
   __typename?: 'Geometry';
   coordinates: Array<Scalars['Float']['output']>;
   type: Scalars['String']['output'];
+}
+
+export interface IDFilterInput {
+  eq?: InputMaybe<Scalars['ID']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  ne?: InputMaybe<Scalars['ID']['input']>;
+  notIn?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+}
+
+export interface IntFilterInput {
+  eq?: InputMaybe<Scalars['Int']['input']>;
+  gt?: InputMaybe<Scalars['Int']['input']>;
+  gte?: InputMaybe<Scalars['Int']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  lt?: InputMaybe<Scalars['Int']['input']>;
+  lte?: InputMaybe<Scalars['Int']['input']>;
+  ne?: InputMaybe<Scalars['Int']['input']>;
+  notIn?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
 }
 
 export interface LogoutResponse {
@@ -281,6 +322,13 @@ export interface OpeningHour {
   hours: Scalars['String']['output'];
 }
 
+export interface PaginationArg {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  start?: InputMaybe<Scalars['Int']['input']>;
+}
+
 export interface Place {
   __typename?: 'Place';
   geometry: Geometry;
@@ -343,6 +391,13 @@ export interface QueryarticleArgs {
 }
 
 
+export interface QueryarticlesArgs {
+  filters?: InputMaybe<ArticleFiltersInput>;
+  pagination?: InputMaybe<PaginationArg>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+}
+
+
 export interface QueryfilteredPlacesArgs {
   minRating?: InputMaybe<Scalars['Float']['input']>;
   neighborhood?: InputMaybe<Scalars['String']['input']>;
@@ -380,6 +435,17 @@ export interface Review {
   userRating?: Maybe<Scalars['Float']['output']>;
 }
 
+export interface StringFilterInput {
+  contains?: InputMaybe<Scalars['String']['input']>;
+  endsWith?: InputMaybe<Scalars['String']['input']>;
+  eq?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  ne?: InputMaybe<Scalars['String']['input']>;
+  notContains?: InputMaybe<Scalars['String']['input']>;
+  notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  startsWith?: InputMaybe<Scalars['String']['input']>;
+}
+
 export interface SuccessResponse {
   __typename?: 'SuccessResponse';
   pendingEmail?: Maybe<Scalars['String']['output']>;
@@ -398,6 +464,9 @@ export interface UploadFile {
   alternativeText?: Maybe<Scalars['String']['output']>;
   formats?: Maybe<Scalars['JSON']['output']>;
   height?: Maybe<Scalars['Int']['output']>;
+  mime?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['Float']['output']>;
   url: Scalars['String']['output'];
   width?: Maybe<Scalars['Int']['output']>;
 }
@@ -508,14 +577,14 @@ export interface ContactFormMutation { __typename?: 'Mutation', contactForm: { _
 export type GetArticlesQueryVariables = Exact<Record<string, never>>;
 
 
-export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description?: string | null, tags: string[], publishedAt?: string | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ArticleSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: Array<string | null> | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
+export interface GetArticlesQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, tags?: any | null, publishedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
 
 export type GetArticleQueryVariables = Exact<{
-  documentId: Scalars['ID']['input'];
+  slug: Scalars['String']['input'];
 }>;
 
 
-export interface GetArticleQuery { __typename?: 'Query', article?: { __typename?: 'Article', documentId: string, title: string, slug: string, description?: string | null, content?: string | null, author?: string | null, featured?: boolean | null, tags: string[], viewCount?: number | null, publishedAt?: string | null, createdAt?: string | null, updatedAt?: string | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null, width?: number | null, height?: number | null }> | null, seo?: { __typename?: 'ArticleSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: Array<string | null> | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null } | null }
+export interface GetArticleQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, content: string, author?: string | null, featured?: boolean | null, tags?: any | null, viewCount?: number | null, publishedAt?: any | null, createdAt?: any | null, updatedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null, width?: number | null, height?: number | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, keywords?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1107,8 +1176,8 @@ export type GetArticlesLazyQueryHookResult = ReturnType<typeof useGetArticlesLaz
 export type GetArticlesSuspenseQueryHookResult = ReturnType<typeof useGetArticlesSuspenseQuery>;
 export type GetArticlesQueryResult = Apollo.QueryResult<GetArticlesQuery, GetArticlesQueryVariables>;
 export const GetArticleDocument = gql`
-    query GetArticle($documentId: ID!) {
-  article(documentId: $documentId) {
+    query GetArticle($slug: String!) {
+  articles(filters: {slug: {eq: $slug}}) {
     documentId
     title
     slug
@@ -1160,7 +1229,7 @@ export const GetArticleDocument = gql`
  * @example
  * const { data, loading, error } = useGetArticleQuery({
  *   variables: {
- *      documentId: // value for 'documentId'
+ *      slug: // value for 'slug'
  *   },
  * });
  */

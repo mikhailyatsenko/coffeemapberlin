@@ -1,7 +1,70 @@
 scalar JSON
+scalar DateTime
 
+# Filters
+input StringFilterInput {
+  eq: String
+  ne: String
+  in: [String]
+  notIn: [String]
+  contains: String
+  notContains: String
+  startsWith: String
+  endsWith: String
+}
+
+input IDFilterInput {
+  eq: ID
+  ne: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+input BooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input IntFilterInput {
+  eq: Int
+  ne: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  in: [Int]
+  notIn: [Int]
+}
+
+# Article filters
+input ArticleFiltersInput {
+  documentId: IDFilterInput
+  title: StringFilterInput
+  slug: StringFilterInput
+  description: StringFilterInput
+  author: StringFilterInput
+  featured: BooleanFilterInput
+  viewCount: IntFilterInput
+  publishedAt: StringFilterInput
+  createdAt: StringFilterInput
+  updatedAt: StringFilterInput
+  and: [ArticleFiltersInput]
+  or: [ArticleFiltersInput]
+  not: ArticleFiltersInput
+}
+
+# Pagination
+input PaginationArg {
+  page: Int
+  pageSize: Int
+  start: Int
+  limit: Int
+}
+
+# Main types
 type Query {
-  articles: [Article!]!
+  articles(filters: ArticleFiltersInput, pagination: PaginationArg, sort: [String]): [Article!]!
+
   article(documentId: ID!): Article
 }
 
@@ -9,18 +72,19 @@ type Article {
   documentId: ID!
   title: String!
   slug: String!
-  description: String
-  content: String
+  description: String!
+  content: String!
   author: String
   featured: Boolean
-  tags: [String!]!
+  tags: JSON
   viewCount: Int
-  publishedAt: String
-  createdAt: String
-  updatedAt: String
+  publishedAt: DateTime
+  createdAt: DateTime
+  updatedAt: DateTime
   coverImage: UploadFile
   gallery: [UploadFile!]
-  seo: ArticleSeo
+  seo: ComponentSharedSeo
+  cafeReferences: JSON
 }
 
 type UploadFile {
@@ -29,12 +93,15 @@ type UploadFile {
   width: Int
   height: Int
   alternativeText: String
+  name: String
+  size: Float
+  mime: String
 }
 
-type ArticleSeo {
+type ComponentSharedSeo {
   metaTitle: String
   metaDescription: String
-  keywords: [String]
+  keywords: String
   canonicalURL: String
   metaImage: UploadFile
 }

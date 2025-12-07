@@ -1,10 +1,10 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import { strapiClient } from 'shared/config/strapiClient';
 import { RoutePaths } from 'shared/constants';
-import { useGetArticleQuery, useGetArticlesQuery } from 'shared/generated/graphql';
+import { useGetArticleQuery } from 'shared/generated/graphql';
 import cls from './JournalArticlePage.module.scss';
 
 const getCoverImageUrl = (formats: unknown, fallback?: string | null) => {
@@ -21,29 +21,16 @@ export const JournalArticlePage = () => {
   const { slug } = useParams<{ slug: string }>();
 
   const {
-    data: listData,
-    loading: isListLoading,
-    error: listError,
-  } = useGetArticlesQuery({
-    client: strapiClient,
-  });
-
-  const baseArticle = useMemo(
-    () => listData?.articles.find((article) => article.slug === slug),
-    [listData?.articles, slug],
-  );
-
-  const {
     data: detailedArticleData,
-    loading: isDetailedLoading,
-    error: detailedError,
+    loading: isArticleLoading,
+    error: articleError,
   } = useGetArticleQuery({
     client: strapiClient,
-    variables: { documentId: baseArticle?.documentId ?? '' },
-    skip: !baseArticle?.documentId,
+    variables: { slug: slug ?? '' },
+    skip: !slug,
   });
 
-  const article = detailedArticleData?.article;
+  const article = detailedArticleData?.articles?.[0] ?? null;
 
   useEffect(() => {
     if (article?.seo) {
@@ -57,13 +44,7 @@ export const JournalArticlePage = () => {
       // Update meta description
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription && article.seo.metaDescription) {
-        metaDescription.setAttribute('content', article.seo.metaDescription);
-      }
-
-      // Update keywords
-      const metaKeywords = document.querySelector('meta[name="keywords"]');
-      if (metaKeywords && article.seo.keywords?.length) {
-        metaKeywords.setAttribute('content', article.seo.keywords.filter(Boolean).join(', '));
+        metaDescription.setAttribute('content', article?.seo.metaDescription);
       }
 
       // Update canonical URL
@@ -103,7 +84,7 @@ export const JournalArticlePage = () => {
     );
   }
 
-  if (isListLoading) {
+  if (isArticleLoading) {
     return (
       <main className={`${cls.JournalArticlePage} container`}>
         <p className={cls.state}>Brewing your article...</p>
@@ -111,7 +92,7 @@ export const JournalArticlePage = () => {
     );
   }
 
-  if (listError) {
+  if (articleError) {
     return (
       <main className={`${cls.JournalArticlePage} container`}>
         <p className={cls.state} role="alert">
@@ -129,7 +110,7 @@ export const JournalArticlePage = () => {
     );
   }
 
-  if (detailedError) {
+  if (articleError) {
     return (
       <main className={`${cls.JournalArticlePage} container`}>
         <p className={cls.state} role="alert">
@@ -139,8 +120,8 @@ export const JournalArticlePage = () => {
     );
   }
 
-  const coverUrl = getCoverImageUrl(article.coverImage?.formats, article.coverImage?.url);
-  const publishedDate = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : undefined;
+  const coverUrl = getCoverImageUrl(article.coverImage?.formats, article?.coverImage?.url);
+  const publishedDate = article.publishedAt ? new Date(article.publishedAt as string).toLocaleDateString() : undefined;
 
   return (
     <main className={`${cls.JournalArticlePage} container`}>
@@ -170,7 +151,7 @@ export const JournalArticlePage = () => {
         </div>
       )}
 
-      {isDetailedLoading ? (
+      {isArticleLoading ? (
         <p className={cls.state}>Pouring the full story...</p>
       ) : (
         <article className={cls.content}>
