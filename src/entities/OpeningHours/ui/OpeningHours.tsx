@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Modal } from 'shared/ui/Modal';
+import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { OpeningHoursList } from '../components/OpeningHoursList/OpeningHoursList';
 
 import { type OpeningHoursProps } from '../types';
@@ -44,10 +45,12 @@ export const OpeningHours: React.FC<OpeningHoursProps> = ({ openingHours }) => {
       </div>
 
       {modalOpen && (
-        <Modal closeOnEsc={true} onClose={handleCloseModal} widthOnDesktop={400}>
-          <h3 className={cls.openingHoursTitle}>Opening Hours</h3>
-          <OpeningHoursList openingHours={openingHours} todayDay={todayDay} />
-        </Modal>
+        <PortalToBody>
+          <Modal closeOnEsc={true} onClose={handleCloseModal} widthOnDesktop={400}>
+            <h3 className={cls.openingHoursTitle}>Opening Hours</h3>
+            <OpeningHoursList openingHours={openingHours} todayDay={todayDay} />
+          </Modal>
+        </PortalToBody>
       )}
     </>
   );
