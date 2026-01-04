@@ -111,6 +111,9 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   }, [placeData?.place?.properties?.googleId, placeData?.place?.properties?.name]);
 
   useEffect(() => {
+    // temporary turn tour off
+    return;
+
     if (isPlaceLoading || !placeData?.place?.properties) {
       return;
     }
