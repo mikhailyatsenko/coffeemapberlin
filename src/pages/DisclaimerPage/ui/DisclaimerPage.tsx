@@ -4,6 +4,9 @@ import cls from './DisclaimerPage.module.scss';
 export const DisclaimerPage = () => {
   useEffect(() => {
     document.title = 'Disclaimer | Berlin Coffee Map';
+    return () => {
+      document.title = 'Berlin Coffee Map';
+    };
   }, []);
 
   return (

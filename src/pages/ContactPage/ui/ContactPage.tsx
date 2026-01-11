@@ -5,6 +5,9 @@ import cls from './ContactPage.module.scss';
 const ContactPage = () => {
   useEffect(() => {
     document.title = 'Contact | Berlin Coffee Map';
+    return () => {
+      document.title = 'Berlin Coffee Map';
+    };
   }, []);
   return (
     <div className={cls.ContactPage}>

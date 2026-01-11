@@ -36,6 +36,13 @@ export const NeighborhoodPage = () => {
     : [];
 
   useEffect(() => {
+    document.title = `Best Coffee Places in ${displayNeighborhood} | Berlin Coffee Map`;
+    return () => {
+      document.title = 'Berlin Coffee Map';
+    };
+  }, [displayNeighborhood]);
+
+  useEffect(() => {
     if (!loading && data && places.length === 0 && neighborhood) {
       const timer = setTimeout(() => {
         navigate('/');

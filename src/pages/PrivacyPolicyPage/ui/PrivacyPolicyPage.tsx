@@ -4,8 +4,10 @@ import cls from './PrivacyPolicyPage.module.scss';
 export const PrivacyPolicyPage = () => {
   useEffect(() => {
     document.title = 'Privacy Policy | Berlin Coffee Map';
+    return () => {
+      document.title = 'Berlin Coffee Map';
+    };
   }, []);
-
   return (
     <section className={`${cls.PrivacyPolicyPage} container`}>
       <h1 className={cls.title}>Privacy Policy</h1>

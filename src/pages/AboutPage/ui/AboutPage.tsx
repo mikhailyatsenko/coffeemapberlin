@@ -5,6 +5,9 @@ import cls from './AboutPage.module.scss';
 export const AboutPage = () => {
   useEffect(() => {
     document.title = 'About | Berlin Coffee Map';
+    return () => {
+      document.title = 'Berlin Coffee Map';
+    };
   }, []);
   return (
     <main className={`${cls.AboutPage} container`} style={{ textAlign: 'center' }}>
