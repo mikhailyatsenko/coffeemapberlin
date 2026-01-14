@@ -11,7 +11,7 @@ export const AboutPage = () => {
   }, []);
   return (
     <main className={`${cls.AboutPage} container`} style={{ textAlign: 'center' }}>
-      <h1>Who are we?</h1>
+      <h1>About</h1>
       <p className={cls.text}>
         Love delicious coffee? Want to know where to find the best brews in Berlin — or a cozy, atmospheric spot to
         relax? Maybe both. You’re in the{' '}
