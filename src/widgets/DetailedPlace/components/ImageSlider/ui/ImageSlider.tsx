@@ -1,12 +1,13 @@
 import { throttle } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Lightbox, { type ZoomRef } from 'yet-another-react-lightbox';
-import { Zoom } from 'yet-another-react-lightbox/plugins';
+import { Zoom, Thumbnails } from 'yet-another-react-lightbox/plugins';
 import LeftArrowIcon from 'shared/assets/left-arrow-icon.svg?react';
 import RightArrowIcon from 'shared/assets/right-arrow-icon.svg?react';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import cls from './ImageSlider.module.scss';
+import 'yet-another-react-lightbox/plugins/thumbnails.css';
 
 interface ImageSliderProps {
   images: string[];
@@ -53,7 +54,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
     return (
       <ImgWithLoader
         fetchPriority="high"
-        src={images?.length ? `${IMAGEKIT_CDN_URL}/${images[0]}` : '/places-images/default-place-img.jpg'}
+        src={'/places-images/default-place-img.jpg'}
         alt={`${placeName} main image`}
         className={className}
         errorFallbackUrl="/places-images/default-place-img.jpg"
@@ -109,8 +110,9 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ images, placeName, cla
         </button>
       )}
       <Lightbox
+        thumbnails={{ position: 'bottom', width: 80, height: 80, showToggle: true }}
         zoom={{ ref: zoomRef, maxZoomPixelRatio: 2, doubleClickMaxStops: 3 }}
-        plugins={[Zoom]}
+        plugins={[Zoom, Thumbnails]}
         open={openLightbox}
         close={() => {
           setOpenLightbox(false);
