@@ -16,7 +16,7 @@ interface TooltipCardOnMapProps {
   coordinates: Position;
 }
 
-export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapProps) => {
+export const TooltipCardOnMap = ({ properties }: TooltipCardOnMapProps) => {
   const { averageRating, name, address, instagram } = properties;
 
   const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
