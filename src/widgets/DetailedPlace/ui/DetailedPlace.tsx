@@ -188,7 +188,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
 
   const { averageRating, description, name, address, instagram, isFavorite, neighborhood, images, website } =
     placeData.place.properties;
-  const { ratingCount, characteristicCounts, openingHours, phone } = placeData.place.properties;
+  const { ratingCount, characteristicCounts, openingHours, phone, googleId } = placeData.place.properties;
   return (
     <div className={cls.page}>
       <header className={cls.header}>
@@ -286,10 +286,12 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
                 <img className={cls.icon} src={logo} alt="" />
                 Show on 3.Welle map
               </button>
-              <button id="google-maps" className={cls.secondaryBtn} onClick={openOnGoogleMaps} type="button">
-                <img className={cls.icon} src="/google-maps.svg" alt="" />
-                Open on Google Maps
-              </button>
+              {googleId ? (
+                <button id="google-maps" className={cls.secondaryBtn} onClick={openOnGoogleMaps} type="button">
+                  <img className={cls.icon} src="/google-maps.svg" alt="" />
+                  Open on Google Maps
+                </button>
+              ) : null}
               {instagram ? (
                 <a
                   href={instagram}

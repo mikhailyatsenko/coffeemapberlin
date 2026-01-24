@@ -1,7 +1,7 @@
 import { type Position } from 'geojson';
 import { NavLink, generatePath } from 'react-router-dom';
 import instagramIcon from 'shared/assets/instagram.svg';
-import routeToIcon from 'shared/assets/route-to.svg';
+// import routeToIcon from 'shared/assets/route-to.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
@@ -80,7 +80,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
               <img className={cls.icon} src={instagramIcon} alt="" />
             </a>
           )}
-          <a
+          {/* <a
             className={cls.iconWrapper}
             onClick={(e) => {
               e.stopPropagation();
@@ -91,7 +91,7 @@ export const TooltipCardOnMap = ({ properties, coordinates }: TooltipCardOnMapPr
             title="Get directions on Google Maps"
           >
             <img className={cls.icon} src={routeToIcon} alt="" />
-          </a>
+          </a> */}
 
           <AddToFavButton
             theme="circle"
