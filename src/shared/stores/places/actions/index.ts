@@ -22,31 +22,6 @@ export const setMoreBatchLoaded = (loaded: boolean) => {
   usePlacesStore.setState({ hasMoreBatchLoaded: loaded });
 };
 
-export const setFilteredPlaces = (
-  filter: { searchTerm: string; minRating: number } | null = {
-    searchTerm: '',
-    minRating: 0,
-  },
-) => {
-  if (filter === null) {
-    usePlacesStore.setState({ filteredPlaces: null });
-    return;
-  }
-  usePlacesStore.setState((state) => {
-    const filteredPlaces = state.places
-      .filter(
-        (place) =>
-          place.properties.name.toLocaleLowerCase().includes(filter.searchTerm.toLocaleLowerCase().trim()) &&
-          (place.properties.averageRating ?? 0) >= filter.minRating,
-      )
-      .sort((a, b) => (b?.properties?.averageRating ?? 0) - (a?.properties?.averageRating ?? 0));
-
-    return {
-      filteredPlaces,
-    };
-  });
-};
-
 export const toggleFavorite = (placeId: string) => {
   usePlacesStore.setState((state) => {
     const updatedPlaces = state.places.map((place) =>
@@ -70,7 +45,7 @@ export const setCurrentPlacePosition = (position: PlacesState['currentPlacePosit
 
 export const revalidatePlaces = () => {
   setPlaces([]);
-  setFilteredPlaces(null);
+  // setFilteredPlaces(null);
   setShowFavorites(false);
   setCurrentPlacePosition(null);
   setInitialBatchLoaded(false);

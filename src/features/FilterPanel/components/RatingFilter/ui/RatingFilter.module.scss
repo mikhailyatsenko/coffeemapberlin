@@ -41,6 +41,7 @@
   transition: all 0.2s;
   display: flex;
   align-items: center;
+  gap: 4px;
   &:hover {
     border-color: var(--accent-primary);
     background: var(--bg-hover);
@@ -49,6 +50,6 @@
   &.selected {
     background-color: var(--accent-primary);
     border-color: var(--accent-primary);
-    color: var(--text-primary);
+    color: var(--text-inverse);
   }
 }
