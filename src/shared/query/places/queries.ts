@@ -111,8 +111,8 @@ export const GET_PLACE = gql`
 `;
 
 export const GET_FILTERED_PLACES = gql`
-  query FilteredPlaces($neighborhood: String, $minRating: Float) {
-    filteredPlaces(neighborhood: $neighborhood, minRating: $minRating) {
+  query FilteredPlaces($neighborhood: [String], $minRating: Float, $additionalInfo: [String]) {
+    filteredPlaces(neighborhood: $neighborhood, minRating: $minRating, additionalInfo: $additionalInfo) {
       places {
         id
         type
@@ -134,6 +134,27 @@ export const GET_FILTERED_PLACES = gql`
           googleId
           neighborhood
         }
+      }
+      total
+    }
+  }
+`;
+
+export const GET_AVAILABLE_NEIGHBORHOODS = gql`
+  query AvailableNeighborhoods {
+    availableNeighborhoods {
+      neighborhoods
+      total
+    }
+  }
+`;
+
+export const GET_AVAILABLE_TAGS = gql`
+  query GetAvailableTags {
+    availableAdditionalInfoTags {
+      tags {
+        category
+        tag
       }
       total
     }

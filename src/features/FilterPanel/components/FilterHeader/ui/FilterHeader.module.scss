@@ -1,0 +1,45 @@
+.header {
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-primary);
+  z-index: 10;
+  @media (max-width: 900px) {
+    padding: 16px 20px;
+  }
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+
+  @media (max-width: 900px) {
+    font-size: 20px;
+  }
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--accent-primary);
+  }
+}

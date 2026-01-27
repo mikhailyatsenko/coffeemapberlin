@@ -1,17 +1,15 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation, useNavigate, generatePath } from 'react-router-dom';
+import { NavLink, useNavigate, generatePath } from 'react-router-dom';
 // eslint-disable-next-line boundaries/element-types
 import { AuthModal } from 'widgets/AuthModal'; // TODO: fix import according to feature-sliced design
 import { AuthIndicator } from 'features/AuthIndicator';
 import { NeighborhoodDropdown } from 'features/NeighborhoodDropdown';
-import { SearchPlaces } from 'features/SearchPlaces';
 import { RoutePaths } from 'shared/constants';
 import { Logo } from 'shared/ui/Logo';
 import cls from './Navbar.module.scss';
 export const Navbar = () => {
   const [isBurgerActive, setIsBurgerActive] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,7 +51,6 @@ export const Navbar = () => {
       </NavLink>
 
       <div className={cls.buttonsRight}>
-        {location.pathname === '/' && !isBurgerActive && <SearchPlaces />}
         <ul className={`${cls.navMenu} ${isBurgerActive ? `${cls.active}` : ''}`}>
           <li className={cls.navItem}>
             <NavLink

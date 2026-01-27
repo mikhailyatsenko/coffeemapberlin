@@ -1,13 +1,13 @@
 .FormButton {
   position: relative;
-  color: black;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 100;
   padding: 10px 26px;
   margin: 20px 4px;
 
   cursor: pointer;
-  border: 1px solid #000;
+  border: 1px solid var(--text-primary);
   border-radius: 4px;
   background: transparent;
   &:hover,
@@ -15,8 +15,8 @@
     transform: scale(0.98);
   }
   &:disabled {
-    color: #b4b4b4;
-    border-color: #b4b4b4;
+    color: var(--text-disabled);
+    border-color: var(--text-disabled);
     cursor: not-allowed;
     transform: none;
     &:hover,
@@ -30,12 +30,12 @@
         transform: translateX(-50%);
         white-space: nowrap;
         font-size: 12px;
-        color: #ff0505;
+        color: var(--error);
       }
     }
   }
   @media (width <= 767px) {
-    border-color: #fff;
-    color: #fff;
+    border-color: var(--text-inverse);
+    color: var(--text-inverse);
   }
 }

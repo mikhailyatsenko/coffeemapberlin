@@ -1,11 +1,14 @@
 import { useCallback, useMemo, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
+import { FloatingButtons } from 'widgets/FloatingButtons';
 import { MainMapLazy } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
-import { ShowFavoritePlaces } from 'features/ShowFavoritePlaces';
-import { useGetPlacesQuery } from 'shared/generated/graphql';
+import { FilterPanel } from 'features/FilterPanel';
+import { EmptyFilterResults } from 'features/FilterPanel/components/EmptyFilterResults';
+import { useGetPlacesQuery, useFilteredPlacesLazyQuery } from 'shared/generated/graphql';
 import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
 import { useAuthStore } from 'shared/stores/auth';
+import { useFiltersStore } from 'shared/stores/filters';
 import { useGuestFavoritesStore } from 'shared/stores/guestFavorites';
 
 import {
@@ -29,6 +32,17 @@ export const MainPage = () => {
   const hasMoreBatchLoaded = usePlacesStore((state) => state.hasMoreBatchLoaded);
   const { user } = useAuthStore();
   const guestFavIds = useGuestFavoritesStore((s) => s.ids);
+
+  // Use separate selectors to avoid creating new objects on each render
+  const minRating = useFiltersStore((state) => state.minRating);
+  const neighborhood = useFiltersStore((state) => state.neighborhood);
+  const selectedTags = useFiltersStore((state) => state.selectedTags);
+
+  // Check if filters are active
+  const hasActiveFilters = useMemo(
+    () => minRating > 0 || neighborhood.length > 0 || selectedTags.length > 0,
+    [minRating, neighborhood, selectedTags],
+  );
 
   // Handle email confirmation from location state
   const token = location.state?.token as string | null | undefined;
@@ -76,6 +90,34 @@ export const MainPage = () => {
     },
   });
 
+  // Filtered places query - using lazy query to control when it executes
+  const [fetchFilteredPlaces, { loading: filteredLoading }] = useFilteredPlacesLazyQuery({
+    onCompleted: (data) => {
+      // Always set filteredPlaces, even if empty array, to distinguish from "no filters applied"
+      usePlacesStore.setState({ filteredPlaces: data?.filteredPlaces.places || [] });
+    },
+  });
+
+  const handleApplyFilters = useCallback(() => {
+    if (hasActiveFilters) {
+      fetchFilteredPlaces({
+        variables: {
+          minRating: minRating > 0 ? minRating : undefined,
+          neighborhood: neighborhood.length > 0 ? neighborhood : undefined,
+          additionalInfo: selectedTags.length > 0 ? selectedTags : undefined,
+        },
+      });
+    } else {
+      // Clear filtered places if no active filters
+      usePlacesStore.setState({ filteredPlaces: null });
+    }
+  }, [hasActiveFilters, minRating, neighborhood, selectedTags, fetchFilteredPlaces]);
+
+  const handleResetFilters = useCallback(() => {
+    // Clear filtered places when filters are reset
+    usePlacesStore.setState({ filteredPlaces: null });
+  }, []);
+
   const favoritePlaces = useMemo(() => {
     return places.filter((place) => place.properties.isFavorite);
   }, [places]);
@@ -91,26 +133,45 @@ export const MainPage = () => {
       }
       setShowFavorites(false);
     }
-    return filteredPlaces?.length ? filteredPlaces : places;
-  }, [showFavorites, filteredPlaces, places, user, favoritePlaces, guestFavIds]);
+    // If filters are active and filteredPlaces is an empty array, return empty array
+    // If filters are active and filteredPlaces has items, return filteredPlaces
+    // If no filters are active (filteredPlaces is null), return all places
+    if (hasActiveFilters && filteredPlaces !== null) {
+      return filteredPlaces || [];
+    }
+    return places;
+  }, [showFavorites, filteredPlaces, places, user, favoritePlaces, guestFavIds, hasActiveFilters]);
+
+  // Check if we should show empty results message
+  const showEmptyResults = hasActiveFilters && filteredPlaces !== null && filteredPlaces.length === 0;
 
   const placesGeo = {
     type: 'FeatureCollection' as const,
-    features: placesToDisplay ?? [],
+    features: showEmptyResults ? [] : placesToDisplay ?? [],
   };
 
   return (
     <>
       <main>
-        {initialLoading && <Loader />}
-        <PlacesList places={placesToDisplay} />
+        {(initialLoading || filteredLoading) && <Loader />}
+        {showEmptyResults ? (
+          <EmptyFilterResults onResetFilters={handleResetFilters} />
+        ) : (
+          <PlacesList places={placesToDisplay} />
+        )}
         <Suspense fallback={null}>
           <MainMapLazy placesGeo={placesGeo} />
         </Suspense>
       </main>
-      <ShowFavoritePlaces
+      <FloatingButtons
         showFavorites={showFavorites}
         favoritesQuantity={favoritePlaces.length || (!user ? guestFavIds.length : 0)}
+        hasActiveFilters={hasActiveFilters && filteredPlaces !== null}
+      />
+      <FilterPanel
+        hasActiveFilters={hasActiveFilters}
+        onApplyFilters={handleApplyFilters}
+        onResetFilters={handleResetFilters}
       />
     </>
   );
