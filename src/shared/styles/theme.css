@@ -31,6 +31,7 @@
   --border-secondary: #d1d5db;
   --border-accent: var(--accent-primary);
   --border-hover: #cbd5e1;
+  --border-disabled: #b4b4b4;
 
   /* Shadow Colors */
   --shadow-sm: rgba(15, 23, 42, 0.06);

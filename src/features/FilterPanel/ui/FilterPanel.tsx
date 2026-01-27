@@ -13,9 +13,10 @@ import cls from './FilterPanel.module.scss';
 interface FilterPanelProps {
   onApplyFilters: () => void;
   onResetFilters: () => void;
+  hasActiveFilters: boolean;
 }
 
-const FilterPanelComponent = ({ onApplyFilters, onResetFilters }: FilterPanelProps) => {
+const FilterPanelComponent = ({ onApplyFilters, onResetFilters, hasActiveFilters }: FilterPanelProps) => {
   // Use separate selectors to avoid creating new objects on each render
   const isOpen = useFiltersStore((state) => state.isFilterPanelOpen);
   const minRating = useFiltersStore((state) => state.minRating);
@@ -71,7 +72,7 @@ const FilterPanelComponent = ({ onApplyFilters, onResetFilters }: FilterPanelPro
         {loadingTags ? 'Loading features...' : <TagsFilter availableTags={availableTags} selectedTags={selectedTags} />}
       </div>
 
-      <FilterFooter onReset={handleReset} onApply={handleApply} />
+      <FilterFooter hasActiveFilters={hasActiveFilters} onReset={handleReset} onApply={handleApply} />
     </div>
   );
 

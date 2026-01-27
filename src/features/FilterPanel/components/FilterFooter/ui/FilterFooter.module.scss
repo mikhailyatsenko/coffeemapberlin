@@ -42,3 +42,10 @@
     background-color: var(--accent-primary-hover);
   }
 }
+
+.resetButton:disabled,
+.applyButton:disabled {
+  background-color: var(--bg-tertiary);
+  border: 2px solid var(--border-disabled);
+  color: var(--text-disabled);
+}

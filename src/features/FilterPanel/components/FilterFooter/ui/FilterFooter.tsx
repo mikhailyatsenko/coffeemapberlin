@@ -2,14 +2,15 @@ import { memo } from 'react';
 import cls from './FilterFooter.module.scss';
 
 interface FilterFooterProps {
+  hasActiveFilters: boolean;
   onReset: () => void;
   onApply: () => void;
 }
 
-const FilterFooterComponent = ({ onReset, onApply }: FilterFooterProps) => {
+const FilterFooterComponent = ({ hasActiveFilters, onReset, onApply }: FilterFooterProps) => {
   return (
     <div className={cls.footer}>
-      <button className={cls.resetButton} onClick={onReset} type="button">
+      <button className={cls.resetButton} disabled={!hasActiveFilters} onClick={onReset} type="button">
         Reset
       </button>
       <button className={cls.applyButton} onClick={onApply} type="button">

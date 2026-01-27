@@ -168,7 +168,11 @@ export const MainPage = () => {
         favoritesQuantity={favoritePlaces.length || (!user ? guestFavIds.length : 0)}
         hasActiveFilters={hasActiveFilters && filteredPlaces !== null}
       />
-      <FilterPanel onApplyFilters={handleApplyFilters} onResetFilters={handleResetFilters} />
+      <FilterPanel
+        hasActiveFilters={hasActiveFilters}
+        onApplyFilters={handleApplyFilters}
+        onResetFilters={handleResetFilters}
+      />
     </>
   );
 };
