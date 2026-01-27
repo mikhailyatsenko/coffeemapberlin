@@ -1,5 +1,5 @@
 import { memo, Suspense } from 'react';
-import { usePlacesStore } from 'shared/stores/places';
+// import { usePlacesStore } from 'shared/stores/places';
 import { ContainerSizeManager } from '../components/ContainerSizeManager';
 import { SEOPlacesList } from '../components/SEOPlacesList';
 import { VirtualizedList } from '../components/VirtualizedList';
@@ -7,11 +7,11 @@ import { type PlacesListProps } from '../types';
 import cls from './PlacesList.module.scss';
 
 const PlacesListComponent = ({ places }: PlacesListProps) => {
-  const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
+  // const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
 
-  if (filteredPlaces) {
-    return null;
-  }
+  // if (filteredPlaces) {
+  //   return null;
+  // }
 
   return (
     <div className={cls.placesListWrapper}>
