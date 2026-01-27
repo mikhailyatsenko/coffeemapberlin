@@ -33,6 +33,18 @@ export interface AddTextReviewResponse {
   text: Scalars['String']['output'];
 }
 
+export interface AdditionalInfoTag {
+  __typename?: 'AdditionalInfoTag';
+  category: Scalars['String']['output'];
+  tag: Scalars['String']['output'];
+}
+
+export interface AdditionalInfoTagsResponse {
+  __typename?: 'AdditionalInfoTagsResponse';
+  tags: AdditionalInfoTag[];
+  total: Scalars['Int']['output'];
+}
+
 export interface Article {
   __typename?: 'Article';
   author?: Maybe<Scalars['String']['output']>;
@@ -74,6 +86,12 @@ export interface AuthPayload {
   emailChanged?: Maybe<Scalars['Boolean']['output']>;
   isFirstLogin?: Maybe<Scalars['Boolean']['output']>;
   user: User;
+}
+
+export interface AvailableNeighborhoodsResponse {
+  __typename?: 'AvailableNeighborhoodsResponse';
+  neighborhoods: Array<Scalars['String']['output']>;
+  total: Scalars['Int']['output'];
 }
 
 export interface BooleanFilterInput {
@@ -376,6 +394,8 @@ export interface Query {
   __typename?: 'Query';
   article?: Maybe<Article>;
   articles: Article[];
+  availableAdditionalInfoTags: AdditionalInfoTagsResponse;
+  availableNeighborhoods: AvailableNeighborhoodsResponse;
   currentUser?: Maybe<User>;
   favoritePlaces: FavoritePlace[];
   filteredPlaces: PlacesResponse;
@@ -399,8 +419,9 @@ export interface QueryarticlesArgs {
 
 
 export interface QueryfilteredPlacesArgs {
+  additionalInfo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   minRating?: InputMaybe<Scalars['Float']['input']>;
-  neighborhood?: InputMaybe<Scalars['String']['input']>;
+  neighborhood?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 }
 
 
@@ -622,12 +643,23 @@ export type PlaceQueryVariables = Exact<{
 export interface PlaceQuery { __typename?: 'Query', place: { __typename?: 'Place', id: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, images?: string[] | null, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, ratingCount: number, googleId?: string | null, additionalInfo?: any | null, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts: { __typename?: 'CharacteristicCounts', deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } } }
 
 export type FilteredPlacesQueryVariables = Exact<{
-  neighborhood?: InputMaybe<Scalars['String']['input']>;
+  neighborhood?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
   minRating?: InputMaybe<Scalars['Float']['input']>;
+  additionalInfo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
 }>;
 
 
 export interface FilteredPlacesQuery { __typename?: 'Query', filteredPlaces: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, googleId?: string | null, neighborhood?: string | null } }> } }
+
+export type AvailableNeighborhoodsQueryVariables = Exact<Record<string, never>>;
+
+
+export interface AvailableNeighborhoodsQuery { __typename?: 'Query', availableNeighborhoods: { __typename?: 'AvailableNeighborhoodsResponse', neighborhoods: string[], total: number } }
+
+export type GetAvailableTagsQueryVariables = Exact<Record<string, never>>;
+
+
+export interface GetAvailableTagsQuery { __typename?: 'Query', availableAdditionalInfoTags: { __typename?: 'AdditionalInfoTagsResponse', total: number, tags: Array<{ __typename?: 'AdditionalInfoTag', category: string, tag: string }> } }
 
 export type AddRatingMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1520,8 +1552,12 @@ export type PlaceLazyQueryHookResult = ReturnType<typeof usePlaceLazyQuery>;
 export type PlaceSuspenseQueryHookResult = ReturnType<typeof usePlaceSuspenseQuery>;
 export type PlaceQueryResult = Apollo.QueryResult<PlaceQuery, PlaceQueryVariables>;
 export const FilteredPlacesDocument = gql`
-    query FilteredPlaces($neighborhood: String, $minRating: Float) {
-  filteredPlaces(neighborhood: $neighborhood, minRating: $minRating) {
+    query FilteredPlaces($neighborhood: [String], $minRating: Float, $additionalInfo: [String]) {
+  filteredPlaces(
+    neighborhood: $neighborhood
+    minRating: $minRating
+    additionalInfo: $additionalInfo
+  ) {
     places {
       id
       type
@@ -1563,6 +1599,7 @@ export const FilteredPlacesDocument = gql`
  *   variables: {
  *      neighborhood: // value for 'neighborhood'
  *      minRating: // value for 'minRating'
+ *      additionalInfo: // value for 'additionalInfo'
  *   },
  * });
  */
@@ -1582,6 +1619,89 @@ export type FilteredPlacesQueryHookResult = ReturnType<typeof useFilteredPlacesQ
 export type FilteredPlacesLazyQueryHookResult = ReturnType<typeof useFilteredPlacesLazyQuery>;
 export type FilteredPlacesSuspenseQueryHookResult = ReturnType<typeof useFilteredPlacesSuspenseQuery>;
 export type FilteredPlacesQueryResult = Apollo.QueryResult<FilteredPlacesQuery, FilteredPlacesQueryVariables>;
+export const AvailableNeighborhoodsDocument = gql`
+    query AvailableNeighborhoods {
+  availableNeighborhoods {
+    neighborhoods
+    total
+  }
+}
+    `;
+
+/**
+ * __useAvailableNeighborhoodsQuery__
+ *
+ * To run a query within a React component, call `useAvailableNeighborhoodsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAvailableNeighborhoodsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAvailableNeighborhoodsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAvailableNeighborhoodsQuery(baseOptions?: Apollo.QueryHookOptions<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>(AvailableNeighborhoodsDocument, options);
+      }
+export function useAvailableNeighborhoodsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>(AvailableNeighborhoodsDocument, options);
+        }
+export function useAvailableNeighborhoodsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>(AvailableNeighborhoodsDocument, options);
+        }
+export type AvailableNeighborhoodsQueryHookResult = ReturnType<typeof useAvailableNeighborhoodsQuery>;
+export type AvailableNeighborhoodsLazyQueryHookResult = ReturnType<typeof useAvailableNeighborhoodsLazyQuery>;
+export type AvailableNeighborhoodsSuspenseQueryHookResult = ReturnType<typeof useAvailableNeighborhoodsSuspenseQuery>;
+export type AvailableNeighborhoodsQueryResult = Apollo.QueryResult<AvailableNeighborhoodsQuery, AvailableNeighborhoodsQueryVariables>;
+export const GetAvailableTagsDocument = gql`
+    query GetAvailableTags {
+  availableAdditionalInfoTags {
+    tags {
+      category
+      tag
+    }
+    total
+  }
+}
+    `;
+
+/**
+ * __useGetAvailableTagsQuery__
+ *
+ * To run a query within a React component, call `useGetAvailableTagsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAvailableTagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAvailableTagsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAvailableTagsQuery(baseOptions?: Apollo.QueryHookOptions<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>(GetAvailableTagsDocument, options);
+      }
+export function useGetAvailableTagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>(GetAvailableTagsDocument, options);
+        }
+export function useGetAvailableTagsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>(GetAvailableTagsDocument, options);
+        }
+export type GetAvailableTagsQueryHookResult = ReturnType<typeof useGetAvailableTagsQuery>;
+export type GetAvailableTagsLazyQueryHookResult = ReturnType<typeof useGetAvailableTagsLazyQuery>;
+export type GetAvailableTagsSuspenseQueryHookResult = ReturnType<typeof useGetAvailableTagsSuspenseQuery>;
+export type GetAvailableTagsQueryResult = Apollo.QueryResult<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>;
 export const AddRatingDocument = gql`
     mutation AddRating($placeId: ID!, $rating: Float!) {
   addRating(placeId: $placeId, rating: $rating) {

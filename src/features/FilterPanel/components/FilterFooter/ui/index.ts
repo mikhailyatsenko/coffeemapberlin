@@ -1,0 +1,1 @@
+export { FilterFooter } from './FilterFooter';

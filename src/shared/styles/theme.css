@@ -1,0 +1,78 @@
+:root {
+  /* Dark Background Colors */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2a2a2a;
+  --bg-elevated: #1f1f1f;
+  --bg-hover: #2f2f2f;
+  --bg-active: #3a3a3a;
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #b8b8b8;
+  --text-tertiary: #8a8a8a;
+  --text-disabled: #5a5a5a;
+  --text-inverse: #0a0a0a;
+
+  /* Neon Accent Colors */
+  --neon-cyan: #00f0ff;
+  --neon-cyan-bright: #00ffff;
+  --neon-purple: #a855f7;
+  --neon-purple-bright: #c084fc;
+  --neon-pink: #ff00ff;
+  --neon-pink-bright: #ff66ff;
+  --neon-blue: #0066ff;
+  --neon-blue-bright: #3399ff;
+
+  /* Primary Accent (using neon purple for main brand color) */
+  --accent-primary: var(--neon-purple);
+  --accent-primary-hover: var(--neon-purple-bright);
+  --accent-primary-active: #9333ea;
+  --accent-primary-light: rgba(168, 85, 247, 0.15);
+  --accent-primary-dark: #7c3aed;
+
+  /* Secondary Accent (using neon cyan) */
+  --accent-secondary: var(--neon-cyan);
+  --accent-secondary-hover: var(--neon-cyan-bright);
+  --accent-secondary-light: rgba(0, 240, 255, 0.15);
+
+  /* Border Colors */
+  --border-primary: #3a3a3a;
+  --border-secondary: #2a2a2a;
+  --border-accent: var(--neon-purple);
+  --border-hover: #4a4a4a;
+
+  /* Shadow Colors */
+  --shadow-sm: rgba(0, 0, 0, 0.3);
+  --shadow-md: rgba(0, 0, 0, 0.5);
+  --shadow-lg: rgba(0, 0, 0, 0.7);
+  --shadow-neon: rgba(168, 85, 247, 0.3);
+  --shadow-neon-cyan: rgba(0, 240, 255, 0.3);
+
+  /* Status Colors */
+  --success: #6bc839;
+  --success-light: rgba(16, 185, 129, 0.15);
+  --error: #ef4444;
+  --error-light: rgba(239, 68, 68, 0.15);
+  --warning: #f59e0b;
+  --warning-light: rgba(245, 158, 11, 0.15);
+  --info: var(--neon-cyan);
+  --info-light: var(--accent-secondary-light);
+
+  /* Overlay */
+  --overlay: rgba(0, 0, 0, 0.7);
+  --overlay-light: rgba(0, 0, 0, 0.4);
+
+  /* Focus Outline */
+  --focus-outline: var(--neon-purple);
+  --focus-outline-light: rgba(168, 85, 247, 0.35);
+
+  /* Badge Colors */
+  --badge-red: rgba(239, 67, 67, 0.776);
+  --badge-green: rgba(107, 200, 57, 0.776);
+  --badge-blue: rgba(51, 153, 255, 0.776);
+  --badge-purple: #a855f7c6;
+  --badge-orange: rgba(245, 158, 11, 0.776);
+  --badge-gray: rgba(138, 138, 138, 0.776);
+  --badge-text: var(--text-primary);
+}

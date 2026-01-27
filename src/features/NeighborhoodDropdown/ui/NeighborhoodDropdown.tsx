@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAvailableNeighborhoodsQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks/useWidth';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import cls from './NeighborhoodDropdown.module.scss';
@@ -7,26 +8,17 @@ interface NeighborhoodDropdownProps {
   onSelect: (neighborhood: string) => void;
 }
 
-const NEIGHBORHOODS = [
-  'Charlottenburg-Wilmersdorf',
-  'Friedrichshain-Kreuzberg',
-  'Lichtenberg',
-  'Marzahn-Hellersdorf',
-  'Mitte',
-  'Neukölln',
-  'Pankow',
-  'Reinickendorf',
-  'Spandau',
-  'Steglitz-Zehlendorf',
-  'Tempelhof-Schöneberg',
-  'Treptow-Köpenick',
-] as const;
-
 export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const width = useWidth();
   const isMobile = width <= 900;
+
+  const { data, loading, error } = useAvailableNeighborhoodsQuery({
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const neighborhoods: string[] = data?.availableNeighborhoods.neighborhoods ?? [];
 
   const closeDropdown = () => {
     setIsOpen(false);
@@ -56,18 +48,30 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
 
   const NeighborhoodList = ({ className, onItemClick }: { className: string; onItemClick: (n: string) => void }) => (
     <>
-      {NEIGHBORHOODS.map((neighborhood) => (
-        <button
-          key={neighborhood}
-          className={className}
-          onClick={() => {
-            onItemClick(neighborhood);
-          }}
-          type="button"
-        >
-          {neighborhood}
+      {loading && (
+        <button key="loading" className={className} type="button" disabled>
+          Loading...
         </button>
-      ))}
+      )}
+      {!loading && (error || neighborhoods.length === 0) && (
+        <button key="empty" className={className} type="button" disabled>
+          No neighborhoods
+        </button>
+      )}
+      {!loading &&
+        !error &&
+        neighborhoods.map((neighborhood) => (
+          <button
+            key={neighborhood}
+            className={className}
+            onClick={() => {
+              onItemClick(neighborhood);
+            }}
+            type="button"
+          >
+            {neighborhood}
+          </button>
+        ))}
     </>
   );
   return (
@@ -79,7 +83,7 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        Best Coffee in Your Area
+        Best Bars in Your Area
         <span className={cls.arrow} aria-hidden="true">
           {isOpen ? '▲' : '▼'}
         </span>
@@ -101,7 +105,7 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
                 <button className={cls.closeButton} onClick={closeDropdown} aria-label="Close dropdown" type="button">
                   ×
                 </button>
-                <div className={cls.modalTitle}>Best Coffee in Your Area</div>
+                <div className={cls.modalTitle}>Best Bars in Your Area</div>
                 <div className={cls.modalList}>
                   <NeighborhoodList className={cls.modalItem} onItemClick={handleSelect} />
                 </div>

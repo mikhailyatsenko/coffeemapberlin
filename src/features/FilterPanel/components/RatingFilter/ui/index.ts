@@ -1,0 +1,1 @@
+export { RatingFilter } from './RatingFilter';

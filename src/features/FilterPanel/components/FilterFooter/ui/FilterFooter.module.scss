@@ -1,0 +1,44 @@
+.footer {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--bg-secondary);
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-primary);
+  z-index: 10;
+  @media (max-width: 900px) {
+    padding: 16px 20px;
+  }
+}
+
+.resetButton,
+.applyButton {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.resetButton {
+  background: var(--bg-tertiary);
+  border: 2px solid var(--accent-primary);
+  color: var(--accent-primary);
+
+  &:hover {
+    background-color: var(--bg-hover);
+  }
+}
+
+.applyButton {
+  background-color: var(--accent-primary);
+  color: var(--text-primary);
+
+  &:hover {
+    background-color: var(--accent-primary-hover);
+  }
+}

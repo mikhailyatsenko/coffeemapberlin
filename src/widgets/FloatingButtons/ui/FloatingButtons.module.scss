@@ -1,0 +1,43 @@
+.container {
+  position: fixed;
+  top: 86px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  z-index: 3;
+  width: fit-content;
+}
+
+.slideLeft {
+  animation: slideLeft 0.3s ease forwards;
+}
+
+.appearEffect {
+  animation: appearEffect 0.3s ease forwards;
+}
+
+@keyframes slideLeft {
+  0% {
+    right: -160px;
+    opacity: 0;
+  }
+  20% {
+    right: -100px;
+    opacity: 0;
+  }
+  100% {
+    right: 18px;
+    opacity: 1;
+  }
+}
+
+@keyframes appearEffect {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
