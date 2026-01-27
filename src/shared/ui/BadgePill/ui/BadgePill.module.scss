@@ -5,6 +5,7 @@
   font-weight: normal;
   text-wrap: nowrap;
   width: fit-content;
+  border: 1px solid transparent;
   &.small {
     padding: 4px 8px;
   }
@@ -37,5 +38,23 @@
   &.gray {
     background-color: var(--badge-gray);
     color: var(--badge-text);
+  }
+  &.hover-red:hover {
+    border-color: var(--badge-red);
+  }
+  &.hover-green:hover {
+    border-color: var(--badge-green);
+  }
+  &.hover-blue:hover {
+    border-color: var(--badge-blue);
+  }
+  &.hover-purple:hover {
+    border-color: var(--badge-purple);
+  }
+  &.hover-orange:hover {
+    border-color: var(--badge-orange);
+  }
+  &.hover-gray:hover {
+    border-color: var(--badge-gray);
   }
 }
