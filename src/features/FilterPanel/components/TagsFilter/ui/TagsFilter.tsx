@@ -4,11 +4,12 @@ import { BadgePill } from 'shared/ui/BadgePill';
 import cls from './TagsFilter.module.scss';
 
 interface TagsFilterProps {
+  isMobile: boolean;
   availableTags: string[];
   selectedTags: string[];
 }
 
-const TagsFilterComponent = ({ availableTags, selectedTags }: TagsFilterProps) => {
+const TagsFilterComponent = ({ isMobile, availableTags, selectedTags }: TagsFilterProps) => {
   if (availableTags.length === 0) return null;
 
   return (
@@ -26,7 +27,12 @@ const TagsFilterComponent = ({ availableTags, selectedTags }: TagsFilterProps) =
               }}
               type="button"
             >
-              <BadgePill hover="orange" text={tag} color={isSelected ? 'orange' : 'gray'} size="medium" />
+              <BadgePill
+                hover={isMobile ? undefined : 'orange'}
+                text={tag}
+                color={isSelected ? 'orange' : 'gray'}
+                size="medium"
+              />
             </button>
           );
         })}

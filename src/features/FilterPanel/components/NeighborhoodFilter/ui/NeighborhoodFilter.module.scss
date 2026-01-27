@@ -42,8 +42,10 @@
   transition: all 0.2s;
 
   &:hover {
-    background-color: var(--bg-hover);
-    border-color: var(--accent-primary);
+    @media (min-width: 901px) {
+      background-color: var(--bg-hover);
+      border-color: var(--accent-primary);
+    }
   }
 
   &.selected {

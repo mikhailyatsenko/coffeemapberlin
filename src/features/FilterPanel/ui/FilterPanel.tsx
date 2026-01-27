@@ -69,7 +69,11 @@ const FilterPanelComponent = ({ onApplyFilters, onResetFilters, hasActiveFilters
       <div className={cls.content}>
         <RatingFilter minRating={minRating} />
         <NeighborhoodFilter neighborhood={neighborhood} />
-        {loadingTags ? 'Loading features...' : <TagsFilter availableTags={availableTags} selectedTags={selectedTags} />}
+        {loadingTags ? (
+          'Loading features...'
+        ) : (
+          <TagsFilter isMobile={isMobile} availableTags={availableTags} selectedTags={selectedTags} />
+        )}
       </div>
 
       <FilterFooter hasActiveFilters={hasActiveFilters} onReset={handleReset} onApply={handleApply} />
