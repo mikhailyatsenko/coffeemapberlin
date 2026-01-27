@@ -13,7 +13,7 @@ const TagsFilterComponent = ({ availableTags, selectedTags }: TagsFilterProps) =
 
   return (
     <div className={cls.filterSection}>
-      <h3 className={cls.sectionTitle}>Features</h3>
+      <h3 className={cls.sectionTitle}>Features (meets all selected)</h3>
       <div className={cls.tagsContainer}>
         {availableTags.map((tagObj) => {
           const tag = String(tagObj.tag);
