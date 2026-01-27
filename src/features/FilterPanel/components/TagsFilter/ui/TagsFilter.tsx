@@ -4,7 +4,7 @@ import { BadgePill } from 'shared/ui/BadgePill';
 import cls from './TagsFilter.module.scss';
 
 interface TagsFilterProps {
-  availableTags: Array<{ tag: string; category: string }>;
+  availableTags: string[];
   selectedTags: string[];
 }
 
@@ -15,8 +15,7 @@ const TagsFilterComponent = ({ availableTags, selectedTags }: TagsFilterProps) =
     <div className={cls.filterSection}>
       <h3 className={cls.sectionTitle}>Features (meets all selected)</h3>
       <div className={cls.tagsContainer}>
-        {availableTags.map((tagObj) => {
-          const tag = String(tagObj.tag);
+        {availableTags.map((tag) => {
           const isSelected = selectedTags.includes(tag);
           return (
             <button

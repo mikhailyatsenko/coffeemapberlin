@@ -26,7 +26,7 @@ const FilterPanelComponent = ({ onApplyFilters, onResetFilters, hasActiveFilters
   const isMobile = width <= 900;
 
   const { data: tagsData, loading: loadingTags } = useGetAvailableTagsQuery({ skip: !isOpen });
-  const availableTags = tagsData?.availableAdditionalInfoTags.tags || [];
+  const availableTags = tagsData?.availableAdditionalInfoTags?.tags || [];
 
   const handleClose = useCallback(() => {
     setFilterPanelOpen(false);

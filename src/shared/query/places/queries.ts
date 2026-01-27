@@ -152,11 +152,7 @@ export const GET_AVAILABLE_NEIGHBORHOODS = gql`
 export const GET_AVAILABLE_TAGS = gql`
   query GetAvailableTags {
     availableAdditionalInfoTags {
-      tags {
-        category
-        tag
-      }
-      total
+      tags
     }
   }
 `;

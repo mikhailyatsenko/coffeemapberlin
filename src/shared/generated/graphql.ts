@@ -33,16 +33,9 @@ export interface AddTextReviewResponse {
   text: Scalars['String']['output'];
 }
 
-export interface AdditionalInfoTag {
-  __typename?: 'AdditionalInfoTag';
-  category: Scalars['String']['output'];
-  tag: Scalars['String']['output'];
-}
-
 export interface AdditionalInfoTagsResponse {
   __typename?: 'AdditionalInfoTagsResponse';
-  tags: AdditionalInfoTag[];
-  total: Scalars['Int']['output'];
+  tags: Array<Scalars['String']['output']>;
 }
 
 export interface Article {
@@ -659,7 +652,7 @@ export interface AvailableNeighborhoodsQuery { __typename?: 'Query', availableNe
 export type GetAvailableTagsQueryVariables = Exact<Record<string, never>>;
 
 
-export interface GetAvailableTagsQuery { __typename?: 'Query', availableAdditionalInfoTags: { __typename?: 'AdditionalInfoTagsResponse', total: number, tags: Array<{ __typename?: 'AdditionalInfoTag', category: string, tag: string }> } }
+export interface GetAvailableTagsQuery { __typename?: 'Query', availableAdditionalInfoTags: { __typename?: 'AdditionalInfoTagsResponse', tags: string[] } }
 
 export type AddRatingMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1662,11 +1655,7 @@ export type AvailableNeighborhoodsQueryResult = Apollo.QueryResult<AvailableNeig
 export const GetAvailableTagsDocument = gql`
     query GetAvailableTags {
   availableAdditionalInfoTags {
-    tags {
-      category
-      tag
-    }
-    total
+    tags
   }
 }
     `;

@@ -15,11 +15,13 @@
 - **SCSS**
 
 ### Backend
-- **Express**
+- **Node.js, Express.js**
 - **Apollo Server**
 - **GraphQL**
 - **Mongoose**
-- **JSON Web Token (JWT)**
+- **OAuth, JSON Web Token (JWT)**
+- **Strapi**
+
 
 ## Features
 - **Map Integration**: View coffee shops on an interactive map.
@@ -28,6 +30,7 @@
 - **Rating System**: Rate your favorite coffee shops.
 - **Authentication**: Google and E-mail authentication.
 - **Responsive Design**: Optimized for both desktop and mobile devices.
+- **Strapi**: headless CMS powering the journal, used to manage articles, images, and SEO content.
 
 ## Architecture
 The application on frontend follows the "Feature-Sliced Design" methodology. For more information on Feature-Sliced Design, visit [feature-sliced.design](https://feature-sliced.design/).
