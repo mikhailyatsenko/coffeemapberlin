@@ -27,7 +27,7 @@ const TagsFilterComponent = ({ availableTags, selectedTags }: TagsFilterProps) =
               }}
               type="button"
             >
-              <BadgePill hover="purple" text={tag} color={isSelected ? 'purple' : 'gray'} size="medium" />
+              <BadgePill hover="orange" text={tag} color={isSelected ? 'purple' : 'gray'} size="medium" />
             </button>
           );
         })}
