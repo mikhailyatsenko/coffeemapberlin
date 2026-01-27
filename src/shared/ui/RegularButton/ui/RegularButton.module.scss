@@ -7,7 +7,7 @@
   border-radius: 4px;
   border: 1px solid transparent;
   background: transparent;
-  color: #303030;
+  color: var(--text-primary);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -21,7 +21,7 @@
 
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(25, 113, 194, 0.35);
+    box-shadow: 0 0 0 3px var(--focus-outline-light);
   }
 
   &:active:not(:disabled) {
@@ -90,19 +90,19 @@
 /* Variants x Themes */
 /* Primary */
 .RegularButton.variant-outline.theme-primary {
-  border-color: #303030;
-  color: #303030;
+  border-color: var(--text-primary);
+  color: var(--text-primary);
   background: transparent;
 }
 .RegularButton.variant-outline.theme-primary:hover:not(:disabled) {
-  background-color: #303030;
-  color: #ffffff;
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
 }
 
 .RegularButton.variant-solid.theme-primary {
-  background-color: #303030;
-  border-color: #303030;
-  color: #ffffff;
+  background-color: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--text-inverse);
 }
 .RegularButton.variant-solid.theme-primary:hover:not(:disabled) {
   filter: brightness(0.9);
@@ -111,7 +111,7 @@
 .RegularButton.variant-ghost.theme-primary {
   background: transparent;
   border-color: transparent;
-  color: #303030;
+  color: var(--text-primary);
 }
 .RegularButton.variant-ghost.theme-primary:hover:not(:disabled) {
   background-color: rgba(48, 48, 48, 0.08);
@@ -119,19 +119,19 @@
 
 /* Success */
 .RegularButton.variant-outline.theme-success {
-  border-color: #61c289;
-  color: #61c289;
+  border-color: var(--success);
+  color: var(--success);
   background: transparent;
 }
 .RegularButton.variant-outline.theme-success:hover:not(:disabled) {
-  background-color: #61c289;
-  color: #ffffff;
+  background-color: var(--success);
+  color: var(--text-inverse);
 }
 
 .RegularButton.variant-solid.theme-success {
-  background-color: #61c289;
-  border-color: #61c289;
-  color: #ffffff;
+  background-color: var(--success);
+  border-color: var(--success);
+  color: var(--text-inverse);
 }
 .RegularButton.variant-solid.theme-success:hover:not(:disabled) {
   filter: brightness(0.95);
@@ -140,27 +140,27 @@
 .RegularButton.variant-ghost.theme-success {
   background: transparent;
   border-color: transparent;
-  color: #61c289;
+  color: var(--success);
 }
 .RegularButton.variant-ghost.theme-success:hover:not(:disabled) {
-  background-color: rgba(97, 194, 137, 0.12);
+  background-color: var(--success-light);
 }
 
 /* Error */
 .RegularButton.variant-outline.theme-error {
-  border-color: #fd5353;
-  color: #fd5353;
+  border-color: var(--error);
+  color: var(--error);
   background: transparent;
 }
 .RegularButton.variant-outline.theme-error:hover:not(:disabled) {
-  background-color: #fd5353;
-  color: #ffffff;
+  background-color: var(--error);
+  color: var(--text-inverse);
 }
 
 .RegularButton.variant-solid.theme-error {
-  background-color: #fd5353;
-  border-color: #fd5353;
-  color: #ffffff;
+  background-color: var(--error);
+  border-color: var(--error);
+  color: var(--text-inverse);
 }
 .RegularButton.variant-solid.theme-error:hover:not(:disabled) {
   filter: brightness(0.95);
@@ -169,27 +169,27 @@
 .RegularButton.variant-ghost.theme-error {
   background: transparent;
   border-color: transparent;
-  color: #fd5353;
+  color: var(--error);
 }
 .RegularButton.variant-ghost.theme-error:hover:not(:disabled) {
-  background-color: rgba(253, 83, 83, 0.12);
+  background-color: var(--error-light);
 }
 
 /* Neutral */
 .RegularButton.variant-outline.theme-neutral {
-  border-color: #6b7280;
-  color: #6b7280;
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
   background: transparent;
 }
 .RegularButton.variant-outline.theme-neutral:hover:not(:disabled) {
-  background-color: #6b7280;
-  color: #ffffff;
+  background-color: var(--text-secondary);
+  color: var(--text-inverse);
 }
 
 .RegularButton.variant-solid.theme-neutral {
-  background-color: #6b7280;
-  border-color: #6b7280;
-  color: #ffffff;
+  background-color: var(--text-secondary);
+  border-color: var(--text-secondary);
+  color: var(--text-inverse);
 }
 .RegularButton.variant-solid.theme-neutral:hover:not(:disabled) {
   filter: brightness(0.95);
@@ -198,7 +198,7 @@
 .RegularButton.variant-ghost.theme-neutral {
   background: transparent;
   border-color: transparent;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 .RegularButton.variant-ghost.theme-neutral:hover:not(:disabled) {
   background-color: rgba(107, 114, 128, 0.12);

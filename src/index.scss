@@ -9,7 +9,7 @@
 }
 
 :focus-visible {
-  outline: #303030 solid 1px;
+  outline: var(--focus-outline) solid 1px;
 }
 
 html,
@@ -26,9 +26,9 @@ body,
 
 body {
   margin: 0;
-  background-color: #fff;
+  background-color: var(--bg-primary);
   font-size: 16px;
-  color: #303030;
+  color: var(--text-primary);
   font-family: 'Roboto Slab', serif;
   font-weight: 200;
   font-style: normal;

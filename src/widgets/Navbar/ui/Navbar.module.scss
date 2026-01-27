@@ -5,7 +5,7 @@ li {
   position: fixed;
   left: 0;
   top: 0;
-  background-color: #fafafa;
+  background-color: var(--bg-secondary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   z-index: 20;
   padding: 0 40px;
@@ -26,8 +26,8 @@ li {
 
   .navLink.active {
     font-weight: 500;
-    color: #ff4b34;
-    border-color: #ff4b34;
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
   }
 
   .logo {
@@ -57,7 +57,7 @@ li {
   margin: 5px auto;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  background: #111111;
+  background: var(--text-primary);
 }
 .navItem {
   color: #111111;
@@ -66,11 +66,11 @@ li {
 
   &:active {
     .navLink {
-      border-bottom-color: #ff4b34;
+      border-bottom-color: var(--accent-primary);
     }
   }
   &:hover {
-    color: #ff4b34;
+    color: var(--accent-primary);
   }
 }
 
@@ -110,17 +110,17 @@ li {
     flex-direction: column;
     width: 100%;
     text-align: center;
-    background: #ffffff;
+    background: var(--bg-primary);
     transition: 0.3s;
     z-index: 4;
   }
   .navItem {
-    color: #1e1e1e;
+    color: var(--text-primary);
     padding: 28px 0;
     &:hover,
     &:active {
       transform: scale(0.97);
-      color: #919191;
+      color: var(--text-secondary);
     }
   }
 

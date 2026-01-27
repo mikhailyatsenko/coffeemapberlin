@@ -15,27 +15,27 @@
     padding: 12px 24px;
   }
   &.red {
-    background-color: #e33636c6;
-    color: #ffffff;
+    background-color: var(--badge-red);
+    color: var(--badge-text);
   }
   &.green {
-    background-color: #58af2fc6;
-    color: #ffffff;
+    background-color: var(--badge-green);
+    color: var(--badge-text);
   }
   &.blue {
-    background-color: #33aaebc6;
-    color: #ffffff;
+    background-color: var(--badge-blue);
+    color: var(--badge-text);
   }
   &.purple {
-    background-color: #684dc8c6;
-    color: #ffffff;
+    background-color: var(--badge-purple);
+    color: var(--badge-text);
   }
   &.orange {
-    background-color: #ff5d34c6;
-    color: #ffffff;
+    background-color: var(--badge-orange);
+    color: var(--badge-text);
   }
   &.gray {
-    background-color: #616161c6;
-    color: #ffffff;
+    background-color: var(--badge-gray);
+    color: var(--badge-text);
   }
 }

@@ -1,62 +1,51 @@
 :root {
-  /* Dark Background Colors */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #1a1a1a;
-  --bg-tertiary: #2a2a2a;
-  --bg-elevated: #1f1f1f;
-  --bg-hover: #2f2f2f;
-  --bg-active: #3a3a3a;
+  /* Background Colors (Light Theme) */
+  --bg-primary: #ffffff; /* main app background */
+  --bg-secondary: #f8f9fa; /* subtle sections, cards */
+  --bg-tertiary: #f3f4f6; /* skeletons, muted blocks */
+  --bg-elevated: #ffffff; /* elevated surfaces/cards */
+  --bg-hover: #e9ecef; /* hover state for light surfaces */
+  --bg-active: #e5e7eb; /* active / pressed state */
 
   /* Text Colors */
-  --text-primary: #ffffff;
-  --text-secondary: #b8b8b8;
-  --text-tertiary: #8a8a8a;
-  --text-disabled: #5a5a5a;
-  --text-inverse: #0a0a0a;
+  --text-primary: #303030; /* main text */
+  --text-secondary: #6b7280; /* secondary text */
+  --text-tertiary: #4b5563; /* descriptions, subtitles */
+  --text-disabled: #b4b4b4; /* disabled controls */
+  --text-inverse: #ffffff; /* text on dark / accent backgrounds */
 
-  /* Neon Accent Colors */
-  --neon-cyan: #00f0ff;
-  --neon-cyan-bright: #00ffff;
-  --neon-purple: #a855f7;
-  --neon-purple-bright: #c084fc;
-  --neon-pink: #ff00ff;
-  --neon-pink-bright: #ff66ff;
-  --neon-blue: #0066ff;
-  --neon-blue-bright: #3399ff;
+  /* Primary Accent (Orange brand color) */
+  --accent-primary: #ff4b34;
+  --accent-primary-hover: #e84326;
+  --accent-primary-active: #cc3a21;
+  --accent-primary-light: rgba(255, 75, 52, 0.12);
+  --accent-primary-soft: #fff1ed;
 
-  /* Primary Accent (using neon purple for main brand color) */
-  --accent-primary: var(--neon-purple);
-  --accent-primary-hover: var(--neon-purple-bright);
-  --accent-primary-active: #9333ea;
-  --accent-primary-light: rgba(168, 85, 247, 0.15);
-  --accent-primary-dark: #7c3aed;
-
-  /* Secondary Accent (using neon cyan) */
-  --accent-secondary: var(--neon-cyan);
-  --accent-secondary-hover: var(--neon-cyan-bright);
-  --accent-secondary-light: rgba(0, 240, 255, 0.15);
+  /* Secondary Accent (Blue) */
+  --accent-secondary: #1976d2;
+  --accent-secondary-hover: #1565c0;
+  --accent-secondary-light: rgba(25, 118, 210, 0.12);
 
   /* Border Colors */
-  --border-primary: #3a3a3a;
-  --border-secondary: #2a2a2a;
-  --border-accent: var(--neon-purple);
-  --border-hover: #4a4a4a;
+  --border-primary: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --border-accent: var(--accent-primary);
+  --border-hover: #cbd5e1;
 
   /* Shadow Colors */
-  --shadow-sm: rgba(0, 0, 0, 0.3);
-  --shadow-md: rgba(0, 0, 0, 0.5);
-  --shadow-lg: rgba(0, 0, 0, 0.7);
-  --shadow-neon: rgba(168, 85, 247, 0.3);
-  --shadow-neon-cyan: rgba(0, 240, 255, 0.3);
+  --shadow-sm: rgba(15, 23, 42, 0.06);
+  --shadow-md: rgba(15, 23, 42, 0.12);
+  --shadow-lg: rgba(15, 23, 42, 0.18);
+  --shadow-accent: rgba(255, 75, 52, 0.2);
 
   /* Status Colors */
-  --success: #6bc839;
-  --success-light: rgba(16, 185, 129, 0.15);
-  --error: #ef4444;
-  --error-light: rgba(239, 68, 68, 0.15);
+  --success: #61c289;
+  --success-light: rgba(97, 194, 137, 0.15);
+  --error: #fd5353;
+  --error-light: rgba(253, 83, 83, 0.15);
   --warning: #f59e0b;
   --warning-light: rgba(245, 158, 11, 0.15);
-  --info: var(--neon-cyan);
+  --info: #1976d2;
   --info-light: var(--accent-secondary-light);
 
   /* Overlay */
@@ -64,15 +53,21 @@
   --overlay-light: rgba(0, 0, 0, 0.4);
 
   /* Focus Outline */
-  --focus-outline: var(--neon-purple);
-  --focus-outline-light: rgba(168, 85, 247, 0.35);
+  --focus-outline: #303030;
+  --focus-outline-light: rgba(48, 48, 48, 0.3);
 
   /* Badge Colors */
-  --badge-red: rgba(239, 67, 67, 0.776);
-  --badge-green: rgba(107, 200, 57, 0.776);
-  --badge-blue: rgba(51, 153, 255, 0.776);
-  --badge-purple: #a855f7c6;
-  --badge-orange: rgba(245, 158, 11, 0.776);
-  --badge-gray: rgba(138, 138, 138, 0.776);
-  --badge-text: var(--text-primary);
+  --badge-red: #e33636c6;
+  --badge-green: #58af2fc6;
+  --badge-blue: #33aaebc6;
+  --badge-purple: #684dc8c6;
+  --badge-orange: #ff5d34c6;
+  --badge-gray: #616161c6;
+  --badge-text: var(--text-inverse);
+
+  /* Footer / Navbar specific */
+  --bg-footer: #141414;
+  --text-footer: #626262;
+  --text-footer-muted: #8a8a8a;
+  --text-footer-hover: #bdbdbd;
 }

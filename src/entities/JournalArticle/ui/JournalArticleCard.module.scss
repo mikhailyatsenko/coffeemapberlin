@@ -1,8 +1,8 @@
 .card {
   text-decoration: none;
   color: inherit;
-  background: #fff;
-  border: 1px solid rgba(15, 15, 15, 0.05);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
   border-radius: 20px;
   overflow: hidden;
   display: flex;
@@ -22,7 +22,7 @@
 .thumbnail {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: #dedede;
+  background: var(--bg-tertiary);
   overflow: hidden;
 }
 
@@ -58,7 +58,7 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .meta span:not(:last-child)::after {
@@ -71,7 +71,7 @@
 }
 
 .description {
-  color: #4b5563;
+  color: var(--text-tertiary);
   line-height: 1.6;
   margin: 0;
 }
@@ -83,16 +83,16 @@
 }
 
 .tags span {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   border-radius: 999px;
   padding: 0.125rem 0.75rem;
   font-size: 0.75rem;
-  color: #374151;
+  color: var(--text-tertiary);
 }
 
 .readMore {
   margin-top: auto;
   font-size: 0.85rem;
-  color: #ff4b34;
+  color: var(--accent-primary);
   font-weight: 600;
 }

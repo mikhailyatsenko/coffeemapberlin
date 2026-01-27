@@ -2,8 +2,8 @@
   font-size: 12px;
   height: fit-content;
   padding: 20px 40px;
-  background-color: #141414;
-  color: #626262;
+  background-color: var(--bg-footer);
+  color: var(--text-footer);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,11 +29,11 @@
 }
 
 .link {
-  color: #8a8a8a;
+  color: var(--text-footer-muted);
   text-decoration: none;
 }
 
 .link:hover {
-  color: #bdbdbd;
+  color: var(--text-footer-hover);
   text-decoration: underline;
 }
