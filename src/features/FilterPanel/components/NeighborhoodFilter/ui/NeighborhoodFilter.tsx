@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useAvailableNeighborhoodsQuery } from 'shared/generated/graphql';
-import { toggleNeighborhood } from 'shared/stores/filters';
+import { setNeighborhood, toggleNeighborhood } from 'shared/stores/filters';
 import cls from './NeighborhoodFilter.module.scss';
 
 interface NeighborhoodFilterProps {
@@ -17,19 +17,31 @@ const NeighborhoodFilterComponent = ({ neighborhood }: NeighborhoodFilterProps) 
       <div className={cls.neighborhoodList}>
         {loading && <div className={cls.loading}>Loading neighborhoods...</div>}
         {!loading && availableNeighborhoods.length === 0 && <div className={cls.empty}>No neighborhoods available</div>}
-        {!loading &&
-          availableNeighborhoods.map((n) => (
+        {!loading && (
+          <>
             <button
-              key={n}
-              className={`${cls.neighborhoodButton} ${neighborhood.includes(n) ? cls.selected : ''}`}
+              className={`${cls.neighborhoodButton} ${neighborhood.length === 0 ? cls.selected : ''}`}
               onClick={() => {
-                toggleNeighborhood(n);
+                setNeighborhood([]);
               }}
               type="button"
             >
-              {n}
+              All
             </button>
-          ))}
+            {availableNeighborhoods.map((n) => (
+              <button
+                key={n}
+                className={`${cls.neighborhoodButton} ${neighborhood.includes(n) ? cls.selected : ''}`}
+                onClick={() => {
+                  toggleNeighborhood(n);
+                }}
+                type="button"
+              >
+                {n}
+              </button>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
