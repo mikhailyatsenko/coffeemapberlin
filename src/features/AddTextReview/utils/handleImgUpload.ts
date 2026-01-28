@@ -16,6 +16,7 @@ const authenticator = async (signal?: AbortSignal) => {
     const response = await fetch(BASE_URL + '/imagekit/auth', {
       headers: {},
       signal,
+      credentials: 'include',
     });
     if (!response.ok) {
       // If the server response is not successful, extract the error text for debugging.
