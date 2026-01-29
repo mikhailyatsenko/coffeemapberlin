@@ -1,26 +1,20 @@
-import clsx from 'clsx';
-import { driver } from 'driver.js';
+// import { driver } from 'driver.js';
 import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AddTextReviewForm } from 'features/AddTextReview';
 import { RateNow } from 'features/RateNow';
-import { ReviewList } from 'features/ReviewList';
-import { OpeningHours } from 'entities/OpeningHours';
-import instagramIcon from 'shared/assets/instagram.svg';
-import logo from 'shared/assets/logo.svg';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery } from 'shared/generated/graphql';
 import { type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
-import { BadgePill } from 'shared/ui/BadgePill';
-import { CharacteristicCountsIcon, characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
+import { characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
 import { usePlaceReviews } from '../api/usePlaceReviews';
-import { AverageRating } from '../components/AverageRating';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
 import { ErrorPlace } from '../components/ErrorPlace';
-import { ImageSlider } from '../components/ImageSlider/ui';
+import { Header } from '../components/Header';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
+import { ReviewsBlock } from '../components/ReviewsBlock';
+import { Sidebar } from '../components/Sidebar';
 import cls from './DetailedPlace.module.scss';
 import 'driver.js/dist/driver.css';
 
@@ -110,75 +104,75 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     }
   }, [placeData?.place?.properties?.googleId, placeData?.place?.properties?.name]);
 
-  useEffect(() => {
-    // temporary turn tour off
-    return;
+  // useEffect(() => {
+  //   // temporary turn tour off
+  //   return;
 
-    if (isPlaceLoading || !placeData?.place?.properties) {
-      return;
-    }
+  //   if (isPlaceLoading || !placeData?.place?.properties) {
+  //     return;
+  //   }
 
-    const TOUR_STORAGE_KEY = 'detailed-place-tour-completed';
-    const hasSeenTour = localStorage.getItem(TOUR_STORAGE_KEY) === 'true';
+  //   const TOUR_STORAGE_KEY = 'detailed-place-tour-completed';
+  //   const hasSeenTour = localStorage.getItem(TOUR_STORAGE_KEY) === 'true';
 
-    if (hasSeenTour) {
-      return;
-    }
+  //   if (hasSeenTour) {
+  //     return;
+  //   }
 
-    const driverObj = driver({
-      showProgress: true,
-      showButtons: ['next', 'previous', 'close'],
-      steps: [
-        {
-          element: '#favorite-button',
-          popover: {
-            title: 'Add to favorites',
-            description: 'Save places you love for quick access later',
-          },
-        },
-        {
-          element: '#rate-place',
-          popover: { title: 'Rate this place', description: 'Share your experience and rate the coffee shop' },
-        },
-        {
-          element: '#review-form',
-          popover: {
-            title: 'Write a review',
-            description: 'Share your thoughts and help others discover great coffee',
-          },
-        },
-        {
-          element: '#google-maps',
-          popover: { title: 'Open in Google Maps', description: 'Get directions or view in Google Maps' },
-        },
-      ],
-      onPopoverRender: () => {
-        localStorage.setItem(TOUR_STORAGE_KEY, 'true');
-      },
-      onCloseClick: (_element, _step, opts) => {
-        localStorage.setItem(TOUR_STORAGE_KEY, 'true');
-        opts.driver.destroy();
-      },
-      onNextClick: (_element, _step, opts) => {
-        if (opts.driver.isLastStep()) {
-          localStorage.setItem(TOUR_STORAGE_KEY, 'true');
-          opts.driver.destroy();
-        } else {
-          opts.driver.moveNext();
-        }
-      },
-    });
+  //   const driverObj = driver({
+  //     showProgress: true,
+  //     showButtons: ['next', 'previous', 'close'],
+  //     steps: [
+  //       {
+  //         element: '#favorite-button',
+  //         popover: {
+  //           title: 'Add to favorites',
+  //           description: 'Save places you love for quick access later',
+  //         },
+  //       },
+  //       {
+  //         element: '#rate-place',
+  //         popover: { title: 'Rate this place', description: 'Share your experience and rate the coffee shop' },
+  //       },
+  //       {
+  //         element: '#review-form',
+  //         popover: {
+  //           title: 'Write a review',
+  //           description: 'Share your thoughts and help others discover great coffee',
+  //         },
+  //       },
+  //       {
+  //         element: '#google-maps',
+  //         popover: { title: 'Open in Google Maps', description: 'Get directions or view in Google Maps' },
+  //       },
+  //     ],
+  //     onPopoverRender: () => {
+  //       localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+  //     },
+  //     onCloseClick: (_element, _step, opts) => {
+  //       localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+  //       opts.driver.destroy();
+  //     },
+  //     onNextClick: (_element, _step, opts) => {
+  //       if (opts.driver.isLastStep()) {
+  //         localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+  //         opts.driver.destroy();
+  //       } else {
+  //         opts.driver.moveNext();
+  //       }
+  //     },
+  //   });
 
-    driverObj.drive();
+  //   driverObj.drive();
 
-    return () => {
-      driverObj.destroy();
-    };
-  }, [isPlaceLoading, placeData?.place?.properties]);
+  //   return () => {
+  //     driverObj.destroy();
+  //   };
+  // }, [isPlaceLoading, placeData?.place?.properties]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [placeData?.place.id]);
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, [placeData?.place.id]);
 
   if (placeError) {
     return <ErrorPlace error={placeError} />;
@@ -186,28 +180,36 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
 
   if (isPlaceLoading || !placeData?.place?.properties) return <NewDetailedPlaceCardSkeleton />;
 
-  const { averageRating, description, name, address, instagram, isFavorite, neighborhood, images, website } =
-    placeData.place.properties;
-  const { ratingCount, characteristicCounts, openingHours, phone, googleId } = placeData.place.properties;
+  const {
+    averageRating,
+    description,
+    name,
+    address,
+    instagram,
+    isFavorite,
+    neighborhood,
+    images,
+    website,
+    ratingCount,
+    characteristicCounts,
+    openingHours,
+    phone,
+    googleId,
+  } = placeData.place.properties;
+  console.log('images received', images);
   return (
     <div className={cls.page}>
-      <header className={cls.header}>
-        <div className={clsx(cls.briefInfo, cls.block)}>
-          <AverageRating ratingCount={ratingCount} averageRating={averageRating} />
-
-          <h1 className={cls.title}>{name}</h1>
-          <div className={cls.charCounts}>
-            {characteristicKeys.map((charKey) => (
-              <CharacteristicCountsIcon
-                key={charKey}
-                characteristic={charKey as Characteristic}
-                characteristicData={characteristicCounts[charKey as Characteristic]}
-              />
-            ))}
-          </div>
-
-          {description && <div className={cls.description}>{description}</div>}
-          <div className={cls.headerActions}>
+      <Header
+        name={name}
+        description={description}
+        neighborhood={neighborhood}
+        images={images || []}
+        ratingCount={ratingCount}
+        averageRating={averageRating}
+        characteristicCounts={characteristicCounts}
+        characteristicKeys={characteristicKeys as Characteristic[]}
+        headerActions={
+          <>
             <RateNow
               id="rate-place"
               setShowRateNow={setShowRateNow}
@@ -225,127 +227,39 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
               size="medium"
               isFavorite={isFavorite}
             />
-          </div>
-        </div>
-        <div className={cls.headerImg}>
-          {neighborhood ? (
-            <BadgePill text={neighborhood} color="green" size="small" className={cls.neighborhood} />
-          ) : null}
-
-          <ImageSlider images={images || []} placeName={name} className={cls.mainImg} />
-        </div>
-      </header>
+          </>
+        }
+      />
 
       <div className={cls.layout}>
         <main className={cls.main}>
-          <div className={cls.block}>
-            <h2 className={cls.blockTitle}>Reviews</h2>
-
-            {(isEditingReview || !ownReview?.text) && (
-              <AddTextReviewForm
-                id="review-form"
-                placeId={placeId}
-                initialValue={isEditingReview ? editInitialText : ''}
-                onSubmitted={() => {
-                  setIsEditingReview(false);
-                }}
-                onCancel={() => {
-                  setIsEditingReview(false);
-                }}
-              />
-            )}
-
-            <ReviewList
-              reviews={displayedReviews}
-              placeId={placeId}
-              isCompactView={false}
-              setCompactView={() => {}}
-              onEditReview={handleEditReviewInline}
-            />
-          </div>
+          <ReviewsBlock
+            placeId={placeId}
+            isEditingReview={isEditingReview}
+            ownReviewHasText={Boolean(ownReview?.text)}
+            editInitialText={editInitialText}
+            displayedReviews={displayedReviews ?? []}
+            onSubmitted={() => {
+              setIsEditingReview(false);
+            }}
+            onCancel={() => {
+              setIsEditingReview(false);
+            }}
+            onEditReview={handleEditReviewInline}
+          />
         </main>
 
-        <aside className={cls.sidebar}>
-          <div className={cls.block}>
-            <h3 className={cls.blockTitle}>Place info</h3>
-
-            <div className={cls.infoRow}>
-              <span className={cls.infoLabel}>Address</span>
-              <span className={cls.infoValue}>{address}</span>
-            </div>
-            {phone ? (
-              <div className={cls.infoRow}>
-                <span className={cls.infoLabel}>Phone</span>
-                <a className={cls.infoValue} href={`tel:${phone}`} type="tel">
-                  {phone}
-                </a>
-              </div>
-            ) : null}
-            <div className={cls.actionsCol}>
-              <button className={cls.secondaryBtn} onClick={openOnMap} type="button">
-                <img className={cls.icon} src={logo} alt="" />
-                Show on 3.Welle map
-              </button>
-              {googleId ? (
-                <button id="google-maps" className={cls.secondaryBtn} onClick={openOnGoogleMaps} type="button">
-                  <img className={cls.icon} src="/google-maps.svg" alt="" />
-                  Open on Google Maps
-                </button>
-              ) : null}
-              {instagram ? (
-                <a
-                  href={instagram}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={cls.secondaryBtn}
-                  title="Open Instagram profile"
-                >
-                  <img className={cls.icon} src={instagramIcon} alt="" />
-                  Open Instagram
-                </a>
-              ) : null}
-
-              {website ? (
-                <a
-                  href={website}
-                  target="_blank"
-                  rel="noreferrer nofollow"
-                  className={cls.secondaryBtn}
-                  title="Open website"
-                >
-                  <span className={cls.icon} role="img" aria-label="Website">
-                    🌐
-                  </span>
-                  Open Website
-                </a>
-              ) : null}
-              {/* <div
-                className={cls.inlineFav}
-                onClick={handleToggleFavorite}
-                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-              >
-                <AddToFavButton isFavorite={Boolean(isFavorite)} />
-                <span>{isFavorite ? 'In favorites' : 'Add to favorites'}</span>
-              </div> */}
-            </div>
-          </div>
-          {openingHours && openingHours.length > 0 ? (
-            <div className={cls.block}>
-              <h2 className={cls.blockTitle}>Opening hours</h2>
-              <OpeningHours openingHours={openingHours ?? []} />
-            </div>
-          ) : null}
-          {tags.length > 0 && (
-            <div className={cls.block}>
-              <h3 className={cls.blockTitle}>Features</h3>
-              <div className={cls.tagsContainer}>
-                {tags.map((tag, index) => (
-                  <BadgePill key={index} text={tag} color="purple" size="small" />
-                ))}
-              </div>
-            </div>
-          )}
-        </aside>
+        <Sidebar
+          address={address}
+          phone={phone}
+          googleId={googleId}
+          instagram={instagram}
+          website={website}
+          openingHours={openingHours ?? []}
+          tags={tags}
+          openOnMap={openOnMap}
+          openOnGoogleMaps={openOnGoogleMaps}
+        />
       </div>
 
       <div className={cls.breadcrumbs}>
