@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { JournalArticleCard } from 'entities/JournalArticle';
 import { strapiClient } from 'shared/config/strapiClient';
 import { useGetArticlesQuery } from 'shared/generated/graphql';
@@ -9,19 +9,6 @@ export const JournalPage = () => {
   const { data, loading, error } = useGetArticlesQuery({
     client: strapiClient,
   });
-
-  useEffect(() => {
-    document.title = 'Journal | Berlin Coffee Map';
-
-    // Update meta description
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        'content',
-        'Stories, insights, brewing tips, café discoveries, and everything related to the world of coffee.',
-      );
-    }
-  }, []);
 
   const articles = data?.articles ?? [];
 
@@ -53,6 +40,13 @@ export const JournalPage = () => {
 
   return (
     <main className={`${cls.JournalPage} container`}>
+      <Helmet>
+        <title>Journal | Berlin Coffee Map</title>
+        <meta
+          name="description"
+          content="Stories, insights, brewing tips, café discoveries, and everything related to the world of coffee."
+        />
+      </Helmet>
       <section className={cls.hero}>
         <h1 className={cls.kicker}>Journal</h1>
         {/* <h1>Stories from Berlin&apos;s specialty coffee scene</h1>

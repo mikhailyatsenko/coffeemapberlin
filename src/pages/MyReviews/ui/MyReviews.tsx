@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { UserReviewActivity } from 'features/UserReviewActivity';
 
 export const MyReviews = () => {
-  useEffect(() => {
-    document.title = 'My reviews | Berlin Coffee Map';
-    return () => {
-      document.title = 'Berlin Coffee Map';
-    };
-  }, []);
-  return <UserReviewActivity />;
+  return (
+    <>
+      <Helmet>
+        <title>My reviews | Berlin Coffee Map</title>
+      </Helmet>
+      <UserReviewActivity />
+    </>
+  );
 };

@@ -1,16 +1,13 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import cls from './AboutPage.module.scss';
 
 export const AboutPage = () => {
-  useEffect(() => {
-    document.title = 'About | Berlin Coffee Map';
-    return () => {
-      document.title = 'Berlin Coffee Map';
-    };
-  }, []);
   return (
     <main className={`${cls.AboutPage} container`} style={{ textAlign: 'center' }}>
+      <Helmet>
+        <title>About | Berlin Coffee Map</title>
+      </Helmet>
       <h1>About</h1>
       <p className={cls.text}>
         Love delicious coffee? Want to know where to find the best brews in Berlin — or a cozy, atmospheric spot to

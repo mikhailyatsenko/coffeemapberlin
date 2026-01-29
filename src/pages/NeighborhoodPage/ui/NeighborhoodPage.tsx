@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { useParams, useNavigate } from 'react-router-dom';
 import { NeighborhoodPlaceCard } from 'entities/NeighborhoodPlaceCard';
 import { useFilteredPlacesQuery } from 'shared/generated/graphql';
@@ -36,13 +37,6 @@ export const NeighborhoodPage = () => {
     : [];
 
   useEffect(() => {
-    document.title = `Best Coffee Places in ${displayNeighborhood} | Berlin Coffee Map`;
-    return () => {
-      document.title = 'Berlin Coffee Map';
-    };
-  }, [displayNeighborhood]);
-
-  useEffect(() => {
     if (!loading && data && places.length === 0 && neighborhood) {
       const timer = setTimeout(() => {
         navigate('/');
@@ -68,6 +62,13 @@ export const NeighborhoodPage = () => {
 
   return (
     <main className={`${cls.NeighborhoodPage} container`}>
+      <Helmet>
+        <title>
+          {displayNeighborhood
+            ? `Best Coffee Places in ${displayNeighborhood} | Berlin Coffee Map`
+            : 'Berlin Coffee Map'}
+        </title>
+      </Helmet>
       <div className={cls.header}>
         <h1>Best Coffee Places in {displayNeighborhood}</h1>
         <p className={cls.subtitle}>

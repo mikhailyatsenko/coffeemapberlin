@@ -1,15 +1,12 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import cls from './PrivacyPolicyPage.module.scss';
 
 export const PrivacyPolicyPage = () => {
-  useEffect(() => {
-    document.title = 'Privacy Policy | Berlin Coffee Map';
-    return () => {
-      document.title = 'Berlin Coffee Map';
-    };
-  }, []);
   return (
     <section className={`${cls.PrivacyPolicyPage} container`}>
+      <Helmet>
+        <title>Privacy Policy | Berlin Coffee Map</title>
+      </Helmet>
       <h1 className={cls.title}>Privacy Policy</h1>
       <p className={cls.updated}>Last updated: {new Date().toLocaleDateString()}</p>
 

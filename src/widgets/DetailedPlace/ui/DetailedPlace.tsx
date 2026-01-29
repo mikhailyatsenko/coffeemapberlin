@@ -1,5 +1,6 @@
 // import { driver } from 'driver.js';
-import React, { useCallback, useEffect, useMemo, useState, memo } from 'react';
+import React, { useCallback, useMemo, useState, memo } from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
@@ -73,15 +74,6 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     setEditInitialText(text || '');
     setIsEditingReview(true);
   }, []);
-
-  useEffect(() => {
-    document.title = placeData?.place?.properties?.name
-      ? `${placeData?.place.properties.name} | Reviews, Photos, Contacts`
-      : 'Berlin Coffee Map';
-    return () => {
-      document.title = 'Berlin Coffee Map';
-    };
-  }, [placeData?.place?.properties?.name]);
 
   const openOnMap = useCallback(() => {
     if (placeData?.place?.geometry.coordinates) {
@@ -196,9 +188,11 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     phone,
     googleId,
   } = placeData.place.properties;
-  console.log('images received', images);
   return (
     <div className={cls.page}>
+      <Helmet>
+        <title>{name ? `${name} | Reviews, Photos, Contacts` : 'Berlin Coffee Map'}</title>
+      </Helmet>
       <Header
         name={name}
         description={description}

@@ -1,41 +1,16 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { RoutePaths } from 'shared/constants';
 import cls from './NotFoundPage.module.scss';
 
 export const NotFoundPage = () => {
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = '404 — Page not found | Berlin Coffee Map';
-
-    const head = document.head;
-
-    const robotsMeta = head.querySelector<HTMLMetaElement>('meta[name="robots"]');
-    const createdRobots = !robotsMeta;
-    const robotsEl = robotsMeta ?? document.createElement('meta');
-    const prevRobotsContent = robotsMeta?.getAttribute('content') ?? null;
-    robotsEl.setAttribute('name', 'robots');
-    robotsEl.setAttribute('content', 'noindex, nofollow');
-    if (createdRobots) head.appendChild(robotsEl);
-
-    const prerenderMeta = document.createElement('meta');
-    prerenderMeta.setAttribute('name', 'prerender-status-code');
-    prerenderMeta.setAttribute('content', '404');
-    head.appendChild(prerenderMeta);
-
-    return () => {
-      document.title = previousTitle;
-      if (createdRobots) {
-        robotsEl.remove();
-      } else if (prevRobotsContent !== null) {
-        robotsEl.setAttribute('content', prevRobotsContent);
-      }
-      prerenderMeta.remove();
-    };
-  }, []);
-
   return (
     <section className={`${cls.NotFoundPage} container`} aria-labelledby="not-found-title">
+      <Helmet>
+        <title>404 — Page not found | Berlin Coffee Map</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="prerender-status-code" content="404" />
+      </Helmet>
       <h1 id="not-found-title" className={cls.title}>
         Page not found
       </h1>

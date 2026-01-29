@@ -1,16 +1,12 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import cls from './DisclaimerPage.module.scss';
 
 export const DisclaimerPage = () => {
-  useEffect(() => {
-    document.title = 'Disclaimer | Berlin Coffee Map';
-    return () => {
-      document.title = 'Berlin Coffee Map';
-    };
-  }, []);
-
   return (
     <section className={`${cls.DisclaimerPage} container`}>
+      <Helmet>
+        <title>Disclaimer | Berlin Coffee Map</title>
+      </Helmet>
       <h1 className={cls.title}>Disclaimer</h1>
       <p className={cls.updated}>Last updated: {new Date().toLocaleDateString()}</p>
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
@@ -32,50 +32,6 @@ export const JournalArticlePage = () => {
   });
 
   const article = detailedArticleData?.articles?.[0] ?? null;
-
-  useEffect(() => {
-    if (article?.seo) {
-      // Update title
-      if (article.seo.metaTitle) {
-        document.title = article.seo.metaTitle;
-      } else if (article.title) {
-        document.title = `${article.title} | Journal | Berlin Coffee Map`;
-      }
-
-      // Update meta description
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription && article.seo.metaDescription) {
-        metaDescription.setAttribute('content', article?.seo.metaDescription);
-      }
-
-      // Update canonical URL
-      const canonicalLink = document.querySelector('link[rel="canonical"]');
-      if (canonicalLink && article.seo.canonicalURL) {
-        canonicalLink.setAttribute('href', article.seo.canonicalURL);
-      }
-
-      // Update Open Graph image
-      const ogImage = document.querySelector('meta[property="og:image"]');
-      if (ogImage && article.seo.metaImage?.url) {
-        ogImage.setAttribute('content', article.seo.metaImage.url);
-      }
-
-      // Update Open Graph title
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle && article.seo.metaTitle) {
-        ogTitle.setAttribute('content', article.seo.metaTitle);
-      }
-
-      // Update Open Graph description
-      const ogDescription = document.querySelector('meta[property="og:description"]');
-      if (ogDescription && article.seo.metaDescription) {
-        ogDescription.setAttribute('content', article.seo.metaDescription);
-      }
-    } else if (article?.title) {
-      // Fallback to basic title update if no SEO data
-      document.title = `${article.title} | Journal | Berlin Coffee Map`;
-    }
-  }, [article?.title, article?.seo]);
 
   if (!slug) {
     return (
@@ -112,6 +68,15 @@ export const JournalArticlePage = () => {
 
   return (
     <main className={`container`}>
+      <Helmet>
+        <title>{article.seo?.metaTitle ?? `${article.title} | Journal | Berlin Coffee Map`}</title>
+        {article.seo?.metaDescription && <meta name="description" content={article.seo.metaDescription} />}
+        {article.seo?.canonicalURL && <link rel="canonical" href={article.seo.canonicalURL} />}
+        {article.seo?.metaImage?.url && <meta property="og:image" content={article.seo.metaImage.url} />}
+        {article.seo?.metaTitle && <meta property="og:title" content={article.seo.metaTitle} />}
+        {article.seo?.metaDescription && <meta property="og:description" content={article.seo.metaDescription} />}
+      </Helmet>
+
       <Link to={`/${RoutePaths.journal}`} className={cls.breadcrumb}>
         ← Back to Journal
       </Link>

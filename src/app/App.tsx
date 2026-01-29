@@ -1,5 +1,6 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { Toaster } from 'react-hot-toast';
 import { useLocation, matchPath } from 'react-router-dom';
 import { Footer } from 'widgets/Footer';
@@ -23,6 +24,13 @@ const App = () => {
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Helmet>
+        <title>Berlin Coffee Map</title>
+        <meta
+          name="description"
+          content="Discover top coffee shops in Berlin. Easily find your perfect coffee spot on our map."
+        />
+      </Helmet>
       <Navbar />
       <AppRouter />
       {!matchPath(RoutePaths.main, location.pathname) && <Footer />}
