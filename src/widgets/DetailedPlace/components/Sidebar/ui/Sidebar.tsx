@@ -15,6 +15,7 @@ interface SidebarProps {
   tags: string[];
   openOnMap: () => void;
   openOnGoogleMaps: () => void;
+  setShowReportInaccuracyModal: (show: boolean) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -27,6 +28,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   tags,
   openOnMap,
   openOnGoogleMaps,
+  setShowReportInaccuracyModal,
 }) => (
   <aside className={cls.sidebar}>
     <div className={cls.block}>
@@ -76,6 +78,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
             Open Website
           </a>
         ) : null}
+        <button
+          className={cls.secondaryBtn}
+          onClick={() => {
+            setShowReportInaccuracyModal(true);
+          }}
+          type="button"
+          title="Report inaccuracy"
+        >
+          <span className={cls.icon} role="img" aria-label="Report">
+            ⚠️
+          </span>
+          Report inaccuracy
+        </button>
       </div>
     </div>
     {openingHours && openingHours.length > 0 ? (

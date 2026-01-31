@@ -3,12 +3,14 @@ import React, { useCallback, useMemo, useState, memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { RateNow } from 'features/RateNow';
+import { SendReportInaccuracyForm } from 'features/SendReportInaccuracyForm';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery } from 'shared/generated/graphql';
 import { type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
+import { Modal } from 'shared/ui/Modal';
 import { usePlaceReviews } from '../api/usePlaceReviews';
 import { CoffeeShopSchema } from '../components/CoffeeShopSchema';
 import { ErrorPlace } from '../components/ErrorPlace';
@@ -25,6 +27,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   const [showRateNow, setShowRateNow] = useState(false);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [editInitialText, setEditInitialText] = useState('');
+  const [showReportInaccuracyModal, setShowReportInaccuracyModal] = useState(false);
 
   // Precompute static keys to satisfy hooks order (before any early returns)
   const characteristicKeys = useMemo(() => Array.from(characteristicsMap.keys()), []);
@@ -253,6 +256,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
           tags={tags}
           openOnMap={openOnMap}
           openOnGoogleMaps={openOnGoogleMaps}
+          setShowReportInaccuracyModal={setShowReportInaccuracyModal}
         />
       </div>
 
@@ -271,6 +275,18 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
         phone={phone}
         image={images?.length ? `${IMAGEKIT_CDN_URL}/${images[0]}` : undefined}
       />
+
+      {showReportInaccuracyModal && placeId && (
+        <Modal
+          onClose={() => {
+            setShowReportInaccuracyModal(false);
+          }}
+          closeOnEsc={true}
+          widthOnDesktop={600}
+        >
+          <SendReportInaccuracyForm placeId={placeId} placeName={name} />
+        </Modal>
+      )}
     </div>
   );
 };

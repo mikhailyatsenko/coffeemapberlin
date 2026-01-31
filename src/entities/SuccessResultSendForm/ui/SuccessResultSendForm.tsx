@@ -4,14 +4,16 @@ import { RegularButton } from 'shared/ui/RegularButton';
 import { type SuccessResultSendFormProps } from '../types';
 import cls from './SuccessResultSendForm.module.scss';
 
-export const SuccessResultSendForm = ({ name }: SuccessResultSendFormProps) => {
+export const SuccessResultSendForm = ({
+  text = 'Your message has been sent! We will review it shortly.',
+}: SuccessResultSendFormProps) => {
   return (
     <div className={cls.SuccessResultSendForm}>
       <div className={cls.icon}>
         <img src={successIcon} alt="" />
       </div>
       <h3 className={cls.title}>Success!</h3>
-      <p className={cls.text}>{name}, your message has been sent! We will review it shortly.</p>
+      <p className={cls.text}>{text}</p>
       <Link to={'/'}>
         <RegularButton theme="success">Home</RegularButton>
       </Link>

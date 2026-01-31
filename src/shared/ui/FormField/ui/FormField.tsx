@@ -11,6 +11,7 @@ interface FormFieldProps {
   autoComplete?: string;
   autoFocus?: boolean;
   className?: string;
+  disabled?: boolean;
   onValueChange?: (value: string) => void;
 }
 export const FormField: React.FC<FormFieldProps> = ({
@@ -21,6 +22,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   labelText,
   autoComplete,
   autoFocus,
+  disabled,
   onValueChange,
 }) => {
   const { register } = useFormContext();
@@ -37,6 +39,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     value,
     autoComplete,
     autoFocus,
+    disabled,
     id: fieldName,
     ...registered,
     onChange: handleChange,

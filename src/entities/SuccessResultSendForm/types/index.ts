@@ -1,3 +1,4 @@
 export interface SuccessResultSendFormProps {
-  name: string;
+  name?: string;
+  text?: string;
 }

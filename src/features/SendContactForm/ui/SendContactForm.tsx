@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { type SubmitHandler } from 'react-hook-form';
 import { ContactForm, type ContactFormData } from 'entities/ContactForm/ui/ContactForm';
 import { ErrorResultSendForm } from 'entities/ErrorResultSendForm';
@@ -7,8 +8,11 @@ import { Loader } from 'shared/ui/Loader';
 
 export const SendContactForm = () => {
   const [contactForm, { loading, error, data, reset }] = useContactFormMutation();
+  const [savedFormData, setSavedFormData] = useState<ContactFormData | null>(null);
+  const [formKey, setFormKey] = useState(0);
 
   const onSubmit: SubmitHandler<ContactFormData> = async (formData) => {
+    setSavedFormData(formData);
     await contactForm({
       variables: {
         name: formData.name,
@@ -21,6 +25,7 @@ export const SendContactForm = () => {
 
   const handleTryAgain = () => {
     reset();
+    setFormKey((prev) => prev + 1);
   };
 
   if (error) {
@@ -34,7 +39,18 @@ export const SendContactForm = () => {
   return (
     <>
       {loading ? <Loader /> : ''}
-      <ContactForm onSubmit={onSubmit} />
+      <ContactForm
+        key={formKey}
+        onSubmit={onSubmit}
+        defaultValues={
+          savedFormData || {
+            name: '',
+            email: '',
+            message: '',
+            recaptcha: '',
+          }
+        }
+      />
     </>
   );
 };

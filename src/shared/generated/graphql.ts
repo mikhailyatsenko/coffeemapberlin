@@ -210,6 +210,7 @@ export interface Mutation {
   loginWithGoogle?: Maybe<AuthPayload>;
   logout?: Maybe<LogoutResponse>;
   registerUser: SuccessResponse;
+  reportInaccuracy: ReportInaccuracyResponse;
   requestPasswordReset: SuccessResponse;
   resendConfirmationEmail: SuccessResponse;
   resetPassword: SuccessResponse;
@@ -264,6 +265,13 @@ export interface MutationregisterUserArgs {
   displayName: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+}
+
+
+export interface MutationreportInaccuracyArgs {
+  message: Scalars['String']['input'];
+  placeId: Scalars['String']['input'];
+  placeName: Scalars['String']['input'];
 }
 
 
@@ -431,6 +439,12 @@ export interface QueryplaceReviewsArgs {
 export interface QueryplacesArgs {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+}
+
+export interface ReportInaccuracyResponse {
+  __typename?: 'ReportInaccuracyResponse';
+  placeName: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
 }
 
 export interface Review {
@@ -653,6 +667,15 @@ export type GetAvailableTagsQueryVariables = Exact<Record<string, never>>;
 
 
 export interface GetAvailableTagsQuery { __typename?: 'Query', availableAdditionalInfoTags: { __typename?: 'AdditionalInfoTagsResponse', tags: string[] } }
+
+export type ReportInaccuracyMutationVariables = Exact<{
+  placeId: Scalars['String']['input'];
+  placeName: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+}>;
+
+
+export interface ReportInaccuracyMutation { __typename?: 'Mutation', reportInaccuracy: { __typename?: 'ReportInaccuracyResponse', success: boolean, placeName: string } }
 
 export type AddRatingMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1691,6 +1714,42 @@ export type GetAvailableTagsQueryHookResult = ReturnType<typeof useGetAvailableT
 export type GetAvailableTagsLazyQueryHookResult = ReturnType<typeof useGetAvailableTagsLazyQuery>;
 export type GetAvailableTagsSuspenseQueryHookResult = ReturnType<typeof useGetAvailableTagsSuspenseQuery>;
 export type GetAvailableTagsQueryResult = Apollo.QueryResult<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>;
+export const ReportInaccuracyDocument = gql`
+    mutation ReportInaccuracy($placeId: String!, $placeName: String!, $message: String!) {
+  reportInaccuracy(placeId: $placeId, placeName: $placeName, message: $message) {
+    success
+    placeName
+  }
+}
+    `;
+export type ReportInaccuracyMutationFn = Apollo.MutationFunction<ReportInaccuracyMutation, ReportInaccuracyMutationVariables>;
+
+/**
+ * __useReportInaccuracyMutation__
+ *
+ * To run a mutation, you first call `useReportInaccuracyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReportInaccuracyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reportInaccuracyMutation, { data, loading, error }] = useReportInaccuracyMutation({
+ *   variables: {
+ *      placeId: // value for 'placeId'
+ *      placeName: // value for 'placeName'
+ *      message: // value for 'message'
+ *   },
+ * });
+ */
+export function useReportInaccuracyMutation(baseOptions?: Apollo.MutationHookOptions<ReportInaccuracyMutation, ReportInaccuracyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ReportInaccuracyMutation, ReportInaccuracyMutationVariables>(ReportInaccuracyDocument, options);
+      }
+export type ReportInaccuracyMutationHookResult = ReturnType<typeof useReportInaccuracyMutation>;
+export type ReportInaccuracyMutationResult = Apollo.MutationResult<ReportInaccuracyMutation>;
+export type ReportInaccuracyMutationOptions = Apollo.BaseMutationOptions<ReportInaccuracyMutation, ReportInaccuracyMutationVariables>;
 export const AddRatingDocument = gql`
     mutation AddRating($placeId: ID!, $rating: Float!) {
   addRating(placeId: $placeId, rating: $rating) {

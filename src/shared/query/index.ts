@@ -4,3 +4,4 @@ export * from './places';
 export * from './reviews';
 export * from './user';
 export * from './contact';
+export * from './reportInaccuracy';
