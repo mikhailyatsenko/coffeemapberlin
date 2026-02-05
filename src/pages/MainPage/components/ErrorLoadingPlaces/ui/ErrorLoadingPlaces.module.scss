@@ -1,0 +1,93 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+}
+
+.content {
+  text-align: center;
+  max-width: 500px;
+  padding: 2rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 4px 16px var(--shadow-md);
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.message {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.5;
+}
+
+.subMessage {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
+}
+
+.errorDetails {
+  margin: 1.5rem 0;
+  text-align: left;
+
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.errorText {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  padding: 1rem;
+  font-size: 0.75rem;
+  color: var(--error);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .content {
+    padding: 1.5rem;
+  }
+
+  .retryButton {
+    width: 100%;
+    max-width: 200px;
+  }
+}

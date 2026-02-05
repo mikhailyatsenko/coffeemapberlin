@@ -22,6 +22,7 @@ import {
   type Place,
 } from 'shared/stores/places';
 import { Loader } from 'shared/ui/Loader';
+import { ErrorLoadingPlaces } from '../components/ErrorLoadingPlaces/ui/ErrorLoadingPlaces';
 
 export const MainPage = () => {
   const location = useLocation();
@@ -72,7 +73,7 @@ export const MainPage = () => {
     });
   }, []);
 
-  const { loading: initialLoading } = useGetPlacesQuery({
+  const { loading: initialLoading, error: initialError } = useGetPlacesQuery({
     skip: hasInitialBatchLoaded,
     variables: { limit: PAGE_SIZE, offset: INITIAL_OFFSET },
     onCompleted: (data) => {
@@ -81,7 +82,7 @@ export const MainPage = () => {
     },
   });
 
-  useGetPlacesQuery({
+  const { error: moreBatchError } = useGetPlacesQuery({
     skip: hasMoreBatchLoaded,
     variables: { offset: PAGE_SIZE },
     onCompleted: (data) => {
@@ -89,6 +90,9 @@ export const MainPage = () => {
       setMoreBatchLoaded(true);
     },
   });
+
+  // Show error if initial query fails
+  const hasError = initialError || moreBatchError;
 
   // Filtered places query - using lazy query to control when it executes
   const [fetchFilteredPlaces, { loading: filteredLoading }] = useFilteredPlacesLazyQuery({
@@ -149,6 +153,10 @@ export const MainPage = () => {
     type: 'FeatureCollection' as const,
     features: showEmptyResults ? [] : placesToDisplay ?? [],
   };
+
+  if (hasError) {
+    return <ErrorLoadingPlaces error={initialError || moreBatchError} />;
+  }
 
   return (
     <>
