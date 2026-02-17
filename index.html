@@ -56,14 +56,39 @@
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D2TXH1NP41"></script>
+  <!-- Google tag (gtag.js) - отложенная загрузка -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-D2TXH1NP41');
+    
+    var gtagLoaded = false;
+    
+    function loadGoogleAnalytics() {
+      if (gtagLoaded) return;
+      gtagLoaded = true;
+      
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-D2TXH1NP41';
+      document.head.appendChild(script);
+      
+      script.onload = function() {
+        gtag('js', new Date());
+        gtag('config', 'G-D2TXH1NP41');
+      };
+    }
+    
+    function onUserInteraction() {
+      if (gtagLoaded) return;
+      loadGoogleAnalytics();
+    }
+    
+    ['mousemove', 'scroll', 'touchstart', 'keydown'].forEach(function(event) {
+      document.addEventListener(event, onUserInteraction, { once: true });
+    });
+    
+    // Резервный запуск через 4 секунды, если пользователь ничего не делает
+    setTimeout(loadGoogleAnalytics, 4000);
   </script>
 
 </body>
