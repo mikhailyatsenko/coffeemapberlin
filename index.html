@@ -87,7 +87,7 @@
       document.addEventListener(event, onUserInteraction, { once: true });
     });
     
-    // Резервный запуск через 4 секунды, если пользователь ничего не делает
+    // delayed load after 4 seconds as a fallback
     setTimeout(loadGoogleAnalytics, 4000);
   </script>
 

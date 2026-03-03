@@ -1,12 +1,10 @@
 import { useCallback, useMemo, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
 import { FloatingButtons } from 'widgets/FloatingButtons';
 import { MainMapLazy } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { FilterPanel } from 'features/FilterPanel';
 import { EmptyFilterResults } from 'features/FilterPanel/components/EmptyFilterResults';
 import { useGetPlacesQuery, useFilteredPlacesLazyQuery } from 'shared/generated/graphql';
-import { useEmailConfirmation } from 'shared/hooks/useEmailConfirmation';
 import { useAuthStore } from 'shared/stores/auth';
 import { useFiltersStore } from 'shared/stores/filters';
 import { useGuestFavoritesStore } from 'shared/stores/guestFavorites';
@@ -25,7 +23,6 @@ import { Loader } from 'shared/ui/Loader';
 import { ErrorLoadingPlaces } from '../components/ErrorLoadingPlaces/ui/ErrorLoadingPlaces';
 
 export const MainPage = () => {
-  const location = useLocation();
   const places = usePlacesStore((state) => state.places);
   const filteredPlaces = usePlacesStore((state) => state.filteredPlaces);
   const showFavorites = usePlacesStore((state) => state.showFavorites);
@@ -44,11 +41,6 @@ export const MainPage = () => {
     () => minRating > 0 || neighborhood.length > 0 || selectedTags.length > 0,
     [minRating, neighborhood, selectedTags],
   );
-
-  // Handle email confirmation from location state
-  const token = location.state?.token as string | null | undefined;
-  const email = location.state?.email as string | null | undefined;
-  useEmailConfirmation(email, token);
 
   // Indicate loading only for initial data loading. More data is loading in the background.
   const appendUniquePlaces = useCallback((incomingPlaces?: Place[] | null, isInitial?: boolean) => {

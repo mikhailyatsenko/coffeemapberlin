@@ -25,6 +25,11 @@ export const AccountSettings = () => {
     mode: 'onChange',
     resolver: yupResolver(passwordValidationSchema),
     context: { isGoogleUserUserWithoutPassword: user?.isGoogleUserUserWithoutPassword },
+    defaultValues: {
+      oldPassword: '',
+      newPassword: '',
+      repeatPassword: '',
+    },
   });
 
   const personalDataForm = useForm<PersonalDataFormData>({
@@ -51,7 +56,8 @@ export const AccountSettings = () => {
         email: user.email,
       });
     }
-  }, [user, resetPersonalData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!user) {
     return <p>Please log in to view your profile.</p>;
