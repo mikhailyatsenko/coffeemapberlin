@@ -8,7 +8,7 @@ import {
 import toast from 'react-hot-toast';
 import { type ImagesWrapper } from '../types';
 
-const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'https://yatsenko.site';
+const BASE_URL = process.env.VITE_ENV === 'development' ? 'http://localhost:3000' : 'http://api.3welle.com';
 
 const authenticator = async (signal?: AbortSignal) => {
   try {
