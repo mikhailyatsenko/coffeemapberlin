@@ -22,7 +22,12 @@ export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
   const form = useForm<ContactFormData>({
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
-    defaultValues: defaultValues || undefined,
+    defaultValues: defaultValues || {
+      name: '',
+      email: '',
+      message: '',
+      recaptcha: '',
+    },
   });
 
   const {

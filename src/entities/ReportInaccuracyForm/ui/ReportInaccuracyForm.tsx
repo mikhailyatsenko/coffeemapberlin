@@ -22,7 +22,12 @@ export const ReportInaccuracyForm = ({ onSubmit, defaultValues }: ReportInaccura
   const form = useForm<ReportInaccuracyFormData>({
     mode: 'onChange',
     resolver: yupResolver<ReportInaccuracyFormData>(validationSchema),
-    defaultValues: defaultValues || undefined,
+    defaultValues: defaultValues || {
+      placeName: '',
+      placeId: '',
+      message: '',
+      recaptcha: '',
+    },
   });
 
   const {

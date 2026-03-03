@@ -16,7 +16,17 @@ export const SignUpWithEmail = ({
   continueWithSocial,
   setError,
 }: SignUpWithEmailProps) => {
-  const form = useForm({ mode: 'onChange', resolver: yupResolver(validationSchemaSignUpWithEmail) });
+  const form = useForm({
+    mode: 'onChange',
+    resolver: yupResolver(validationSchemaSignUpWithEmail),
+    defaultValues: {
+      displayName: '',
+      email: '',
+      password: '',
+      repeatPassword: '',
+      recaptcha: '',
+    },
+  });
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,
@@ -56,7 +66,7 @@ export const SignUpWithEmail = ({
     <div className={cls.content}>
       {isLoading ? <Loader /> : null}
       <h2>Create account</h2>
-      <div className={cls.continueWithSocial}>{continueWithSocial?.map((social) => social)}</div>
+      <div className={cls.continueWithSocial}>{continueWithSocial?.map(async (social) => await social)}</div>
       <div className={cls.or}>or</div>
       <FormProvider {...form}>
         <form className={cls.registerWithEmail} onSubmit={handleSubmit(signUpWithEmailHandler)}>

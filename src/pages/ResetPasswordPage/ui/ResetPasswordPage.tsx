@@ -74,6 +74,10 @@ export const ResetPasswordPage = () => {
   const form = useForm<ResetPasswordFormData>({
     resolver: yupResolver(validationSchema),
     mode: 'onChange',
+    defaultValues: {
+      newPassword: '',
+      confirmPassword: '',
+    },
   });
 
   const {

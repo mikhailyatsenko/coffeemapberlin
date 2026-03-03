@@ -49,6 +49,10 @@ export const SignInWithEmail = ({
   const form = useForm<SignInWithEmailData>({
     mode: 'onChange',
     resolver: yupResolver(validationSchemaSignInWithEmail),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const {

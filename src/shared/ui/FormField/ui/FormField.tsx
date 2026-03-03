@@ -1,5 +1,5 @@
 import type { ChangeEvent } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import cls from './FormField.module.scss';
 
 interface FormFieldProps {
@@ -17,7 +17,6 @@ interface FormFieldProps {
 export const FormField: React.FC<FormFieldProps> = ({
   fieldName,
   type,
-  value,
   error,
   labelText,
   autoComplete,
@@ -25,32 +24,37 @@ export const FormField: React.FC<FormFieldProps> = ({
   disabled,
   onValueChange,
 }) => {
-  const { register } = useFormContext();
-  const registered = register(fieldName);
+  const { control } = useFormContext();
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    registered.onChange(event);
-    onValueChange?.(event.target.value);
-  };
-
-  const parameters = {
-    placeholder: fieldName,
-    type,
-    value,
-    autoComplete,
-    autoFocus,
-    disabled,
-    id: fieldName,
-    ...registered,
-    onChange: handleChange,
-  };
   return (
     <div className={`${cls.formGroup} ${type === 'hidden' ? cls.hiddenGroup : ''}`}>
-      {!(type === 'textarea') ? (
-        <input className={`${cls.formField} ${error ? cls.error : ''}`} {...parameters} />
-      ) : (
-        <textarea className={`${cls.formField} ${error ? cls.error : ''}`} rows={4} {...parameters} />
-      )}
+      <Controller
+        name={fieldName}
+        control={control}
+        render={({ field }) => {
+          const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            field.onChange(event);
+            onValueChange?.(event.target.value);
+          };
+
+          const parameters = {
+            ...field,
+            placeholder: fieldName,
+            type,
+            autoComplete,
+            autoFocus,
+            disabled,
+            id: fieldName,
+            onChange: handleChange,
+          };
+
+          return !(type === 'textarea') ? (
+            <input className={`${cls.formField} ${error ? cls.error : ''}`} {...parameters} />
+          ) : (
+            <textarea className={`${cls.formField} ${error ? cls.error : ''}`} rows={4} {...parameters} />
+          );
+        }}
+      />
 
       <label className={cls.formLabel} htmlFor={fieldName}>
         {labelText}
