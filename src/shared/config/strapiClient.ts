@@ -1,7 +1,7 @@
 import { createHttpLink, ApolloClient, InMemoryCache } from '@apollo/client';
 
 const httpLink = createHttpLink({
-  uri: 'https://cms.yatsenko.site/graphql',
+  uri: 'https://cms.3welle.com/graphql',
   fetchOptions: {
     credentials: 'omit',
   },
