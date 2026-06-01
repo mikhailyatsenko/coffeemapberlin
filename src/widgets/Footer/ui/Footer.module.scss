@@ -37,3 +37,14 @@
   color: var(--text-footer-hover);
   text-decoration: underline;
 }
+
+.openSource {
+  color: var(--text-footer-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.openSource:hover {
+  color: var(--text-footer-hover);
+  text-decoration: underline;
+}

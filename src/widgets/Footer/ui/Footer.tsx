@@ -17,6 +17,14 @@ export const Footer = () => {
           Disclaimer
         </Link>
       </nav>
+      <a
+        href="https://github.com/mikhailyatsenko/coffeemapberlin"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cls.openSource}
+      >
+        Open source · Contributions welcome
+      </a>
       <div className={cls.copyright}>&copy; {new Date().getFullYear()}</div>
     </footer>
   );
