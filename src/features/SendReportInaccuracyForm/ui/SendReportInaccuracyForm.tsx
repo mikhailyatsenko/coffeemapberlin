@@ -4,6 +4,7 @@ import { ErrorResultSendForm } from 'entities/ErrorResultSendForm';
 import { ReportInaccuracyForm, type ReportInaccuracyFormData } from 'entities/ReportInaccuracyForm';
 import { SuccessResultSendForm } from 'entities/SuccessResultSendForm';
 import { useReportInaccuracyMutation } from 'shared/generated/graphql';
+import { executeRecaptcha } from 'shared/lib/recaptcha';
 import { Loader } from 'shared/ui/Loader';
 
 interface SendReportInaccuracyFormProps {
@@ -18,11 +19,13 @@ export const SendReportInaccuracyForm = ({ placeId, placeName }: SendReportInacc
 
   const onSubmit: SubmitHandler<ReportInaccuracyFormData> = async (formData) => {
     setSavedFormData(formData);
+    const captchaToken = await executeRecaptcha('report_inaccuracy');
     await reportInaccuracy({
       variables: {
         placeId: formData.placeId,
         placeName: formData.placeName,
         message: formData.message,
+        captchaToken,
       },
     });
   };
@@ -51,7 +54,6 @@ export const SendReportInaccuracyForm = ({ placeId, placeName }: SendReportInacc
             placeId,
             placeName,
             message: '',
-            recaptcha: '',
           }
         }
       />

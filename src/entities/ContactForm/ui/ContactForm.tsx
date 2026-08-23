@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { FormField } from 'shared/ui/FormField';
 import { WhiteButton } from 'shared/ui/WhiteButton';
@@ -10,7 +9,6 @@ export interface ContactFormData {
   name: string;
   email: string;
   message: string;
-  recaptcha: string;
 }
 
 interface ContactFormProps {
@@ -26,21 +24,13 @@ export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
       name: '',
       email: '',
       message: '',
-      recaptcha: '',
     },
   });
 
   const {
     handleSubmit,
     formState: { errors, isValid },
-    setValue,
-    trigger,
   } = form;
-
-  const handleCaptchaChange = (value: string | null) => {
-    setValue('recaptcha', value || '');
-    trigger('recaptcha');
-  };
 
   return (
     <div className={cls.ContactForm}>
@@ -49,17 +39,6 @@ export const ContactForm = ({ onSubmit, defaultValues }: ContactFormProps) => {
           <FormField labelText={'Name'} fieldName="name" type="text" error={errors.name?.message} />
           <FormField labelText={'Email'} fieldName="email" type="email" error={errors.email?.message} />
           <FormField labelText={'Message'} fieldName="message" type="textarea" error={errors.message?.message} />
-          <div className={cls.recaptcha}>
-            <ReCAPTCHA
-              sitekey={
-                process.env.VITE_ENV === 'development'
-                  ? process.env.RE_CAPTCHA_KEY_DEV!
-                  : process.env.RE_CAPTCHA_KEY_PROD!
-              }
-              onChange={handleCaptchaChange}
-            />
-          </div>
-          <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} />
 
           <WhiteButton type="submit" disabled={!isValid}>
             Send message

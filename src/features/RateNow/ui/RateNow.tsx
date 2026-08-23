@@ -2,8 +2,8 @@ import { RatePlaceWidget, ToggleCharacteristic } from 'entities/RatePlace';
 import { useDeleteReview, useToggleCharacteristic } from 'shared/api';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
 import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
+import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
-import { showLoginRequired } from 'shared/stores/modal';
 import { revalidatePlaces } from 'shared/stores/places';
 import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
@@ -29,12 +29,11 @@ export const RateNow = ({
   });
 
   const onSubmitRating = async (rating: number) => {
-    if (!user) {
-      showLoginRequired();
-      return;
-    }
+    // Guests rate too; the captcha runs once, when the identity is issued.
+    const guestCredentials = user ? {} : await ensureGuestIdentity();
+
     await addRating({
-      variables: { placeId, rating },
+      variables: { placeId, rating, ...guestCredentials },
       refetchQueries: [
         { query: PlaceDocument, variables: { placeId } },
         { query: PlaceReviewsDocument, variables: { placeId } },

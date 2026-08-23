@@ -7,5 +7,4 @@ export const validationSchemaSignUpWithEmail = Yup.object().shape({
   repeatPassword: Yup.string()
     .oneOf([Yup.ref('password')], 'Passwords must match')
     .required('Password repeat is required'),
-  recaptcha: Yup.string().required('Please complete the reCAPTCHA'),
 });

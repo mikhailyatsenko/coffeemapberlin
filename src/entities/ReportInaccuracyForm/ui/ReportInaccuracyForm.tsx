@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
@@ -10,7 +9,6 @@ export interface ReportInaccuracyFormData {
   placeName: string;
   placeId: string;
   message: string;
-  recaptcha: string;
 }
 
 interface ReportInaccuracyFormProps {
@@ -26,21 +24,13 @@ export const ReportInaccuracyForm = ({ onSubmit, defaultValues }: ReportInaccura
       placeName: '',
       placeId: '',
       message: '',
-      recaptcha: '',
     },
   });
 
   const {
     handleSubmit,
     formState: { errors, isValid },
-    setValue,
-    trigger,
   } = form;
-
-  const handleCaptchaChange = (value: string | null) => {
-    setValue('recaptcha', value || '');
-    trigger('recaptcha');
-  };
 
   return (
     <div className={cls.ReportInaccuracyForm}>
@@ -66,17 +56,6 @@ export const ReportInaccuracyForm = ({ onSubmit, defaultValues }: ReportInaccura
             type="textarea"
             error={errors.message?.message}
           />
-          <div className={cls.recaptcha}>
-            <ReCAPTCHA
-              sitekey={
-                process.env.VITE_ENV === 'development'
-                  ? process.env.RE_CAPTCHA_KEY_DEV!
-                  : process.env.RE_CAPTCHA_KEY_PROD!
-              }
-              onChange={handleCaptchaChange}
-            />
-          </div>
-          <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} />
 
           <RegularButton
             className={cls.submitButton}

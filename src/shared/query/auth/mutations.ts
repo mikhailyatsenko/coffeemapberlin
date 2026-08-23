@@ -32,8 +32,8 @@ export const SIGN_IN_WITH_EMAIL = gql`
 `;
 
 export const REGISTER_USER = gql`
-  mutation RegisterUser($email: String!, $displayName: String!, $password: String!) {
-    registerUser(email: $email, displayName: $displayName, password: $password) {
+  mutation RegisterUser($email: String!, $displayName: String!, $password: String!, $captchaToken: String) {
+    registerUser(email: $email, displayName: $displayName, password: $password, captchaToken: $captchaToken) {
       success
     }
   }

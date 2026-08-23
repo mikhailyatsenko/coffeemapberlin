@@ -4,6 +4,7 @@ import { ContactForm, type ContactFormData } from 'entities/ContactForm/ui/Conta
 import { ErrorResultSendForm } from 'entities/ErrorResultSendForm';
 import { SuccessResultSendForm } from 'entities/SuccessResultSendForm';
 import { useContactFormMutation } from 'shared/generated/graphql';
+import { executeRecaptcha } from 'shared/lib/recaptcha';
 import { Loader } from 'shared/ui/Loader';
 
 export const SendContactForm = () => {
@@ -13,12 +14,13 @@ export const SendContactForm = () => {
 
   const onSubmit: SubmitHandler<ContactFormData> = async (formData) => {
     setSavedFormData(formData);
+    const captchaToken = await executeRecaptcha('contact_form');
     await contactForm({
       variables: {
         name: formData.name,
         email: formData.email,
         message: formData.message,
-        // recaptcha: formData.recaptcha,
+        captchaToken,
       },
     });
   };
@@ -47,7 +49,6 @@ export const SendContactForm = () => {
             name: '',
             email: '',
             message: '',
-            recaptcha: '',
           }
         }
       />
