@@ -121,6 +121,16 @@ export interface CharacteristicData {
   pressed: Scalars['Boolean']['output'];
 }
 
+export interface ClaimGuestReviewsResponse {
+  __typename?: 'ClaimGuestReviewsResponse';
+  claimedCount: Scalars['Int']['output'];
+  /**
+   * Guest reviews left behind because the account already has a review for that
+   * place. They stay anonymous rather than overwriting anything.
+   */
+  conflictedCount: Scalars['Int']['output'];
+}
+
 export interface ComponentSharedSeo {
   __typename?: 'ComponentSharedSeo';
   canonicalURL?: Maybe<Scalars['String']['output']>;
@@ -175,6 +185,16 @@ export interface Geometry {
   type: Scalars['String']['output'];
 }
 
+/**
+ * Credentials issued once after a successful captcha check. The client stores both
+ * values in localStorage; the raw secret is never returned again.
+ */
+export interface GuestIdentityPayload {
+  __typename?: 'GuestIdentityPayload';
+  guestId: Scalars['String']['output'];
+  guestSecret: Scalars['String']['output'];
+}
+
 export interface IDFilterInput {
   eq?: InputMaybe<Scalars['ID']['input']>;
   in?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
@@ -202,13 +222,21 @@ export interface Mutation {
   __typename?: 'Mutation';
   addRating: AddRatingResponse;
   addTextReview: AddTextReviewResponse;
+  /** Attaches reviews left as a guest to the currently signed-in account. */
+  claimGuestReviews: ClaimGuestReviewsResponse;
   confirmEmail: AuthPayload;
   contactForm: ContactFormResponse;
+  /**
+   * Issues a guest identity after a captcha check. This is the only place a guest
+   * captcha is verified; every later guest action authenticates with the secret.
+   */
+  createGuestIdentity: GuestIdentityPayload;
   deleteAccount: SuccessResponse;
   deleteAvatar: SuccessResponse;
   deleteReview: DeleteReviewResult;
   loginWithGoogle?: Maybe<AuthPayload>;
   logout?: Maybe<LogoutResponse>;
+  refreshToken: RefreshTokenResponse;
   registerUser: SuccessResponse;
   reportInaccuracy: ReportInaccuracyResponse;
   requestPasswordReset: SuccessResponse;
@@ -220,20 +248,31 @@ export interface Mutation {
   toggleFavorite: Scalars['Boolean']['output'];
   updatePersonalData: SuccessResponse;
   uploadAvatar: UploadAvatarResponse;
+  uploadReviewImage: UploadReviewImageResponse;
   validatePasswordResetToken: SuccessResponse;
 }
 
 
 export interface MutationaddRatingArgs {
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
   placeId: Scalars['ID']['input'];
   rating: Scalars['Float']['input'];
 }
 
 
 export interface MutationaddTextReviewArgs {
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
   placeId: Scalars['ID']['input'];
   reviewImages?: InputMaybe<Scalars['Int']['input']>;
   text: Scalars['String']['input'];
+}
+
+
+export interface MutationclaimGuestReviewsArgs {
+  guestId: Scalars['String']['input'];
+  guestSecret: Scalars['String']['input'];
 }
 
 
@@ -244,9 +283,15 @@ export interface MutationconfirmEmailArgs {
 
 
 export interface MutationcontactFormArgs {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
   email: Scalars['String']['input'];
   message: Scalars['String']['input'];
   name: Scalars['String']['input'];
+}
+
+
+export interface MutationcreateGuestIdentityArgs {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
 }
 
 
@@ -262,6 +307,7 @@ export interface MutationloginWithGoogleArgs {
 
 
 export interface MutationregisterUserArgs {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -269,6 +315,7 @@ export interface MutationregisterUserArgs {
 
 
 export interface MutationreportInaccuracyArgs {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
   message: Scalars['String']['input'];
   placeId: Scalars['String']['input'];
   placeName: Scalars['String']['input'];
@@ -307,6 +354,8 @@ export interface MutationsignInWithEmailArgs {
 
 export interface MutationtoggleCharacteristicArgs {
   characteristic: Characteristic;
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
   placeId: Scalars['ID']['input'];
 }
 
@@ -327,6 +376,14 @@ export interface MutationuploadAvatarArgs {
   fileBuffer: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
+}
+
+
+export interface MutationuploadReviewImageArgs {
+  fileBuffer: Scalars['String']['input'];
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
+  reviewId: Scalars['ID']['input'];
 }
 
 
@@ -441,6 +498,12 @@ export interface QueryplacesArgs {
   offset?: InputMaybe<Scalars['Int']['input']>;
 }
 
+export interface RefreshTokenResponse {
+  __typename?: 'RefreshTokenResponse';
+  accessToken: Scalars['String']['output'];
+  user: User;
+}
+
 export interface ReportInaccuracyResponse {
   __typename?: 'ReportInaccuracyResponse';
   placeName: Scalars['String']['output'];
@@ -458,7 +521,8 @@ export interface Review {
   reviewImages: Scalars['Int']['output'];
   text?: Maybe<Scalars['String']['output']>;
   userAvatar?: Maybe<Scalars['String']['output']>;
-  userId: Scalars['ID']['output'];
+  /** Null for guest reviews, which have no account behind them. */
+  userId?: Maybe<Scalars['ID']['output']>;
   userName: Scalars['String']['output'];
   userRating?: Maybe<Scalars['Float']['output']>;
 }
@@ -497,6 +561,12 @@ export interface UploadFile {
   size?: Maybe<Scalars['Float']['output']>;
   url: Scalars['String']['output'];
   width?: Maybe<Scalars['Int']['output']>;
+}
+
+export interface UploadReviewImageResponse {
+  __typename?: 'UploadReviewImageResponse';
+  /** Number of images stored for the review after this upload. */
+  reviewImages: Scalars['Int']['output'];
 }
 
 export interface User {
@@ -539,6 +609,7 @@ export type RegisterUserMutationVariables = Exact<{
   email: Scalars['String']['input'];
   displayName: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -597,10 +668,26 @@ export type ContactFormMutationVariables = Exact<{
   name: Scalars['String']['input'];
   email: Scalars['String']['input'];
   message: Scalars['String']['input'];
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
 export interface ContactFormMutation { __typename?: 'Mutation', contactForm: { __typename?: 'ContactFormResponse', success: boolean, name: string } }
+
+export type CreateGuestIdentityMutationVariables = Exact<{
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export interface CreateGuestIdentityMutation { __typename?: 'Mutation', createGuestIdentity: { __typename?: 'GuestIdentityPayload', guestId: string, guestSecret: string } }
+
+export type ClaimGuestReviewsMutationVariables = Exact<{
+  guestId: Scalars['String']['input'];
+  guestSecret: Scalars['String']['input'];
+}>;
+
+
+export interface ClaimGuestReviewsMutation { __typename?: 'Mutation', claimGuestReviews: { __typename?: 'ClaimGuestReviewsResponse', claimedCount: number, conflictedCount: number } }
 
 export type GetArticlesQueryVariables = Exact<Record<string, never>>;
 
@@ -624,6 +711,8 @@ export interface ToggleFavoriteMutation { __typename?: 'Mutation', toggleFavorit
 export type ToggleCharacteristicMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
   characteristic: Characteristic;
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -672,6 +761,7 @@ export type ReportInaccuracyMutationVariables = Exact<{
   placeId: Scalars['String']['input'];
   placeName: Scalars['String']['input'];
   message: Scalars['String']['input'];
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -680,6 +770,8 @@ export interface ReportInaccuracyMutation { __typename?: 'Mutation', reportInacc
 export type AddRatingMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
   rating: Scalars['Float']['input'];
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -688,11 +780,22 @@ export interface AddRatingMutation { __typename?: 'Mutation', addRating: { __typ
 export type AddTextReviewMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
   text: Scalars['String']['input'];
-  reviewImages?: InputMaybe<Scalars['Int']['input']>;
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
 export interface AddTextReviewMutation { __typename?: 'Mutation', addTextReview: { __typename?: 'AddTextReviewResponse', reviewId: string, text: string } }
+
+export type UploadReviewImageMutationVariables = Exact<{
+  reviewId: Scalars['ID']['input'];
+  fileBuffer: Scalars['String']['input'];
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export interface UploadReviewImageMutation { __typename?: 'Mutation', uploadReviewImage: { __typename?: 'UploadReviewImageResponse', reviewImages: number } }
 
 export type DeleteReviewMutationVariables = Exact<{
   reviewId: Scalars['ID']['input'];
@@ -707,7 +810,7 @@ export type PlaceReviewsQueryVariables = Exact<{
 }>;
 
 
-export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId: string, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, characteristics?: Characteristic[] | null, isOwnReview: boolean, reviewImages: number, isGoogleReview: boolean }> } }
+export interface PlaceReviewsQuery { __typename?: 'Query', placeReviews: { __typename?: 'PlaceReviews', id: string, reviews: Array<{ __typename?: 'Review', id: string, text?: string | null, userId?: string | null, userName: string, userAvatar?: string | null, createdAt: string, userRating?: number | null, characteristics?: Characteristic[] | null, isOwnReview: boolean, reviewImages: number, isGoogleReview: boolean }> } }
 
 export type UserReviewActivityQueryVariables = Exact<Record<string, never>>;
 
@@ -835,8 +938,13 @@ export type SignInWithEmailMutationHookResult = ReturnType<typeof useSignInWithE
 export type SignInWithEmailMutationResult = Apollo.MutationResult<SignInWithEmailMutation>;
 export type SignInWithEmailMutationOptions = Apollo.BaseMutationOptions<SignInWithEmailMutation, SignInWithEmailMutationVariables>;
 export const RegisterUserDocument = gql`
-    mutation RegisterUser($email: String!, $displayName: String!, $password: String!) {
-  registerUser(email: $email, displayName: $displayName, password: $password) {
+    mutation RegisterUser($email: String!, $displayName: String!, $password: String!, $captchaToken: String) {
+  registerUser(
+    email: $email
+    displayName: $displayName
+    password: $password
+    captchaToken: $captchaToken
+  ) {
     success
   }
 }
@@ -859,6 +967,7 @@ export type RegisterUserMutationFn = Apollo.MutationFunction<RegisterUserMutatio
  *      email: // value for 'email'
  *      displayName: // value for 'displayName'
  *      password: // value for 'password'
+ *      captchaToken: // value for 'captchaToken'
  *   },
  * });
  */
@@ -1123,8 +1232,13 @@ export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLaz
 export type CurrentUserSuspenseQueryHookResult = ReturnType<typeof useCurrentUserSuspenseQuery>;
 export type CurrentUserQueryResult = Apollo.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export const ContactFormDocument = gql`
-    mutation ContactForm($name: String!, $email: String!, $message: String!) {
-  contactForm(name: $name, email: $email, message: $message) {
+    mutation ContactForm($name: String!, $email: String!, $message: String!, $captchaToken: String) {
+  contactForm(
+    name: $name
+    email: $email
+    message: $message
+    captchaToken: $captchaToken
+  ) {
     success
     name
   }
@@ -1148,6 +1262,7 @@ export type ContactFormMutationFn = Apollo.MutationFunction<ContactFormMutation,
  *      name: // value for 'name'
  *      email: // value for 'email'
  *      message: // value for 'message'
+ *      captchaToken: // value for 'captchaToken'
  *   },
  * });
  */
@@ -1158,6 +1273,75 @@ export function useContactFormMutation(baseOptions?: Apollo.MutationHookOptions<
 export type ContactFormMutationHookResult = ReturnType<typeof useContactFormMutation>;
 export type ContactFormMutationResult = Apollo.MutationResult<ContactFormMutation>;
 export type ContactFormMutationOptions = Apollo.BaseMutationOptions<ContactFormMutation, ContactFormMutationVariables>;
+export const CreateGuestIdentityDocument = gql`
+    mutation CreateGuestIdentity($captchaToken: String) {
+  createGuestIdentity(captchaToken: $captchaToken) {
+    guestId
+    guestSecret
+  }
+}
+    `;
+export type CreateGuestIdentityMutationFn = Apollo.MutationFunction<CreateGuestIdentityMutation, CreateGuestIdentityMutationVariables>;
+
+/**
+ * __useCreateGuestIdentityMutation__
+ *
+ * To run a mutation, you first call `useCreateGuestIdentityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGuestIdentityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGuestIdentityMutation, { data, loading, error }] = useCreateGuestIdentityMutation({
+ *   variables: {
+ *      captchaToken: // value for 'captchaToken'
+ *   },
+ * });
+ */
+export function useCreateGuestIdentityMutation(baseOptions?: Apollo.MutationHookOptions<CreateGuestIdentityMutation, CreateGuestIdentityMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateGuestIdentityMutation, CreateGuestIdentityMutationVariables>(CreateGuestIdentityDocument, options);
+      }
+export type CreateGuestIdentityMutationHookResult = ReturnType<typeof useCreateGuestIdentityMutation>;
+export type CreateGuestIdentityMutationResult = Apollo.MutationResult<CreateGuestIdentityMutation>;
+export type CreateGuestIdentityMutationOptions = Apollo.BaseMutationOptions<CreateGuestIdentityMutation, CreateGuestIdentityMutationVariables>;
+export const ClaimGuestReviewsDocument = gql`
+    mutation ClaimGuestReviews($guestId: String!, $guestSecret: String!) {
+  claimGuestReviews(guestId: $guestId, guestSecret: $guestSecret) {
+    claimedCount
+    conflictedCount
+  }
+}
+    `;
+export type ClaimGuestReviewsMutationFn = Apollo.MutationFunction<ClaimGuestReviewsMutation, ClaimGuestReviewsMutationVariables>;
+
+/**
+ * __useClaimGuestReviewsMutation__
+ *
+ * To run a mutation, you first call `useClaimGuestReviewsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useClaimGuestReviewsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [claimGuestReviewsMutation, { data, loading, error }] = useClaimGuestReviewsMutation({
+ *   variables: {
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
+ *   },
+ * });
+ */
+export function useClaimGuestReviewsMutation(baseOptions?: Apollo.MutationHookOptions<ClaimGuestReviewsMutation, ClaimGuestReviewsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ClaimGuestReviewsMutation, ClaimGuestReviewsMutationVariables>(ClaimGuestReviewsDocument, options);
+      }
+export type ClaimGuestReviewsMutationHookResult = ReturnType<typeof useClaimGuestReviewsMutation>;
+export type ClaimGuestReviewsMutationResult = Apollo.MutationResult<ClaimGuestReviewsMutation>;
+export type ClaimGuestReviewsMutationOptions = Apollo.BaseMutationOptions<ClaimGuestReviewsMutation, ClaimGuestReviewsMutationVariables>;
 export const GetArticlesDocument = gql`
     query GetArticles {
   articles {
@@ -1328,8 +1512,13 @@ export type ToggleFavoriteMutationHookResult = ReturnType<typeof useToggleFavori
 export type ToggleFavoriteMutationResult = Apollo.MutationResult<ToggleFavoriteMutation>;
 export type ToggleFavoriteMutationOptions = Apollo.BaseMutationOptions<ToggleFavoriteMutation, ToggleFavoriteMutationVariables>;
 export const ToggleCharacteristicDocument = gql`
-    mutation ToggleCharacteristic($placeId: ID!, $characteristic: Characteristic!) {
-  toggleCharacteristic(placeId: $placeId, characteristic: $characteristic) {
+    mutation ToggleCharacteristic($placeId: ID!, $characteristic: Characteristic!, $guestId: String, $guestSecret: String) {
+  toggleCharacteristic(
+    placeId: $placeId
+    characteristic: $characteristic
+    guestId: $guestId
+    guestSecret: $guestSecret
+  ) {
     success
   }
 }
@@ -1351,6 +1540,8 @@ export type ToggleCharacteristicMutationFn = Apollo.MutationFunction<ToggleChara
  *   variables: {
  *      placeId: // value for 'placeId'
  *      characteristic: // value for 'characteristic'
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
  *   },
  * });
  */
@@ -1715,8 +1906,13 @@ export type GetAvailableTagsLazyQueryHookResult = ReturnType<typeof useGetAvaila
 export type GetAvailableTagsSuspenseQueryHookResult = ReturnType<typeof useGetAvailableTagsSuspenseQuery>;
 export type GetAvailableTagsQueryResult = Apollo.QueryResult<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>;
 export const ReportInaccuracyDocument = gql`
-    mutation ReportInaccuracy($placeId: String!, $placeName: String!, $message: String!) {
-  reportInaccuracy(placeId: $placeId, placeName: $placeName, message: $message) {
+    mutation ReportInaccuracy($placeId: String!, $placeName: String!, $message: String!, $captchaToken: String) {
+  reportInaccuracy(
+    placeId: $placeId
+    placeName: $placeName
+    message: $message
+    captchaToken: $captchaToken
+  ) {
     success
     placeName
   }
@@ -1740,6 +1936,7 @@ export type ReportInaccuracyMutationFn = Apollo.MutationFunction<ReportInaccurac
  *      placeId: // value for 'placeId'
  *      placeName: // value for 'placeName'
  *      message: // value for 'message'
+ *      captchaToken: // value for 'captchaToken'
  *   },
  * });
  */
@@ -1751,8 +1948,13 @@ export type ReportInaccuracyMutationHookResult = ReturnType<typeof useReportInac
 export type ReportInaccuracyMutationResult = Apollo.MutationResult<ReportInaccuracyMutation>;
 export type ReportInaccuracyMutationOptions = Apollo.BaseMutationOptions<ReportInaccuracyMutation, ReportInaccuracyMutationVariables>;
 export const AddRatingDocument = gql`
-    mutation AddRating($placeId: ID!, $rating: Float!) {
-  addRating(placeId: $placeId, rating: $rating) {
+    mutation AddRating($placeId: ID!, $rating: Float!, $guestId: String, $guestSecret: String) {
+  addRating(
+    placeId: $placeId
+    rating: $rating
+    guestId: $guestId
+    guestSecret: $guestSecret
+  ) {
     averageRating
     ratingCount
     reviewId
@@ -1777,6 +1979,8 @@ export type AddRatingMutationFn = Apollo.MutationFunction<AddRatingMutation, Add
  *   variables: {
  *      placeId: // value for 'placeId'
  *      rating: // value for 'rating'
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
  *   },
  * });
  */
@@ -1788,8 +1992,13 @@ export type AddRatingMutationHookResult = ReturnType<typeof useAddRatingMutation
 export type AddRatingMutationResult = Apollo.MutationResult<AddRatingMutation>;
 export type AddRatingMutationOptions = Apollo.BaseMutationOptions<AddRatingMutation, AddRatingMutationVariables>;
 export const AddTextReviewDocument = gql`
-    mutation AddTextReview($placeId: ID!, $text: String!, $reviewImages: Int) {
-  addTextReview(placeId: $placeId, text: $text, reviewImages: $reviewImages) {
+    mutation AddTextReview($placeId: ID!, $text: String!, $guestId: String, $guestSecret: String) {
+  addTextReview(
+    placeId: $placeId
+    text: $text
+    guestId: $guestId
+    guestSecret: $guestSecret
+  ) {
     reviewId
     text
   }
@@ -1812,7 +2021,8 @@ export type AddTextReviewMutationFn = Apollo.MutationFunction<AddTextReviewMutat
  *   variables: {
  *      placeId: // value for 'placeId'
  *      text: // value for 'text'
- *      reviewImages: // value for 'reviewImages'
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
  *   },
  * });
  */
@@ -1823,6 +2033,47 @@ export function useAddTextReviewMutation(baseOptions?: Apollo.MutationHookOption
 export type AddTextReviewMutationHookResult = ReturnType<typeof useAddTextReviewMutation>;
 export type AddTextReviewMutationResult = Apollo.MutationResult<AddTextReviewMutation>;
 export type AddTextReviewMutationOptions = Apollo.BaseMutationOptions<AddTextReviewMutation, AddTextReviewMutationVariables>;
+export const UploadReviewImageDocument = gql`
+    mutation UploadReviewImage($reviewId: ID!, $fileBuffer: String!, $guestId: String, $guestSecret: String) {
+  uploadReviewImage(
+    reviewId: $reviewId
+    fileBuffer: $fileBuffer
+    guestId: $guestId
+    guestSecret: $guestSecret
+  ) {
+    reviewImages
+  }
+}
+    `;
+export type UploadReviewImageMutationFn = Apollo.MutationFunction<UploadReviewImageMutation, UploadReviewImageMutationVariables>;
+
+/**
+ * __useUploadReviewImageMutation__
+ *
+ * To run a mutation, you first call `useUploadReviewImageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadReviewImageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadReviewImageMutation, { data, loading, error }] = useUploadReviewImageMutation({
+ *   variables: {
+ *      reviewId: // value for 'reviewId'
+ *      fileBuffer: // value for 'fileBuffer'
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
+ *   },
+ * });
+ */
+export function useUploadReviewImageMutation(baseOptions?: Apollo.MutationHookOptions<UploadReviewImageMutation, UploadReviewImageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadReviewImageMutation, UploadReviewImageMutationVariables>(UploadReviewImageDocument, options);
+      }
+export type UploadReviewImageMutationHookResult = ReturnType<typeof useUploadReviewImageMutation>;
+export type UploadReviewImageMutationResult = Apollo.MutationResult<UploadReviewImageMutation>;
+export type UploadReviewImageMutationOptions = Apollo.BaseMutationOptions<UploadReviewImageMutation, UploadReviewImageMutationVariables>;
 export const DeleteReviewDocument = gql`
     mutation DeleteReview($reviewId: ID!, $deleteOptions: String!) {
   deleteReview(reviewId: $reviewId, deleteOptions: $deleteOptions) {

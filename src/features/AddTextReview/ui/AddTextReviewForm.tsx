@@ -2,16 +2,16 @@ import clsx from 'clsx';
 import { debounce } from 'lodash-es';
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import toast from 'react-hot-toast';
-import { useDeleteReview } from 'shared/api';
 import { client } from 'shared/config/apolloClient';
 import { useAddTextReviewMutation, PlaceReviewsDocument } from 'shared/generated/graphql';
+import { ensureGuestIdentity, type GuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
-import { showLoginRequired } from 'shared/stores/modal';
+import { showGuestReviewSubmitted } from 'shared/stores/modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { UploadReviewImages } from '../components/UploadReviewImages/ui/UploadReviewImages';
 import { useAddTextReviewDraftStore } from '../model';
 import { type ImagesWrapper, type AddTextReviewFormProps } from '../types';
-import { handleImgUpload } from '../utils/handleImgUpload';
+import { uploadReviewImages } from '../utils/uploadReviewImages';
 import cls from './AddTextReviewForm.module.scss';
 
 const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
@@ -35,8 +35,6 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const [addTextReview, { loading: isAddTextLoading, error: apolloError }] = useAddTextReviewMutation({
     awaitRefetchQueries: true,
   });
-
-  const { handleDeleteReview } = useDeleteReview(placeId);
 
   // Combined loading state for better UX
   const isFormLoading = isAddTextLoading || isImgUploadingProcessing;
@@ -100,18 +98,6 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
     return Math.round(imagesWrappers.reduce((acc, img) => acc + img.progress, 0) / imagesWrappers.length);
   }, [imagesWrappers]);
 
-  const cleanupReview = useCallback(
-    async (reviewId: string, reason: string) => {
-      console.log(`Cleaning up review ${reviewId}: ${reason}`);
-      try {
-        await handleDeleteReview(reviewId, 'deleteReviewText');
-      } catch (error) {
-        console.error('Failed to delete review during cleanup:', error);
-      }
-    },
-    [handleDeleteReview],
-  );
-
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -125,13 +111,12 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
       abortControllerRef.current = new AbortController();
 
       try {
-        if (!user) {
-          showLoginRequired();
-          return;
-        }
+        // Guests review under an identity issued after a captcha check; the
+        // captcha runs here, on the first guest action, not on every submit.
+        const guestCredentials: Partial<GuestIdentity> = user ? {} : await ensureGuestIdentity();
 
         const result = await addTextReview({
-          variables: { placeId, text: trimmed, reviewImages: imagesWrappers.length },
+          variables: { placeId, text: trimmed, ...guestCredentials },
           context: {
             fetchOptions: {
               signal: abortControllerRef.current.signal,
@@ -143,24 +128,23 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
 
         if (reviewId && imagesWrappers.length > 0) {
           try {
-            await handleImgUpload(
+            await uploadReviewImages(
               imagesWrappers,
-              placeId,
               reviewId,
+              guestCredentials,
               setImagesWrappers,
               setIsImgUploadingProcessing,
               abortControllerRef.current.signal,
             );
           } catch (uploadError) {
-            if (uploadError instanceof Error && uploadError.name === 'AbortError') {
-              await cleanupReview(reviewId, 'user cancelled during image upload');
-              setIsImgUploadingProcessing(false);
-              return;
-            }
-            await cleanupReview(reviewId, 'image upload failed');
-            console.error('Image upload failed:', uploadError);
+            // The review itself is saved and consistent — it simply has fewer
+            // photos than intended, so it is left in place either way.
             setIsImgUploadingProcessing(false);
-            return;
+
+            if (!(uploadError instanceof Error && uploadError.name === 'AbortError')) {
+              console.error('Image upload failed:', uploadError);
+              toast.error('Some photos could not be uploaded');
+            }
           }
         }
 
@@ -170,6 +154,10 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         await client.refetchQueries({
           include: [PlaceReviewsDocument],
         });
+
+        if (!user) {
+          showGuestReviewSubmitted();
+        }
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
           return;
@@ -182,7 +170,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
         abortControllerRef.current = null;
       }
     },
-    [text, isFormLoading, user, addTextReview, placeId, imagesWrappers, clearDraft, onSubmitted, cleanupReview],
+    [text, isFormLoading, user, addTextReview, placeId, imagesWrappers, clearDraft, onSubmitted],
   );
 
   const handleCancelSubmission = useCallback(() => {

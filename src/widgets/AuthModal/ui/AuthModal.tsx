@@ -11,6 +11,7 @@ import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { ConfirmEmail } from '../components/ConfirmEmail';
 import { GuestFavoritesInfo } from '../components/GuestFavoritesInfo';
+import { GuestReviewSubmitted } from '../components/GuestReviewSubmitted';
 import { LoginRequired } from '../components/LoginRequired';
 import { RequestPasswordReset } from '../components/RequestPasswordReset';
 import { ResendConfirmEmail } from '../components/ResendConfirmEmail';
@@ -42,6 +43,8 @@ export const AuthModal = () => {
         );
       case ModalContentVariant.GuestFavoritesInfo:
         return <GuestFavoritesInfo onClose={hideModal} onSignIn={showSignIn} />;
+      case ModalContentVariant.GuestReviewSubmitted:
+        return <GuestReviewSubmitted onClose={hideModal} onSignUp={showSignUp} />;
       case ModalContentVariant.SignUpWithEmail:
         return (
           <SignUpWithEmail

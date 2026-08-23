@@ -7,8 +7,18 @@ export const TOGGLE_FAVORITE = gql`
 `;
 
 export const TOGGLE_CHARACTERISTIC = gql`
-  mutation ToggleCharacteristic($placeId: ID!, $characteristic: Characteristic!) {
-    toggleCharacteristic(placeId: $placeId, characteristic: $characteristic) {
+  mutation ToggleCharacteristic(
+    $placeId: ID!
+    $characteristic: Characteristic!
+    $guestId: String
+    $guestSecret: String
+  ) {
+    toggleCharacteristic(
+      placeId: $placeId
+      characteristic: $characteristic
+      guestId: $guestId
+      guestSecret: $guestSecret
+    ) {
       success
     }
   }

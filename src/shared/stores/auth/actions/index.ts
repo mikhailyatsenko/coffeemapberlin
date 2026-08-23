@@ -1,5 +1,7 @@
+import toast from 'react-hot-toast';
 import { client } from 'shared/config/apolloClient';
 import { CurrentUserDocument, LogoutDocument } from 'shared/generated/graphql';
+import { claimGuestReviews } from 'shared/lib/guest';
 // import { revalidatePlaces } from 'shared/stores/places';
 import { type User } from 'shared/types';
 
@@ -22,6 +24,10 @@ export const checkAuth = async () => {
     });
 
     useAuthStore.setState({ user: data.currentUser, isAuthLoading: false });
+
+    if (data.currentUser) {
+      void claimReviewsLeftAsGuest();
+    }
   } catch (error) {
     useAuthStore.setState({ ...INITIAL_STATE, isAuthLoading: false });
   }
@@ -29,4 +35,22 @@ export const checkAuth = async () => {
 
 export const setUser = (user: User | null) => {
   useAuthStore.setState((state) => ({ ...state, user, isAuthLoading: false }));
+
+  if (user) {
+    void claimReviewsLeftAsGuest();
+  }
+};
+
+/**
+ * Runs after any successful sign-in. Does nothing — and makes no request — when
+ * this browser never left a guest review.
+ */
+const claimReviewsLeftAsGuest = async () => {
+  const conflictedCount = await claimGuestReviews();
+
+  if (conflictedCount) {
+    // The account already had a review for those places, so the guest ones were
+    // left alone rather than overwriting anything.
+    toast(`${conflictedCount} guest review(s) could not be added to your account`);
+  }
 };

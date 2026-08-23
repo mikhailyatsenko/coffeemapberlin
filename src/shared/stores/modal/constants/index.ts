@@ -3,6 +3,7 @@ import { type ModalState } from '../types';
 export enum ModalContentVariant {
   LoginRequired = 'LoginRequired',
   GuestFavoritesInfo = 'GuestFavoritesInfo',
+  GuestReviewSubmitted = 'GuestReviewSubmitted',
   SignUpWithEmail = 'SignUpWithEmail',
   SignInWithEmail = 'SignInWithEmail',
   SuccessfulSignUp = 'SuccessfulSignUp',

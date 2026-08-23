@@ -5,8 +5,8 @@ import {
   PlaceDocument,
   type PlaceQuery,
 } from 'shared/generated/graphql';
+import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
-import { showLoginRequired } from 'shared/stores/modal';
 
 export const useToggleCharacteristic = (placeId: string) => {
   const { user } = useAuthStore();
@@ -56,13 +56,11 @@ export const useToggleCharacteristic = (placeId: string) => {
   };
 
   const toggleChar = async (characteristic: Characteristic) => {
-    if (!user) {
-      showLoginRequired();
-      return;
-    }
     try {
+      const guestCredentials = user ? {} : await ensureGuestIdentity();
+
       await toggleCharacteristic({
-        variables: { placeId, characteristic },
+        variables: { placeId, characteristic, ...guestCredentials },
       });
     } catch (error) {
       console.error('Error toggling favorite:', error);

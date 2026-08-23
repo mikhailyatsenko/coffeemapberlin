@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
+import { executeRecaptcha } from 'shared/lib/recaptcha';
 import { FormField } from 'shared/ui/FormField';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
@@ -24,14 +24,11 @@ export const SignUpWithEmail = ({
       email: '',
       password: '',
       repeatPassword: '',
-      recaptcha: '',
     },
   });
   const [isLoading, setIsLoading] = useState(false);
   const {
     handleSubmit,
-    setValue,
-    trigger,
     formState: { errors, isValid },
   } = form;
 
@@ -40,11 +37,15 @@ export const SignUpWithEmail = ({
   const signUpWithEmailHandler = async (data: SignUpWithEmailData) => {
     try {
       setIsLoading(true);
+      // v3 tokens are single use and expire in two minutes, so one is minted
+      // per submit rather than held in form state.
+      const captchaToken = await executeRecaptcha('register_user');
       await registerUser({
         variables: {
           email: data.email,
           displayName: data.displayName,
           password: data.password,
+          captchaToken,
         },
       });
       onFormSent();
@@ -55,11 +56,6 @@ export const SignUpWithEmail = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleCaptchaChange = (value: string | null) => {
-    setValue('recaptcha', value || '');
-    trigger('recaptcha');
   };
 
   return (
@@ -79,18 +75,6 @@ export const SignUpWithEmail = ({
             labelText="Repeat password"
             error={errors?.repeatPassword?.message}
           />
-          <div className={cls.recaptcha}>
-            <ReCAPTCHA
-              sitekey={
-                process.env.VITE_ENV === 'development'
-                  ? process.env.RE_CAPTCHA_KEY_DEV!
-                  : process.env.RE_CAPTCHA_KEY_PROD!
-              }
-              onChange={handleCaptchaChange}
-            />
-            {errors.recaptcha && <p>{errors.recaptcha.message}</p>}
-          </div>
-          {/* <FormField fieldName="recaptcha" type="hidden" error={errors.recaptcha?.message} value={''} /> */}
           <RegularButton type="submit" disabled={!isValid || isLoading}>
             Sign up
           </RegularButton>
