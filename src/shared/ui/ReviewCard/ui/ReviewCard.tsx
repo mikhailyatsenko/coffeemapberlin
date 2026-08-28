@@ -19,6 +19,8 @@ interface ReviewCardProps {
   rating?: number;
   reviewImages: number;
   isOwnReview?: boolean;
+  /** A guest owns their review and may edit it, but deleting needs an account. */
+  canDelete?: boolean;
   handleDeleteReview?: (id: string) => void;
   setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
@@ -37,6 +39,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   rating,
   reviewImages,
   isOwnReview,
+  canDelete,
   handleDeleteReview,
   setShowRateNow,
   createdAt,
@@ -112,7 +115,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         </div>
         <div className={cls.dateAndButtons}>
           <p className={cls.createdAt}>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</p>
-          {isOwnReview && handleDeleteReview && (
+          {isOwnReview && (
             <div className={cls.buttons}>
               <EditIcon
                 onClick={() => {
@@ -123,15 +126,17 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
                 title="Edit my feedback"
               />
 
-              <DeleteIcon
-                onClick={() => {
-                  const isConfirmed = window.confirm('Deleting review. Continue?');
-                  if (!isConfirmed) return;
-                  handleDeleteReview(reviewId);
-                }}
-                className={cls.buttonIcon}
-                title="Delete my review"
-              />
+              {canDelete && handleDeleteReview && (
+                <DeleteIcon
+                  onClick={() => {
+                    const isConfirmed = window.confirm('Deleting review. Continue?');
+                    if (!isConfirmed) return;
+                    handleDeleteReview(reviewId);
+                  }}
+                  className={cls.buttonIcon}
+                  title="Delete my review"
+                />
+              )}
             </div>
           )}
         </div>

@@ -11,8 +11,9 @@ export const GuestReviewSubmitted = ({ onClose, onSignUp }: GuestReviewSubmitted
     <div className={cls.GuestReviewSubmitted}>
       <h2>Thanks for your review!</h2>
       <p>
-        It&apos;s published anonymously. Create an account and we&apos;ll attach it to you — that&apos;s the only way to
-        edit or delete it later ✨
+        It&apos;s live and everyone can see it — just anonymously. Only this browser knows the review is yours: clear
+        its data or open the site elsewhere and the review stays up, but you&apos;ll lose the ability to edit it or put
+        your name on it. Create an account and it&apos;s yours for good ✨
       </p>
       <div className={cls.buttons}>
         <RegularButton onClick={onSignUp}>Create account</RegularButton>

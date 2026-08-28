@@ -6,56 +6,17 @@ import {
   type CreateGuestIdentityMutation,
 } from 'shared/generated/graphql';
 import { executeRecaptcha } from 'shared/lib/recaptcha';
+import { clearGuestIdentity, type GuestIdentity, readGuestIdentity, writeGuestIdentity } from './guestStorage';
 
 /**
  * Guest identity: the credential that lets an unauthenticated visitor leave a
  * review. It is issued once, after a captcha check, and then replaces the
  * captcha for every later guest action.
  *
- * The pair lives in localStorage, so clearing site data loses the reviews for
- * good — that is the trade for not asking a guest to register.
+ * The pair lives in localStorage. The review itself is public either way — what
+ * is lost with the storage is the proof that it belongs to this visitor, and
+ * with it the ability to edit the review or claim it under an account.
  */
-
-const GUEST_ID_KEY = '3welle:guestId';
-const GUEST_SECRET_KEY = '3welle:guestSecret';
-
-export interface GuestIdentity {
-  guestId: string;
-  guestSecret: string;
-}
-
-const readStorage = (key: string): string | null => {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    // Private mode and blocked site data both throw on access.
-    return null;
-  }
-};
-
-const writeStorage = (key: string, value: string): void => {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // Nothing to do: the guest simply gets a new identity next time.
-  }
-};
-
-export const readGuestIdentity = (): GuestIdentity | null => {
-  const guestId = readStorage(GUEST_ID_KEY);
-  const guestSecret = readStorage(GUEST_SECRET_KEY);
-
-  return guestId && guestSecret ? { guestId, guestSecret } : null;
-};
-
-export const clearGuestIdentity = (): void => {
-  try {
-    localStorage.removeItem(GUEST_ID_KEY);
-    localStorage.removeItem(GUEST_SECRET_KEY);
-  } catch {
-    // Ignore: an identity we cannot clear is one we also cannot read.
-  }
-};
 
 let pendingIdentity: Promise<GuestIdentity> | null = null;
 
@@ -82,10 +43,10 @@ export const ensureGuestIdentity = async (): Promise<GuestIdentity> => {
       throw new Error('Could not start a guest session');
     }
 
-    writeStorage(GUEST_ID_KEY, identity.guestId);
-    writeStorage(GUEST_SECRET_KEY, identity.guestSecret);
+    const minted = { guestId: identity.guestId, guestSecret: identity.guestSecret };
+    writeGuestIdentity(minted);
 
-    return { guestId: identity.guestId, guestSecret: identity.guestSecret };
+    return minted;
   })();
 
   try {

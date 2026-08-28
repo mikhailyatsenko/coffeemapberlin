@@ -98,7 +98,7 @@ export const RateNow = ({
         >
           <div className={cls.RateNow}>
             <RatePlaceWidget
-              handleDeleteMyRating={handleDeleteMyRating}
+              handleDeleteMyRating={user ? handleDeleteMyRating : undefined}
               userRating={currentUserReview?.userRating}
               reviewId={currentUserReview?.id}
               onSubmitRating={onSubmitRating}
