@@ -9,7 +9,8 @@ interface RatePlaceWidgetProps {
   userRating?: number | null;
   reviewId?: string;
   onSubmitRating: (rating: number) => void;
-  handleDeleteMyRating: () => void;
+  /** Omitted for guests: deleting a review needs an account. */
+  handleDeleteMyRating?: () => void;
 }
 
 export const RatePlaceWidget = ({
@@ -30,7 +31,7 @@ export const RatePlaceWidget = ({
             <div className={cls.currentUserRateNumber}>{userRating}</div>
           </div>
           <div className={cls.delEditIcons}>
-            <DeleteIcon className={cls.icon} onClick={handleDeleteMyRating} />
+            {handleDeleteMyRating && <DeleteIcon className={cls.icon} onClick={handleDeleteMyRating} />}
             <EditIcon
               className={cls.icon}
               onClick={() => {

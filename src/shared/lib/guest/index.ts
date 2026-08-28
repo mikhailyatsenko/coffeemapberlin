@@ -1,7 +1,2 @@
-export {
-  claimGuestReviews,
-  clearGuestIdentity,
-  ensureGuestIdentity,
-  readGuestIdentity,
-  type GuestIdentity,
-} from './guestIdentity';
+export { claimGuestReviews, ensureGuestIdentity } from './guestIdentity';
+export { clearGuestIdentity, readGuestIdentity, writeGuestIdentity, type GuestIdentity } from './guestStorage';
