@@ -4,6 +4,9 @@
   "version": "0.0.1",
   "homepage": "https://3welle.com",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
