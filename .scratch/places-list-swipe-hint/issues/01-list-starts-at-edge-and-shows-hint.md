@@ -4,13 +4,13 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] On mobile with no saved `scroll-list` position, the list starts at offset 0 and is never scrolled to 60px
-- [ ] About 1000ms after the list renders with Places, it scrolls smoothly to 80px (native `scrollTo` with `behavior: 'smooth'` on the list's scroll container), then about 400ms later smoothly back to 0
-- [ ] The hint plays at most once per mount
-- [ ] With a saved `scroll-list` position, that position is restored as before and no hint plays
-- [ ] With `prefers-reduced-motion: reduce`, no hint plays
-- [ ] On desktop (vertical list), nothing changes and no hint plays
-- [ ] Component tests for the places list at mobile width cover all of the above (vitest + Testing Library, fake timers, stubbed `matchMedia` and `scrollTo`; prior art: `SearchPlaces.test.tsx`)
-- [ ] Checked by eye on a phone or in mobile emulation: the hint looks smooth
+- [x] On mobile with no saved `scroll-list` position, the list starts at offset 0 and is never scrolled to 60px
+- [x] About 1000ms after the list renders with Places, it scrolls smoothly to 80px (native `scrollTo` with `behavior: 'smooth'` on the list's scroll container), then about 400ms later smoothly back to 0
+- [x] The hint plays at most once per mount
+- [x] With a saved `scroll-list` position, that position is restored as before and no hint plays
+- [x] With `prefers-reduced-motion: reduce`, no hint plays
+- [x] On desktop (vertical list), nothing changes and no hint plays
+- [x] Component tests for the places list at mobile width cover all of the above (vitest + Testing Library, fake timers, stubbed `matchMedia` and `scrollTo`; prior art: `SearchPlaces.test.tsx`)
+- [x] Checked by eye on a phone or in mobile emulation: the hint looks smooth

@@ -1,6 +1,6 @@
 # Swipe hint for the places list on mobile
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem Statement
 

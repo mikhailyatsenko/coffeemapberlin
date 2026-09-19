@@ -4,9 +4,9 @@
 
 **Blocked by:** 01 (Mobile places list starts at its left edge and shows a swipe hint once).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] If the list's scroll position is no longer 0 when the start delay ends, the hint is skipped
-- [ ] A `touchstart` or `pointerdown` on the list during the hint cancels the rest of it: no scroll back to 0
-- [ ] On unmount, all hint timers and listeners are cleaned up, and no `scrollTo` calls happen afterwards
-- [ ] Component tests at mobile width cover these three cases alongside the tests from 01
+- [x] If the list's scroll position is no longer 0 when the start delay ends, the hint is skipped
+- [x] A `touchstart` or `pointerdown` on the list during the hint cancels the rest of it: no scroll back to 0
+- [x] On unmount, all hint timers and listeners are cleaned up, and no `scrollTo` calls happen afterwards
+- [x] Component tests at mobile width cover these three cases alongside the tests from 01
