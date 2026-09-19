@@ -1,8 +1,8 @@
 import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
-import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 dotenv.config();
 
 // https://vitejs.dev/config/
@@ -20,6 +20,11 @@ export default defineConfig({
     'process.env': { ...process.env, VITE_ENV: process.env.VITE_ENV ?? 'development' },
   },
   base: '/',
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/shared/config/tests/setupTests.ts'],
+    css: { modules: { classNameStrategy: 'non-scoped' } },
+  },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
     esbuildOptions: {
