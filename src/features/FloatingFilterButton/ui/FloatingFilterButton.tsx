@@ -5,9 +5,10 @@ import cls from './FloatingFilterButton.module.scss';
 
 interface FloatingFilterButtonProps {
   hasActiveFilters: boolean;
+  inline?: boolean;
 }
 
-const FloatingFilterButtonComponent = ({ hasActiveFilters }: FloatingFilterButtonProps) => {
+const FloatingFilterButtonComponent = ({ hasActiveFilters, inline = false }: FloatingFilterButtonProps) => {
   const isOpen = useFiltersStore((state) => state.isFilterPanelOpen);
 
   const handleClick = () => {
@@ -16,7 +17,7 @@ const FloatingFilterButtonComponent = ({ hasActiveFilters }: FloatingFilterButto
 
   return (
     <button
-      className={`${cls.floatingButton} ${hasActiveFilters ? cls.active : ''}`}
+      className={`${cls.floatingButton} ${hasActiveFilters ? cls.active : ''} ${inline ? cls.inline : ''}`}
       onClick={handleClick}
       type="button"
       aria-label="Open filters"

@@ -4,6 +4,7 @@ import { MainMapLazy } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { FilterPanel } from 'features/FilterPanel';
 import { EmptyFilterResults } from 'features/FilterPanel/components/EmptyFilterResults';
+import { FloatingFilterButton } from 'features/FloatingFilterButton';
 import { EmptySearchResults, SearchPlaces, filterPlacesByName } from 'features/SearchPlaces';
 import { useGetPlacesQuery, useFilteredPlacesLazyQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
@@ -154,6 +155,10 @@ export const MainPage = () => {
     features: showEmptyResults ? [] : searchedPlaces,
   };
 
+  const filterButton = !showFavorites && (
+    <FloatingFilterButton hasActiveFilters={hasActiveFilters && filteredPlaces !== null} inline />
+  );
+
   if (hasError) {
     return <ErrorLoadingPlaces error={initialError || moreBatchError} />;
   }
@@ -162,11 +167,11 @@ export const MainPage = () => {
     <>
       <main>
         {(initialLoading || filteredLoading) && <Loader />}
+        <SearchPlaces resultsCount={searchedPlaces.length} addon={filterButton} />
         {showEmptyResults ? (
           <EmptyFilterResults onResetFilters={handleResetFilters} />
         ) : (
           <>
-            <SearchPlaces resultsCount={searchedPlaces.length} />
             {showEmptySearchResults && <EmptySearchResults query={searchQuery} />}
             <PlacesList places={searchedPlaces} />
           </>
@@ -178,7 +183,6 @@ export const MainPage = () => {
       <FloatingButtons
         showFavorites={showFavorites}
         favoritesQuantity={favoritePlaces.length || (!user ? guestFavIds.length : 0)}
-        hasActiveFilters={hasActiveFilters && filteredPlaces !== null}
       />
       <FilterPanel
         hasActiveFilters={hasActiveFilters}

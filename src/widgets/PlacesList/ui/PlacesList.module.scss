@@ -2,10 +2,10 @@
   position: fixed;
   z-index: 1;
   padding: 10px 10px 0;
-  top: 114px; /* below the search input */
+  top: 112px; /* below the search input */
   left: 0;
   width: 470px; /* 450 + 20 (left+right padding) */
-  height: calc(100vh - 114px);
+  height: calc(100vh - 112px);
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE и Edge */
 }

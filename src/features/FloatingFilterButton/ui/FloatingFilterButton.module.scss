@@ -38,6 +38,15 @@
     box-shadow: 0 0 4px var(--shadow-neon);
   }
 
+  /* Matches the height of the row it sits in (e.g. next to the search input) */
+  &.inline {
+    flex-shrink: 0;
+    width: auto;
+    height: 100%;
+    aspect-ratio: 1;
+    border: none;
+  }
+
   @media (max-width: 900px) {
     .icon {
       width: 20px;

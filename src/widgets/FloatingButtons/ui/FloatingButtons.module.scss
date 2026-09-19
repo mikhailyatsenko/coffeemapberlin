@@ -8,6 +8,10 @@
   align-items: center;
   z-index: 3;
   width: fit-content;
+
+  @media (max-width: 767px) {
+    top: 120px; /* below the search row */
+  }
 }
 
 .slideLeft {
