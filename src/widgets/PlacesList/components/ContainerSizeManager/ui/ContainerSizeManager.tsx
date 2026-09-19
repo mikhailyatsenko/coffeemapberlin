@@ -33,7 +33,11 @@ const ContainerSizeManagerComponent = ({ children }: ContainerSizeManagerProps) 
     };
   }, []);
 
-  return <div ref={containerRef}>{children(containerSize)}</div>;
+  return (
+    <div ref={containerRef} style={{ height: '100%' }}>
+      {children(containerSize)}
+    </div>
+  );
 };
 
 export const ContainerSizeManager = memo(ContainerSizeManagerComponent);

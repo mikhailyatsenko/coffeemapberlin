@@ -1,0 +1,141 @@
+.searchPlaces {
+  position: fixed;
+  z-index: 2;
+  top: 70px;
+  left: 10px;
+  width: 450px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 0 14px;
+  box-sizing: border-box;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow-md);
+  transition: border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--accent-primary);
+  }
+
+  @media (max-width: 767px) {
+    top: 70px;
+    left: 48px; /* keep clear of the map geolocate control */
+    width: auto;
+    right: 62px; /* keep clear of the floating buttons */
+    height: 38px;
+    padding-left: 10px;
+  }
+}
+
+.searchIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px; /* prevents zoom on iOS */
+  color: var(--text-primary);
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.resultsCount {
+  flex-shrink: 0;
+  font-size: 14px;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.clearButton {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--bg-hover);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--text-secondary);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}
+
+.emptyResults {
+  position: fixed;
+  z-index: 1;
+  top: 124px;
+  left: 10px;
+  width: 450px;
+  box-sizing: border-box;
+  padding: 16px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow-md);
+  text-align: center;
+
+  @media (max-width: 767px) {
+    top: unset;
+    bottom: 48px; /* above the map attribution */
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}
+
+.emptyText {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  word-break: break-word;
+
+  b {
+    color: var(--text-primary);
+  }
+}
+
+.emptyButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  background-color: var(--accent-primary);
+  color: var(--text-inverse);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--accent-primary-hover);
+  }
+}

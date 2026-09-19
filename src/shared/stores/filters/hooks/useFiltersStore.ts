@@ -6,4 +6,5 @@ export const useFiltersStore = create<FiltersState>(() => ({
   neighborhood: [],
   selectedTags: [],
   isFilterPanelOpen: false,
+  searchQuery: '',
 }));

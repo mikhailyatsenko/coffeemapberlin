@@ -4,6 +4,7 @@ import { MainMapLazy } from 'widgets/Map';
 import { PlacesList } from 'widgets/PlacesList';
 import { FilterPanel } from 'features/FilterPanel';
 import { EmptyFilterResults } from 'features/FilterPanel/components/EmptyFilterResults';
+import { EmptySearchResults, SearchPlaces, filterPlacesByName } from 'features/SearchPlaces';
 import { useGetPlacesQuery, useFilteredPlacesLazyQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
 import { useFiltersStore } from 'shared/stores/filters';
@@ -35,6 +36,7 @@ export const MainPage = () => {
   const minRating = useFiltersStore((state) => state.minRating);
   const neighborhood = useFiltersStore((state) => state.neighborhood);
   const selectedTags = useFiltersStore((state) => state.selectedTags);
+  const searchQuery = useFiltersStore((state) => state.searchQuery);
 
   // Check if filters are active
   const hasActiveFilters = useMemo(
@@ -138,12 +140,18 @@ export const MainPage = () => {
     return places;
   }, [showFavorites, filteredPlaces, places, user, favoritePlaces, guestFavIds, hasActiveFilters]);
 
+  const searchedPlaces = useMemo(
+    () => filterPlacesByName(placesToDisplay, searchQuery),
+    [placesToDisplay, searchQuery],
+  );
+
   // Check if we should show empty results message
   const showEmptyResults = hasActiveFilters && filteredPlaces !== null && filteredPlaces.length === 0;
+  const showEmptySearchResults = !showEmptyResults && places.length > 0 && searchedPlaces.length === 0;
 
   const placesGeo = {
     type: 'FeatureCollection' as const,
-    features: showEmptyResults ? [] : placesToDisplay ?? [],
+    features: showEmptyResults ? [] : searchedPlaces,
   };
 
   if (hasError) {
@@ -157,7 +165,11 @@ export const MainPage = () => {
         {showEmptyResults ? (
           <EmptyFilterResults onResetFilters={handleResetFilters} />
         ) : (
-          <PlacesList places={placesToDisplay} />
+          <>
+            <SearchPlaces resultsCount={searchedPlaces.length} />
+            {showEmptySearchResults && <EmptySearchResults query={searchQuery} />}
+            <PlacesList places={searchedPlaces} />
+          </>
         )}
         <Suspense fallback={null}>
           <MainMapLazy placesGeo={placesGeo} />

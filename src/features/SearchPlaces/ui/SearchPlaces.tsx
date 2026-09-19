@@ -1,0 +1,63 @@
+import { memo, type ChangeEvent, type KeyboardEvent } from 'react';
+import { setSearchQuery, useFiltersStore } from 'shared/stores/filters';
+import cls from './SearchPlaces.module.scss';
+
+interface SearchPlacesProps {
+  resultsCount: number;
+}
+
+const SearchPlacesComponent = ({ resultsCount }: SearchPlacesProps) => {
+  const searchQuery = useFiltersStore((state) => state.searchQuery);
+  const isSearching = searchQuery.trim().length > 0;
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      setSearchQuery('');
+    }
+  };
+
+  return (
+    <div className={cls.searchPlaces} role="search">
+      <svg className={cls.searchIcon} viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M20 20l-4-4" />
+      </svg>
+      <input
+        className={cls.input}
+        type="search"
+        value={searchQuery}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        placeholder="Search coffee shops by name"
+        aria-label="Search coffee shops by name"
+        autoComplete="off"
+        enterKeyHint="search"
+      />
+      {isSearching && (
+        <span className={cls.resultsCount} aria-live="polite">
+          {resultsCount} found
+        </span>
+      )}
+      {searchQuery && (
+        <button
+          className={cls.clearButton}
+          type="button"
+          onClick={() => {
+            setSearchQuery('');
+          }}
+          aria-label="Clear search"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+};
+
+export const SearchPlaces = memo(SearchPlacesComponent);

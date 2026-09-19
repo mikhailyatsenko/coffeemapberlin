@@ -36,6 +36,10 @@ export const setFilterPanelOpen = (isOpen: boolean) => {
   useFiltersStore.setState({ isFilterPanelOpen: isOpen });
 };
 
+export const setSearchQuery = (searchQuery: string) => {
+  useFiltersStore.setState({ searchQuery });
+};
+
 export const resetFilters = () => {
   useFiltersStore.setState({
     minRating: 0,

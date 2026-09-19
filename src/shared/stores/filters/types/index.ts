@@ -3,4 +3,5 @@ export interface FiltersState {
   neighborhood: string[];
   selectedTags: string[];
   isFilterPanelOpen: boolean;
+  searchQuery: string;
 }
