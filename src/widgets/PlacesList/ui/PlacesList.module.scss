@@ -14,7 +14,10 @@
   .placesListWrapper {
     padding: 0;
     top: unset;
-    bottom: calc(24px + var(--keyboard-inset, 0px)); /* lifted above the keyboard while searching */
+    bottom: max(
+      24px,
+      var(--keyboard-inset, 0px)
+    ); /* above the map attribution, or right on the keyboard when it is open */
     width: 100%;
     height: 150px;
   }
