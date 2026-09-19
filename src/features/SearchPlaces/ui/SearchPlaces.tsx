@@ -1,5 +1,6 @@
-import { memo, type ChangeEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { memo, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { setSearchQuery, useFiltersStore } from 'shared/stores/filters';
+import { useKeyboardInset } from '../lib/useKeyboardInset';
 import cls from './SearchPlaces.module.scss';
 
 interface SearchPlacesProps {
@@ -11,6 +12,10 @@ interface SearchPlacesProps {
 const SearchPlacesComponent = ({ resultsCount, addon }: SearchPlacesProps) => {
   const searchQuery = useFiltersStore((state) => state.searchQuery);
   const isSearching = searchQuery.trim().length > 0;
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Keep the results list visible above the mobile keyboard while typing
+  useKeyboardInset(isFocused);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -35,6 +40,12 @@ const SearchPlacesComponent = ({ resultsCount, addon }: SearchPlacesProps) => {
           value={searchQuery}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onFocus={() => {
+            setIsFocused(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+          }}
           placeholder="Search coffee shops by name"
           aria-label="Search coffee shops by name"
           autoComplete="off"

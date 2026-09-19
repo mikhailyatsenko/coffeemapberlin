@@ -121,7 +121,7 @@
 
   @media (max-width: 767px) {
     top: unset;
-    bottom: 48px; /* above the map attribution */
+    bottom: calc(48px + var(--keyboard-inset, 0px)); /* above the map attribution and keyboard */
     left: 12px;
     right: 12px;
     width: auto;
