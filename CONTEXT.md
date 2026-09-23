@@ -20,6 +20,10 @@ _Avoid_: Tag, additional info
 A Place a person has saved to come back to. Guests and Users have Favorites alike.
 _Avoid_: Bookmark, saved place, like
 
+**Place suggestion**:
+A proposal from a User or Guest to add a Place that is not yet on the map. Not shown on the map until approved.
+_Avoid_: Submission, request, new place
+
 **Inaccuracy report**:
 A message from anyone that a Place's details are wrong, such as its opening hours or address.
 _Avoid_: Complaint, feedback, correction
