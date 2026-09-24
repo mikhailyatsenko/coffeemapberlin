@@ -30,6 +30,9 @@ module.exports = {
     browser: true,
     es2021: true,
   },
+  // A disable that suppresses nothing never reaches a commit: lint-staged's --fix deletes it, and without --fix
+  // this warning fails --max-warnings=0.
+  reportUnusedDisableDirectives: true,
   extends: [
     'standard-with-typescript',
     'plugin:react/recommended',
@@ -52,6 +55,11 @@ module.exports = {
       parserOptions: {
         sourceType: 'script',
       },
+    },
+    // Triple-slash references are how a .d.ts pulls in ambient types.
+    {
+      files: ['src/**/*.d.ts'],
+      rules: { '@typescript-eslint/triple-slash-reference': 'off' },
     },
     {
       files: ['src/shared/generated/**/*'],
@@ -162,8 +170,10 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.json',
   },
-  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'boundaries'],
+  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'boundaries', '@eslint-community/eslint-comments'],
   rules: {
+    '@eslint-community/eslint-comments/require-description': 'error',
+    '@eslint-community/eslint-comments/no-unlimited-disable': 'error',
     'no-restricted-syntax': ['warn', ...globalRestrictedSyntax],
     'boundaries/element-types': [
       'error',

@@ -6,14 +6,14 @@ See [spec](../spec.md): "ESLint configuration" (disable hygiene) and "One-off fi
 
 **Blocked by:** 07 (Lint test harness and layer boundaries through boundaries) and 09 (No data access in presentational layers). Their disables must already comply.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The plugin is added as a devDependency, with `require-description` and `no-unlimited-disable` turned on.
-- [ ] `reportUnusedDisableDirectives` is on.
-- [ ] The test covers:
+- [x] The plugin is added as a devDependency, with `require-description` and `no-unlimited-disable` turned on.
+- [x] `reportUnusedDisableDirectives` is on.
+- [x] The test covers:
   - a disable without a description, which is reported;
   - a bare `eslint-disable-next-line`, which is reported;
   - an unused disable, which is reported;
   - a named, described disable that suppresses a real violation, which passes.
-- [ ] Every existing disable in `src/` passes the new rules.
-- [ ] `npm run lint:ts` reports 0 errors, and `npm test` passes.
+- [x] Every existing disable in `src/` passes the new rules.
+- [x] `npm run lint:ts` reports 0 errors, and `npm test` passes.

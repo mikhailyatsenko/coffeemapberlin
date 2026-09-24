@@ -17,7 +17,7 @@ import { passwordValidationSchema, personalDataValidationSchema } from '../lib/v
 import cls from './AccountSettings.module.scss';
 
 export const AccountSettings = () => {
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const [isPendingEmailModalOpen, setIsPendingEmailModalOpen] = useState(false);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
@@ -56,7 +56,7 @@ export const AccountSettings = () => {
         email: user.email,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed the form once on mount; re-running on user change would wipe unsaved edits
   }, []);
 
   if (!user) {

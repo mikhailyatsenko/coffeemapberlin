@@ -13,7 +13,7 @@ export const useWithGoogle = ({ setError }: UseWithGoogleProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const continueWithGoogle = useGoogleLogin({
     flow: 'auth-code',
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises -- useGoogleLogin types onSuccess as sync; the promise is safe to drop because the handler catches its own errors
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       try {

@@ -40,9 +40,12 @@ const messagesFor = (file: string) => {
   return messages;
 };
 
+// A null rule id is either a parse error or a problem with an eslint-disable comment itself.
+const ruleIdOf = (message: Linter.LintMessage) => message.ruleId ?? (message.fatal ? 'fatal' : 'directive');
+
 const ruleIdsFor = (file: string) =>
   messagesFor(file)
-    .map((message) => message.ruleId ?? 'fatal')
+    .map(ruleIdOf)
     .sort((a, b) => a.localeCompare(b));
 
 describe('layer order', () => {
@@ -163,7 +166,7 @@ describe('components/X segments', () => {
 // Severity per rule id, so a test can tell a `warn` rule from an `error` one.
 const ruleIdsWithSeverityFor = (file: string) =>
   messagesFor(file)
-    .map((message) => `${message.ruleId ?? 'fatal'}:${message.severity === 1 ? 'warn' : 'error'}`)
+    .map((message) => `${ruleIdOf(message)}:${message.severity === 1 ? 'warn' : 'error'}`)
     .sort((a, b) => a.localeCompare(b));
 
 const WHOLE_STORE = 'Whole-store subscription';
@@ -238,5 +241,30 @@ describe('data access in presentational layers', () => {
 
   it("allows a generated hook in a feature's ui/", () => {
     expect(ruleIdsFor('src/features/Search/ui/importsGeneratedHook.ts')).toEqual([]);
+  });
+});
+
+describe('eslint-disable hygiene', () => {
+  const DISABLES = 'src/shared/lib/disables';
+
+  it('rejects a disable without a description', () => {
+    expect(ruleIdsWithSeverityFor(`${DISABLES}/withoutDescription.ts`)).toEqual([
+      '@eslint-community/eslint-comments/require-description:error',
+    ]);
+  });
+
+  it('rejects a disable that names no rule', () => {
+    expect(ruleIdsWithSeverityFor(`${DISABLES}/unlimited.ts`)).toEqual([
+      '@eslint-community/eslint-comments/no-unlimited-disable:error',
+    ]);
+  });
+
+  it('reports a disable that suppresses nothing', () => {
+    // Why warn is enough: see reportUnusedDisableDirectives in .eslintrc.cjs.
+    expect(ruleIdsWithSeverityFor(`${DISABLES}/unused.ts`)).toEqual(['directive:warn']);
+  });
+
+  it('allows a named, described disable that suppresses a real violation', () => {
+    expect(ruleIdsFor(`${DISABLES}/namedAndDescribed.ts`)).toEqual([]);
   });
 });

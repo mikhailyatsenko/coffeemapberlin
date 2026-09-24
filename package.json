@@ -47,6 +47,7 @@
     "zustand": "^5.0.4"
   },
   "devDependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
     "@feature-sliced/eslint-config": "^0.1.1",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/typescript": "^4.1.6",
