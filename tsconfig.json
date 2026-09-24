@@ -30,8 +30,12 @@
   },
   "include": [
     "src",
+    "lint-tests",
     "./.eslintrc.cjs",
     "./codegen.ts"
+  ],
+  "exclude": [
+    "lint-tests/fixtures"
   ],
   "references": [
     {

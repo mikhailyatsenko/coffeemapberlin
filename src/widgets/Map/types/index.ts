@@ -1,4 +1,4 @@
-import { type PlacesDataWithGeo } from 'features/LoadMap/types';
+import { type PlacesDataWithGeo } from 'shared/types';
 
 export interface MainMapProps {
   placesGeo: PlacesDataWithGeo;

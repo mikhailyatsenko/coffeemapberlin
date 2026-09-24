@@ -1,3 +1,5 @@
+import { type GetPlacesQuery } from 'shared/generated/graphql';
+
 export interface CharacteristicData {
   pressed: boolean;
   count: number;
@@ -36,4 +38,9 @@ export interface User {
   avatar?: string;
   createdAt?: Date;
   isGoogleUserUserWithoutPassword: boolean;
+}
+
+export interface PlacesDataWithGeo {
+  type: 'FeatureCollection';
+  features: GetPlacesQuery['places']['places'];
 }

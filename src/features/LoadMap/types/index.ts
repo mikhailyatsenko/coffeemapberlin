@@ -1,9 +1,5 @@
-import { type GetPlacesQuery } from 'shared/generated/graphql';
+import { type PlacesDataWithGeo } from 'shared/types';
 
-export interface PlacesDataWithGeo {
-  type: 'FeatureCollection';
-  features: GetPlacesQuery['places']['places'];
-}
 export interface LoadMapProps {
   placesGeo: PlacesDataWithGeo;
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { type SubmitHandler } from 'react-hook-form';
-import { ContactForm, type ContactFormData } from 'entities/ContactForm/ui/ContactForm';
+import { ContactForm, type ContactFormData } from 'entities/ContactForm';
 import { ErrorResultSendForm } from 'entities/ErrorResultSendForm';
 import { SuccessResultSendForm } from 'entities/SuccessResultSendForm';
 import { useContactFormMutation } from 'shared/generated/graphql';

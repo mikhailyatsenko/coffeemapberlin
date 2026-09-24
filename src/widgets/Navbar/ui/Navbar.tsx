@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, generatePath } from 'react-router-dom';
-// eslint-disable-next-line boundaries/element-types
-import { AuthModal } from 'widgets/AuthModal'; // TODO: fix import according to feature-sliced design
+// eslint-disable-next-line boundaries/element-types -- where AuthModal lives is a design question, see .scratch/architecture-debt/issues/01-authmodal-placement.md
+import { AuthModal } from 'widgets/AuthModal';
 import { AuthIndicator } from 'features/AuthIndicator';
 import { NeighborhoodDropdown } from 'features/NeighborhoodDropdown';
 import { RoutePaths } from 'shared/constants';
