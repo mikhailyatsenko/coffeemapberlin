@@ -1,6 +1,6 @@
 # Spec: FSD and SOLID rules for agents
 
-Status: ready-for-agent
+Status: resolved
 Map: [FSD and SOLID rules for agents](map.md)
 
 ## Problem Statement
