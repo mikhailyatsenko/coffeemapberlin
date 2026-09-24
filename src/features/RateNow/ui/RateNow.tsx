@@ -8,6 +8,7 @@ import {
   PlaceReviewsDocument,
   useAddRatingMutation,
 } from 'shared/generated/graphql';
+import { trackEvent } from 'shared/lib/analytics';
 import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
@@ -27,7 +28,7 @@ export const RateNow = ({
   ...props
 }: RateNowProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSavingRating, setIsSavingRating] = useState(false);
   const [isRatingSaved, setIsRatingSaved] = useState(false);
@@ -91,13 +92,11 @@ export const RateNow = ({
   const handleRatePlaceClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    if (process.env.VITE_ENV !== 'development') {
-      window.gtag('event', 'rate_place_click', {
-        item_id: placeId,
-        item_name: 'click on rate place',
-        category: 'engagement',
-      });
-    }
+    trackEvent('rate_place_click', {
+      item_id: placeId,
+      item_name: 'click on rate place',
+      category: 'engagement',
+    });
     setSaveError(null);
     setIsRatingSaved(false);
     setShowRateNow(true);
