@@ -19,6 +19,14 @@
   }
 }
 
+.confirmation {
+  font-size: 14px;
+  padding: 8px 12px;
+  background-color: var(--success-light);
+  border: 1px solid var(--success);
+  border-radius: 4px;
+}
+
 .error {
   color: var(--error);
   font-size: 14px;

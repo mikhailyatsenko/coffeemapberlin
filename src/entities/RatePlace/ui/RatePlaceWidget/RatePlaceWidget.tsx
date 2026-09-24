@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import DeleteIcon from 'shared/assets/delete-icon.svg?react';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
+import { Spinner } from 'shared/ui/Loader';
 import BeanIcon from 'shared/ui/RatingWidget/ui/BeanIcon';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import cls from './RatePlaceWidget.module.scss';
@@ -9,6 +10,8 @@ interface RatePlaceWidgetProps {
   userRating?: number | null;
   reviewId?: string;
   onSubmitRating: (rating: number) => void;
+  /** While true the beans ignore taps and a spinner shows beside them. */
+  isSaving?: boolean;
   /** Omitted for guests: deleting a review needs an account. */
   handleDeleteMyRating?: () => void;
 }
@@ -18,6 +21,7 @@ export const RatePlaceWidget = ({
   userRating,
   handleDeleteMyRating,
   reviewId,
+  isSaving = false,
 }: RatePlaceWidgetProps) => {
   const [isEditRating, setIsEditRating] = useState(false);
 
@@ -43,7 +47,15 @@ export const RatePlaceWidget = ({
       ) : (
         <>
           <h3>Rate this place</h3>
-          <RatingWidget isClickable={true} handleRating={onSubmitRating} />
+          <div className={cls.beans}>
+            <RatingWidget isClickable={true} disabled={isSaving} handleRating={onSubmitRating} />
+            {isSaving && (
+              <span className={cls.saving}>
+                <Spinner size="sm" />
+                Saving…
+              </span>
+            )}
+          </div>
         </>
       )}
     </div>

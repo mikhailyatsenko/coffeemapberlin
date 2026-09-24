@@ -11,7 +11,6 @@ import {
 import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
-import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 
@@ -30,14 +29,21 @@ export const RateNow = ({
   const { handleDeleteReview } = useDeleteReview(placeId);
   const { user } = useAuthStore();
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [addRating, { loading: loadingRating }] = useAddRatingMutation({
+  const [isSavingRating, setIsSavingRating] = useState(false);
+  const [isRatingSaved, setIsRatingSaved] = useState(false);
+  // Bumped after each save so RatePlaceWidget leaves edit mode and shows the new Rating.
+  const [ratingWidgetKey, setRatingWidgetKey] = useState(0);
+  const [addRating] = useAddRatingMutation({
     onCompleted() {
       revalidatePlaces();
     },
   });
 
   const onSubmitRating = async (rating: number) => {
+    if (isSavingRating) return;
+    setIsSavingRating(true);
     setSaveError(null);
+    setIsRatingSaved(false);
     try {
       // Guests rate too; the captcha runs once, when the identity is issued.
       const guestCredentials = user ? {} : await ensureGuestIdentity();
@@ -50,9 +56,13 @@ export const RateNow = ({
         ],
         awaitRefetchQueries: true,
       });
+      setIsRatingSaved(true);
+      setRatingWidgetKey((key) => key + 1);
     } catch (error) {
       console.error('Error adding rating:', error);
       setSaveError(getSaveErrorMessage(error));
+    } finally {
+      setIsSavingRating(false);
     }
   };
 
@@ -69,12 +79,11 @@ export const RateNow = ({
 
   const currentUserReview = reviews.find((review) => review.isOwnReview);
 
-  if (loadingRating) return <Loader />;
-
   const handleDeleteMyRating = () => {
     if (currentUserReview) {
       const isConfirmed = window.confirm('Deleting your rating. Continue?');
       if (!isConfirmed) return;
+      setIsRatingSaved(false);
       handleDeleteReview(currentUserReview?.id, 'deleteRating');
     }
   };
@@ -90,6 +99,7 @@ export const RateNow = ({
       });
     }
     setSaveError(null);
+    setIsRatingSaved(false);
     setShowRateNow(true);
   };
 
@@ -122,11 +132,18 @@ export const RateNow = ({
         >
           <div className={cls.RateNow}>
             <RatePlaceWidget
+              key={ratingWidgetKey}
+              isSaving={isSavingRating}
               handleDeleteMyRating={user ? handleDeleteMyRating : undefined}
               userRating={currentUserReview?.userRating}
               reviewId={currentUserReview?.id}
               onSubmitRating={onSubmitRating}
             />
+            {isRatingSaved && (
+              <p className={cls.confirmation} role="status">
+                Thanks for your rating! Anything that stood out? Mark it below.
+              </p>
+            )}
             {saveError && (
               <p className={cls.error} role="alert">
                 {saveError}

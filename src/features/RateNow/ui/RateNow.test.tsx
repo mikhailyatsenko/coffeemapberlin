@@ -8,6 +8,7 @@ import {
   Characteristic,
   PlaceDocument,
   type PlaceQuery,
+  PlaceReviewsDocument,
   ToggleCharacteristicDocument,
   usePlaceQuery,
 } from 'shared/generated/graphql';
@@ -207,5 +208,98 @@ describe('RateNow failures', () => {
     await waitFor(() => {
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
+  });
+});
+
+const addRatingMock = ({
+  onCall = () => {},
+  delay = 0,
+}: { onCall?: () => void; delay?: number } = {}): MockedResponse => ({
+  request: { query: AddRatingDocument, variables: { placeId, rating: 4, ...guest } },
+  delay,
+  result: () => {
+    onCall();
+    return {
+      data: {
+        addRating: {
+          __typename: 'AddRatingResult',
+          averageRating: 4,
+          ratingCount: 1,
+          reviewId: 'review-1',
+          userRating: 4,
+        },
+      },
+    };
+  },
+});
+
+const refetchMocks: MockedResponse[] = [
+  { request: { query: PlaceDocument, variables: { placeId } }, result: { data: place } },
+  {
+    request: { query: PlaceReviewsDocument, variables: { placeId } },
+    result: { data: { placeReviews: { __typename: 'PlaceReviews', id: placeId, reviews: [] } } },
+  },
+];
+
+describe('RateNow while saving a Rating', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.mocked(ensureGuestIdentity).mockResolvedValue(guest);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('keeps the modal open and shows the saving state inside it', async () => {
+    const { container } = renderRateNow([addRatingMock({ delay: 50 }), ...refetchMocks]);
+
+    clickBean(container, 4);
+
+    expect(await screen.findByText(/saving/i)).toBeInTheDocument();
+    expect(screen.getByText('Rate this place')).toBeInTheDocument();
+    expect(screen.getByText('What made your visit special?')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /rate place/i })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByText(/saving/i)).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('What made your visit special?')).toBeInTheDocument();
+  });
+
+  it('sends one mutation however many beans are tapped during a save', async () => {
+    let resolveIdentity: (value: typeof guest) => void = () => {};
+    vi.mocked(ensureGuestIdentity).mockReturnValue(
+      new Promise((resolve) => {
+        resolveIdentity = resolve;
+      }),
+    );
+    const addRating = vi.fn();
+    const { container } = renderRateNow([
+      addRatingMock({ onCall: addRating }),
+      addRatingMock({ onCall: addRating }),
+      ...refetchMocks,
+    ]);
+
+    clickBean(container, 4);
+    clickBean(container, 4);
+    resolveIdentity(guest);
+    await screen.findByText(/saving/i);
+    clickBean(container, 4);
+
+    await screen.findByRole('status');
+    expect(addRating).toHaveBeenCalledTimes(1);
+    expect(ensureGuestIdentity).toHaveBeenCalledTimes(1);
+  });
+
+  it('thanks the Guest and invites them to mark Characteristics once saved', async () => {
+    const { container } = renderRateNow([addRatingMock(), ...refetchMocks]);
+
+    clickBean(container, 4);
+
+    const confirmation = await screen.findByRole('status');
+    expect(confirmation).toHaveTextContent(/thank/i);
+    expect(confirmation).toHaveTextContent(/below/i);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

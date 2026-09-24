@@ -4,6 +4,9 @@
   align-items: center;
   row-gap: 1px;
   padding: 4px 0;
+  &.disabled {
+    opacity: 0.5;
+  }
 }
 
 .starWrapper {

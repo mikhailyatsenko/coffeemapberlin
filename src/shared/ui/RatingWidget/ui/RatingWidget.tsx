@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useState } from 'react';
 import BeanIcon from './BeanIcon';
 import cls from './RatingWidget.module.scss';
@@ -6,13 +7,16 @@ interface RatingWidgetProps {
   rating?: number | null;
   handleRating?: (rating: number) => void;
   isClickable: boolean;
+  /** Keeps the clickable look but ignores hover and clicks, e.g. while a Rating is saving. */
+  disabled?: boolean;
   userRating?: number;
 }
 
-const RatingWidget: React.FC<RatingWidgetProps> = ({ rating, handleRating, isClickable }) => {
+const RatingWidget: React.FC<RatingWidgetProps> = ({ rating, handleRating, isClickable, disabled = false }) => {
   const [hoverRating, setHoverRating] = useState<number>(0);
 
   const handleMouseEnter = (index: number) => {
+    if (disabled) return;
     setHoverRating(index + 1);
   };
 
@@ -21,13 +25,13 @@ const RatingWidget: React.FC<RatingWidgetProps> = ({ rating, handleRating, isCli
   };
 
   const handleClick = (index: number) => {
-    if (handleRating) {
+    if (handleRating && !disabled) {
       handleRating(index + 1);
     }
   };
 
   return (
-    <div className={cls.rating}>
+    <div className={clsx(cls.rating, disabled && cls.disabled)}>
       {[...Array(5)].map((_, index) => {
         const fillValue = isClickable ? hoverRating : rating ?? 0;
         const filled = index < Math.floor(fillValue);
@@ -45,7 +49,7 @@ const RatingWidget: React.FC<RatingWidgetProps> = ({ rating, handleRating, isCli
               onClick: () => {
                 handleClick(index);
               },
-              style: { cursor: 'pointer' },
+              style: { cursor: disabled ? 'default' : 'pointer' },
             })}
           >
             <BeanIcon clickable={isClickable} filled={filled} />

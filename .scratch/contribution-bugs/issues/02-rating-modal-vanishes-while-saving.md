@@ -1,6 +1,6 @@
 # The Rating modal disappears while a Rating is saving
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem
 
@@ -17,6 +17,6 @@ Tapping a bean makes the whole Rating modal disappear and a loader take its plac
 
 ## Acceptance criteria
 
-- [ ] The modal never unmounts during a Rating save
-- [ ] Repeated taps during a save don't send a second mutation
-- [ ] A successful save shows a visible confirmation in the modal
+- [x] The modal never unmounts during a Rating save
+- [x] Repeated taps during a save don't send a second mutation
+- [x] A successful save shows a visible confirmation in the modal
