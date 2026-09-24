@@ -22,7 +22,6 @@ interface ReviewCardProps {
   /** A guest owns their review and may edit it, but deleting needs an account. */
   canDelete?: boolean;
   handleDeleteReview?: (id: string) => void;
-  setShowRateNow: React.Dispatch<React.SetStateAction<boolean>>;
   createdAt: string;
   onEditReview?: (reviewText: string) => void;
   isGoogleReview: boolean;
@@ -41,7 +40,6 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
   isOwnReview,
   canDelete,
   handleDeleteReview,
-  setShowRateNow,
   createdAt,
   onEditReview,
   characteristics,
@@ -119,8 +117,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
             <div className={cls.buttons}>
               <EditIcon
                 onClick={() => {
-                  if (onEditReview) onEditReview(reviewText || '');
-                  else setShowRateNow(true);
+                  onEditReview?.(reviewText || '');
                 }}
                 className={cls.buttonIcon}
                 title="Edit my feedback"

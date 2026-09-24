@@ -1,6 +1,6 @@
 # "Be first to write one" does nothing
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem
 
@@ -16,6 +16,6 @@ On a Place with no Reviews, the Reviews block says "There are no reviews yet. Be
 
 ## Acceptance criteria
 
-- [ ] Activating "write one" by tap, click or keyboard focuses the Review text field
-- [ ] The prompt is hidden when there's no form to go to
-- [ ] The now-unused `setShowRateNow`/`showRateNow` props are removed from `ReviewList` if nothing else needs them
+- [x] Activating "write one" by tap, click or keyboard focuses the Review text field
+- [x] The prompt is hidden when there's no form to go to
+- [x] The now-unused `setShowRateNow`/`showRateNow` props are removed from `ReviewList` if nothing else needs them

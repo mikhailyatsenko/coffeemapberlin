@@ -11,29 +11,24 @@ const ReviewListComponent = ({
   placeId,
   isCompactView,
   setCompactView,
-  setShowRateNow = () => {},
-  showRateNow = false,
   onEditReview,
+  onWriteReview,
 }: ReviewListProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
   const { user } = useAuthStore();
-
-  if (showRateNow) return null;
 
   if (reviews.length === 0)
     return (
       <div className={cls.noReviews}>
         <p>There are no reviews yet.</p>
-        <p>
-          Be first to{' '}
-          <span
-            onClick={() => {
-              setShowRateNow(true);
-            }}
-          >
-            write one
-          </span>
-        </p>
+        {onWriteReview && (
+          <p>
+            Be first to{' '}
+            <button type="button" className={cls.writeOne} onClick={onWriteReview}>
+              write one
+            </button>
+          </p>
+        )}
       </div>
     );
 
@@ -65,7 +60,6 @@ const ReviewListComponent = ({
             isOwnReview={review.isOwnReview}
             canDelete={Boolean(user)}
             userAvatar={review.userAvatar ?? undefined}
-            setShowRateNow={setShowRateNow}
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}
             reviewImages={review.reviewImages}
@@ -82,6 +76,6 @@ export const ReviewList = memo(
   ReviewListComponent,
   (prevProps, nextProps) =>
     prevProps.reviews === nextProps.reviews &&
-    prevProps.showRateNow === nextProps.showRateNow &&
+    prevProps.onWriteReview === nextProps.onWriteReview &&
     prevProps.isCompactView === nextProps.isCompactView,
 );

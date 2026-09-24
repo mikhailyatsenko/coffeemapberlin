@@ -24,26 +24,36 @@ export const ReviewsBlock: React.FC<ReviewsBlockProps> = ({
   onSubmitted,
   onCancel,
   onEditReview,
-}) => (
-  <div className={cls.block}>
-    <h2 className={cls.blockTitle}>Reviews</h2>
+}) => {
+  const isFormShown = isEditingReview || !ownReviewHasText;
 
-    {(isEditingReview || !ownReviewHasText) && (
-      <AddTextReviewForm
-        id="review-form"
+  // focus() also scrolls the field into view.
+  const focusReviewText = () => {
+    document.querySelector<HTMLTextAreaElement>('#review-form textarea')?.focus();
+  };
+
+  return (
+    <div className={cls.block}>
+      <h2 className={cls.blockTitle}>Reviews</h2>
+
+      {isFormShown && (
+        <AddTextReviewForm
+          id="review-form"
+          placeId={placeId}
+          initialValue={isEditingReview ? editInitialText : ''}
+          onSubmitted={onSubmitted}
+          onCancel={onCancel}
+        />
+      )}
+
+      <ReviewList
+        reviews={displayedReviews}
         placeId={placeId}
-        initialValue={isEditingReview ? editInitialText : ''}
-        onSubmitted={onSubmitted}
-        onCancel={onCancel}
+        isCompactView={false}
+        setCompactView={() => {}}
+        onEditReview={onEditReview}
+        onWriteReview={isFormShown ? focusReviewText : undefined}
       />
-    )}
-
-    <ReviewList
-      reviews={displayedReviews}
-      placeId={placeId}
-      isCompactView={false}
-      setCompactView={() => {}}
-      onEditReview={onEditReview}
-    />
-  </div>
-);
+    </div>
+  );
+};
