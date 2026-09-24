@@ -48,7 +48,7 @@ export const RatePlaceWidget = ({
         <>
           <h3>Rate this place</h3>
           <div className={cls.beans}>
-            <RatingWidget isClickable={true} disabled={isSaving} handleRating={onSubmitRating} />
+            <RatingWidget isClickable={true} rating={userRating} disabled={isSaving} handleRating={onSubmitRating} />
             {isSaving && (
               <span className={cls.saving}>
                 <Spinner size="sm" />

@@ -1,6 +1,6 @@
 # Rating beans can't be used by keyboard and give no preview on touch
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem
 
@@ -14,6 +14,6 @@ The clickable beans in the Rating modal are plain `<span>`s with mouse handlers 
 
 ## Acceptance criteria
 
-- [ ] Tab reaches the Rating control; arrow keys move and Enter/Space choose a value
-- [ ] Screen readers announce the control and the current value
-- [ ] Display-only beans are unchanged
+- [x] Tab reaches the Rating control; arrow keys move and Enter/Space choose a value
+- [x] Screen readers announce the control and the current value
+- [x] Display-only beans are unchanged
