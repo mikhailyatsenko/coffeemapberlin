@@ -23,6 +23,12 @@ export interface OneTapRatingProps {
   placeId: string;
   /** The person's current Rating for the Place, if any. */
   rating?: number | null;
+  /** Called on a tap that starts a save, before the server answers. */
+  onRate?: (rating: number) => void;
   /** Called once the server confirms a Rating. */
   onSaved?: (rating: number) => void;
+  /** Called when a save fails; the beans are back on the previous Rating and show the message. */
+  onFailed?: () => void;
 }
+
+export type RateBlockProps = Pick<OneTapRatingProps, 'placeId' | 'rating'>;

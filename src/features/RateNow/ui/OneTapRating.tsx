@@ -7,8 +7,8 @@ import cls from './OneTapRating.module.scss';
 export type { OneTapRatingProps };
 
 /** Beans that save a Rating on one tap, for Users and Guests alike. */
-export const OneTapRating = ({ placeId, rating, onSaved }: OneTapRatingProps) => {
-  const { shownRating, isSaving, error, saveRating } = useOneTapRating({ placeId, rating, onSaved });
+export const OneTapRating = (props: OneTapRatingProps) => {
+  const { shownRating, isSaving, error, saveRating } = useOneTapRating(props);
 
   return (
     <div className={cls.OneTapRating}>

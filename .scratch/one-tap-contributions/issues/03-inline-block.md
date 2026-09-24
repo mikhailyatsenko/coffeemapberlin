@@ -4,11 +4,12 @@
 
 **Blocked by:** 02 (One-tap Rating as its own component).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The block renders on the Place page in the position above, on desktop and on a phone-width viewport
-- [ ] Rating from the block shows "Thanks!" and "Your rating: N · change" at once; a failure shows the message and returns to the beans
-- [ ] "change" reopens the beans with the current Rating selected; saving a new one sends `rating_saved` with `is_change: true`
-- [ ] With an existing own Rating the block opens in the "Your rating: N · change" state, without "Thanks!"
-- [ ] `rate_block_view` fires once per page view when the block enters the viewport, with `has_rating` (tested with a mocked `IntersectionObserver`)
-- [ ] The confirmation and errors are announced (status / alert roles)
+- [x] The block renders on the Place page in the position above, on desktop and on a phone-width viewport
+  - Placed in `DetailedPlace` between the header and the layout; checked from code and CSS only, not yet by hand in a browser (no local backend at the time)
+- [x] Rating from the block shows "Thanks!" and "Your rating: N · change" at once; a failure shows the message and returns to the beans
+- [x] "change" reopens the beans with the current Rating selected; saving a new one sends `rating_saved` with `is_change: true`
+- [x] With an existing own Rating the block opens in the "Your rating: N · change" state, without "Thanks!"
+- [x] `rate_block_view` fires once per page view when the block enters the viewport, with `has_rating` (tested with a mocked `IntersectionObserver`)
+- [x] The confirmation and errors are announced (status / alert roles)

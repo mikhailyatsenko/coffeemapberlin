@@ -5,6 +5,7 @@ import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
 
+import { getActor } from '../lib/getActor';
 import { getSaveErrorMessage } from '../lib/getSaveErrorMessage';
 import { getSaveErrorReason } from '../lib/getSaveErrorReason';
 import { type OneTapRatingProps } from '../types';
@@ -13,7 +14,7 @@ import { type OneTapRatingProps } from '../types';
  * Saves a Rating on one tap. The tapped Rating shows at once; a failure puts the
  * previous one back and returns a message. Needs no Place page query in the cache.
  */
-export const useOneTapRating = ({ placeId, rating, onSaved }: OneTapRatingProps) => {
+export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: OneTapRatingProps) => {
   const user = useAuthStore((s) => s.user);
   const [pendingRating, setPendingRating] = useState<number | null>(null);
   const [savedRating, setSavedRating] = useState<number | null>(null);
@@ -38,7 +39,8 @@ export const useOneTapRating = ({ placeId, rating, onSaved }: OneTapRatingProps)
     if (isSavingRef.current) return;
     isSavingRef.current = true;
     setPendingRating(newRating);
-    const actor = user ? 'user' : 'guest';
+    onRate?.(newRating);
+    const actor = getActor(user);
     try {
       // Guests rate too; the captcha runs once, when the identity is issued.
       const guestCredentials = user ? {} : await ensureGuestIdentity();
@@ -69,6 +71,7 @@ export const useOneTapRating = ({ placeId, rating, onSaved }: OneTapRatingProps)
         kind: 'rating',
         reason: getSaveErrorReason(saveError),
       });
+      onFailed?.();
     } finally {
       setPendingRating(null);
       isSavingRef.current = false;

@@ -1,1 +1,1 @@
-export { OneTapRating, type OneTapRatingProps, RateNow } from './ui';
+export { OneTapRating, type OneTapRatingProps, RateBlock, type RateBlockProps, RateNow } from './ui';

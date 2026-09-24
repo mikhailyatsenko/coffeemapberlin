@@ -2,7 +2,7 @@
 import React, { useCallback, useMemo, useState, memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { RateNow } from 'features/RateNow';
+import { RateBlock, RateNow } from 'features/RateNow';
 import { SendReportInaccuracyForm } from 'features/SendReportInaccuracyForm';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery } from 'shared/generated/graphql';
@@ -64,8 +64,13 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     return allTags;
   }, [placeData?.place?.properties?.additionalInfo]);
 
-  const { data: placeReviewsData } = usePlaceReviews(placeData?.place?.properties ? placeId : null);
+  const { data: placeReviewsData, error: placeReviewsError } = usePlaceReviews(
+    placeData?.place?.properties ? placeId : null,
+  );
   const ownReview = placeReviewsData?.placeReviews.ownReview;
+  // Latched: a later refetch (e.g. after sign-in) must not unmount the block and count a second view.
+  const [haveReviewsLoaded, setHaveReviewsLoaded] = useState(false);
+  if (!haveReviewsLoaded && placeReviewsData) setHaveReviewsLoaded(true);
   const displayedReviews = useMemo(() => {
     const own = placeReviewsData?.placeReviews.ownReview;
     const others = placeReviewsData?.placeReviews.othersSorted ?? [];
@@ -227,6 +232,13 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
           </>
         }
       />
+
+      {/* Waits for the own Review, so a returning person sees their Rating rather than the beans first. */}
+      {(haveReviewsLoaded || placeReviewsError) && (
+        <div className={cls.rateBlock}>
+          <RateBlock key={placeId} placeId={placeId} rating={ownReview?.userRating} />
+        </div>
+      )}
 
       <div className={cls.layout}>
         <main className={cls.main}>
