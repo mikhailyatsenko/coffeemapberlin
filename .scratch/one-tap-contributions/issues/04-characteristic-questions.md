@@ -4,12 +4,12 @@
 
 **Blocked by:** 03 (Inline "Been here? Rate it" block).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] No questions before a Rating; up to three after; "More questions?" reveals the rest
-- [ ] Free Wi-Fi, outdoor seating and pet friendly are never asked; already marked Characteristics are not asked
-- [ ] Yes sends `toggleCharacteristic` and the question leaves; Skip sends nothing and the question leaves for this page view
-- [ ] A failed Yes returns the question with the message and fires `contribution_failed` with `kind: characteristic`
-- [ ] `characteristic_answered` fires with `characteristic` and `answer: yes | skip` (Yes on server confirmation, Skip on tap)
-- [ ] Yes / Skip are real buttons, reachable by Tab and usable with Enter / Space
-- [ ] The Place's Characteristic counts update after a Yes
+- [x] No questions before a Rating; up to three after; "More questions?" reveals the rest
+- [x] Free Wi-Fi, outdoor seating and pet friendly are never asked; already marked Characteristics are not asked
+- [x] Yes sends `toggleCharacteristic` and the question leaves; Skip sends nothing and the question leaves for this page view
+- [x] A failed Yes returns the question with the message and fires `contribution_failed` with `kind: characteristic`
+- [x] `characteristic_answered` fires with `characteristic` and `answer: yes | skip` (Yes on server confirmation, Skip on tap)
+- [x] Yes / Skip are real buttons, reachable by Tab and usable with Enter / Space
+- [x] The Place's Characteristic counts update after a Yes

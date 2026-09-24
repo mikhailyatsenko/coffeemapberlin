@@ -7,7 +7,7 @@ import { revalidatePlaces } from 'shared/stores/places';
 
 import { getActor } from '../lib/getActor';
 import { getSaveErrorMessage } from '../lib/getSaveErrorMessage';
-import { getSaveErrorReason } from '../lib/getSaveErrorReason';
+import { trackContributionFailed } from '../lib/trackContributionFailed';
 import { type OneTapRatingProps } from '../types';
 
 /**
@@ -65,12 +65,7 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
     } catch (saveError) {
       console.error('Error adding rating:', saveError);
       setError(getSaveErrorMessage(saveError));
-      trackEvent('contribution_failed', {
-        place_id: placeId,
-        actor,
-        kind: 'rating',
-        reason: getSaveErrorReason(saveError),
-      });
+      trackContributionFailed(placeId, actor, 'rating', saveError);
       onFailed?.();
     } finally {
       setPendingRating(null);

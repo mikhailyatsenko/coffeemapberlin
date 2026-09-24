@@ -11,7 +11,7 @@ import { type RateBlockProps } from '../types';
  * otherwise the thank-you with the Rating. A tap shows the thank-you at once; a failed
  * save brings the beans back.
  */
-export const useRateBlock = ({ placeId, rating }: RateBlockProps) => {
+export const useRateBlock = ({ placeId, rating }: Pick<RateBlockProps, 'placeId' | 'rating'>) => {
   const user = useAuthStore((s) => s.user);
   // The Rating tapped in this page view, shown before the caller's Rating catches up.
   const [tappedRating, setTappedRating] = useState<number | null>(null);

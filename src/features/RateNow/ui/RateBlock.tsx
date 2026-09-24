@@ -1,3 +1,4 @@
+import { CharacteristicQuestions } from '../components/CharacteristicQuestions';
 import { useRateBlock } from '../model/useRateBlock';
 import { type RateBlockProps } from '../types';
 import { OneTapRating } from './OneTapRating';
@@ -6,7 +7,7 @@ import cls from './RateBlock.module.scss';
 export type { RateBlockProps };
 
 /** The Place page's "Been here? Rate it" block. */
-export const RateBlock = ({ placeId, rating }: RateBlockProps) => {
+export const RateBlock = ({ placeId, rating, characteristicCounts }: RateBlockProps) => {
   const {
     blockRef,
     beansRef,
@@ -39,6 +40,10 @@ export const RateBlock = ({ placeId, rating }: RateBlockProps) => {
             </p>
           </>
         )}
+      </div>
+      {/* Hidden rather than unmounted while there is no Rating, so Skips and saving Yeses outlive a failed Rating. */}
+      <div className={cls.questions} hidden={currentRating === null}>
+        <CharacteristicQuestions placeId={placeId} characteristicCounts={characteristicCounts} />
       </div>
     </section>
   );

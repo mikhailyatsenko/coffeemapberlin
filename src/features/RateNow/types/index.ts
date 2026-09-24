@@ -31,4 +31,7 @@ export interface OneTapRatingProps {
   onFailed?: () => void;
 }
 
-export type RateBlockProps = Pick<OneTapRatingProps, 'placeId' | 'rating'>;
+export interface RateBlockProps extends Pick<OneTapRatingProps, 'placeId' | 'rating'> {
+  /** The Place's Characteristic counts; `pressed` says which the person has marked. */
+  characteristicCounts: CharacteristicCounts;
+}

@@ -236,7 +236,12 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
       {/* Waits for the own Review, so a returning person sees their Rating rather than the beans first. */}
       {(haveReviewsLoaded || placeReviewsError) && (
         <div className={cls.rateBlock}>
-          <RateBlock key={placeId} placeId={placeId} rating={ownReview?.userRating} />
+          <RateBlock
+            key={placeId}
+            placeId={placeId}
+            rating={ownReview?.userRating}
+            characteristicCounts={characteristicCounts}
+          />
         </div>
       )}
 
