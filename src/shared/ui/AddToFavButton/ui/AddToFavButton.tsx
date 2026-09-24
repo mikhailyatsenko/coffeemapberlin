@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-restricted-imports -- shared/ui must get data via props, but this button owns its favorite toggle (mutation, cache, stores); moving that out is a design change. TODO: .scratch/architecture-debt/issues/02-addtofavbutton-data-access.md */
 import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -46,7 +47,7 @@ export const AddToFavButton = ({
     refetchQueries: [GET_FAVORITE_PLACES],
   });
 
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const guestFavIds = useGuestFavoritesStore((s) => s.ids);
   const infoShown = useGuestFavoritesStore((s) => s.infoShown);
   const effectiveIsFavorite = user ? isFavorite : guestFavIds.includes(placeId);

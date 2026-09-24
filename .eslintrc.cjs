@@ -16,8 +16,14 @@ const globalRestrictedSyntax = [
   },
 ];
 
+// A shared module and everything under it, by alias or by any path that goes through shared/.
+const sharedModule = (name) => [`shared/${name}`, `shared/${name}/**`, `**/shared/${name}`, `**/shared/${name}/**`];
+
 // Fires once on any file the override matches: the file's path is the violation.
 const restrictPath = (message) => ['error', ...globalRestrictedSyntax, { selector: 'Program', message }];
+
+const APOLLO_MESSAGE =
+  'Presentational code must not talk to Apollo → take the data and callbacks via props from a feature or page, or use `import type` for Apollo types.';
 
 module.exports = {
   env: {
@@ -54,6 +60,43 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         'prefer-const': 'off',
+      },
+    },
+    // Presentational layers get data only through props. Types stay importable.
+    {
+      files: ['src/shared/ui/**', 'src/entities/*/ui/**', 'src/entities/*/components/**'],
+      rules: {
+        '@typescript-eslint/no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: '@apollo/client',
+                allowTypeImports: true,
+                message: APOLLO_MESSAGE,
+              },
+            ],
+            patterns: [
+              { group: ['@apollo/client/*'], allowTypeImports: true, message: APOLLO_MESSAGE },
+              {
+                group: sharedModule('stores'),
+                message:
+                  'Presentational code must not read or write stores → take the state and callbacks via props from a feature or page.',
+              },
+              {
+                group: sharedModule('generated/graphql'),
+                importNamePattern: '^use',
+                message:
+                  "Generated Apollo hooks fetch data, which presentational code must not do → call the hook in a feature's or page's ui/ and pass the result via props; generated types stay importable.",
+              },
+              {
+                group: [...sharedModule('config/apolloClient'), ...sharedModule('query'), ...sharedModule('api')],
+                message:
+                  'Presentational code must not use the Apollo client, queries or API wrappers → do the data access in a feature or page and pass the result via props.',
+              },
+            ],
+          },
+        ],
       },
     },
     {

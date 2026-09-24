@@ -6,14 +6,14 @@ See [spec](../spec.md): "ESLint configuration" rule (f), and "One-off fixes". Ru
 
 **Blocked by:** 07 (Lint test harness and layer boundaries through boundaries).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] `@typescript-eslint/no-restricted-imports` is a path-scoped override at `error`, with `allowTypeImports` on `@apollo/client`, `importNamePattern: '^use'` on the generated GraphQL module, and `shared/api` in the banned group. Its messages read "what is wrong → how to fix".
-- [ ] The test covers:
+- [x] `@typescript-eslint/no-restricted-imports` is a path-scoped override at `error`, with `allowTypeImports` on `@apollo/client`, `importNamePattern: '^use'` on the generated GraphQL module, and `shared/api` in the banned group. Its messages read "what is wrong → how to fix".
+- [x] The test covers:
   - a store import in `shared/ui`, which is flagged;
   - a generated hook in `entities/*/ui`, which is flagged;
   - a type-only `@apollo/client` import in `shared/ui`, which passes;
   - a generated hook in a feature's `ui/`, which passes.
-- [ ] `AddToFavButton`'s component and its cache-update helper carry file-level disables. These name the rule and give a reason with a TODO linking a new `.scratch/architecture-debt/issues/NN-<slug>.md`. The note has `Status: needs-triage` and records the rule, the files, and why the fix is a design change.
-- [ ] No other file-level disable is added.
-- [ ] `npm run lint:ts` reports 0 problems, and `npm test` passes.
+- [x] `AddToFavButton`'s component and its cache-update helper carry file-level disables. These name the rule and give a reason with a TODO linking a new `.scratch/architecture-debt/issues/NN-<slug>.md`. The note has `Status: needs-triage` and records the rule, the files, and why the fix is a design change.
+- [x] No other file-level disable is added.
+- [x] `npm run lint:ts` reports 0 problems, and `npm test` passes. (0 errors; the 24 remaining warnings are the boy-scout `warn` rules from ticket 10.)

@@ -205,3 +205,38 @@ describe('slice root index exports', () => {
     expect(ruleIdsFor('src/entities/Place/index.ts')).toEqual([]);
   });
 });
+
+describe('data access in presentational layers', () => {
+  const RESTRICTED = ['@typescript-eslint/no-restricted-imports:error'];
+
+  it('rejects a store import in shared/ui', () => {
+    expect(ruleIdsWithSeverityFor('src/shared/ui/Badge/importsStore.ts')).toEqual(RESTRICTED);
+  });
+
+  it('rejects a generated hook in shared/ui, entities/*/ui and entities/*/components', () => {
+    expect(ruleIdsWithSeverityFor('src/shared/ui/Badge/importsGeneratedHook.ts')).toEqual(RESTRICTED);
+    expect(ruleIdsWithSeverityFor('src/entities/Place/ui/importsGeneratedHook.ts')).toEqual(RESTRICTED);
+    expect(ruleIdsWithSeverityFor('src/entities/Place/components/Pin/ui/importsGeneratedHook.ts')).toEqual(RESTRICTED);
+  });
+
+  it('rejects a value import from @apollo/client and its subpaths in shared/ui', () => {
+    expect(ruleIdsWithSeverityFor('src/shared/ui/Badge/importsApolloValue.ts')).toEqual(RESTRICTED);
+    expect(ruleIdsWithSeverityFor('src/shared/ui/Badge/importsApolloSubpath.ts')).toEqual(RESTRICTED);
+  });
+
+  it('rejects shared/api in shared/ui', () => {
+    expect(ruleIdsWithSeverityFor('src/shared/ui/Badge/importsApi.ts')).toEqual(RESTRICTED);
+  });
+
+  it('allows a type-only @apollo/client import in shared/ui', () => {
+    expect(ruleIdsFor('src/shared/ui/Badge/importsApolloType.ts')).toEqual([]);
+  });
+
+  it('allows a generated type in shared/ui', () => {
+    expect(ruleIdsFor('src/shared/ui/Badge/importsGeneratedType.ts')).toEqual([]);
+  });
+
+  it("allows a generated hook in a feature's ui/", () => {
+    expect(ruleIdsFor('src/features/Search/ui/importsGeneratedHook.ts')).toEqual([]);
+  });
+});
