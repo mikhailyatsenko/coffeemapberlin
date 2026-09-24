@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 dotenv.config();
 
 // https://vitejs.dev/config/
@@ -24,6 +24,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/shared/config/tests/setupTests.ts'],
     css: { modules: { classNameStrategy: 'non-scoped' } },
+    // Agent worktrees hold full copies of the repo; their tests would run twice.
+    exclude: [...configDefaults.exclude, '.claude/worktrees/**'],
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
