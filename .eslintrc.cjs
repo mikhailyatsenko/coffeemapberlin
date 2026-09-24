@@ -6,14 +6,18 @@ const SLICE_SEGMENTS = `{${['components', ...COMPONENT_SEGMENT_NAMES].join(',')}
 
 // Global no-restricted-syntax selectors. An override that sets no-restricted-syntax replaces
 // the global options instead of merging them, so every such override spreads these back in.
-const globalRestrictedSyntax = [];
+// Severity is one per rule, so inside an `error` override these report as errors too. That changes
+// nothing in practice: such an override flags the whole file, so the file fails lint either way.
+const globalRestrictedSyntax = [
+  {
+    selector: "CallExpression[callee.type='Identifier'][callee.name=/^use[A-Z]\\w*Store$/][arguments.length=0]",
+    message:
+      'Whole-store subscription re-renders on every store change → pass a selector, e.g. useXStore((s) => s.field), or useShallow for several fields.',
+  },
+];
 
 // Fires once on any file the override matches: the file's path is the violation.
-const restrictPath = (message) => [
-  'error',
-  ...globalRestrictedSyntax,
-  { selector: 'Program', message },
-];
+const restrictPath = (message) => ['error', ...globalRestrictedSyntax, { selector: 'Program', message }];
 
 module.exports = {
   env: {
@@ -83,6 +87,23 @@ module.exports = {
         ),
       },
     },
+    // Only index.ts: a root index.tsx is already rejected by the segment override above.
+    {
+      files: [`src/${LAYERS}/*/index.ts`],
+      rules: {
+        'no-restricted-syntax': [
+          'warn',
+          ...globalRestrictedSyntax,
+          {
+            // esquery regexes cannot contain a literal `/`, hence \x2F.
+            selector:
+              ':matches(ExportAllDeclaration, ExportNamedDeclaration)[source.value!=/^\\.\\x2Fui(\\x2F|$)/], ExportNamedDeclaration[source=null], ExportDefaultDeclaration',
+            message:
+              "A slice root index.ts exposes only the ui segment → re-export from './ui', e.g. export { X } from './ui/X', and keep model, lib, types etc. private or move what others need into ui.",
+          },
+        ],
+      },
+    },
     {
       files: ['vite.config.ts'],
       parserOptions: {
@@ -100,6 +121,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'boundaries'],
   rules: {
+    'no-restricted-syntax': ['warn', ...globalRestrictedSyntax],
     'boundaries/element-types': [
       'error',
       {

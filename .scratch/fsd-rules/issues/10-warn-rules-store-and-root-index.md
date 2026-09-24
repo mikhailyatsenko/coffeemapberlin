@@ -10,17 +10,21 @@ See [spec](../spec.md): "ESLint configuration" rules (g) and root index, and the
 
 **Blocked by:** 08 (Segment structure rules). That ticket adds the `no-restricted-syntax` overrides that must repeat (g).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] (g) is a global `no-restricted-syntax` selector at `warn`, and it is repeated in every `no-restricted-syntax` override.
-- [ ] The root-index rule is a path-scoped override at `warn`.
-- [ ] Both messages read "what is wrong → how to fix".
-- [ ] The test covers:
+- [x] (g) is a global `no-restricted-syntax` selector at `warn`, and it is repeated in every `no-restricted-syntax` override.
+- [x] The root-index rule is a path-scoped override at `warn`.
+- [x] Both messages read "what is wrong → how to fix".
+- [x] The test covers:
   - `useXStore()`, which warns;
   - `useXStore((s) => s.x)`, which passes;
-  - `useXStore()` inside a file covered by another `no-restricted-syntax` override, which still warns;
+  - `useXStore()` inside a file covered by another `no-restricted-syntax` override, which is still reported (as `error` inside an `error` override, see Comments);
   - `export *` from `./model` in a root `index.ts`, which warns;
   - `export { X } from './ui'` and `export { X } from './ui/X'`, which pass.
-- [ ] The test asserts severity (`warn` vs `error`) for these rules.
-- [ ] `npm run lint:ts` reports 0 errors. The known warnings are expected, because `lint:ts` does not use `--max-warnings=0`.
-- [ ] `npm test` passes.
+- [x] The test asserts severity (`warn` vs `error`) for these rules.
+- [x] `npm run lint:ts` reports 0 errors. The known warnings are expected, because `lint:ts` does not use `--max-warnings=0`.
+- [x] `npm test` passes.
+
+## Comments
+
+**Severity of (g) inside other overrides.** `no-restricted-syntax` has one severity per rule, so inside the segment overrides (which are `error`) the repeated (g) selector reports as `error`, not `warn`. Those overrides flag the whole file, so the file fails lint either way; the test asserts (g) still fires there and documents the `error`. A true `warn` there would need a second rule id (e.g. a local plugin aliasing `no-restricted-syntax`), which the spec's "no new dependency" rules out.

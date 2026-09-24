@@ -159,3 +159,49 @@ describe('components/X segments', () => {
     expect(ruleIdsFor('src/features/Search/components/Chip/ui/Chip.ts')).toEqual([]);
   });
 });
+
+// Severity per rule id, so a test can tell a `warn` rule from an `error` one.
+const ruleIdsWithSeverityFor = (file: string) =>
+  messagesFor(file)
+    .map((message) => `${message.ruleId ?? 'fatal'}:${message.severity === 1 ? 'warn' : 'error'}`)
+    .sort((a, b) => a.localeCompare(b));
+
+const WHOLE_STORE = 'Whole-store subscription';
+
+describe('whole-store subscriptions', () => {
+  it('warns on a store hook called without a selector', () => {
+    expect(ruleIdsWithSeverityFor('src/features/Search/ui/wholeStore.ts')).toEqual(['no-restricted-syntax:warn']);
+  });
+
+  it('allows a store hook called with a selector', () => {
+    expect(ruleIdsFor('src/features/Search/ui/selectorStore.ts')).toEqual([]);
+  });
+
+  it("still reports inside a file covered by an error override, at that override's severity", () => {
+    const file = 'src/features/Search/utils/wholeStore.ts';
+    // Why error, not warn: see globalRestrictedSyntax in .eslintrc.cjs.
+    expect(ruleIdsWithSeverityFor(file)).toEqual(['no-restricted-syntax:error', 'no-restricted-syntax:error']);
+    // Both findings share the rule id, so only the message shows that the whole-store check fired.
+    expect(messagesFor(file).some((message) => message.message.includes(WHOLE_STORE))).toBe(true);
+  });
+
+  it('still warns inside a slice root index.ts, whose override is warn', () => {
+    const file = 'src/features/Cart/index.ts';
+    expect(ruleIdsWithSeverityFor(file)).toEqual(['no-restricted-syntax:warn', 'no-restricted-syntax:warn']);
+    expect(messagesFor(file).some((message) => message.message.includes(WHOLE_STORE))).toBe(true);
+  });
+});
+
+describe('slice root index exports', () => {
+  it("warns on a re-export from a segment other than './ui'", () => {
+    expect(ruleIdsWithSeverityFor('src/features/Profile/index.ts')).toEqual(['no-restricted-syntax:warn']);
+  });
+
+  it("allows a re-export from './ui'", () => {
+    expect(ruleIdsFor('src/widgets/Sidebar/index.ts')).toEqual([]);
+  });
+
+  it("allows a re-export from './ui/X'", () => {
+    expect(ruleIdsFor('src/entities/Place/index.ts')).toEqual([]);
+  });
+});
