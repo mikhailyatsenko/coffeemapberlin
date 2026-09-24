@@ -17,6 +17,7 @@ import { RecaptchaUnavailableError } from 'shared/lib/recaptcha';
 import { RateNow } from './RateNow';
 
 vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
+vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('shared/stores/places', () => ({ revalidatePlaces: vi.fn() }));
 
 const placeId = 'place-1';
@@ -89,14 +90,11 @@ const renderRateNow = (mocks: MockedResponse[] = []) => {
   );
 };
 
-const clickBean = (container: HTMLElement, rating: number) => {
-  const beans = container.querySelectorAll('.starWrapper');
-  fireEvent.click(beans[rating - 1]);
-};
+const bean = (rating: number) => screen.getByRole('radio', { name: `${rating} of 5` });
 
 const freeWifiChip = () => screen.getByRole('button', { name: /wi-fi/i });
 
-describe('RateNow failures', () => {
+describe('RateNow Characteristic failures', () => {
   let unhandled: unknown[];
   const onUnhandled = (reason: unknown) => {
     unhandled.push(reason);
@@ -112,45 +110,6 @@ describe('RateNow failures', () => {
   afterEach(() => {
     process.off('unhandledRejection', onUnhandled);
     vi.restoreAllMocks();
-  });
-
-  it('tells a Guest that verification was blocked when reCAPTCHA fails while rating', async () => {
-    vi.mocked(ensureGuestIdentity).mockRejectedValue(new RecaptchaUnavailableError('reCAPTCHA failed to load'));
-    const addRating = vi.fn();
-    const { container } = renderRateNow([
-      {
-        request: { query: AddRatingDocument },
-        variableMatcher: () => true,
-        result: () => {
-          addRating();
-          return { data: null };
-        },
-      },
-    ]);
-
-    clickBean(container, 4);
-
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent(/ad blocker/i);
-    expect(alert).toHaveTextContent(/sign in/i);
-    expect(addRating).not.toHaveBeenCalled();
-    expect(screen.getByText('Rate this place')).toBeInTheDocument();
-    expect(unhandled).toEqual([]);
-  });
-
-  it('shows an error when the server fails to save a Rating', async () => {
-    const { container } = renderRateNow([
-      {
-        request: { query: AddRatingDocument, variables: { placeId, rating: 4, ...guest } },
-        error: new Error('Network down'),
-      },
-    ]);
-
-    clickBean(container, 4);
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't save/i);
-    expect(screen.getByText('Rate this place')).toBeInTheDocument();
-    expect(unhandled).toEqual([]);
   });
 
   it('shows an error and releases the chip when a Characteristic fails to save', async () => {
@@ -241,7 +200,7 @@ const refetchMocks: MockedResponse[] = [
   },
 ];
 
-describe('RateNow while saving a Rating', () => {
+describe('RateNow Rating in the modal', () => {
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(ensureGuestIdentity).mockResolvedValue(guest);
@@ -251,55 +210,35 @@ describe('RateNow while saving a Rating', () => {
     vi.restoreAllMocks();
   });
 
-  it('keeps the modal open and shows the saving state inside it', async () => {
-    const { container } = renderRateNow([addRatingMock({ delay: 50 }), ...refetchMocks]);
-
-    clickBean(container, 4);
-
-    expect(await screen.findByText(/saving/i)).toBeInTheDocument();
-    expect(screen.getByText('Rate this place')).toBeInTheDocument();
-    expect(screen.getByText('What made your visit special?')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /rate place/i })).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.queryByText(/saving/i)).not.toBeInTheDocument();
-    });
-    expect(screen.getByText('What made your visit special?')).toBeInTheDocument();
-  });
-
-  it('sends one mutation however many beans are tapped during a save', async () => {
-    let resolveIdentity: (value: typeof guest) => void = () => {};
-    vi.mocked(ensureGuestIdentity).mockReturnValue(
-      new Promise((resolve) => {
-        resolveIdentity = resolve;
-      }),
-    );
+  it('shows the tapped Rating at once and thanks the Guest once it is saved', async () => {
     const addRating = vi.fn();
-    const { container } = renderRateNow([
-      addRatingMock({ onCall: addRating }),
-      addRatingMock({ onCall: addRating }),
-      ...refetchMocks,
-    ]);
+    renderRateNow([addRatingMock({ onCall: addRating, delay: 50 }), ...refetchMocks]);
 
-    clickBean(container, 4);
-    clickBean(container, 4);
-    resolveIdentity(guest);
-    await screen.findByText(/saving/i);
-    clickBean(container, 4);
+    fireEvent.click(bean(4));
 
-    await screen.findByRole('status');
-    expect(addRating).toHaveBeenCalledTimes(1);
-    expect(ensureGuestIdentity).toHaveBeenCalledTimes(1);
-  });
-
-  it('thanks the Guest and invites them to mark Characteristics once saved', async () => {
-    const { container } = renderRateNow([addRatingMock(), ...refetchMocks]);
-
-    clickBean(container, 4);
+    expect(bean(4)).toBeChecked();
+    expect(addRating).not.toHaveBeenCalled();
+    expect(screen.getByText('What made your visit special?')).toBeInTheDocument();
 
     const confirmation = await screen.findByRole('status');
     expect(confirmation).toHaveTextContent(/thank/i);
     expect(confirmation).toHaveTextContent(/below/i);
+    expect(addRating).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('rolls the Rating back and explains a failed save', async () => {
+    renderRateNow([
+      {
+        request: { query: AddRatingDocument, variables: { placeId, rating: 4, ...guest } },
+        error: new Error('Network down'),
+      },
+    ]);
+
+    fireEvent.click(bean(4));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't save/i);
+    expect(bean(4)).not.toBeChecked();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 });

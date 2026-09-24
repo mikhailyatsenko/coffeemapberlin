@@ -82,6 +82,18 @@ describe('RatingWidget as a control', () => {
     expect(container.querySelectorAll('.filledStar')).toHaveLength(0);
   });
 
+  it('keeps the current value filled once the pointer is gone, so a touch choice stays visible', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<RatingWidget isClickable rating={3} handleRating={vi.fn()} />);
+
+    expect(container.querySelectorAll('.filledStar')).toHaveLength(3);
+    await user.hover(screen.getByRole('radio', { name: '5 of 5' }));
+    expect(container.querySelectorAll('.filledStar')).toHaveLength(5);
+    await user.unhover(screen.getByRole('radio', { name: '5 of 5' }));
+
+    expect(container.querySelectorAll('.filledStar')).toHaveLength(3);
+  });
+
   it('previews the focused value while using the keyboard', async () => {
     const user = userEvent.setup();
     const { container } = render(<RatingWidget isClickable handleRating={vi.fn()} />);

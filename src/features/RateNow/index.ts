@@ -1,1 +1,1 @@
-export * from './ui';
+export { OneTapRating, type OneTapRatingProps, RateNow } from './ui';

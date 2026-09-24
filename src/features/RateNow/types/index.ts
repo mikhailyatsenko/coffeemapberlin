@@ -18,3 +18,11 @@ export interface RateNowProps extends React.HTMLAttributes<HTMLDivElement> {
   placeId: string;
   characteristicCounts: CharacteristicCounts;
 }
+
+export interface OneTapRatingProps {
+  placeId: string;
+  /** The person's current Rating for the Place, if any. */
+  rating?: number | null;
+  /** Called once the server confirms a Rating. */
+  onSaved?: (rating: number) => void;
+}

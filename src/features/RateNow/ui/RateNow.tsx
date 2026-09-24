@@ -1,22 +1,15 @@
 import { useState } from 'react';
-import { RatePlaceWidget, ToggleCharacteristic } from 'entities/RatePlace';
-import { useDeleteReview, useToggleCharacteristic } from 'shared/api';
+import { ToggleCharacteristic } from 'entities/RatePlace';
+import { useToggleCharacteristic } from 'shared/api';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
-import {
-  type Characteristic,
-  PlaceDocument,
-  PlaceReviewsDocument,
-  useAddRatingMutation,
-} from 'shared/generated/graphql';
+import { type Characteristic } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
-import { ensureGuestIdentity } from 'shared/lib/guest';
-import { useAuthStore } from 'shared/stores/auth';
-import { revalidatePlaces } from 'shared/stores/places';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 
 import { getSaveErrorMessage } from '../lib/getSaveErrorMessage';
 import { type RateNowProps } from '../types';
+import { OneTapRating } from './OneTapRating';
 import cls from './RateNow.module.scss';
 
 export const RateNow = ({
@@ -27,67 +20,21 @@ export const RateNow = ({
   showRateNow,
   ...props
 }: RateNowProps) => {
-  const { handleDeleteReview } = useDeleteReview(placeId);
-  const user = useAuthStore((s) => s.user);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [isSavingRating, setIsSavingRating] = useState(false);
+  const [characteristicError, setCharacteristicError] = useState<string | null>(null);
   const [isRatingSaved, setIsRatingSaved] = useState(false);
-  // Bumped after each save so RatePlaceWidget leaves edit mode and shows the new Rating.
-  const [ratingWidgetKey, setRatingWidgetKey] = useState(0);
-  const [addRating] = useAddRatingMutation({
-    onCompleted() {
-      revalidatePlaces();
-    },
-  });
-
-  const onSubmitRating = async (rating: number) => {
-    if (isSavingRating) return;
-    setIsSavingRating(true);
-    setSaveError(null);
-    setIsRatingSaved(false);
-    try {
-      // Guests rate too; the captcha runs once, when the identity is issued.
-      const guestCredentials = user ? {} : await ensureGuestIdentity();
-
-      await addRating({
-        variables: { placeId, rating, ...guestCredentials },
-        refetchQueries: [
-          { query: PlaceDocument, variables: { placeId } },
-          { query: PlaceReviewsDocument, variables: { placeId } },
-        ],
-        awaitRefetchQueries: true,
-      });
-      setIsRatingSaved(true);
-      setRatingWidgetKey((key) => key + 1);
-    } catch (error) {
-      console.error('Error adding rating:', error);
-      setSaveError(getSaveErrorMessage(error));
-    } finally {
-      setIsSavingRating(false);
-    }
-  };
 
   const { toggleChar } = useToggleCharacteristic(placeId);
 
   const onToggleCharacteristic = async (characteristic: Characteristic) => {
-    setSaveError(null);
+    setCharacteristicError(null);
     try {
       await toggleChar(characteristic);
     } catch (error) {
-      setSaveError(getSaveErrorMessage(error));
+      setCharacteristicError(getSaveErrorMessage(error));
     }
   };
 
   const currentUserReview = reviews.find((review) => review.isOwnReview);
-
-  const handleDeleteMyRating = () => {
-    if (currentUserReview) {
-      const isConfirmed = window.confirm('Deleting your rating. Continue?');
-      if (!isConfirmed) return;
-      setIsRatingSaved(false);
-      handleDeleteReview(currentUserReview?.id, 'deleteRating');
-    }
-  };
 
   const handleRatePlaceClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -97,7 +44,7 @@ export const RateNow = ({
       item_name: 'click on rate place',
       category: 'engagement',
     });
-    setSaveError(null);
+    setCharacteristicError(null);
     setIsRatingSaved(false);
     setShowRateNow(true);
   };
@@ -130,22 +77,22 @@ export const RateNow = ({
           }}
         >
           <div className={cls.RateNow}>
-            <RatePlaceWidget
-              key={ratingWidgetKey}
-              isSaving={isSavingRating}
-              handleDeleteMyRating={user ? handleDeleteMyRating : undefined}
-              userRating={currentUserReview?.userRating}
-              reviewId={currentUserReview?.id}
-              onSubmitRating={onSubmitRating}
+            <h3 className={cls.heading}>Rate this place</h3>
+            <OneTapRating
+              placeId={placeId}
+              rating={currentUserReview?.userRating}
+              onSaved={() => {
+                setIsRatingSaved(true);
+              }}
             />
             {isRatingSaved && (
               <p className={cls.confirmation} role="status">
                 Thanks for your rating! Anything that stood out? Mark it below.
               </p>
             )}
-            {saveError && (
+            {characteristicError && (
               <p className={cls.error} role="alert">
-                {saveError}
+                {characteristicError}
               </p>
             )}
             <div className={cls.characteristicWidget}>

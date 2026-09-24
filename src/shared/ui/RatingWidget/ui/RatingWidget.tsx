@@ -77,7 +77,8 @@ const RatingWidget: React.FC<RatingWidgetProps> = ({ rating, handleRating, isCli
   };
 
   const previewRating = hoverRating || focusedRating;
-  const fillValue = isClickable ? previewRating : rating ?? 0;
+  // With no preview the chosen value stays filled, so a touch choice remains visible.
+  const fillValue = isClickable ? previewRating || checkedRating : rating ?? 0;
 
   return (
     <div
