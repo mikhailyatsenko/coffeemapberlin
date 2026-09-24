@@ -1,3 +1,20 @@
+const LAYERS = '{pages,widgets,features,entities}';
+// components/X is a mini-slice: the slice segments minus its own components/.
+const COMPONENT_SEGMENT_NAMES = ['ui', 'types', 'constants', 'lib', 'model', 'api', 'hooks', 'mappers'];
+const COMPONENT_SEGMENTS = `{${COMPONENT_SEGMENT_NAMES.join(',')}}`;
+const SLICE_SEGMENTS = `{${['components', ...COMPONENT_SEGMENT_NAMES].join(',')}}`;
+
+// Global no-restricted-syntax selectors. An override that sets no-restricted-syntax replaces
+// the global options instead of merging them, so every such override spreads these back in.
+const globalRestrictedSyntax = [];
+
+// Fires once on any file the override matches: the file's path is the violation.
+const restrictPath = (message) => [
+  'error',
+  ...globalRestrictedSyntax,
+  { selector: 'Program', message },
+];
+
 module.exports = {
   env: {
     browser: true,
@@ -33,6 +50,37 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         'prefer-const': 'off',
+      },
+    },
+    {
+      files: [`src/${LAYERS}/*/**`],
+      excludedFiles: [`src/${LAYERS}/*/index.ts`, `src/${LAYERS}/*/${SLICE_SEGMENTS}/**`, 'src/entities/*/@x/*.ts'],
+      rules: {
+        'no-restricted-syntax': restrictPath(
+          `A slice holds only the segments ${SLICE_SEGMENTS} and a root index.ts → move this file into the segment that fits its purpose (e.g. utils/ → lib/), or rename index.tsx to index.ts.`,
+        ),
+      },
+    },
+    {
+      files: [`src/${LAYERS}/*/components/**`],
+      excludedFiles: [
+        `src/${LAYERS}/*/components/index.ts`,
+        `src/${LAYERS}/*/components/*/index.ts`,
+        `src/${LAYERS}/*/components/*/${COMPONENT_SEGMENTS}/**`,
+      ],
+      rules: {
+        'no-restricted-syntax': restrictPath(
+          `components/ holds only an index.ts and folders X/, and components/X holds only an index.ts and the segments ${COMPONENT_SEGMENTS} → move this file into the segment of components/X that fits its purpose (a component goes into ui/).`,
+        ),
+      },
+    },
+    // Comes after the components/X override: later overrides win, so this message replaces that one.
+    {
+      files: [`src/${LAYERS}/*/components/**/components/**`],
+      rules: {
+        'no-restricted-syntax': restrictPath(
+          "components/X must not contain a components/ folder → move the sub-component beside its parent, into the slice's own components/.",
+        ),
       },
     },
     {

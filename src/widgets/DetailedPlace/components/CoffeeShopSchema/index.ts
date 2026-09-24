@@ -1,1 +1,1 @@
-export { CoffeeShopSchema } from './CoffeeShopSchema';
+export { CoffeeShopSchema } from './ui/CoffeeShopSchema';

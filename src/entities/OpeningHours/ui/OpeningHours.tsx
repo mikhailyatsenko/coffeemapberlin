@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Modal } from 'shared/ui/Modal';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
-import { OpeningHoursList } from '../components/OpeningHoursList/OpeningHoursList';
+import { OpeningHoursList } from '../components/OpeningHoursList';
 
 import { type OpeningHoursProps } from '../types';
 import cls from './OpeningHours.module.scss';

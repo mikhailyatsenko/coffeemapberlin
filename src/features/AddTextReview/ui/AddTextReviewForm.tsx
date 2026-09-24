@@ -9,9 +9,9 @@ import { useAuthStore } from 'shared/stores/auth';
 import { showGuestReviewSubmitted } from 'shared/stores/modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { UploadReviewImages } from '../components/UploadReviewImages/ui/UploadReviewImages';
+import { uploadReviewImages } from '../lib/uploadReviewImages';
 import { useAddTextReviewDraftStore } from '../model';
 import { type ImagesWrapper, type AddTextReviewFormProps } from '../types';
-import { uploadReviewImages } from '../utils/uploadReviewImages';
 import cls from './AddTextReviewForm.module.scss';
 
 const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({

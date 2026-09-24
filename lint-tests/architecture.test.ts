@@ -24,22 +24,26 @@ const fixtureConfig: Linter.Config = {
   },
 };
 
-const ruleIdsByFile = new Map<string, string[]>();
+const messagesByFile = new Map<string, Linter.LintMessage[]>();
 
 beforeAll(async () => {
   const eslint = new ESLint({ cwd: FIXTURES, useEslintrc: false, overrideConfig: fixtureConfig, ignore: false });
   const results = await eslint.lintFiles(['src']);
   for (const result of results) {
-    const ruleIds = result.messages.map((message) => message.ruleId ?? 'fatal').sort((a, b) => a.localeCompare(b));
-    ruleIdsByFile.set(path.relative(FIXTURES, result.filePath), ruleIds);
+    messagesByFile.set(path.relative(FIXTURES, result.filePath), result.messages);
   }
 }, 60_000);
 
-const ruleIdsFor = (file: string) => {
-  const ruleIds = ruleIdsByFile.get(file);
-  if (!ruleIds) throw new Error(`No fixture at ${file}`);
-  return ruleIds;
+const messagesFor = (file: string) => {
+  const messages = messagesByFile.get(file);
+  if (!messages) throw new Error(`No fixture at ${file}`);
+  return messages;
 };
+
+const ruleIdsFor = (file: string) =>
+  messagesFor(file)
+    .map((message) => message.ruleId ?? 'fatal')
+    .sort((a, b) => a.localeCompare(b));
 
 describe('layer order', () => {
   it('rejects an import from a higher layer', () => {
@@ -102,5 +106,56 @@ describe('@x cross-imports', () => {
 
   it('rejects @x on features', () => {
     expect(ruleIdsFor('src/widgets/Header/ui/importsFeatureX.ts')).toEqual(['boundaries/entry-point']);
+  });
+});
+
+describe('slice segments', () => {
+  it('rejects an unknown segment in a slice', () => {
+    expect(ruleIdsFor('src/features/Search/utils/helper.ts')).toEqual(['no-restricted-syntax']);
+  });
+
+  it('allows a known segment in a slice', () => {
+    expect(ruleIdsFor('src/features/Search/lib/helper.ts')).toEqual([]);
+  });
+
+  it('rejects a root index.tsx', () => {
+    expect(ruleIdsFor('src/entities/Review/index.tsx')).toEqual(['no-restricted-syntax']);
+  });
+
+  it('allows a root index.ts', () => {
+    expect(ruleIdsFor('src/entities/Place/index.ts')).toEqual([]);
+  });
+});
+
+describe('components/X segments', () => {
+  it('rejects an unknown segment in components/X', () => {
+    expect(ruleIdsFor('src/features/Search/components/Filter/Filter.ts')).toEqual(['no-restricted-syntax']);
+  });
+
+  it('rejects a loose file in components/', () => {
+    expect(ruleIdsFor('src/features/Search/components/Loose.ts')).toEqual(['no-restricted-syntax']);
+  });
+
+  it('allows an index.ts in components/', () => {
+    expect(ruleIdsFor('src/features/Search/components/index.ts')).toEqual([]);
+  });
+
+  it('allows a known segment in components/X', () => {
+    expect(ruleIdsFor('src/features/Search/components/Filter/ui/FilterView.ts')).toEqual([]);
+  });
+
+  it('allows an index.ts in components/X', () => {
+    expect(ruleIdsFor('src/features/Search/components/Filter/index.ts')).toEqual([]);
+  });
+
+  it('rejects components/ nested in components/, with the nesting message', () => {
+    const file = 'src/features/Search/components/Filter/components/Chip/ui/NestedChip.ts';
+    expect(ruleIdsFor(file)).toEqual(['no-restricted-syntax']);
+    // Both overrides share the rule id, so only the message shows which one won.
+    expect(messagesFor(file)[0].message).toMatch(/must not contain a components\/ folder/);
+  });
+
+  it('allows a sub-component beside its parent in components/', () => {
+    expect(ruleIdsFor('src/features/Search/components/Chip/ui/Chip.ts')).toEqual([]);
   });
 });
