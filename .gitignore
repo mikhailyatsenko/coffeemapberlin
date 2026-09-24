@@ -28,3 +28,6 @@ dist-ssr
 old.json
 test.json
 generateSitemap.js
+
+# Claude Code agent worktrees
+.claude/worktrees/
