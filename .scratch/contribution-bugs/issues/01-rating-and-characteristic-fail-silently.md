@@ -1,6 +1,6 @@
 # Rating and Characteristic taps fail silently
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem
 
@@ -22,8 +22,8 @@ Scenario: a Guest with uBlock opens a Place, taps "Rate place" and taps the 4th 
 
 ## Acceptance criteria
 
-- [ ] A reCAPTCHA failure while rating shows an error in the modal, and no Rating appears as saved
-- [ ] A failed Characteristic toggle shows an error and the chip returns to its previous state
-- [ ] A server/network error on either path shows an error
-- [ ] The console log message in `useToggleCharacteristic` names the right action
-- [ ] Tests cover the failure paths
+- [x] A reCAPTCHA failure while rating shows an error in the modal, and no Rating appears as saved
+- [x] A failed Characteristic toggle shows an error and the chip returns to its previous state
+- [x] A server/network error on either path shows an error
+- [x] The console log message in `useToggleCharacteristic` names the right action
+- [x] Tests cover the failure paths

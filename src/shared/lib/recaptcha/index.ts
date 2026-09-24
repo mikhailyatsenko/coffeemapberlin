@@ -1,1 +1,1 @@
-export { executeRecaptcha, type RecaptchaAction } from './executeRecaptcha';
+export { executeRecaptcha, RecaptchaUnavailableError, type RecaptchaAction } from './executeRecaptcha';

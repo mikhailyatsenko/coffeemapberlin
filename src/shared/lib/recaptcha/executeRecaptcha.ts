@@ -27,6 +27,18 @@ declare global {
   }
 }
 
+/**
+ * reCAPTCHA could not produce a token — most often because an ad blocker
+ * blocked the script. Callers can tell this apart from a server error and ask
+ * the visitor to allow it or sign in.
+ */
+export class RecaptchaUnavailableError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RecaptchaUnavailableError';
+  }
+}
+
 let loader: Promise<Grecaptcha> | null = null;
 
 const loadRecaptcha = async (): Promise<Grecaptcha> => {
@@ -43,7 +55,7 @@ const loadRecaptcha = async (): Promise<Grecaptcha> => {
     const onReady = () => {
       const grecaptcha = window.grecaptcha;
       if (!grecaptcha) {
-        reject(new Error('reCAPTCHA failed to initialise'));
+        reject(new RecaptchaUnavailableError('reCAPTCHA failed to initialise'));
         return;
       }
       grecaptcha.ready(() => {
@@ -64,7 +76,7 @@ const loadRecaptcha = async (): Promise<Grecaptcha> => {
     script.onerror = () => {
       // Allow a later attempt to retry the load instead of caching the failure.
       loader = null;
-      reject(new Error('reCAPTCHA failed to load'));
+      reject(new RecaptchaUnavailableError('reCAPTCHA failed to load'));
     };
     document.head.appendChild(script);
   });
@@ -81,5 +93,9 @@ const loadRecaptcha = async (): Promise<Grecaptcha> => {
  */
 export const executeRecaptcha = async (action: RecaptchaAction): Promise<string> => {
   const grecaptcha = await loadRecaptcha();
-  return await grecaptcha.execute(SITE_KEY!, { action });
+  try {
+    return await grecaptcha.execute(SITE_KEY!, { action });
+  } catch {
+    throw new RecaptchaUnavailableError('reCAPTCHA failed to issue a token');
+  }
 };

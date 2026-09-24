@@ -55,6 +55,10 @@ export const useToggleCharacteristic = (placeId: string) => {
     }
   };
 
+  /**
+   * Rethrows on failure so the caller can show it. The optimistic toggle needs
+   * no manual undo: Apollo drops the optimistic layer when the mutation fails.
+   */
   const toggleChar = async (characteristic: Characteristic) => {
     try {
       const guestCredentials = user ? {} : await ensureGuestIdentity();
@@ -63,7 +67,7 @@ export const useToggleCharacteristic = (placeId: string) => {
         variables: { placeId, characteristic, ...guestCredentials },
       });
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      console.error('Error toggling characteristic:', error);
       throw error;
     }
   };

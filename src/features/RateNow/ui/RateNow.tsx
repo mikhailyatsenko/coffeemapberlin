@@ -1,7 +1,13 @@
+import { useState } from 'react';
 import { RatePlaceWidget, ToggleCharacteristic } from 'entities/RatePlace';
 import { useDeleteReview, useToggleCharacteristic } from 'shared/api';
 import EditIcon from 'shared/assets/edit-icon.svg?react';
-import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
+import {
+  type Characteristic,
+  PlaceDocument,
+  PlaceReviewsDocument,
+  useAddRatingMutation,
+} from 'shared/generated/graphql';
 import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
@@ -9,6 +15,7 @@ import { Loader } from 'shared/ui/Loader';
 import { Modal } from 'shared/ui/Modal';
 import { RegularButton } from 'shared/ui/RegularButton';
 
+import { getSaveErrorMessage } from '../lib/getSaveErrorMessage';
 import { type RateNowProps } from '../types';
 import cls from './RateNow.module.scss';
 
@@ -22,6 +29,7 @@ export const RateNow = ({
 }: RateNowProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
   const { user } = useAuthStore();
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [addRating, { loading: loadingRating }] = useAddRatingMutation({
     onCompleted() {
       revalidatePlaces();
@@ -29,20 +37,35 @@ export const RateNow = ({
   });
 
   const onSubmitRating = async (rating: number) => {
-    // Guests rate too; the captcha runs once, when the identity is issued.
-    const guestCredentials = user ? {} : await ensureGuestIdentity();
+    setSaveError(null);
+    try {
+      // Guests rate too; the captcha runs once, when the identity is issued.
+      const guestCredentials = user ? {} : await ensureGuestIdentity();
 
-    await addRating({
-      variables: { placeId, rating, ...guestCredentials },
-      refetchQueries: [
-        { query: PlaceDocument, variables: { placeId } },
-        { query: PlaceReviewsDocument, variables: { placeId } },
-      ],
-      awaitRefetchQueries: true,
-    });
+      await addRating({
+        variables: { placeId, rating, ...guestCredentials },
+        refetchQueries: [
+          { query: PlaceDocument, variables: { placeId } },
+          { query: PlaceReviewsDocument, variables: { placeId } },
+        ],
+        awaitRefetchQueries: true,
+      });
+    } catch (error) {
+      console.error('Error adding rating:', error);
+      setSaveError(getSaveErrorMessage(error));
+    }
   };
 
   const { toggleChar } = useToggleCharacteristic(placeId);
+
+  const onToggleCharacteristic = async (characteristic: Characteristic) => {
+    setSaveError(null);
+    try {
+      await toggleChar(characteristic);
+    } catch (error) {
+      setSaveError(getSaveErrorMessage(error));
+    }
+  };
 
   const currentUserReview = reviews.find((review) => review.isOwnReview);
 
@@ -66,6 +89,7 @@ export const RateNow = ({
         category: 'engagement',
       });
     }
+    setSaveError(null);
     setShowRateNow(true);
   };
 
@@ -103,9 +127,14 @@ export const RateNow = ({
               reviewId={currentUserReview?.id}
               onSubmitRating={onSubmitRating}
             />
+            {saveError && (
+              <p className={cls.error} role="alert">
+                {saveError}
+              </p>
+            )}
             <div className={cls.characteristicWidget}>
               <h4>What made your visit special?</h4>
-              <ToggleCharacteristic toggleChar={toggleChar} characteristicCounts={characteristicCounts} />
+              <ToggleCharacteristic toggleChar={onToggleCharacteristic} characteristicCounts={characteristicCounts} />
             </div>
           </div>
         </Modal>
