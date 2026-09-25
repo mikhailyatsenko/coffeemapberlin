@@ -28,6 +28,12 @@ vi.mock('shared/stores/places', () => ({ revalidatePlaces: vi.fn() }));
 const placeId = 'place-1';
 const guest = { guestId: 'guest-1', guestSecret: 'secret-1' };
 
+/**
+ * How long a mock stays unanswered in tests that check the state while a save is in flight.
+ * Long enough that a loaded machine still sees that state, short of the 1000 ms findBy / waitFor timeout.
+ */
+const IN_FLIGHT_MS = 300;
+
 const unmarked = { __typename: 'CharacteristicData', pressed: false, count: 0 } as const;
 const marked = { __typename: 'CharacteristicData', pressed: true, count: 1 } as const;
 
@@ -268,7 +274,7 @@ describe('RateBlock', () => {
   it('thanks the Guest and shows the Rating the moment a bean is tapped', async () => {
     const user = userEvent.setup();
     const addRating = vi.fn();
-    renderRateBlock([addRatingMock({ onCall: addRating, delay: 50 }), ...refetchMocks()]);
+    renderRateBlock([addRatingMock({ onCall: addRating, delay: IN_FLIGHT_MS }), ...refetchMocks()]);
 
     await user.click(bean(4));
 
@@ -453,7 +459,7 @@ describe('RateBlock', () => {
   it('brings a question back and explains a failed Yes', async () => {
     const user = userEvent.setup();
     renderRateBlock(
-      [toggleCharacteristicMock({ characteristic: Characteristic.yummyEats, fails: true, delay: 20 })],
+      [toggleCharacteristicMock({ characteristic: Characteristic.yummyEats, fails: true, delay: IN_FLIGHT_MS })],
       4,
     );
 
@@ -590,7 +596,7 @@ describe('RateBlock', () => {
 
   it('offers a mark for removal only once its Yes is saved', async () => {
     const user = userEvent.setup();
-    renderRateBlock([toggleCharacteristicMock({ characteristic: Characteristic.yummyEats, delay: 20 })], 4);
+    renderRateBlock([toggleCharacteristicMock({ characteristic: Characteristic.yummyEats, delay: IN_FLIGHT_MS })], 4);
 
     await user.click(answer('Yummy eats?', 'Yes'));
 
@@ -615,7 +621,7 @@ describe('RateBlock', () => {
   it('restores the chip and explains a failed removal', async () => {
     const user = userEvent.setup();
     renderRateBlock(
-      [toggleCharacteristicMock({ characteristic: Characteristic.freeWifi, fails: true, delay: 20 })],
+      [toggleCharacteristicMock({ characteristic: Characteristic.freeWifi, fails: true, delay: IN_FLIGHT_MS })],
       4,
       { markedCharacteristics: [Characteristic.freeWifi] },
     );
