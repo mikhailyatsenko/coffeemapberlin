@@ -19,6 +19,7 @@ import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCard
 import { ReviewsBlock } from '../components/ReviewsBlock';
 import { Sidebar } from '../components/Sidebar';
 import { REVIEW_TEXT_SELECTOR } from '../constants/reviewText';
+import { useShowsRateBlock } from '../model/useShowsRateBlock';
 import cls from './DetailedPlace.module.scss';
 import 'driver.js/dist/driver.css';
 
@@ -69,9 +70,11 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     placeData?.place?.properties ? placeId : null,
   );
   const ownReview = placeReviewsData?.placeReviews.ownReview;
-  // Latched: a later refetch (e.g. after sign-in) must not unmount the block and count a second view.
-  const [haveReviewsLoaded, setHaveReviewsLoaded] = useState(false);
-  if (!haveReviewsLoaded && placeReviewsData) setHaveReviewsLoaded(true);
+  const showsRateBlock = useShowsRateBlock({
+    placeId,
+    hasReviews: Boolean(placeReviewsData),
+    hasReviewsError: Boolean(placeReviewsError),
+  });
   const displayedReviews = useMemo(() => {
     const own = placeReviewsData?.placeReviews.ownReview;
     const others = placeReviewsData?.placeReviews.othersSorted ?? [];
@@ -233,8 +236,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
         }
       />
 
-      {/* Waits for the own Review, so a returning person sees their Rating rather than the beans first. */}
-      {(haveReviewsLoaded || placeReviewsError) && (
+      {showsRateBlock && (
         <div className={cls.rateBlock}>
           <RateBlock
             ref={rateBlockRef}
