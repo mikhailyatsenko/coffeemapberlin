@@ -53,7 +53,7 @@ _Avoid_: Merge, migrate, transfer
 ### Reviews
 
 **Review**:
-One opinion about one Place: a Rating, Review text, Characteristics and photos, any of which may be missing. Left by a User or Guest (at most one per Place), or imported as a Google review.
+One opinion about one Place: a Rating, Review text, Characteristics and Photos, any of which may be missing. Left by a User or Guest (at most one per Place), or imported as a Google review.
 _Avoid_: Feedback, comment, interaction
 
 **Google review**:
@@ -71,6 +71,10 @@ _Avoid_: Score, overall rating
 **Review text**:
 The written part of a Review.
 _Avoid_: Text review, comment
+
+**Photo**:
+An image attached to a Review. Users and Guests add their own; Google reviews bring theirs from Google.
+_Avoid_: Image, picture, review image
 
 **Characteristic**:
 One of a fixed set of qualities (e.g. free Wi-Fi, pet friendly) that a person marks for a Place in their Review. The community's opinion, counted per Place.
