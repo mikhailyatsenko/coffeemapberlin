@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { ensureGuestIdentity } from 'shared/lib/guest';
-import { getSaveErrorMessage } from 'shared/lib/saveError';
+import { getSaveErrorMessage, getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
 
@@ -66,7 +66,7 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
     } catch (saveError) {
       console.error('Error adding rating:', saveError);
       setError(getSaveErrorMessage(saveError));
-      trackContributionFailed(placeId, actor, 'rating', saveError);
+      trackContributionFailed(placeId, actor, { kind: 'rating', reason: getSaveErrorReason(saveError) });
       onFailed?.();
     } finally {
       setPendingRating(null);

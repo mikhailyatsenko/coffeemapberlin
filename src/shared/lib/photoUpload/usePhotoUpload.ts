@@ -53,8 +53,11 @@ export const usePhotoUpload = (existingCount: number) => {
     setPhotos((prev) => prev.map((photo) => (photo.id === id ? { ...photo, ...patch } : photo)));
   };
 
-  /** Keeps as many files as the Review has room for, downscales them and returns how many it dropped. */
-  const add = async (files: File[]): Promise<{ dropped: number }> => {
+  /**
+   * Keeps as many files as the Review has room for and downscales them.
+   * @returns how many files it dropped, and the Photos it added: pending, or failed as `unreadable`.
+   */
+  const add = async (files: File[]): Promise<{ dropped: number; added: Photo[] }> => {
     const kept = files.slice(0, room);
     const dropped = files.length - kept.length;
     setRoomNotice(dropped > 0 ? `You can add ${kept.length} more` : null);
@@ -66,7 +69,7 @@ export const usePhotoUpload = (existingCount: number) => {
     setPhotos((prev) => [...prev, ...prepared]);
     setPreparingCount((count) => count - kept.length);
 
-    return { dropped };
+    return { dropped, added: prepared };
   };
 
   /** Removes a Photo that hasn't been uploaded. */
@@ -138,15 +141,13 @@ export const usePhotoUpload = (existingCount: number) => {
       target,
     );
 
-  /** Fails every Photo waiting to upload, when the upload can't start at all. */
-  const failWaiting = (reason: PhotoFailureReason) => {
-    setPhotos((prev) =>
-      prev.map((photo) => (photo.status === 'pending' ? { ...photo, status: 'failed', reason } : photo)),
-    );
+  /** Fails the Photos about to upload, when their upload can't start at all. */
+  const fail = (ids: string[], reason: PhotoFailureReason) => {
+    setPhotos((prev) => prev.map((photo) => (ids.includes(photo.id) ? { ...photo, status: 'failed', reason } : photo)));
   };
 
-  /** Uploads one failed Photo again. */
-  const retry = async (id: string, target: UploadTarget) => await uploadEach([id], target);
+  /** Uploads just these Photos: ones picked a moment ago, or a failed one again. */
+  const uploadPhotos = async (ids: string[], target: UploadTarget) => await uploadEach(ids, target);
 
   useEffect(
     () => () => {
@@ -157,7 +158,7 @@ export const usePhotoUpload = (existingCount: number) => {
     [],
   );
 
-  return { photos, room, roomNotice, isPreparing, isUploading, add, remove, removeAll, upload, retry, failWaiting };
+  return { photos, room, roomNotice, isPreparing, isUploading, add, remove, removeAll, upload, uploadPhotos, fail };
 };
 
 export type PhotoUpload = ReturnType<typeof usePhotoUpload>;

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useToggleCharacteristic } from 'shared/api';
 import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
-import { getSaveErrorMessage } from 'shared/lib/saveError';
+import { getSaveErrorMessage, getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 
 import { QUESTION_BATCH_SIZE } from '../../../constants/questions';
@@ -73,7 +73,7 @@ export const useCharacteristicQuestions = ({
       } catch (saveError) {
         // Its question comes back: it is still in the batch, or in a later one if "More questions?" was used meanwhile.
         setError(getSaveErrorMessage(saveError));
-        trackContributionFailed(placeId, actor, 'characteristic', saveError);
+        trackContributionFailed(placeId, actor, { kind: 'characteristic', reason: getSaveErrorReason(saveError) });
       }
     });
   };

@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
 import { useRef } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -129,6 +130,17 @@ const uploadMock = ({
     onCall();
     return { data: { uploadReviewImage: { __typename: 'UploadReviewImageResponse', reviewImages: 1 } } };
   },
+});
+
+/** One `uploadReviewImage` for the Review that fails with the server's `code`, or on the network without one. */
+const failedUploadMock = ({
+  reviewId = 'own-review',
+  code,
+}: { reviewId?: string; code?: string } = {}): MockedResponse => ({
+  request: { query: UploadReviewImageDocument, variables: { reviewId, fileBuffer: DOWNSCALED_BASE64, ...guest } },
+  ...(code
+    ? { result: { errors: [new GraphQLError('Upload failed', { extensions: { code } })] } }
+    : { error: new Error('Network down') }),
 });
 
 /** The Place reviews with the person's own Review holding `ownPhotos` Photos. */
@@ -340,6 +352,9 @@ const photo = (name: string) => new File(['original'], name, { type: 'image/jpeg
 const pickPhotos = async (user: ReturnType<typeof userEvent.setup>, files: File[]) => {
   await user.upload(screen.getByLabelText('Choose photos'), files);
 };
+
+/** The thumbnail of the picked file `name`, with its status, error and Retry. */
+const thumbnailOf = (name: string) => screen.getByRole('img', { name: new RegExp(`: ${name}$`) }).closest('li')!;
 
 const skipAll = async (user: ReturnType<typeof userEvent.setup>) => {
   for (const text of askedQuestions()) await user.click(answer(text!, 'Skip'));
@@ -994,16 +1009,172 @@ describe('RateBlock', () => {
       expect(screen.getByText('1 photo added')).toBeInTheDocument();
     });
 
-    it('keeps the picked Photos and says why when the Guest identity check fails', async () => {
+    it.each([
+      { code: 'RATE_LIMITED', reason: 'rate_limited', message: 'Too many photos for now, try again later' },
+      { code: 'IMAGE_LIMIT_REACHED', reason: 'limit_reached', message: 'This review already has 10 photos' },
+      // The server's "too large".
+      { code: 'BAD_USER_INPUT', reason: 'unreadable', message: "This photo couldn't be read, try a JPEG or PNG" },
+      {
+        code: undefined,
+        reason: 'network',
+        message: "We couldn't save that. Please check your connection and try again.",
+      },
+    ])('shows why a Photo failed as $reason and reports it', async ({ code, reason, message }) => {
+      const user = userEvent.setup();
+      renderRateBlock([failedUploadMock({ code })], 3, { ownReviewId: 'own-review' });
+
+      await pickPhotos(user, [photo('a.jpg')]);
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(message);
+      expect(within(thumbnailOf('a.jpg')).getByText(message)).toBeInTheDocument();
+      expect(trackedEvents('contribution_failed')).toEqual([
+        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason }],
+      ]);
+      expect(trackedEvents('photos_uploaded')).toHaveLength(0);
+    });
+
+    it('keeps the picked Photos and fails them as reCAPTCHA when the Guest identity check fails', async () => {
       vi.mocked(ensureGuestIdentity).mockRejectedValue(new RecaptchaUnavailableError('reCAPTCHA failed to load'));
       const user = userEvent.setup();
       renderRateBlock([], 3, { ownReviewId: 'own-review' });
 
       await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
 
-      expect(await screen.findAllByText(/ad blocker/i)).toHaveLength(2);
-      expect(screen.getAllByRole('img')).toHaveLength(2);
+      expect(await screen.findByRole('alert')).toHaveTextContent(/ad blocker/i);
+      expect(within(thumbnailOf('a.jpg')).getByText(/ad blocker/i)).toBeInTheDocument();
+      expect(within(thumbnailOf('b.jpg')).getByText(/ad blocker/i)).toBeInTheDocument();
       expect(trackedEvents('photos_uploaded')).toHaveLength(0);
+      expect(trackedEvents('contribution_failed')).toEqual([
+        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'recaptcha' }],
+        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'recaptcha' }],
+      ]);
+    });
+
+    it('keeps the Photos that saved when another one fails', async () => {
+      const user = userEvent.setup();
+      renderRateBlock([failedUploadMock({ code: 'RATE_LIMITED' }), uploadMock({ reviewId: 'own-review' })], 3, {
+        ownReviewId: 'own-review',
+      });
+
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
+
+      expect(await screen.findByText('1 photo added')).toBeInTheDocument();
+      expect(within(thumbnailOf('b.jpg')).getByText('Saved')).toBeInTheDocument();
+      expect(within(thumbnailOf('a.jpg')).queryByText('Saved')).not.toBeInTheDocument();
+      expect(screen.getByRole('alert')).toHaveTextContent('Too many photos for now, try again later');
+      expect(trackedEvents('contribution_failed')).toHaveLength(1);
+      await waitFor(() => {
+        expect(trackedEvents('photos_uploaded')).toEqual([
+          ['photos_uploaded', { place_id: placeId, actor: 'guest', count: 1, had_text: false }],
+        ]);
+      });
+    });
+
+    it('fails an unreadable file alone while the rest upload', async () => {
+      vi.mocked(resizeAndConvert).mockRejectedValueOnce(new Error('Cannot decode'));
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      renderRateBlock([uploadMock({ reviewId: 'own-review', onCall: uploaded })], 3, { ownReviewId: 'own-review' });
+
+      await pickPhotos(user, [photo('a.heic'), photo('b.jpg')]);
+
+      expect(await screen.findByText('1 photo added')).toBeInTheDocument();
+      expect(uploaded).toHaveBeenCalledTimes(1);
+      const unreadable = thumbnailOf('a.heic');
+      expect(within(unreadable).getByText("This photo couldn't be read, try a JPEG or PNG")).toBeInTheDocument();
+      // Sending it again would fail the same way.
+      expect(within(unreadable).queryByRole('button', { name: /Retry/ })).not.toBeInTheDocument();
+      expect(screen.getByRole('alert')).toHaveTextContent("This photo couldn't be read, try a JPEG or PNG");
+      expect(trackedEvents('contribution_failed')).toEqual([
+        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'unreadable' }],
+      ]);
+    });
+
+    it('resends only the failed Photo on Retry and clears the alert once it saves', async () => {
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      renderRateBlock(
+        [
+          failedUploadMock(),
+          uploadMock({ reviewId: 'own-review', onCall: uploaded }),
+          uploadMock({ reviewId: 'own-review', onCall: uploaded }),
+        ],
+        3,
+        { ownReviewId: 'own-review' },
+      );
+
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
+      await screen.findByText('1 photo added');
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+
+      await user.click(within(thumbnailOf('a.jpg')).getByRole('button', { name: 'Retry a.jpg' }));
+
+      expect(await screen.findByText('2 photos added')).toBeInTheDocument();
+      expect(uploaded).toHaveBeenCalledTimes(2);
+      expect(within(thumbnailOf('a.jpg')).getByText('Saved')).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(trackedEvents('contribution_failed')).toHaveLength(1);
+      await waitFor(() => {
+        expect(trackedEvents('photos_uploaded')).toHaveLength(2);
+      });
+    });
+
+    it('reports each failed attempt when a Retry fails again', async () => {
+      const user = userEvent.setup();
+      renderRateBlock([failedUploadMock(), failedUploadMock({ code: 'IMAGE_LIMIT_REACHED' })], 3, {
+        ownReviewId: 'own-review',
+      });
+
+      await pickPhotos(user, [photo('a.jpg')]);
+      await screen.findByRole('alert');
+      await user.click(screen.getByRole('button', { name: 'Retry a.jpg' }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('alert')).toHaveTextContent('This review already has 10 photos');
+      });
+      expect(trackedEvents('contribution_failed').map(([, params]) => params?.reason)).toEqual([
+        'network',
+        'limit_reached',
+      ]);
+    });
+
+    it('checks the Guest identity again on Retry', async () => {
+      vi.mocked(ensureGuestIdentity)
+        .mockRejectedValueOnce(new RecaptchaUnavailableError('reCAPTCHA failed to load'))
+        .mockResolvedValue(guest);
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      renderRateBlock([uploadMock({ reviewId: 'own-review', onCall: uploaded })], 3, { ownReviewId: 'own-review' });
+
+      await pickPhotos(user, [photo('a.jpg')]);
+      await user.click(await screen.findByRole('button', { name: 'Retry a.jpg' }));
+
+      expect(await screen.findByText('1 photo added')).toBeInTheDocument();
+      expect(ensureGuestIdentity).toHaveBeenCalledTimes(2);
+      expect(uploaded).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('cancels the upload when the block goes away, without an error', async () => {
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      const { unmount } = renderRateBlock(
+        [
+          uploadMock({ reviewId: 'own-review', delay: IN_FLIGHT_MS }),
+          uploadMock({ reviewId: 'own-review', onCall: uploaded }),
+        ],
+        3,
+        { ownReviewId: 'own-review' },
+      );
+
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
+      await screen.findByRole('progressbar', { name: 'Upload progress for a.jpg' });
+      unmount();
+      await new Promise((resolve) => setTimeout(resolve, IN_FLIGHT_MS * 2));
+
+      expect(uploaded).not.toHaveBeenCalled();
+      expect(trackedEvents('contribution_failed')).toHaveLength(0);
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it('refetches the Place reviews once a batch saves, with no "Create account" modal', async () => {

@@ -17,3 +17,13 @@
     display: none;
   }
 }
+
+.error {
+  margin: 0;
+  color: var(--error);
+  font-size: 14px;
+  padding: 8px 12px;
+  background-color: var(--error-light);
+  border: 1px solid var(--error);
+  border-radius: 4px;
+}
