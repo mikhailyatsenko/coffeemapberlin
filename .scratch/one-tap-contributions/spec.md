@@ -102,7 +102,7 @@ The feature ships with GA events for every step, a baseline and a success thresh
 | `characteristic_removed` | a mark removed from "Your marks" | `characteristic` |
 | `contribution_failed` | a Rating or Yes fails | `kind` (`rating` / `characteristic`), `reason` (`recaptcha` / `network`) |
 | `review_text_link_click` | "Add a few words or a photo" tapped | none |
-| `rate_place_click` | the header button tapped (kept for continuity) | none |
+| `rate_place_click` | the header button tapped (kept for continuity) | `item_id`, `item_name`, `category`: the params it carried before, so older GA reports still match |
 
 ## Testing Decisions
 
