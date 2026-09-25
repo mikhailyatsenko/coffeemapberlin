@@ -1,0 +1,56 @@
+.RateBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  text-align: center;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.thanks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.change {
+  padding: 0;
+  color: var(--accent-secondary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.questions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.reviewTextLink {
+  padding: 0;
+  color: var(--accent-secondary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

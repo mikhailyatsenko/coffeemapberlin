@@ -1,0 +1,78 @@
+.CharacteristicQuestions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+}
+
+.text {
+  float: left;
+  padding: 0;
+  font-size: 15px;
+  text-align: left;
+}
+
+.answers {
+  display: flex;
+  gap: 8px;
+}
+
+.yes,
+.skip,
+.more {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.yes {
+  color: var(--text-inverse);
+  background: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+
+  &:hover {
+    background: var(--accent-primary-hover);
+  }
+}
+
+.skip,
+.more {
+  color: var(--text-secondary);
+  background: none;
+  border: 1px solid var(--border-primary);
+
+  &:hover {
+    background: var(--bg-hover);
+  }
+}
+
+.more {
+  align-self: center;
+}
+
+.error {
+  color: var(--error);
+  font-size: 14px;
+  padding: 8px 12px;
+  background-color: var(--error-light);
+  border: 1px solid var(--error);
+  border-radius: 4px;
+}

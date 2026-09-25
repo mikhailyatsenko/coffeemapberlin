@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useToggleFavoriteMutation } from 'shared/generated/graphql';
+import { trackEvent } from 'shared/lib/analytics';
 import { GET_FAVORITE_PLACES } from 'shared/query/places/queries';
 import { useAuthStore } from 'shared/stores/auth';
 import { useGuestFavoritesStore, markGuestInfoShown, toggleGuestFavorite } from 'shared/stores/guestFavorites';
@@ -56,13 +57,11 @@ export const AddToFavButton = ({
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
       e.preventDefault();
-      if (process.env.VITE_ENV !== 'development') {
-        window.gtag('event', 'add_to_favorites_click', {
-          item_id: placeId,
-          item_name: 'click on favorites',
-          category: 'engagement',
-        });
-      }
+      trackEvent('add_to_favorites_click', {
+        item_id: placeId,
+        item_name: 'click on favorites',
+        category: 'engagement',
+      });
 
       if (!user) {
         setIsAnimating(true);

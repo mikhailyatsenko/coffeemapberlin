@@ -2,6 +2,7 @@ import React from 'react';
 import { AddTextReviewForm } from 'features/AddTextReview';
 import { ReviewList } from 'features/ReviewList';
 import { type Review } from 'shared/generated/graphql';
+import { REVIEW_TEXT_SELECTOR } from '../../../constants/reviewText';
 import cls from '../../../ui/DetailedPlace.module.scss';
 
 interface ReviewsBlockProps {
@@ -27,9 +28,8 @@ export const ReviewsBlock: React.FC<ReviewsBlockProps> = ({
 }) => {
   const isFormShown = isEditingReview || !ownReviewHasText;
 
-  // focus() also scrolls the field into view.
   const focusReviewText = () => {
-    document.querySelector<HTMLTextAreaElement>('#review-form textarea')?.focus();
+    document.querySelector<HTMLTextAreaElement>(REVIEW_TEXT_SELECTOR)?.focus();
   };
 
   return (

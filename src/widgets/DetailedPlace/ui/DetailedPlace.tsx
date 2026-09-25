@@ -1,8 +1,8 @@
 // import { driver } from 'driver.js';
-import React, { useCallback, useMemo, useState, memo } from 'react';
+import React, { useCallback, useMemo, useRef, useState, memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { RateNow } from 'features/RateNow';
+import { RateBlock, type RateBlockHandle, RateButton } from 'features/RateNow';
 import { SendReportInaccuracyForm } from 'features/SendReportInaccuracyForm';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery } from 'shared/generated/graphql';
@@ -18,13 +18,15 @@ import { Header } from '../components/Header';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import { ReviewsBlock } from '../components/ReviewsBlock';
 import { Sidebar } from '../components/Sidebar';
+import { REVIEW_TEXT_SELECTOR } from '../constants/reviewText';
+import { useShowsRateBlock } from '../model/useShowsRateBlock';
 import cls from './DetailedPlace.module.scss';
 import 'driver.js/dist/driver.css';
 
 const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   const navigate = useNavigate();
 
-  const [showRateNow, setShowRateNow] = useState(false);
+  const rateBlockRef = useRef<RateBlockHandle>(null);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [editInitialText, setEditInitialText] = useState('');
   const [showReportInaccuracyModal, setShowReportInaccuracyModal] = useState(false);
@@ -64,8 +66,15 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     return allTags;
   }, [placeData?.place?.properties?.additionalInfo]);
 
-  const { data: placeReviewsData } = usePlaceReviews(placeData?.place?.properties ? placeId : null);
+  const { data: placeReviewsData, error: placeReviewsError } = usePlaceReviews(
+    placeData?.place?.properties ? placeId : null,
+  );
   const ownReview = placeReviewsData?.placeReviews.ownReview;
+  const showsRateBlock = useShowsRateBlock({
+    placeId,
+    hasReviews: Boolean(placeReviewsData),
+    hasReviewsError: Boolean(placeReviewsError),
+  });
   const displayedReviews = useMemo(() => {
     const own = placeReviewsData?.placeReviews.ownReview;
     const others = placeReviewsData?.placeReviews.othersSorted ?? [];
@@ -207,13 +216,12 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
         characteristicKeys={characteristicKeys as Characteristic[]}
         headerActions={
           <>
-            <RateNow
-              id="rate-place"
-              setShowRateNow={setShowRateNow}
-              showRateNow={showRateNow}
+            <RateButton
               placeId={placeId}
-              reviews={displayedReviews}
-              characteristicCounts={characteristicCounts}
+              rating={ownReview?.userRating}
+              onClick={() => {
+                rateBlockRef.current?.focusBeans();
+              }}
             />
 
             <AddToFavButton
@@ -227,6 +235,22 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
           </>
         }
       />
+
+      {showsRateBlock && (
+        <div className={cls.rateBlock}>
+          <RateBlock
+            ref={rateBlockRef}
+            key={placeId}
+            placeId={placeId}
+            rating={ownReview?.userRating}
+            characteristicCounts={characteristicCounts}
+            hasReviewText={Boolean(ownReview?.text)}
+            onAddReviewText={() => {
+              document.querySelector<HTMLTextAreaElement>(REVIEW_TEXT_SELECTOR)?.focus();
+            }}
+          />
+        </div>
+      )}
 
       <div className={cls.layout}>
         <main className={cls.main}>

@@ -17,8 +17,12 @@ A factual feature of a Place imported from Google, such as dine-in or wheelchair
 _Avoid_: Tag, additional info
 
 **Favorite**:
-A Place a person has saved to come back to. Guests and Users have Favorites alike.
+A Place a person has saved to come back to. Guests and Users have Favorites alike. Saving a Favorite is not a Visit.
 _Avoid_: Bookmark, saved place, like
+
+**Visit**:
+A Place a person has been to, known from their own Review of it. Not marked separately; Guests and Users have Visits alike.
+_Avoid_: Check-in, been there, visited place
 
 **Place suggestion**:
 A proposal from a User or Guest to add a Place that is not yet on the map. Not shown on the map until approved.
@@ -81,6 +85,14 @@ _Avoid_: Tags filter, facets
 **Search**:
 Narrowing the Places shown by matching their name. Separate from Filters and applied on top of them.
 _Avoid_: Filter (for name matching), lookup
+
+**Quiz**:
+A few questions about what a person is looking for, answered with a handful of Places matching their Neighborhood and Amenities.
+_Avoid_: Test, survey, finder, match-maker
+
+**Shortlist**:
+Up to five Places in one Neighborhood that share a set of Amenities, e.g. Dog friendly in Mitte. Built from Amenities, not opinion.
+_Avoid_: Best-of list, ranking, collection, pick
 
 ### Journal
 
