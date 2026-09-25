@@ -12,7 +12,8 @@ import { type RateBlockProps } from '../types';
  * The block's states: beans while there is no Rating or the person is changing it,
  * otherwise the thank-you with the Rating. A tap shows the thank-you at once; a failed
  * save brings the beans back. Once a Rating exists and no questions remain, a person
- * without Review text is offered the Review text form.
+ * without Review text is offered the Review text form. Photos go to the Review the
+ * Rating saved to in this page view, else to the person's own Review.
  */
 export const useRateBlock = ({
   placeId,
@@ -20,6 +21,7 @@ export const useRateBlock = ({
   characteristicCounts,
   hasReviewText,
   onAddReviewText,
+  ownReviewId,
   ref,
 }: RateBlockProps) => {
   const user = useAuthStore((s) => s.user);
@@ -30,6 +32,8 @@ export const useRateBlock = ({
     setRatingFromCaller(rating);
     setTappedRating(null);
   }
+  // Known as soon as a Rating saves, before the caller's Reviews refetch.
+  const [savedReviewId, setSavedReviewId] = useState<string | null>(null);
   const [isChanging, setIsChanging] = useState(false);
   const [isThanked, setIsThanked] = useState(false);
   // Not asked again in this page view: skipped, or removed from "Your marks". Kept here so it outlives a failed Rating.
@@ -45,6 +49,7 @@ export const useRateBlock = ({
 
   const currentRating = tappedRating ?? rating ?? null;
   const showsBeans = isChanging || currentRating === null;
+  const reviewId = savedReviewId ?? ownReviewId;
   const offersReviewText =
     currentRating !== null && !hasReviewText && getRemainingQuestions(characteristicCounts, dismissed).length === 0;
 
@@ -100,6 +105,10 @@ export const useRateBlock = ({
     setIsChanging(false);
   };
 
+  const handleSaved = (_rating: number, newReviewId: string) => {
+    setSavedReviewId(newReviewId);
+  };
+
   const handleSaveFailed = () => {
     pendingFocusRef.current = {};
     setTappedRating(null);
@@ -137,7 +146,9 @@ export const useRateBlock = ({
     currentRating,
     showsBeans,
     isThanked,
+    reviewId,
     handleRate,
+    handleSaved,
     handleSaveFailed,
     startChange,
     dismissed,

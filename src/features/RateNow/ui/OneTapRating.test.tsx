@@ -105,7 +105,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     expect(bean(4)).toBeChecked();
     expect(addRating).not.toHaveBeenCalled();
     await waitFor(() => {
-      expect(onSaved).toHaveBeenCalledWith(4);
+      expect(onSaved).toHaveBeenCalledWith(4, 'review-1');
     });
     expect(addRating).toHaveBeenCalledTimes(1);
     expect(bean(4)).toBeChecked();
@@ -149,7 +149,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
 
     await user.click(bean(4));
     await waitFor(() => {
-      expect(onSaved).toHaveBeenCalledWith(4);
+      expect(onSaved).toHaveBeenCalledWith(4, 'review-1');
     });
     // The Rating was deleted elsewhere, e.g. from the person's Review card.
     rerender(
@@ -175,7 +175,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     await user.click(bean(4));
 
     await waitFor(() => {
-      expect(onSaved).toHaveBeenCalledWith(4);
+      expect(onSaved).toHaveBeenCalledWith(4, 'review-1');
     });
     expect(ensureGuestIdentity).not.toHaveBeenCalled();
     expect(trackedEvents('rating_saved')).toEqual([
@@ -273,7 +273,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     await user.keyboard('{End}{ArrowLeft}{Enter}');
 
     await waitFor(() => {
-      expect(onSaved).toHaveBeenCalledWith(4);
+      expect(onSaved).toHaveBeenCalledWith(4, 'review-1');
     });
   });
 });

@@ -11,10 +11,13 @@ import {
   type PlaceQuery,
   PlaceReviewsDocument,
   ToggleCharacteristicDocument,
+  UploadReviewImageDocument,
   usePlaceQuery,
+  usePlaceReviewsQuery,
 } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { ensureGuestIdentity } from 'shared/lib/guest';
+import { resizeAndConvert } from 'shared/lib/image';
 import { RecaptchaUnavailableError } from 'shared/lib/recaptcha';
 import { setUser } from 'shared/stores/auth';
 import { useModalStore } from 'shared/stores/modal';
@@ -24,6 +27,8 @@ import { RateButton } from './RateButton';
 vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
 vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('shared/stores/places', () => ({ revalidatePlaces: vi.fn() }));
+// jsdom has no createImageBitmap or canvas, so the downscale is replaced by a stand-in.
+vi.mock('shared/lib/image', () => ({ resizeAndConvert: vi.fn() }));
 
 const placeId = 'place-1';
 const guest = { guestId: 'guest-1', guestSecret: 'secret-1' };
@@ -110,6 +115,57 @@ const refetchMocks = (): MockedResponse[] => [
   },
 ];
 
+const DOWNSCALED_BASE64 = btoa('downscaled');
+
+/** One answered `uploadReviewImage` for the Review; `onCall` counts what reached the network. */
+const uploadMock = ({
+  reviewId = 'review-1',
+  onCall = () => {},
+  delay = 0,
+}: { reviewId?: string; onCall?: () => void; delay?: number } = {}): MockedResponse => ({
+  request: { query: UploadReviewImageDocument, variables: { reviewId, fileBuffer: DOWNSCALED_BASE64, ...guest } },
+  delay,
+  result: () => {
+    onCall();
+    return { data: { uploadReviewImage: { __typename: 'UploadReviewImageResponse', reviewImages: 1 } } };
+  },
+});
+
+/** The Place reviews with the person's own Review holding `ownPhotos` Photos. */
+const placeReviewsMock = ({
+  ownPhotos = 0,
+  onCall = () => {},
+}: { ownPhotos?: number; onCall?: () => void } = {}): MockedResponse => ({
+  request: { query: PlaceReviewsDocument, variables: { placeId } },
+  result: () => {
+    onCall();
+    return {
+      data: {
+        placeReviews: {
+          __typename: 'PlaceReviews',
+          id: placeId,
+          reviews: [
+            {
+              __typename: 'Review',
+              id: 'own-review',
+              text: null,
+              userId: null,
+              userName: 'Guest',
+              userAvatar: null,
+              createdAt: '2026-09-25',
+              userRating: 3,
+              characteristics: [],
+              isOwnReview: true,
+              reviewImages: ownPhotos,
+              isGoogleReview: false,
+            },
+          ],
+        },
+      },
+    };
+  },
+});
+
 /** A stand-in for the browser's viewport check: the test says when the block becomes visible. */
 let reportVisibility: (isIntersecting: boolean) => void = () => {};
 
@@ -159,14 +215,26 @@ const Harness = ({
   hasReviewText,
   onAddReviewText,
   withRateButton,
+  ownReviewId,
+  ownReviewPhotoCount,
+  watchesReviews,
 }: {
   rating?: number | null;
   hasReviewText: boolean;
   onAddReviewText: () => void;
   withRateButton: boolean;
+  ownReviewId?: string;
+  ownReviewPhotoCount: number;
+  watchesReviews: boolean;
 }) => {
   const rateBlockRef = useRef<RateBlockHandle>(null);
   const { data } = usePlaceQuery({ variables: { placeId }, fetchPolicy: 'cache-only' });
+  // The Place page's Reviews: a refetch after Photos reaches the network and updates the own Review's count.
+  const { data: reviewsData, refetch: refetchReviews } = usePlaceReviewsQuery({
+    variables: { placeId },
+    skip: !watchesReviews,
+  });
+  const ownReview = reviewsData?.placeReviews.reviews.find((review) => review.isOwnReview);
   if (!data?.place) return null;
   const { characteristicCounts } = data.place.properties;
 
@@ -188,7 +256,20 @@ const Harness = ({
         characteristicCounts={characteristicCounts}
         hasReviewText={hasReviewText}
         onAddReviewText={onAddReviewText}
+        ownReviewId={ownReviewId}
+        ownReviewPhotoCount={ownReview?.reviewImages ?? ownReviewPhotoCount}
       />
+      {watchesReviews && (
+        // Stands in for another part of the page, such as the Review text form, refetching the Reviews.
+        <button
+          type="button"
+          onClick={() => {
+            refetchReviews().catch(() => {});
+          }}
+        >
+          Refetch reviews
+        </button>
+      )}
       <p>Friendly staff count: {characteristicCounts.friendlyStaff.count}</p>
     </>
   );
@@ -202,11 +283,17 @@ const renderRateBlock = (
     hasReviewText = false,
     onAddReviewText = () => {},
     withRateButton = false,
+    ownReviewId,
+    ownReviewPhotoCount = 0,
+    watchesReviews = false,
   }: {
     markedCharacteristics?: Characteristic[];
     hasReviewText?: boolean;
     onAddReviewText?: () => void;
     withRateButton?: boolean;
+    ownReviewId?: string;
+    ownReviewPhotoCount?: number;
+    watchesReviews?: boolean;
   } = {},
 ) => {
   const cache = new InMemoryCache();
@@ -218,6 +305,9 @@ const renderRateBlock = (
         hasReviewText={hasReviewText}
         onAddReviewText={onAddReviewText}
         withRateButton={withRateButton}
+        ownReviewId={ownReviewId}
+        ownReviewPhotoCount={ownReviewPhotoCount}
+        watchesReviews={watchesReviews}
       />
     </MockedProvider>,
   );
@@ -238,7 +328,18 @@ const markNames = () =>
     .getAllByRole('button')
     .map((chip) => chip.getAttribute('aria-label'));
 
-const reviewTextLink = () => screen.queryByRole('button', { name: 'Add a few words or a photo' });
+const reviewTextLink = () => screen.queryByRole('button', { name: 'Add a few words' });
+
+/** The thank-you comes first; the Photo row below has its own status line. */
+const thanks = () => screen.getAllByRole('status')[0];
+
+const addPhotoButton = () => screen.queryByRole('button', { name: 'Add a photo' });
+
+const photo = (name: string) => new File(['original'], name, { type: 'image/jpeg' });
+
+const pickPhotos = async (user: ReturnType<typeof userEvent.setup>, files: File[]) => {
+  await user.upload(screen.getByLabelText('Choose photos'), files);
+};
 
 const skipAll = async (user: ReturnType<typeof userEvent.setup>) => {
   for (const text of askedQuestions()) await user.click(answer(text!, 'Skip'));
@@ -251,6 +352,9 @@ describe('RateBlock', () => {
     vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(ensureGuestIdentity).mockResolvedValue(guest);
+    vi.mocked(resizeAndConvert).mockResolvedValue(new Blob(['downscaled'], { type: 'image/webp' }));
+    URL.createObjectURL = vi.fn(() => 'blob:photo');
+    URL.revokeObjectURL = vi.fn();
     setUser(null);
   });
 
@@ -268,7 +372,7 @@ describe('RateBlock', () => {
 
     expect(screen.getByRole('heading', { name: 'Been here? Rate it' })).toBeInTheDocument();
     expect(screen.getAllByRole('radio')).toHaveLength(5);
-    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    expect(thanks()).toBeEmptyDOMElement();
   });
 
   it('thanks the Guest and shows the Rating the moment a bean is tapped', async () => {
@@ -278,9 +382,8 @@ describe('RateBlock', () => {
 
     await user.click(bean(4));
 
-    const thanks = screen.getByRole('status');
-    expect(thanks).toHaveTextContent('Thanks!');
-    expect(thanks).toHaveTextContent('Your rating: 4');
+    expect(thanks()).toHaveTextContent('Thanks!');
+    expect(thanks()).toHaveTextContent('Your rating: 4');
     // The tapped bean is gone, so focus moves to what replaced it.
     expect(screen.getByRole('button', { name: 'change' })).toHaveFocus();
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
@@ -289,7 +392,7 @@ describe('RateBlock', () => {
     await waitFor(() => {
       expect(addRating).toHaveBeenCalledTimes(1);
     });
-    expect(screen.getByRole('status')).toHaveTextContent('Your rating: 4');
+    expect(thanks()).toHaveTextContent('Your rating: 4');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
@@ -321,7 +424,7 @@ describe('RateBlock', () => {
   it('greets a returning person with their Rating and no thanks', () => {
     renderRateBlock([], 3);
 
-    const summary = screen.getByRole('status');
+    const summary = thanks();
     expect(summary).toHaveTextContent('Your rating: 3');
     expect(summary).not.toHaveTextContent('Thanks!');
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
@@ -337,7 +440,7 @@ describe('RateBlock', () => {
     expect(bean(3)).toHaveFocus();
     await user.click(bean(5));
 
-    expect(screen.getByRole('status')).toHaveTextContent('Your rating: 5');
+    expect(thanks()).toHaveTextContent('Your rating: 5');
     await waitFor(() => {
       expect(trackedEvents('rating_saved')).toEqual([
         ['rating_saved', { place_id: placeId, actor: 'guest', rating: 5, is_change: true }],
@@ -730,5 +833,228 @@ describe('RateBlock', () => {
     expect(bean(3)).toBeChecked();
     expect(bean(3)).toHaveFocus();
     expect(trackedEvents('rate_place_click')).toHaveLength(1);
+  });
+  describe('Add a photo', () => {
+    it('is not offered before a Rating', () => {
+      renderRateBlock([]);
+
+      expect(addPhotoButton()).not.toBeInTheDocument();
+    });
+
+    it('is disabled while the first Rating saves, then uploads to the Review the Rating created', async () => {
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      renderRateBlock([
+        addRatingMock({ delay: IN_FLIGHT_MS }),
+        ...refetchMocks(),
+        uploadMock({ onCall: uploaded }),
+        uploadMock({ onCall: uploaded }),
+      ]);
+
+      await user.click(bean(4));
+
+      expect(addPhotoButton()).toBeDisabled();
+      await waitFor(() => {
+        expect(addPhotoButton()).toBeEnabled();
+      });
+
+      await user.click(addPhotoButton()!);
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
+
+      expect(await screen.findByText('2 photos added')).toBeInTheDocument();
+      expect(uploaded).toHaveBeenCalledTimes(2);
+      expect(screen.getAllByText('Saved')).toHaveLength(2);
+      expect(ensureGuestIdentity).toHaveBeenCalled();
+    });
+
+    it('goes with a first Rating that fails to save', async () => {
+      const user = userEvent.setup();
+      renderRateBlock([
+        {
+          request: { query: AddRatingDocument, variables: { placeId, rating: 4, ...guest } },
+          error: new Error('down'),
+        },
+      ]);
+
+      await user.click(bean(4));
+
+      await screen.findByRole('alert');
+      expect(addPhotoButton()).not.toBeInTheDocument();
+    });
+
+    it('is offered to a returning person, while they change the Rating and with Review text', async () => {
+      const user = userEvent.setup();
+      renderRateBlock([], 3, { ownReviewId: 'own-review', hasReviewText: true });
+
+      expect(addPhotoButton()).toBeEnabled();
+
+      await user.click(screen.getByRole('button', { name: 'change' }));
+
+      expect(addPhotoButton()).toBeEnabled();
+    });
+
+    it('uploads to the own Review for a returning person', async () => {
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      renderRateBlock([uploadMock({ reviewId: 'own-review', onCall: uploaded })], 3, { ownReviewId: 'own-review' });
+
+      await pickPhotos(user, [photo('a.jpg')]);
+
+      expect(await screen.findByText('1 photo added')).toBeInTheDocument();
+      expect(uploaded).toHaveBeenCalledTimes(1);
+    });
+
+    it('is not offered when the Review already has 10 Photos', () => {
+      renderRateBlock([], 3, { ownReviewId: 'own-review', ownReviewPhotoCount: 10 });
+
+      expect(addPhotoButton()).not.toBeInTheDocument();
+    });
+
+    it('opens a picker for several images, the library or the camera', () => {
+      renderRateBlock([], 3, { ownReviewId: 'own-review' });
+
+      const input = screen.getByLabelText('Choose photos');
+      expect(input).toHaveAttribute('type', 'file');
+      expect(input).toHaveAttribute('accept', 'image/*');
+      expect(input).toHaveAttribute('multiple');
+      expect(input).not.toHaveAttribute('capture');
+    });
+
+    it('drops the files the Review has no room for', async () => {
+      const user = userEvent.setup();
+      const uploaded = vi.fn();
+      renderRateBlock([uploadMock({ reviewId: 'own-review', onCall: uploaded })], 3, {
+        ownReviewId: 'own-review',
+        ownReviewPhotoCount: 9,
+      });
+
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg'), photo('c.jpg')]);
+
+      expect(await screen.findByText('You can add 1 more')).toBeInTheDocument();
+      expect(await screen.findByText('1 photo added')).toBeInTheDocument();
+      expect(uploaded).toHaveBeenCalledTimes(1);
+      // The Review is full now.
+      expect(screen.queryByRole('button', { name: 'Add more' })).not.toBeInTheDocument();
+    });
+
+    it('offers "Add more" once a batch settles, counting the Photos it saved only once', async () => {
+      const user = userEvent.setup();
+      const refetched = vi.fn();
+      renderRateBlock(
+        [
+          placeReviewsMock({ ownPhotos: 7 }),
+          uploadMock({ reviewId: 'own-review', delay: IN_FLIGHT_MS }),
+          uploadMock({ reviewId: 'own-review' }),
+          placeReviewsMock({ ownPhotos: 9, onCall: refetched }),
+          uploadMock({ reviewId: 'own-review' }),
+          placeReviewsMock({ ownPhotos: 10 }),
+        ],
+        3,
+        { ownReviewId: 'own-review', ownReviewPhotoCount: 7, watchesReviews: true },
+      );
+
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
+
+      expect(screen.queryByRole('button', { name: 'Add more' })).not.toBeInTheDocument();
+      expect(await screen.findByText('2 photos added')).toBeInTheDocument();
+      // The refetch now reports the 9 Photos, the 2 saved here included.
+      await waitFor(() => {
+        expect(refetched).toHaveBeenCalledTimes(1);
+      });
+
+      await user.click(await screen.findByRole('button', { name: 'Add more' }));
+      await pickPhotos(user, [photo('c.jpg'), photo('d.jpg')]);
+
+      // 7 before this page view, 2 saved in the first batch: room for one more.
+      expect(await screen.findByText('You can add 1 more')).toBeInTheDocument();
+      expect(await screen.findByText('3 photos added')).toBeInTheDocument();
+    });
+
+    it('counts Photos the Review gains elsewhere in the page view', async () => {
+      const user = userEvent.setup();
+      renderRateBlock(
+        [
+          placeReviewsMock({ ownPhotos: 7 }),
+          uploadMock({ reviewId: 'own-review' }),
+          placeReviewsMock({ ownPhotos: 8 }),
+          // The Review text form added 2 more.
+          placeReviewsMock({ ownPhotos: 10 }),
+        ],
+        3,
+        { ownReviewId: 'own-review', watchesReviews: true },
+      );
+
+      await pickPhotos(user, [photo('a.jpg')]);
+      await screen.findByRole('button', { name: 'Add more' });
+      await user.click(screen.getByRole('button', { name: 'Refetch reviews' }));
+
+      await waitFor(() => {
+        expect(screen.queryByRole('button', { name: 'Add more' })).not.toBeInTheDocument();
+      });
+      expect(screen.getByText('1 photo added')).toBeInTheDocument();
+    });
+
+    it('keeps the picked Photos and says why when the Guest identity check fails', async () => {
+      vi.mocked(ensureGuestIdentity).mockRejectedValue(new RecaptchaUnavailableError('reCAPTCHA failed to load'));
+      const user = userEvent.setup();
+      renderRateBlock([], 3, { ownReviewId: 'own-review' });
+
+      await pickPhotos(user, [photo('a.jpg'), photo('b.jpg')]);
+
+      expect(await screen.findAllByText(/ad blocker/i)).toHaveLength(2);
+      expect(screen.getAllByRole('img')).toHaveLength(2);
+      expect(trackedEvents('photos_uploaded')).toHaveLength(0);
+    });
+
+    it('refetches the Place reviews once a batch saves, with no "Create account" modal', async () => {
+      const user = userEvent.setup();
+      const refetched = vi.fn();
+      const modalBefore = useModalStore.getState().modalContentVariant;
+      renderRateBlock(
+        [
+          placeReviewsMock(),
+          uploadMock({ reviewId: 'own-review' }),
+          placeReviewsMock({ ownPhotos: 1, onCall: refetched }),
+        ],
+        3,
+        {
+          ownReviewId: 'own-review',
+          watchesReviews: true,
+        },
+      );
+
+      await pickPhotos(user, [photo('a.jpg')]);
+
+      await waitFor(() => {
+        expect(refetched).toHaveBeenCalledTimes(1);
+      });
+      expect(useModalStore.getState().modalContentVariant).toBe(modalBefore);
+    });
+
+    it('reports the taps and the saved batch', async () => {
+      const user = userEvent.setup();
+      renderRateBlock([uploadMock({ reviewId: 'own-review' }), uploadMock({ reviewId: 'own-review' })], 3, {
+        ownReviewId: 'own-review',
+        hasReviewText: true,
+      });
+
+      await user.click(addPhotoButton()!);
+      await pickPhotos(user, [photo('a.jpg')]);
+      await user.click(await screen.findByRole('button', { name: 'Add more' }));
+      await pickPhotos(user, [photo('b.jpg')]);
+      await screen.findByText('2 photos added');
+
+      expect(trackedEvents('photo_button_click')).toEqual([
+        ['photo_button_click', { place_id: placeId, actor: 'guest' }],
+        ['photo_button_click', { place_id: placeId, actor: 'guest' }],
+      ]);
+      await waitFor(() => {
+        expect(trackedEvents('photos_uploaded')).toHaveLength(2);
+      });
+      expect(trackedEvents('photos_uploaded')[0]).toEqual([
+        'photos_uploaded',
+        { place_id: placeId, actor: 'guest', count: 1, had_text: true },
+      ]);
+    });
   });
 });

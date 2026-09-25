@@ -245,6 +245,8 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
             rating={ownReview?.userRating}
             characteristicCounts={characteristicCounts}
             hasReviewText={Boolean(ownReview?.text)}
+            ownReviewId={ownReview?.id}
+            ownReviewPhotoCount={ownReview?.reviewImages ?? 0}
             onAddReviewText={() => {
               document.querySelector<HTMLTextAreaElement>(REVIEW_TEXT_SELECTOR)?.focus();
             }}

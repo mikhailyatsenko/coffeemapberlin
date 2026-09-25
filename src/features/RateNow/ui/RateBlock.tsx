@@ -1,3 +1,4 @@
+import { AddPhotos } from '../components/AddPhotos';
 import { CharacteristicQuestions } from '../components/CharacteristicQuestions';
 import { YourMarks } from '../components/YourMarks';
 import { useRateBlock } from '../model/useRateBlock';
@@ -9,7 +10,7 @@ export type { RateBlockHandle, RateBlockProps };
 
 /** The Place page's "Been here? Rate it" block. */
 export const RateBlock = (props: RateBlockProps) => {
-  const { placeId, rating, characteristicCounts } = props;
+  const { placeId, rating, characteristicCounts, hasReviewText, ownReviewPhotoCount } = props;
   const {
     blockRef,
     beansRef,
@@ -17,7 +18,9 @@ export const RateBlock = (props: RateBlockProps) => {
     currentRating,
     showsBeans,
     isThanked,
+    reviewId,
     handleRate,
+    handleSaved,
     handleSaveFailed,
     startChange,
     dismissed,
@@ -34,7 +37,13 @@ export const RateBlock = (props: RateBlockProps) => {
       {showsBeans && <h2 className={cls.heading}>Been here? Rate it</h2>}
       {/* Stays mounted while hidden, so a save in flight can still report a failure. */}
       <div ref={beansRef} hidden={!showsBeans}>
-        <OneTapRating placeId={placeId} rating={rating} onRate={handleRate} onFailed={handleSaveFailed} />
+        <OneTapRating
+          placeId={placeId}
+          rating={rating}
+          onRate={handleRate}
+          onSaved={handleSaved}
+          onFailed={handleSaveFailed}
+        />
       </div>
       {/* The one thank-you container; always present so screen readers announce what appears in it. */}
       <div className={cls.thanks} role="status">
@@ -50,6 +59,15 @@ export const RateBlock = (props: RateBlockProps) => {
           </>
         )}
       </div>
+      {/* Its own row, outside the thank-you container: Photos don't wait for the questions. */}
+      {currentRating !== null && (
+        <AddPhotos
+          placeId={placeId}
+          reviewId={reviewId}
+          reviewPhotoCount={ownReviewPhotoCount}
+          hasReviewText={hasReviewText}
+        />
+      )}
       {/* Hidden rather than unmounted while there is no Rating, so Skips and saving Yeses outlive a failed Rating. */}
       <div className={cls.questions} hidden={currentRating === null}>
         <CharacteristicQuestions
@@ -71,7 +89,7 @@ export const RateBlock = (props: RateBlockProps) => {
       />
       {offersReviewText && (
         <button type="button" className={cls.reviewTextLink} onClick={addReviewText}>
-          Add a few words or a photo
+          Add a few words
         </button>
       )}
     </section>

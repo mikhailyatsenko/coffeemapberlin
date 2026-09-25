@@ -61,6 +61,8 @@ export const usePhotoUpload = (existingCount: number) => {
 
     setPreparingCount((count) => count + kept.length);
     const prepared = await Promise.all(kept.map(preparePhoto));
+    // Ahead of the render, so an upload started right after `add` sees them.
+    photosRef.current = [...photosRef.current, ...prepared];
     setPhotos((prev) => [...prev, ...prepared]);
     setPreparingCount((count) => count - kept.length);
 
@@ -136,6 +138,13 @@ export const usePhotoUpload = (existingCount: number) => {
       target,
     );
 
+  /** Fails every Photo waiting to upload, when the upload can't start at all. */
+  const failWaiting = (reason: PhotoFailureReason) => {
+    setPhotos((prev) =>
+      prev.map((photo) => (photo.status === 'pending' ? { ...photo, status: 'failed', reason } : photo)),
+    );
+  };
+
   /** Uploads one failed Photo again. */
   const retry = async (id: string, target: UploadTarget) => await uploadEach([id], target);
 
@@ -148,7 +157,7 @@ export const usePhotoUpload = (existingCount: number) => {
     [],
   );
 
-  return { photos, room, roomNotice, isPreparing, isUploading, add, remove, removeAll, upload, retry };
+  return { photos, room, roomNotice, isPreparing, isUploading, add, remove, removeAll, upload, retry, failWaiting };
 };
 
 export type PhotoUpload = ReturnType<typeof usePhotoUpload>;

@@ -45,7 +45,7 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
       // Guests rate too; the captcha runs once, when the identity is issued.
       const guestCredentials = user ? {} : await ensureGuestIdentity();
 
-      await addRating({
+      const { data } = await addRating({
         variables: { placeId, rating: newRating, ...guestCredentials },
         // In the background: the Rating already shows, and callers may have no Place page open.
         refetchQueries: [
@@ -61,7 +61,8 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
         rating: newRating,
         is_change: confirmedRating !== null,
       });
-      onSaved?.(newRating);
+      const reviewId = data?.addRating.reviewId;
+      if (reviewId) onSaved?.(newRating, reviewId);
     } catch (saveError) {
       console.error('Error adding rating:', saveError);
       setError(getSaveErrorMessage(saveError));
