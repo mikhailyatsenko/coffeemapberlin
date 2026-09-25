@@ -1,3 +1,3 @@
 export { OneTapRating, type OneTapRatingProps } from './OneTapRating';
-export { RateBlock, type RateBlockProps } from './RateBlock';
-export { RateNow } from './RateNow';
+export { RateBlock, type RateBlockHandle, type RateBlockProps } from './RateBlock';
+export { RateButton, type RateButtonProps } from './RateButton';

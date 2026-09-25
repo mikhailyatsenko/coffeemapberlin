@@ -2,6 +2,7 @@ import { InMemoryCache } from '@apollo/client';
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useRef } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AddRatingDocument,
@@ -17,7 +18,8 @@ import { ensureGuestIdentity } from 'shared/lib/guest';
 import { RecaptchaUnavailableError } from 'shared/lib/recaptcha';
 import { setUser } from 'shared/stores/auth';
 import { useModalStore } from 'shared/stores/modal';
-import { RateBlock } from './RateBlock';
+import { RateBlock, type RateBlockHandle } from './RateBlock';
+import { RateButton } from './RateButton';
 
 vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
 vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
@@ -150,18 +152,31 @@ const Harness = ({
   rating,
   hasReviewText,
   onAddReviewText,
+  withRateButton,
 }: {
   rating?: number | null;
   hasReviewText: boolean;
   onAddReviewText: () => void;
+  withRateButton: boolean;
 }) => {
+  const rateBlockRef = useRef<RateBlockHandle>(null);
   const { data } = usePlaceQuery({ variables: { placeId }, fetchPolicy: 'cache-only' });
   if (!data?.place) return null;
   const { characteristicCounts } = data.place.properties;
 
   return (
     <>
+      {withRateButton && (
+        <RateButton
+          placeId={placeId}
+          rating={rating}
+          onClick={() => {
+            rateBlockRef.current?.focusBeans();
+          }}
+        />
+      )}
       <RateBlock
+        ref={rateBlockRef}
         placeId={placeId}
         rating={rating}
         characteristicCounts={characteristicCounts}
@@ -180,13 +195,24 @@ const renderRateBlock = (
     markedCharacteristics = [],
     hasReviewText = false,
     onAddReviewText = () => {},
-  }: { markedCharacteristics?: Characteristic[]; hasReviewText?: boolean; onAddReviewText?: () => void } = {},
+    withRateButton = false,
+  }: {
+    markedCharacteristics?: Characteristic[];
+    hasReviewText?: boolean;
+    onAddReviewText?: () => void;
+    withRateButton?: boolean;
+  } = {},
 ) => {
   const cache = new InMemoryCache();
   cache.writeQuery({ query: PlaceDocument, variables: { placeId }, data: placeWith(markedCharacteristics) });
   return render(
     <MockedProvider mocks={mocks} cache={cache}>
-      <Harness rating={rating} hasReviewText={hasReviewText} onAddReviewText={onAddReviewText} />
+      <Harness
+        rating={rating}
+        hasReviewText={hasReviewText}
+        onAddReviewText={onAddReviewText}
+        withRateButton={withRateButton}
+      />
     </MockedProvider>,
   );
 };
@@ -223,6 +249,8 @@ describe('RateBlock', () => {
   });
 
   afterEach(() => {
+    // @ts-expect-error jsdom has no scrollIntoView; drop the stub a test may have put there.
+    delete Element.prototype.scrollIntoView;
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
     vi.mocked(trackEvent).mockClear();
@@ -669,5 +697,32 @@ describe('RateBlock', () => {
     expect(trackedEvents('characteristic_removed')).toHaveLength(1);
     expect(trackedEvents('rating_saved')).toHaveLength(1);
     expect(useModalStore.getState().modalContentVariant).toBe(modalBefore);
+  });
+  it('takes a person with no Rating from the header button to the beans', async () => {
+    const user = userEvent.setup();
+    const scrollIntoView = vi.fn();
+    // jsdom has no scrolling, so the stub stands in for it.
+    Element.prototype.scrollIntoView = scrollIntoView;
+    renderRateBlock([], null, { withRateButton: true });
+
+    await user.click(screen.getByRole('button', { name: 'Rate place' }));
+
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(bean(1)).toHaveFocus();
+    expect(trackedEvents('rate_place_click')).toEqual([
+      ['rate_place_click', expect.objectContaining({ place_id: placeId, actor: 'guest' })],
+    ]);
+  });
+
+  it('shows the Rating on the header button and opens the beans on it for a change', async () => {
+    const user = userEvent.setup();
+    Element.prototype.scrollIntoView = vi.fn();
+    renderRateBlock([], 3, { withRateButton: true });
+
+    await user.click(screen.getByRole('button', { name: 'Your rating: 3' }));
+
+    expect(bean(3)).toBeChecked();
+    expect(bean(3)).toHaveFocus();
+    expect(trackedEvents('rate_place_click')).toHaveLength(1);
   });
 });

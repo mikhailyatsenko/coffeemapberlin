@@ -1,11 +1,11 @@
 import { CharacteristicQuestions } from '../components/CharacteristicQuestions';
 import { YourMarks } from '../components/YourMarks';
 import { useRateBlock } from '../model/useRateBlock';
-import { type RateBlockProps } from '../types';
+import { type RateBlockHandle, type RateBlockProps } from '../types';
 import { OneTapRating } from './OneTapRating';
 import cls from './RateBlock.module.scss';
 
-export type { RateBlockProps };
+export type { RateBlockHandle, RateBlockProps };
 
 /** The Place page's "Been here? Rate it" block. */
 export const RateBlock = (props: RateBlockProps) => {

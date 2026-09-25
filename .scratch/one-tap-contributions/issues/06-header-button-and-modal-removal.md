@@ -4,10 +4,10 @@
 
 **Blocked by:** 05 ("Your marks" and the Review text link).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The header button scrolls to the block and focuses the beans; its label reflects the person's Rating
-- [ ] No modal opens anywhere for rating; no dead code of the modal remains; lint passes
-- [ ] "Be first to write one" focuses the Review text form
-- [ ] Manual check on a phone-width viewport: block position, header-button scroll, "write one" link
-- [ ] All tests green, `ReviewsBlock` tests included
+- [x] The header button scrolls to the block and focuses the beans; its label reflects the person's Rating
+- [x] No modal opens anywhere for rating; no dead code of the modal remains; lint passes
+- [x] "Be first to write one" focuses the Review text form
+- [x] Manual check on a phone-width viewport: block position, header-button scroll, "write one" link
+- [x] All tests green, `ReviewsBlock` tests included

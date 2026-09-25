@@ -1,8 +1,8 @@
 // import { driver } from 'driver.js';
-import React, { useCallback, useMemo, useState, memo } from 'react';
+import React, { useCallback, useMemo, useRef, useState, memo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { RateBlock, RateNow } from 'features/RateNow';
+import { RateBlock, type RateBlockHandle, RateButton } from 'features/RateNow';
 import { SendReportInaccuracyForm } from 'features/SendReportInaccuracyForm';
 import { IMAGEKIT_CDN_URL } from 'shared/constants';
 import { usePlaceQuery } from 'shared/generated/graphql';
@@ -25,7 +25,7 @@ import 'driver.js/dist/driver.css';
 const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   const navigate = useNavigate();
 
-  const [showRateNow, setShowRateNow] = useState(false);
+  const rateBlockRef = useRef<RateBlockHandle>(null);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [editInitialText, setEditInitialText] = useState('');
   const [showReportInaccuracyModal, setShowReportInaccuracyModal] = useState(false);
@@ -213,13 +213,12 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
         characteristicKeys={characteristicKeys as Characteristic[]}
         headerActions={
           <>
-            <RateNow
-              id="rate-place"
-              setShowRateNow={setShowRateNow}
-              showRateNow={showRateNow}
+            <RateButton
               placeId={placeId}
-              reviews={displayedReviews}
-              characteristicCounts={characteristicCounts}
+              rating={ownReview?.userRating}
+              onClick={() => {
+                rateBlockRef.current?.focusBeans();
+              }}
             />
 
             <AddToFavButton
@@ -238,6 +237,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
       {(haveReviewsLoaded || placeReviewsError) && (
         <div className={cls.rateBlock}>
           <RateBlock
+            ref={rateBlockRef}
             key={placeId}
             placeId={placeId}
             rating={ownReview?.userRating}

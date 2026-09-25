@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { type Characteristic } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { useAuthStore } from 'shared/stores/auth';
@@ -20,6 +20,7 @@ export const useRateBlock = ({
   characteristicCounts,
   hasReviewText,
   onAddReviewText,
+  ref,
 }: RateBlockProps) => {
   const user = useAuthStore((s) => s.user);
   // The Rating tapped in this page view, shown before the caller's Rating catches up.
@@ -39,7 +40,8 @@ export const useRateBlock = ({
   const beansRef = useRef<HTMLDivElement>(null);
   const changeButtonRef = useRef<HTMLButtonElement>(null);
   // Set by the person's own action, so the block never takes focus on its first render.
-  const shouldMoveFocusRef = useRef(false);
+  // Null means no focus move is pending; `{}` asks for a plain focus().
+  const pendingFocusRef = useRef<FocusOptions | null>(null);
 
   const currentRating = tappedRating ?? rating ?? null;
   const showsBeans = isChanging || currentRating === null;
@@ -55,37 +57,58 @@ export const useRateBlock = ({
   });
 
   // Focuses the start of the block: the beans, or "change" next to the Rating.
-  const focusRating = useCallback(() => {
-    if (showsBeans) {
-      beansRef.current?.querySelector<HTMLElement>('[role="radio"][tabindex="0"]')?.focus();
-    } else {
-      changeButtonRef.current?.focus();
-    }
-  }, [showsBeans]);
+  const focusRating = useCallback(
+    (options?: FocusOptions) => {
+      if (showsBeans) {
+        beansRef.current?.querySelector<HTMLElement>('[role="radio"][tabindex="0"]')?.focus(options);
+      } else {
+        changeButtonRef.current?.focus(options);
+      }
+    },
+    [showsBeans],
+  );
 
   // The focused element was just hidden, so focus moves to what replaced it.
   useEffect(() => {
-    if (!shouldMoveFocusRef.current) return;
-    shouldMoveFocusRef.current = false;
-    focusRating();
+    const options = pendingFocusRef.current;
+    if (!options) return;
+    pendingFocusRef.current = null;
+    focusRating(options);
   }, [focusRating]);
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      focusBeans: () => {
+        blockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // The smooth scroll above does the scrolling; focus must not jump there first.
+        if (showsBeans) {
+          focusRating({ preventScroll: true });
+        } else {
+          pendingFocusRef.current = { preventScroll: true };
+          setIsChanging(true);
+        }
+      },
+    }),
+    [blockRef, showsBeans, focusRating],
+  );
+
   const handleRate = (newRating: number) => {
-    shouldMoveFocusRef.current = true;
+    pendingFocusRef.current = {};
     setTappedRating(newRating);
     setIsThanked(true);
     setIsChanging(false);
   };
 
   const handleSaveFailed = () => {
-    shouldMoveFocusRef.current = true;
+    pendingFocusRef.current = {};
     setTappedRating(null);
     setIsThanked(false);
     setIsChanging(true);
   };
 
   const startChange = () => {
-    shouldMoveFocusRef.current = true;
+    pendingFocusRef.current = {};
     setIsChanging(true);
   };
 
