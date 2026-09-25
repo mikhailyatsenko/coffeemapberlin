@@ -1,22 +1,17 @@
 import clsx from 'clsx';
 import { debounce } from 'lodash-es';
-import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
-import toast from 'react-hot-toast';
-import { client } from 'shared/config/apolloClient';
-import { useAddTextReviewMutation, PlaceReviewsDocument } from 'shared/generated/graphql';
-import { ensureGuestIdentity, type GuestIdentity } from 'shared/lib/guest';
-import { useAuthStore } from 'shared/stores/auth';
-import { showGuestReviewSubmitted } from 'shared/stores/modal';
+import React, { useEffect, useMemo, useRef, useState, memo } from 'react';
+import { isUploadable, usePhotoUpload } from 'shared/lib/photoUpload';
 import { RegularButton } from 'shared/ui/RegularButton';
-import { UploadReviewImages } from '../components/UploadReviewImages/ui/UploadReviewImages';
-import { uploadReviewImages } from '../lib/uploadReviewImages';
-import { useAddTextReviewDraftStore } from '../model';
-import { type ImagesWrapper, type AddTextReviewFormProps } from '../types';
+import { ReviewPhotoPicker } from '../components/ReviewPhotoPicker';
+import { useAddTextReviewDraftStore, useSubmitReview } from '../model';
+import { type AddTextReviewFormProps } from '../types';
 import cls from './AddTextReviewForm.module.scss';
 
 const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   placeId,
   initialValue = '',
+  existingPhotoCount = 0,
   className,
   onSubmitted,
   onCancel,
@@ -24,30 +19,19 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
 }) => {
   const draftText = useAddTextReviewDraftStore((s) => s.draftsByPlaceId[placeId] ?? '');
   const setDraft = useAddTextReviewDraftStore((s) => s.setDraft);
-  const clearDraft = useAddTextReviewDraftStore((s) => s.clearDraft);
   const [text, setText] = useState(initialValue || draftText || '');
-  const [error, setError] = useState<string | null>(null);
-  const [imagesWrappers, setImagesWrappers] = useState<ImagesWrapper[]>([]);
-  const [isImgUploadingProcessing, setIsImgUploadingProcessing] = useState(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const { user } = useAuthStore();
-
-  const [addTextReview, { loading: isAddTextLoading, error: apolloError }] = useAddTextReviewMutation({
-    awaitRefetchQueries: true,
+  const photoUpload = usePhotoUpload(existingPhotoCount);
+  const { photos, isUploading: isUploadingPhotos } = photoUpload;
+  const { submit, cancel, isSavingText, error, setError } = useSubmitReview({
+    placeId,
+    uploadPhotos: photoUpload.upload,
+    onSubmitted,
   });
 
   // Combined loading state for better UX
-  const isFormLoading = isAddTextLoading || isImgUploadingProcessing;
+  const isFormLoading = isSavingText || isUploadingPhotos;
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  // Clear local error when Apollo error changes
-  useEffect(() => {
-    if (apolloError) {
-      const errorMessage = apolloError.message || 'Failed to submit review. Please try again.';
-      setError(errorMessage);
-    }
-  }, [apolloError]);
 
   const debouncedSetDraft = useMemo(
     () =>
@@ -82,112 +66,20 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
     };
   }, [debouncedSetDraft]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      // Clean up image URLs to prevent memory leaks
-      imagesWrappers.forEach((img) => {
-        if (img.localUrl) {
-          URL.revokeObjectURL(img.localUrl);
-        }
-      });
-    };
-  }, [imagesWrappers]);
-
   const overallUploadProgress = useMemo(() => {
-    return Math.round(imagesWrappers.reduce((acc, img) => acc + img.progress, 0) / imagesWrappers.length);
-  }, [imagesWrappers]);
+    const uploadable = photos.filter(isUploadable);
+    const saved = uploadable.filter((photo) => photo.status === 'saved');
+    return uploadable.length ? Math.round((saved.length / uploadable.length) * 100) : 0;
+  }, [photos]);
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      const trimmed = text.trim();
-      if (!trimmed) return;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = text.trim();
+    // Photos still downscaling would miss the upload.
+    if (!trimmed || isFormLoading || photoUpload.isPreparing) return;
+    void submit(trimmed);
+  };
 
-      if (isFormLoading) return;
-
-      setError(null);
-
-      abortControllerRef.current = new AbortController();
-
-      try {
-        // Guests review under an identity issued after a captcha check; the
-        // captcha runs here, on the first guest action, not on every submit.
-        const guestCredentials: Partial<GuestIdentity> = user ? {} : await ensureGuestIdentity();
-
-        const result = await addTextReview({
-          variables: { placeId, text: trimmed, ...guestCredentials },
-          context: {
-            fetchOptions: {
-              signal: abortControllerRef.current.signal,
-            },
-          },
-        });
-
-        const reviewId = result.data?.addTextReview?.reviewId;
-
-        if (reviewId && imagesWrappers.length > 0) {
-          try {
-            await uploadReviewImages(
-              imagesWrappers,
-              reviewId,
-              guestCredentials,
-              setImagesWrappers,
-              setIsImgUploadingProcessing,
-              abortControllerRef.current.signal,
-            );
-          } catch (uploadError) {
-            // The review itself is saved and consistent — it simply has fewer
-            // photos than intended, so it is left in place either way.
-            setIsImgUploadingProcessing(false);
-
-            if (!(uploadError instanceof Error && uploadError.name === 'AbortError')) {
-              console.error('Image upload failed:', uploadError);
-              toast.error('Some photos could not be uploaded');
-            }
-          }
-        }
-
-        clearDraft(placeId);
-        onSubmitted?.();
-
-        await client.refetchQueries({
-          include: [PlaceReviewsDocument],
-        });
-
-        if (!user) {
-          showGuestReviewSubmitted();
-        }
-      } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          return;
-        }
-
-        const errorMessage = err instanceof Error ? err.message : 'Failed to submit review. Please try again.';
-        setError(errorMessage);
-        console.error('Error adding or updating review:', err);
-      } finally {
-        abortControllerRef.current = null;
-      }
-    },
-    [text, isFormLoading, user, addTextReview, placeId, imagesWrappers, clearDraft, onSubmitted],
-  );
-
-  const handleCancelSubmission = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      setIsImgUploadingProcessing(false);
-      toast.error('Submission cancelled by user');
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
   // Generate unique IDs for accessibility
   const textareaId = `review-text-${placeId}`;
   const errorId = `review-error-${placeId}`;
@@ -230,11 +122,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
             aria-invalid={error ? 'true' : 'false'}
           />
           <div className={cls.bottomArea}>
-            <UploadReviewImages
-              imagesWrappers={imagesWrappers}
-              setImagesWrappers={setImagesWrappers}
-              isProcessing={isFormLoading}
-            />
+            <ReviewPhotoPicker photoUpload={photoUpload} isProcessing={isFormLoading || photoUpload.isPreparing} />
 
             <div className={cls.characterCount}>{text.length}/1000 characters</div>
           </div>
@@ -265,7 +153,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
               variant="outline"
               theme="error"
               type="button"
-              onClick={handleCancelSubmission}
+              onClick={cancel}
               aria-label="Cancel submission and image upload"
             >
               Cancel Upload
@@ -274,12 +162,12 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           <RegularButton
             type="submit"
             variant="solid"
-            disabled={isFormLoading || text.trim().length === 0}
+            disabled={isFormLoading || photoUpload.isPreparing || text.trim().length === 0}
             aria-describedby={isFormLoading ? 'loading-status' : undefined}
           >
-            {isAddTextLoading
+            {isSavingText
               ? 'Sending review ...'
-              : isImgUploadingProcessing
+              : isUploadingPhotos
                 ? `Uploading images... ${overallUploadProgress}%`
                 : initialValue
                   ? 'Update review'
@@ -289,7 +177,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
 
         {isFormLoading && (
           <div id="loading-status" className="sr-only" aria-live="polite">
-            {isAddTextLoading ? 'Submitting review...' : `Processing images... ${overallUploadProgress}%`}
+            {isSavingText ? 'Submitting review...' : `Processing images... ${overallUploadProgress}%`}
           </div>
         )}
       </fieldset>
@@ -298,5 +186,5 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
 };
 
 export const AddTextReviewForm = memo(AddTextReviewFormComponent, (prevProps, nextProps) => {
-  return prevProps.placeId === nextProps.placeId;
+  return prevProps.placeId === nextProps.placeId && prevProps.existingPhotoCount === nextProps.existingPhotoCount;
 });

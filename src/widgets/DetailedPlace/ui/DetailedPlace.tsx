@@ -258,6 +258,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
             placeId={placeId}
             isEditingReview={isEditingReview}
             ownReviewHasText={Boolean(ownReview?.text)}
+            ownReviewPhotoCount={ownReview?.reviewImages ?? 0}
             editInitialText={editInitialText}
             displayedReviews={displayedReviews ?? []}
             onSubmitted={() => {

@@ -10,6 +10,7 @@ const renderBlock = (props: Partial<React.ComponentProps<typeof ReviewsBlock>> =
         placeId="place-1"
         isEditingReview={false}
         ownReviewHasText={false}
+        ownReviewPhotoCount={0}
         editInitialText=""
         displayedReviews={[]}
         onSubmitted={() => {}}

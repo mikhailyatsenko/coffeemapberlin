@@ -1,7 +1,7 @@
 import { trackEvent } from 'shared/lib/analytics';
+import { getSaveErrorReason } from 'shared/lib/saveError';
 
 import { type Actor } from './getActor';
-import { getSaveErrorReason } from './getSaveErrorReason';
 
 /** Sends `contribution_failed` for a Rating or Characteristic that failed to save. */
 export const trackContributionFailed = (

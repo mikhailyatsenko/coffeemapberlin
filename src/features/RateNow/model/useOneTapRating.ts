@@ -2,11 +2,11 @@ import { useRef, useState } from 'react';
 import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { ensureGuestIdentity } from 'shared/lib/guest';
+import { getSaveErrorMessage } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
 
 import { getActor } from '../lib/getActor';
-import { getSaveErrorMessage } from '../lib/getSaveErrorMessage';
 import { trackContributionFailed } from '../lib/trackContributionFailed';
 import { type OneTapRatingProps } from '../types';
 

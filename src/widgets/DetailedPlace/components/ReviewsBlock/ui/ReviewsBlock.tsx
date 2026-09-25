@@ -9,6 +9,8 @@ interface ReviewsBlockProps {
   placeId: string;
   isEditingReview: boolean;
   ownReviewHasText: boolean;
+  /** Photos the person's own Review already has. */
+  ownReviewPhotoCount: number;
   editInitialText: string;
   displayedReviews: Review[];
   onSubmitted: () => void;
@@ -20,6 +22,7 @@ export const ReviewsBlock: React.FC<ReviewsBlockProps> = ({
   placeId,
   isEditingReview,
   ownReviewHasText,
+  ownReviewPhotoCount,
   editInitialText,
   displayedReviews,
   onSubmitted,
@@ -41,6 +44,7 @@ export const ReviewsBlock: React.FC<ReviewsBlockProps> = ({
           id="review-form"
           placeId={placeId}
           initialValue={isEditingReview ? editInitialText : ''}
+          existingPhotoCount={ownReviewPhotoCount}
           onSubmitted={onSubmitted}
           onCancel={onCancel}
         />

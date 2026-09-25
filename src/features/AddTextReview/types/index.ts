@@ -1,15 +1,9 @@
 export interface AddTextReviewFormProps extends React.HTMLAttributes<HTMLFormElement> {
   placeId: string;
   initialValue?: string;
+  /** Photos the person's Review for the Place already has; they count against its limit. */
+  existingPhotoCount?: number;
   className?: string;
   onSubmitted?: () => void;
   onCancel?: () => void;
-}
-
-export interface ImagesWrapper {
-  name: string;
-  file: File;
-  progress: number; // 0-100
-  localUrl: string;
-  error?: string;
 }

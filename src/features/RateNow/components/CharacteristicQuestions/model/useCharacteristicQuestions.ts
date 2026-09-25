@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useToggleCharacteristic } from 'shared/api';
 import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
+import { getSaveErrorMessage } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 
 import { QUESTION_BATCH_SIZE } from '../../../constants/questions';
 import { getActor } from '../../../lib/getActor';
 import { getRemainingQuestions } from '../../../lib/getRemainingQuestions';
-import { getSaveErrorMessage } from '../../../lib/getSaveErrorMessage';
 import { trackContributionFailed } from '../../../lib/trackContributionFailed';
 import { type SavingToggles } from '../../../types';
 
