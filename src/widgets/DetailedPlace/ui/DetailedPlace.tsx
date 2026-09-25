@@ -18,6 +18,7 @@ import { Header } from '../components/Header';
 import { NewDetailedPlaceCardSkeleton } from '../components/NewDetailedPlaceCardSkeleton';
 import { ReviewsBlock } from '../components/ReviewsBlock';
 import { Sidebar } from '../components/Sidebar';
+import { REVIEW_TEXT_SELECTOR } from '../constants/reviewText';
 import cls from './DetailedPlace.module.scss';
 import 'driver.js/dist/driver.css';
 
@@ -241,6 +242,10 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
             placeId={placeId}
             rating={ownReview?.userRating}
             characteristicCounts={characteristicCounts}
+            hasReviewText={Boolean(ownReview?.text)}
+            onAddReviewText={() => {
+              document.querySelector<HTMLTextAreaElement>(REVIEW_TEXT_SELECTOR)?.focus();
+            }}
           />
         </div>
       )}

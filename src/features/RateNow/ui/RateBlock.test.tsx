@@ -16,6 +16,7 @@ import { trackEvent } from 'shared/lib/analytics';
 import { ensureGuestIdentity } from 'shared/lib/guest';
 import { RecaptchaUnavailableError } from 'shared/lib/recaptcha';
 import { setUser } from 'shared/stores/auth';
+import { useModalStore } from 'shared/stores/modal';
 import { RateBlock } from './RateBlock';
 
 vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
@@ -145,14 +146,28 @@ const toggleCharacteristicMock = ({
 });
 
 /** Reads the Place from the cache, as DetailedPlace does, so a Yes shows up in the Characteristic counts. */
-const Harness = ({ rating }: { rating?: number | null }) => {
+const Harness = ({
+  rating,
+  hasReviewText,
+  onAddReviewText,
+}: {
+  rating?: number | null;
+  hasReviewText: boolean;
+  onAddReviewText: () => void;
+}) => {
   const { data } = usePlaceQuery({ variables: { placeId }, fetchPolicy: 'cache-only' });
   if (!data?.place) return null;
   const { characteristicCounts } = data.place.properties;
 
   return (
     <>
-      <RateBlock placeId={placeId} rating={rating} characteristicCounts={characteristicCounts} />
+      <RateBlock
+        placeId={placeId}
+        rating={rating}
+        characteristicCounts={characteristicCounts}
+        hasReviewText={hasReviewText}
+        onAddReviewText={onAddReviewText}
+      />
       <p>Friendly staff count: {characteristicCounts.friendlyStaff.count}</p>
     </>
   );
@@ -161,13 +176,17 @@ const Harness = ({ rating }: { rating?: number | null }) => {
 const renderRateBlock = (
   mocks: MockedResponse[],
   rating?: number | null,
-  { markedCharacteristics = [] }: { markedCharacteristics?: Characteristic[] } = {},
+  {
+    markedCharacteristics = [],
+    hasReviewText = false,
+    onAddReviewText = () => {},
+  }: { markedCharacteristics?: Characteristic[]; hasReviewText?: boolean; onAddReviewText?: () => void } = {},
 ) => {
   const cache = new InMemoryCache();
   cache.writeQuery({ query: PlaceDocument, variables: { placeId }, data: placeWith(markedCharacteristics) });
   return render(
     <MockedProvider mocks={mocks} cache={cache}>
-      <Harness rating={rating} />
+      <Harness rating={rating} hasReviewText={hasReviewText} onAddReviewText={onAddReviewText} />
     </MockedProvider>,
   );
 };
@@ -179,6 +198,19 @@ const askedQuestions = () => screen.queryAllByRole('group').map((group) => group
 const answer = (text: string, button: 'Yes' | 'Skip') => within(question(text)).getByRole('button', { name: button });
 
 const bean = (rating: number) => screen.getByRole('radio', { name: `${rating} of 5` });
+
+const marks = () => screen.queryByRole('list', { name: 'Your marks' });
+
+const markNames = () =>
+  within(screen.getByRole('list', { name: 'Your marks' }))
+    .getAllByRole('button')
+    .map((chip) => chip.getAttribute('aria-label'));
+
+const reviewTextLink = () => screen.queryByRole('button', { name: 'Add a few words or a photo' });
+
+const skipAll = async (user: ReturnType<typeof userEvent.setup>) => {
+  for (const text of askedQuestions()) await user.click(answer(text!, 'Skip'));
+};
 
 const trackedEvents = (name: string) => vi.mocked(trackEvent).mock.calls.filter(([eventName]) => eventName === name);
 
@@ -477,5 +509,165 @@ describe('RateBlock', () => {
     await user.click(bean(4));
 
     expect(askedQuestions()).toEqual(['Delicious filter coffee?', 'Yummy eats?']);
+  });
+
+  it('lists every marked Characteristic under "Your marks", Amenities included', () => {
+    renderRateBlock([], 4, {
+      markedCharacteristics: [
+        Characteristic.friendlyStaff,
+        Characteristic.freeWifi,
+        Characteristic.outdoorSeating,
+        Characteristic.petFriendly,
+      ],
+    });
+
+    expect(markNames()).toEqual([
+      'Remove Friendly Staff',
+      'Remove Free Wi-Fi',
+      'Remove Outdoor Seating',
+      'Remove Pet Friendly',
+    ]);
+  });
+
+  it('shows no "Your marks" when nothing is marked', () => {
+    renderRateBlock([], 4);
+
+    expect(marks()).not.toBeInTheDocument();
+    expect(screen.queryByText('Your marks')).not.toBeInTheDocument();
+  });
+
+  it('un-marks a Characteristic removed from "Your marks"', async () => {
+    const user = userEvent.setup();
+    const toggle = vi.fn();
+    renderRateBlock([toggleCharacteristicMock({ characteristic: Characteristic.friendlyStaff, onCall: toggle })], 4, {
+      markedCharacteristics: [Characteristic.friendlyStaff, Characteristic.freeWifi],
+    });
+    expect(screen.getByText('Friendly staff count: 1')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Remove Friendly Staff' }));
+
+    expect(markNames()).toEqual(['Remove Free Wi-Fi']);
+    await waitFor(() => {
+      expect(trackedEvents('characteristic_removed')).toEqual([
+        ['characteristic_removed', { place_id: placeId, actor: 'guest', characteristic: 'friendlyStaff' }],
+      ]);
+    });
+    expect(toggle).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Friendly staff count: 0')).toBeInTheDocument();
+    expect(markNames()).toEqual(['Remove Free Wi-Fi']);
+    // Removing a mark is an answer too: the question doesn't come back.
+    expect(askedQuestions()).not.toContain('Friendly staff?');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('offers a mark for removal only once its Yes is saved', async () => {
+    const user = userEvent.setup();
+    renderRateBlock([toggleCharacteristicMock({ characteristic: Characteristic.yummyEats, delay: 20 })], 4);
+
+    await user.click(answer('Yummy eats?', 'Yes'));
+
+    expect(marks()).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(markNames()).toEqual(['Remove Yummy Eats']);
+    });
+  });
+
+  it('moves focus back to the Rating when the last mark is removed', async () => {
+    const user = userEvent.setup();
+    renderRateBlock([toggleCharacteristicMock({ characteristic: Characteristic.freeWifi })], 4, {
+      markedCharacteristics: [Characteristic.freeWifi],
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Remove Free Wi-Fi' }));
+
+    expect(marks()).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'change' })).toHaveFocus();
+  });
+
+  it('restores the chip and explains a failed removal', async () => {
+    const user = userEvent.setup();
+    renderRateBlock(
+      [toggleCharacteristicMock({ characteristic: Characteristic.freeWifi, fails: true, delay: 20 })],
+      4,
+      { markedCharacteristics: [Characteristic.freeWifi] },
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Remove Free Wi-Fi' }));
+
+    expect(marks()).not.toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent(/check your connection/i);
+    expect(markNames()).toEqual(['Remove Free Wi-Fi']);
+    expect(trackedEvents('characteristic_removed')).toEqual([]);
+  });
+
+  it('offers the Review text form once the questions run out', async () => {
+    const user = userEvent.setup();
+    const onAddReviewText = vi.fn();
+    renderRateBlock([], 4, {
+      markedCharacteristics: [Characteristic.deliciousFilterCoffee, Characteristic.yummyEats],
+      onAddReviewText,
+    });
+
+    expect(reviewTextLink()).not.toBeInTheDocument();
+    await skipAll(user);
+
+    await user.click(reviewTextLink()!);
+
+    expect(onAddReviewText).toHaveBeenCalledTimes(1);
+    expect(trackedEvents('review_text_link_click')).toEqual([
+      ['review_text_link_click', { place_id: placeId, actor: 'guest' }],
+    ]);
+  });
+
+  it('does not offer the Review text form before a Rating', () => {
+    renderRateBlock([], null, {
+      markedCharacteristics: [
+        Characteristic.deliciousFilterCoffee,
+        Characteristic.pleasantAtmosphere,
+        Characteristic.yummyEats,
+        Characteristic.friendlyStaff,
+        Characteristic.affordablePrices,
+      ],
+    });
+
+    expect(reviewTextLink()).not.toBeInTheDocument();
+  });
+
+  it('does not offer the Review text form to a person who already wrote Review text', async () => {
+    const user = userEvent.setup();
+    renderRateBlock([], 4, { hasReviewText: true });
+
+    await skipAll(user);
+    await user.click(screen.getByRole('button', { name: 'More questions?' }));
+    await skipAll(user);
+
+    expect(askedQuestions()).toEqual([]);
+    expect(reviewTextLink()).not.toBeInTheDocument();
+  });
+
+  it('opens no "Create account" modal after a Rating, a Yes or a removed mark', async () => {
+    const user = userEvent.setup();
+    const modalBefore = useModalStore.getState().modalContentVariant;
+    renderRateBlock(
+      [
+        addRatingMock(),
+        ...refetchMocks(),
+        toggleCharacteristicMock({ characteristic: Characteristic.pleasantAtmosphere }),
+        toggleCharacteristicMock({ characteristic: Characteristic.freeWifi }),
+      ],
+      null,
+      { markedCharacteristics: [Characteristic.freeWifi] },
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Remove Free Wi-Fi' }));
+    await user.click(bean(4));
+    await user.click(answer('Pleasant atmosphere?', 'Yes'));
+
+    await waitFor(() => {
+      expect(trackedEvents('characteristic_answered')).toHaveLength(1);
+    });
+    expect(trackedEvents('characteristic_removed')).toHaveLength(1);
+    expect(trackedEvents('rating_saved')).toHaveLength(1);
+    expect(useModalStore.getState().modalContentVariant).toBe(modalBefore);
   });
 });

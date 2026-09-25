@@ -1,4 +1,5 @@
 import { CharacteristicQuestions } from '../components/CharacteristicQuestions';
+import { YourMarks } from '../components/YourMarks';
 import { useRateBlock } from '../model/useRateBlock';
 import { type RateBlockProps } from '../types';
 import { OneTapRating } from './OneTapRating';
@@ -7,7 +8,8 @@ import cls from './RateBlock.module.scss';
 export type { RateBlockProps };
 
 /** The Place page's "Been here? Rate it" block. */
-export const RateBlock = ({ placeId, rating, characteristicCounts }: RateBlockProps) => {
+export const RateBlock = (props: RateBlockProps) => {
+  const { placeId, rating, characteristicCounts } = props;
   const {
     blockRef,
     beansRef,
@@ -18,7 +20,14 @@ export const RateBlock = ({ placeId, rating, characteristicCounts }: RateBlockPr
     handleRate,
     handleSaveFailed,
     startChange,
-  } = useRateBlock({ placeId, rating });
+    dismissed,
+    dismiss,
+    saving,
+    whileSaving,
+    focusRating,
+    offersReviewText,
+    addReviewText,
+  } = useRateBlock(props);
 
   return (
     <section ref={blockRef} className={cls.RateBlock}>
@@ -43,8 +52,28 @@ export const RateBlock = ({ placeId, rating, characteristicCounts }: RateBlockPr
       </div>
       {/* Hidden rather than unmounted while there is no Rating, so Skips and saving Yeses outlive a failed Rating. */}
       <div className={cls.questions} hidden={currentRating === null}>
-        <CharacteristicQuestions placeId={placeId} characteristicCounts={characteristicCounts} />
+        <CharacteristicQuestions
+          placeId={placeId}
+          characteristicCounts={characteristicCounts}
+          dismissed={dismissed}
+          onSkip={dismiss}
+          saving={saving}
+          whileSaving={whileSaving}
+        />
       </div>
+      <YourMarks
+        placeId={placeId}
+        characteristicCounts={characteristicCounts}
+        onRemove={dismiss}
+        saving={saving}
+        whileSaving={whileSaving}
+        onAllRemoved={focusRating}
+      />
+      {offersReviewText && (
+        <button type="button" className={cls.reviewTextLink} onClick={addReviewText}>
+          Add a few words or a photo
+        </button>
+      )}
     </section>
   );
 };

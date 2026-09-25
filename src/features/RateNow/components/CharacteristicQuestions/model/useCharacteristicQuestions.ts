@@ -4,33 +4,41 @@ import { type Characteristic, type CharacteristicCounts } from 'shared/generated
 import { trackEvent } from 'shared/lib/analytics';
 import { useAuthStore } from 'shared/stores/auth';
 
+import { QUESTION_BATCH_SIZE } from '../../../constants/questions';
 import { getActor } from '../../../lib/getActor';
+import { getRemainingQuestions } from '../../../lib/getRemainingQuestions';
 import { getSaveErrorMessage } from '../../../lib/getSaveErrorMessage';
 import { trackContributionFailed } from '../../../lib/trackContributionFailed';
-import { QUESTION_BATCH_SIZE, QUESTIONS } from '../constants/questions';
+import { type SavingToggles } from '../../../types';
 
 /**
  * The Yes / Skip questions: the opinion Characteristics not yet marked, a batch at a
  * time. A Yes marks the Characteristic through the optimistic toggle; a failed Yes
- * brings its question back with a message. A Skip is remembered for this page view only.
+ * brings its question back with a message. A Skip is handed to the block, which
+ * remembers it for this page view only.
  */
-export const useCharacteristicQuestions = (placeId: string, characteristicCounts: CharacteristicCounts) => {
+export const useCharacteristicQuestions = ({
+  placeId,
+  characteristicCounts,
+  dismissed,
+  onSkip,
+  saving,
+  whileSaving,
+}: SavingToggles & {
+  placeId: string;
+  characteristicCounts: CharacteristicCounts;
+  /** Characteristics not to ask about in this page view. */
+  dismissed: readonly Characteristic[];
+  onSkip: (characteristic: Characteristic) => void;
+}) => {
   const user = useAuthStore((s) => s.user);
   const { toggleChar } = useToggleCharacteristic(placeId);
-  const [skipped, setSkipped] = useState<Characteristic[]>([]);
-  // Yes taps still saving; their questions leave at once, before the optimistic toggle lands.
-  const [saving, setSaving] = useState<Characteristic[]>([]);
   const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   // Set by an answer, so the questions never take focus on their own.
   const shouldMoveFocusRef = useRef(false);
 
-  const remaining = QUESTIONS.filter(
-    ({ characteristic }) =>
-      !characteristicCounts[characteristic].pressed &&
-      !skipped.includes(characteristic) &&
-      !saving.includes(characteristic),
-  );
+  const remaining = getRemainingQuestions(characteristicCounts, [...dismissed, ...saving]);
 
   // The Characteristics asked in the current batch; those answered drop out of `questions`, not of the batch.
   const [batch, setBatch] = useState(() =>
@@ -55,24 +63,24 @@ export const useCharacteristicQuestions = (placeId: string, characteristicCounts
     // Only ever marks: the toggle would un-mark a Characteristic that is already marked.
     if (characteristicCounts[characteristic].pressed || saving.includes(characteristic)) return;
     shouldMoveFocusRef.current = true;
-    setSaving((current) => [...current, characteristic]);
     const actor = getActor(user);
-    try {
-      await toggleChar(characteristic);
-      setError(null);
-      trackEvent('characteristic_answered', { place_id: placeId, actor, characteristic, answer: 'yes' });
-    } catch (saveError) {
-      // Its question comes back: it is still in the batch, or in a later one if "More questions?" was used meanwhile.
-      setError(getSaveErrorMessage(saveError));
-      trackContributionFailed(placeId, actor, 'characteristic', saveError);
-    } finally {
-      setSaving((current) => current.filter((c) => c !== characteristic));
-    }
+    // While saving, its question is gone, before the optimistic toggle lands.
+    await whileSaving(characteristic, async () => {
+      try {
+        await toggleChar(characteristic);
+        setError(null);
+        trackEvent('characteristic_answered', { place_id: placeId, actor, characteristic, answer: 'yes' });
+      } catch (saveError) {
+        // Its question comes back: it is still in the batch, or in a later one if "More questions?" was used meanwhile.
+        setError(getSaveErrorMessage(saveError));
+        trackContributionFailed(placeId, actor, 'characteristic', saveError);
+      }
+    });
   };
 
   const skip = (characteristic: Characteristic) => {
     shouldMoveFocusRef.current = true;
-    setSkipped((current) => [...current, characteristic]);
+    onSkip(characteristic);
     setError(null);
     trackEvent('characteristic_answered', { place_id: placeId, actor: getActor(user), characteristic, answer: 'skip' });
   };

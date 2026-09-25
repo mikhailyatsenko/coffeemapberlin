@@ -45,3 +45,12 @@
     display: none;
   }
 }
+
+.reviewTextLink {
+  padding: 0;
+  color: var(--accent-secondary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

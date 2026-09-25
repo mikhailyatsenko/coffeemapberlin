@@ -1,17 +1,21 @@
-import { type CharacteristicCounts } from 'shared/generated/graphql';
+import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
 
+import { type SavingToggles } from '../../../types';
 import { useCharacteristicQuestions } from '../model/useCharacteristicQuestions';
 import cls from './CharacteristicQuestions.module.scss';
 
-interface CharacteristicQuestionsProps {
+interface CharacteristicQuestionsProps extends SavingToggles {
   placeId: string;
   characteristicCounts: CharacteristicCounts;
+  /** Characteristics not to ask about in this page view: skipped, or removed from the person's marks. */
+  dismissed: readonly Characteristic[];
+  onSkip: (characteristic: Characteristic) => void;
 }
 
 /** Yes / Skip questions about the opinion Characteristics the person hasn't marked yet. */
-export const CharacteristicQuestions = ({ placeId, characteristicCounts }: CharacteristicQuestionsProps) => {
+export const CharacteristicQuestions = (props: CharacteristicQuestionsProps) => {
   const { containerRef, questions, hasMoreQuestions, showMoreQuestions, answerYes, skip, error } =
-    useCharacteristicQuestions(placeId, characteristicCounts);
+    useCharacteristicQuestions(props);
 
   return (
     <div ref={containerRef} className={cls.CharacteristicQuestions}>

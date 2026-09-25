@@ -1,4 +1,4 @@
-import { type CharacteristicCounts } from 'shared/generated/graphql';
+import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
 
 interface Review {
   id: string;
@@ -34,4 +34,16 @@ export interface OneTapRatingProps {
 export interface RateBlockProps extends Pick<OneTapRatingProps, 'placeId' | 'rating'> {
   /** The Place's Characteristic counts; `pressed` says which the person has marked. */
   characteristicCounts: CharacteristicCounts;
+  /** Whether the person's Review for the Place has Review text. */
+  hasReviewText: boolean;
+  /** Takes the person to the Review text form. */
+  onAddReviewText: () => void;
+}
+
+/** Toggles still saving in the block, shared by its parts so a second toggle can't undo the first. */
+export interface SavingToggles {
+  /** Characteristics whose toggle is still saving. */
+  saving: readonly Characteristic[];
+  /** Runs a toggle, keeping its Characteristic in `saving` until it settles. */
+  whileSaving: (characteristic: Characteristic, save: () => Promise<void>) => Promise<void>;
 }
