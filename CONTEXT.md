@@ -24,8 +24,12 @@ _Avoid_: Bookmark, saved place, like
 A Place a person has been to, known from their own Review of it. Not marked separately; Guests and Users have Visits alike.
 _Avoid_: Check-in, been there, visited place
 
+**Place photo**:
+An image of a Place itself, shown at the top of its page. Not tied to any Review; comes from the admin or from an approved Place suggestion.
+_Avoid_: Main image, gallery image, Photo (that is a Review's)
+
 **Place suggestion**:
-A proposal from a User or Guest to add a Place that is not yet on the map. Not shown on the map until approved.
+A proposal from a User or Guest to add a Place that is not yet on the map, with its name, address and optionally Place photos. Not shown on the map until the admin publishes it; the admin completes the Place's details before publishing.
 _Avoid_: Submission, request, new place
 
 **Inaccuracy report**:
@@ -73,7 +77,7 @@ The written part of a Review.
 _Avoid_: Text review, comment
 
 **Photo**:
-An image attached to a Review. Users and Guests add their own; Google reviews bring theirs from Google.
+An image attached to a Review. Users and Guests add their own; Google reviews bring theirs from Google. Not a Place photo.
 _Avoid_: Image, picture, review image
 
 **Characteristic**:

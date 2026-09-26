@@ -1,6 +1,6 @@
 # Anyone can suggest a missing Place; the admin approves in one click
 
-Status: needs-triage
+Status: ready-for-agent
 
 ## Problem
 
@@ -17,3 +17,7 @@ Places can only be added by hand. Visitors who know a Place that isn't on the ma
 - Which fields are required; can the form prefill from Google Places without a paid call?
 - Guest spam protection: Guest identity (ADR 0001) is enough, or extra limits?
 - Reject path, duplicates of existing Places, and whether the suggester is told the outcome.
+
+## Comments
+
+- 2026-09-26: Open questions closed in a grilling session; specified in [spec.md](../spec.md). Decisions: minimal form (name + address), suggestion photos become Place photos, admin completes and publishes on a signed-link page ([ADR 0002](../../../docs/adr/0002-admin-acts-through-signed-links.md)), Google used only for a free Place ID lookup, suggester emailed only on publish, success not measured.

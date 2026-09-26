@@ -1,0 +1,3 @@
+# The admin acts through signed links, not an admin role
+
+There is one admin and no admin UI, so admin actions (first: publishing or rejecting a Place suggestion) happen on a page opened from a link in an admin email. The link carries a token signed by the server for that one item, which is the only authorization; it needs no sign-in and does not expire, and the page acts only on an explicit button press, never on opening, because mail scanners follow links. We rejected an admin role on User accounts with an admin area (sign-in, roles and a UI for a single person) and links that act on GET (a scanner could publish a suggestion).
