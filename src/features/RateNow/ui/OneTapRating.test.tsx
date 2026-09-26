@@ -14,7 +14,13 @@ import { RecaptchaUnavailableError } from 'shared/lib/recaptcha';
 import { setUser } from 'shared/stores/auth';
 import { OneTapRating, type OneTapRatingProps } from './OneTapRating';
 
-vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
+vi.mock('shared/lib/guest', () => {
+  const ensureGuestIdentity = vi.fn();
+  return {
+    ensureGuestIdentity,
+    contributionCredentials: (isSignedIn: boolean) => (isSignedIn ? Promise.resolve({}) : ensureGuestIdentity()),
+  };
+});
 vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('shared/stores/places', () => ({ revalidatePlaces: vi.fn() }));
 

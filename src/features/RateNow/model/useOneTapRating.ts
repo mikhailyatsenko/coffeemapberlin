@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
-import { ensureGuestIdentity } from 'shared/lib/guest';
+import { contributionCredentials } from 'shared/lib/guest';
 import { getSaveErrorMessage, getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 import { revalidatePlaces } from 'shared/stores/places';
@@ -43,7 +43,7 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
     const actor = getActor(user);
     try {
       // Guests rate too; the captcha runs once, when the identity is issued.
-      const guestCredentials = user ? {} : await ensureGuestIdentity();
+      const guestCredentials = await contributionCredentials(!!user);
 
       const { data } = await addRating({
         variables: { placeId, rating: newRating, ...guestCredentials },

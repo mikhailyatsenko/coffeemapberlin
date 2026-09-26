@@ -25,7 +25,13 @@ import { useModalStore } from 'shared/stores/modal';
 import { RateBlock, type RateBlockHandle } from './RateBlock';
 import { RateButton } from './RateButton';
 
-vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
+vi.mock('shared/lib/guest', () => {
+  const ensureGuestIdentity = vi.fn();
+  return {
+    ensureGuestIdentity,
+    contributionCredentials: (isSignedIn: boolean) => (isSignedIn ? Promise.resolve({}) : ensureGuestIdentity()),
+  };
+});
 vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('shared/stores/places', () => ({ revalidatePlaces: vi.fn() }));
 // jsdom has no createImageBitmap or canvas, so the downscale is replaced by a stand-in.
@@ -945,7 +951,7 @@ describe('RateBlock', () => {
 
       await pickPhotos(user, [photo('a.jpg'), photo('b.jpg'), photo('c.jpg')]);
 
-      expect(await screen.findByText('You can add 1 more')).toBeInTheDocument();
+      expect(await screen.findByText("Only 1 more fit; the rest weren't added")).toBeInTheDocument();
       expect(await screen.findByText('1 photo added')).toBeInTheDocument();
       expect(uploaded).toHaveBeenCalledTimes(1);
       // The Review is full now.
@@ -981,7 +987,7 @@ describe('RateBlock', () => {
       await pickPhotos(user, [photo('c.jpg'), photo('d.jpg')]);
 
       // 7 before this page view, 2 saved in the first batch: room for one more.
-      expect(await screen.findByText('You can add 1 more')).toBeInTheDocument();
+      expect(await screen.findByText("Only 1 more fit; the rest weren't added")).toBeInTheDocument();
       expect(await screen.findByText('3 photos added')).toBeInTheDocument();
     });
 

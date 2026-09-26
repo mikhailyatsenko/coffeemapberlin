@@ -2,7 +2,7 @@ import { useApolloClient } from '@apollo/client';
 import { useEffect, useRef, useState } from 'react';
 import { PlaceReviewsDocument } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
-import { ensureGuestIdentity } from 'shared/lib/guest';
+import { contributionCredentials } from 'shared/lib/guest';
 import { type PhotoFailureReason, usePhotoUpload } from 'shared/lib/photoUpload';
 import { getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
@@ -68,7 +68,7 @@ export const useAddPhotos = ({ placeId, reviewId, reviewPhotoCount, hasReviewTex
     let guestCredentials;
     try {
       // Reuses the Guest identity the Rating created, so there is no captcha again.
-      guestCredentials = user ? {} : await ensureGuestIdentity();
+      guestCredentials = await contributionCredentials(!!user);
     } catch (error) {
       if (signal?.aborted) return;
       console.error('Error adding photos:', error);
@@ -78,6 +78,7 @@ export const useAddPhotos = ({ placeId, reviewId, reviewPhotoCount, hasReviewTex
       return;
     }
 
+    // An abort adds no failure; Photos saved before it still count and still refresh the Review.
     const { saved, failures } = await uploadPhotos(ids, { reviewId, guestCredentials, signal });
     reportFailures(failures);
     if (saved === 0) return;

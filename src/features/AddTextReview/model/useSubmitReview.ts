@@ -2,7 +2,7 @@ import { useApolloClient } from '@apollo/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useAddTextReviewMutation, PlaceReviewsDocument } from 'shared/generated/graphql';
-import { ensureGuestIdentity, type GuestIdentity } from 'shared/lib/guest';
+import { contributionCredentials } from 'shared/lib/guest';
 import { type UploadResult, type UploadTarget } from 'shared/lib/photoUpload';
 import { useAuthStore } from 'shared/stores/auth';
 import { showGuestReviewSubmitted } from 'shared/stores/modal';
@@ -42,7 +42,7 @@ export const useSubmitReview = ({ placeId, uploadPhotos, onSubmitted }: UseSubmi
       try {
         // Guests review under an identity issued after a captcha check; the
         // captcha runs here, on the first guest action, not on every submit.
-        const guestCredentials: Partial<GuestIdentity> = user ? {} : await ensureGuestIdentity();
+        const guestCredentials = await contributionCredentials(!!user);
 
         const result = await addTextReview({
           variables: { placeId, text, ...guestCredentials },

@@ -10,7 +10,7 @@
 - [x] The upload and client-side downscale live in `shared/lib`; the upload goes through the Apollo client from React context (not the module-level client), one `uploadReviewImage` per Photo, sequentially, with per-Photo progress, saved and failed states and an `AbortSignal`; saved Photos are never rolled back
 - [x] The upload takes the Review's current Photo count, keeps at most 10 − count files and reports how many it dropped
 - [x] Each failed Photo carries a reason: `network`, `recaptcha`, `rate_limited` (`RATE_LIMITED`), `limit_reached` (`IMAGE_LIMIT_REACHED`), `unreadable` (decode/downscale failure or server "too large"), with the messages from the spec
-- [x] The Review text form uses both, passes its Review's existing Photo count, says "You can add N more" when files are dropped, and shows an unreadable file's message on its own thumbnail while the others stay
+- [x] The Review text form uses both, passes its Review's existing Photo count, says "Only N more fit; the rest weren't added" when files are dropped, and shows an unreadable file's message on its own thumbnail while the others stay
 - [x] The form's submit flow is otherwise unchanged: Review text still required there, preview then submit, the "Some photos could not be uploaded" toast on a failed upload, Cancel Upload, the Guest "Create account" modal after Review text
 - [x] New form test (`MockedProvider`, mocked `ensureGuestIdentity` and downscale) covers the existing-Photo limit and an unreadable file failing alone
 - [x] `AddTextReview`'s `index.ts` re-exports by name (boy-scout: it's `export *` today)

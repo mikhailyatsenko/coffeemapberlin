@@ -8,7 +8,13 @@ import { resizeAndConvert } from 'shared/lib/image';
 import { setUser } from 'shared/stores/auth';
 import { AddTextReviewForm } from './AddTextReviewForm';
 
-vi.mock('shared/lib/guest', () => ({ ensureGuestIdentity: vi.fn() }));
+vi.mock('shared/lib/guest', () => {
+  const ensureGuestIdentity = vi.fn();
+  return {
+    ensureGuestIdentity,
+    contributionCredentials: (isSignedIn: boolean) => (isSignedIn ? Promise.resolve({}) : ensureGuestIdentity()),
+  };
+});
 // jsdom has no createImageBitmap or canvas, so the downscale is replaced by a stand-in.
 vi.mock('shared/lib/image', () => ({ resizeAndConvert: vi.fn() }));
 
@@ -44,7 +50,7 @@ const renderForm = (existingPhotoCount: number, mocks: MockedResponse[]) =>
   );
 
 const pickPhotos = async (files: File[]) => {
-  await userEvent.upload(screen.getByLabelText('Upload images for review'), files);
+  await userEvent.upload(screen.getByLabelText('Upload photos for review'), files);
 };
 
 const submitReview = async () => {
@@ -68,7 +74,7 @@ describe('AddTextReviewForm Photos', () => {
 
     await pickPhotos([photo('a.jpg'), photo('b.jpg'), photo('c.jpg')]);
 
-    expect(await screen.findByText('You can add 2 more')).toBeInTheDocument();
+    expect(await screen.findByText("Only 2 more fit; the rest weren't added")).toBeInTheDocument();
     expect(screen.getAllByRole('img')).toHaveLength(2);
 
     await submitReview();

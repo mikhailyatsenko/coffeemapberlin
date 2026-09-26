@@ -24,12 +24,14 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
   const { photos, isUploading: isUploadingPhotos } = photoUpload;
   const { submit, cancel, isSavingText, error, setError } = useSubmitReview({
     placeId,
-    uploadPhotos: photoUpload.upload,
+    uploadPhotos: photoUpload.uploadPending,
     onSubmitted,
   });
 
   // Combined loading state for better UX
   const isFormLoading = isSavingText || isUploadingPhotos;
+  // Also waits for picked Photos to finish downscaling.
+  const isBusy = isFormLoading || photoUpload.isPreparing;
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -76,7 +78,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
     e.preventDefault();
     const trimmed = text.trim();
     // Photos still downscaling would miss the upload.
-    if (!trimmed || isFormLoading || photoUpload.isPreparing) return;
+    if (!trimmed || isBusy) return;
     void submit(trimmed);
   };
 
@@ -122,7 +124,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
             aria-invalid={error ? 'true' : 'false'}
           />
           <div className={cls.bottomArea}>
-            <ReviewPhotoPicker photoUpload={photoUpload} isProcessing={isFormLoading || photoUpload.isPreparing} />
+            <ReviewPhotoPicker photoUpload={photoUpload} isProcessing={isBusy} />
 
             <div className={cls.characterCount}>{text.length}/1000 characters</div>
           </div>
@@ -162,7 +164,7 @@ const AddTextReviewFormComponent: React.FC<AddTextReviewFormProps> = ({
           <RegularButton
             type="submit"
             variant="solid"
-            disabled={isFormLoading || photoUpload.isPreparing || text.trim().length === 0}
+            disabled={isBusy || text.trim().length === 0}
             aria-describedby={isFormLoading ? 'loading-status' : undefined}
           >
             {isSavingText

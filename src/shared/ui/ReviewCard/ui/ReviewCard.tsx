@@ -52,7 +52,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
     [placeId, reviewId, reviewImages],
   );
   return (
-    reviewText && (
+    (reviewText || reviewImages > 0) && (
       <div className={`${cls.reviewCard} ${isOwnReview ? cls.ownReview : ''}`}>
         {isGoogleReview && <div className={cls.googleReviewInfo}>This review was imported from Google Maps.</div>}
         <div className={cls.userInfo}>

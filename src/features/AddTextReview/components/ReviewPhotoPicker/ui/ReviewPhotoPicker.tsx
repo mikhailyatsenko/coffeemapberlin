@@ -25,7 +25,7 @@ export const ReviewPhotoPicker: React.FC<ReviewPhotoPickerProps> = ({ photoUploa
   };
 
   return (
-    <div role="group" aria-label="Review Images">
+    <div role="group" aria-label="Review Photos">
       <input
         ref={inputRef}
         type="file"
@@ -33,7 +33,7 @@ export const ReviewPhotoPicker: React.FC<ReviewPhotoPickerProps> = ({ photoUploa
         multiple
         onChange={onChange}
         style={{ display: 'none' }}
-        aria-label="Upload images for review"
+        aria-label="Upload photos for review"
       />
 
       {!!photos.length && (
@@ -48,7 +48,7 @@ export const ReviewPhotoPicker: React.FC<ReviewPhotoPickerProps> = ({ photoUploa
             onClick={removeAll}
             variant="ghost"
             size="sm"
-            aria-label="Remove all images"
+            aria-label="Remove all photos"
             disabled={isProcessing}
           >
             Remove all
@@ -63,9 +63,9 @@ export const ReviewPhotoPicker: React.FC<ReviewPhotoPickerProps> = ({ photoUploa
           variant="ghost"
           onClick={handlePick}
           disabled={isProcessing}
-          aria-label={`Add images to review (up to ${room} allowed)`}
+          aria-label={`Add photos to review (up to ${room} allowed)`}
         >
-          <b>Add images</b> (up to {room})
+          <b>Add photos</b> (up to {room})
         </RegularButton>
       )}
 

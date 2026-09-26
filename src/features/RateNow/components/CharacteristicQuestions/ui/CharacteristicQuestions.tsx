@@ -1,6 +1,7 @@
 import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
 
 import { type SavingToggles } from '../../../types';
+import { ErrorAlert } from '../../ErrorAlert';
 import { useCharacteristicQuestions } from '../model/useCharacteristicQuestions';
 import cls from './CharacteristicQuestions.module.scss';
 
@@ -49,11 +50,7 @@ export const CharacteristicQuestions = (props: CharacteristicQuestionsProps) => 
           More questions?
         </button>
       )}
-      {error && (
-        <p className={cls.error} role="alert">
-          {error}
-        </p>
-      )}
+      {error && <ErrorAlert>{error}</ErrorAlert>}
     </div>
   );
 };

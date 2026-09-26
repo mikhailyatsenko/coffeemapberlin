@@ -11,7 +11,7 @@
 - [x] The one-tap Rating reports the saved Review id along with the Rating; the block uploads to that id, else to the own Review's id
 - [x] `RateBlock` takes the own Review's id and Photo count; `DetailedPlace` passes them
 - [x] The file input accepts images, allows several, and has no `capture` attribute (library or camera on phones)
-- [x] Upload starts on picking; thumbnails show progress then a checkmark; "N photos added" in a `role="status"` region; "Add more" while the Review has room; files beyond the room dropped with "You can add N more"
+- [x] Upload starts on picking; thumbnails show progress then a checkmark; "N photos added" in a `role="status"` region; "Add more" while the Review has room; files beyond the room dropped with "Only N more fit; the rest weren't added"
 - [x] After a batch settles, `PlaceReviews` refetches in the background; no "Create account" modal for Guests; Guest credentials from `ensureGuestIdentity` (reuses the identity)
 - [x] The Review text link reads "Add a few words"
 - [x] `photo_button_click` on "Add a photo" / "Add more"; `photos_uploaded` with `count` and `had_text` when a batch saves at least one Photo; both with `place_id` and `actor`
@@ -19,3 +19,7 @@
 - [ ] Manual check at phone width: layout, and the picker offering the camera
 
 **Left for a human:** the manual check at phone width (layout, the native picker offering the camera) can't be automated.
+
+## Comments
+
+- 2026-09-26, after code review: layout checked in Chrome DevTools at 375×812 (thumbnails, "N photos added", the dropped-files line, the error line) — fine. The native picker offering the camera still needs a real phone.

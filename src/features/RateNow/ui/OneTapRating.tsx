@@ -1,5 +1,6 @@
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 
+import { ErrorAlert } from '../components/ErrorAlert';
 import { useOneTapRating } from '../model/useOneTapRating';
 import { type OneTapRatingProps } from '../types';
 import cls from './OneTapRating.module.scss';
@@ -14,11 +15,7 @@ export const OneTapRating = (props: OneTapRatingProps) => {
     <div className={cls.OneTapRating}>
       {/* Taps during a save are ignored, so the beans say so. */}
       <RatingWidget isClickable rating={shownRating} disabled={isSaving} handleRating={saveRating} />
-      {error && (
-        <p className={cls.error} role="alert">
-          {error}
-        </p>
-      )}
+      {error && <ErrorAlert>{error}</ErrorAlert>}
     </div>
   );
 };

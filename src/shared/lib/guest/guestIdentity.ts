@@ -57,6 +57,13 @@ export const ensureGuestIdentity = async (): Promise<GuestIdentity> => {
 };
 
 /**
+ * The credentials a contribution sends: none for a signed-in person, whom the
+ * session cookie identifies, and the Guest identity for everyone else.
+ */
+export const contributionCredentials = async (isSignedIn: boolean): Promise<Partial<GuestIdentity>> =>
+  isSignedIn ? {} : await ensureGuestIdentity();
+
+/**
  * Attaches reviews left as a guest to the account that just signed in.
  *
  * Credentials are cleared only after a successful response — dropping them on a

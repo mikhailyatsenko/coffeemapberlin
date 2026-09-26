@@ -70,6 +70,8 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     placeData?.place?.properties ? placeId : null,
   );
   const ownReview = placeReviewsData?.placeReviews.ownReview;
+  const ownReviewHasText = Boolean(ownReview?.text);
+  const ownReviewPhotoCount = ownReview?.reviewImages ?? 0;
   const showsRateBlock = useShowsRateBlock({
     placeId,
     hasReviews: Boolean(placeReviewsData),
@@ -244,9 +246,9 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
             placeId={placeId}
             rating={ownReview?.userRating}
             characteristicCounts={characteristicCounts}
-            hasReviewText={Boolean(ownReview?.text)}
+            hasReviewText={ownReviewHasText}
             ownReviewId={ownReview?.id}
-            ownReviewPhotoCount={ownReview?.reviewImages ?? 0}
+            ownReviewPhotoCount={ownReviewPhotoCount}
             onAddReviewText={() => {
               document.querySelector<HTMLTextAreaElement>(REVIEW_TEXT_SELECTOR)?.focus();
             }}
@@ -259,8 +261,8 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
           <ReviewsBlock
             placeId={placeId}
             isEditingReview={isEditingReview}
-            ownReviewHasText={Boolean(ownReview?.text)}
-            ownReviewPhotoCount={ownReview?.reviewImages ?? 0}
+            ownReviewHasText={ownReviewHasText}
+            ownReviewPhotoCount={ownReviewPhotoCount}
             editInitialText={editInitialText}
             displayedReviews={displayedReviews ?? []}
             onSubmitted={() => {

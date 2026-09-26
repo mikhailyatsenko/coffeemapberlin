@@ -1,6 +1,6 @@
 # Spec: Photo without Review text
 
-Status: ready-for-agent
+Status: ready-for-human
 Map: [Engagement: what to build so people interact more with the site](../engagement/map.md). Rank: #4 in [Rank the candidates into the final list](../engagement/issues/07-rank-candidates.md). Builds on: [One-tap contributions](../one-tap-contributions/spec.md) (in production since 2026-09-25).
 
 ## Problem Statement
@@ -34,7 +34,7 @@ The feature ships with GA events, a baseline and a success threshold (see Furthe
 15. As a keyboard user, I want to reach "Add a photo", "Add more" and "Retry" with Tab and activate them with Enter or Space, so that I can add Photos without a mouse.
 16. As a visitor, I want "Add more" under the thumbnails while my Review has room, so that I can add another batch.
 17. As a visitor whose Review already has 10 Photos, I want no "Add a photo" button, so that I'm not offered something that will fail.
-18. As a visitor who picks more Photos than my Review has room for, I want the extra ones dropped with "You can add N more", so that I know why some weren't taken.
+18. As a visitor who picks more Photos than my Review has room for, I want the extra ones dropped with "Only N more fit; the rest weren't added", so that I know why some weren't taken.
 19. As a visitor on a flaky connection, I want a failed Photo to show an error on its thumbnail and a Retry, so that I can resend just that one.
 20. As a visitor whose upload partly failed, I want the Photos that saved to stay saved, so that one bad file doesn't cost me the others.
 21. As a visitor who picked a file the browser can't read (e.g. HEIC on desktop) or one that is too large, I want that thumbnail to say "This photo couldn't be read, try a JPEG or PNG", so that I know what to do.
@@ -93,7 +93,7 @@ The feature ships with GA events, a baseline and a success threshold (see Furthe
   - Guest credentials come from `ensureGuestIdentity`, which reuses the identity the Rating created.
 - After a batch settles, `PlaceReviews` is refetched in the background so the own Review card shows the Photos. The block's thumbnails stay for the page view.
 - On unmount the upload is aborted, as the form does today.
-- `placeReviews` returns Reviews with a Rating or Review text, and `ReviewCard` already shows a Review's Photos with "Rated: N" when there is no text. Nothing to change there.
+- `placeReviews` returns Reviews with a Rating or Review text. `ReviewCard` shows a Review's Photos with "Rated: N" when there is no text, but it used to render nothing at all without text; it now renders when there is Review text or at least one Photo. A Rating alone still shows no card.
 
 **Guest flow:** unchanged from ADR 0001. No "Create account" modal after Photos. No moderation: the barrier was already one character of Review text, and the Guest rate limits bound abuse.
 
@@ -113,7 +113,7 @@ No event per file. The Review text form sends no new events.
 - **Main seam: the block**, in the existing `RateBlock` test with `MockedProvider`, the Place-from-cache harness, and mocks for `ensureGuestIdentity`, `trackEvent` and the image downscale (jsdom has no `createImageBitmap` or canvas). Cover:
   - no button without a Rating; disabled while the first Rating saves; gone when it fails; shown for a returning Rating, while changing it, and with Review text; gone at 10 Photos;
   - picking files sends one `uploadReviewImage` per file with the Review id from `addRating` (or the own Review) and Guest credentials, then shows the saved checkmarks and "N photos added";
-  - picking more than the room left drops the extras and says "You can add N more";
+  - picking more than the room left drops the extras and says "Only N more fit; the rest weren't added";
   - a failed Photo shows its reason on its thumbnail, keeps the saved ones, and Retry resends only it; each server code maps to its reason; an unreadable file fails alone;
   - `photos_uploaded` and `contribution_failed` (`kind: 'photo'`) fire once with the documented params; `photo_button_click` fires on tap;
   - no "Create account" modal after a Guest's Photos;

@@ -2,6 +2,7 @@ import { PHOTO_FAILURE_MESSAGES } from 'shared/lib/photoUpload';
 import { PhotoThumbnails } from 'shared/ui/PhotoThumbnails';
 import { RegularButton } from 'shared/ui/RegularButton';
 
+import { ErrorAlert } from '../../ErrorAlert';
 import { useAddPhotos } from '../model/useAddPhotos';
 import { type AddPhotosProps } from '../types';
 import cls from './AddPhotos.module.scss';
@@ -51,11 +52,7 @@ export const AddPhotos = (props: AddPhotosProps) => {
         {roomNotice && <span>{roomNotice}</span>}
       </p>
 
-      {alertReason && (
-        <p className={cls.error} role="alert">
-          {PHOTO_FAILURE_MESSAGES[alertReason]}
-        </p>
-      )}
+      {alertReason && <ErrorAlert>{PHOTO_FAILURE_MESSAGES[alertReason]}</ErrorAlert>}
     </div>
   );
 };

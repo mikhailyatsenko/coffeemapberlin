@@ -4,6 +4,7 @@ import { type Characteristic, type CharacteristicCounts } from 'shared/generated
 import { characteristicsMap } from 'shared/ui/CharacteristicCountsIcon';
 
 import { type SavingToggles } from '../../../types';
+import { ErrorAlert } from '../../ErrorAlert';
 import { useYourMarks } from '../model/useYourMarks';
 import cls from './YourMarks.module.scss';
 
@@ -52,11 +53,7 @@ export const YourMarks = (props: YourMarksProps) => {
           </ul>
         </>
       )}
-      {error && (
-        <p className={cls.error} role="alert">
-          {error}
-        </p>
-      )}
+      {error && <ErrorAlert>{error}</ErrorAlert>}
     </div>
   );
 };
