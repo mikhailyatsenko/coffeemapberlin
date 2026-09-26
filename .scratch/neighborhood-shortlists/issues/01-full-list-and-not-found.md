@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 - [x] Sections live in the page's own `components/` (pages-first); the page runs `filteredPlaces` twice: `minRating: 4.5` for Top rated, none for the full list
 - [x] Top rated is left out when empty; the `<h1>` and title stay "Best Coffee Places in {Neighborhood}"; the subtitle no longer says "rating of 4.5 or higher"
@@ -12,4 +12,4 @@
 - [x] A full list with a total of 0, or no `:neighborhood` param, renders the existing Not found page; the 2-second redirect to `/` is gone
 - [x] `neighborhood_view` once per page view after the data loads (`neighborhood`, `shortlists_shown: 0` for now, `places_total`); `neighborhood_card_click` when a card opens the Place page (`neighborhood`, `section`: `top_rated` / `all`); both via `trackEvent` with `actor`
 - [x] A new page test (`MockedProvider` + `MemoryRouter`, `trackEvent` mocked) covers the sections, the empty Top rated, unrated Places last, "Show 20 more", Not found without redirect, and both events
-- [ ] Checked in the browser through Chrome DevTools MCP at 375×812 on a large (Mitte) and a small (Spandau) Neighborhood and an unknown slug
+- [x] Checked in the browser through Chrome DevTools MCP at 375×812 on a large (Mitte) and a small (Spandau) Neighborhood and an unknown slug
