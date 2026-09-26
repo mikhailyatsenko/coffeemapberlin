@@ -22,19 +22,6 @@
   }
 }
 
-.placesList {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 20px;
-
-  @media (max-width: 768px) {
-    padding: 0 16px;
-  }
-}
-
 .emptyState {
   text-align: center;
   padding: 60px 20px;

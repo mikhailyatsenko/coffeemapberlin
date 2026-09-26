@@ -9,7 +9,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import { type NeighborhoodPlaceCardProps } from '../types';
 import cls from './NeighborhoodPlaceCard.module.scss';
 
-const NeighborhoodPlaceCardComponent = ({ place }: NeighborhoodPlaceCardProps) => {
+const NeighborhoodPlaceCardComponent = ({ place, onOpen }: NeighborhoodPlaceCardProps) => {
   const navigate = useNavigate();
   const { properties } = place;
 
@@ -30,6 +30,7 @@ const NeighborhoodPlaceCardComponent = ({ place }: NeighborhoodPlaceCardProps) =
   return (
     <div
       onClick={() => {
+        onOpen?.();
         navigate({ pathname: placePath });
       }}
       className={cls.card}
@@ -46,7 +47,7 @@ const NeighborhoodPlaceCardComponent = ({ place }: NeighborhoodPlaceCardProps) =
       <div className={cls.content}>
         <div className={cls.header}>
           <div className={cls.titleSection}>
-            <h2 className={cls.title}>{properties.name}</h2>
+            <h3 className={cls.title}>{properties.name}</h3>
             {properties.neighborhood && (
               <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badge} />
             )}
@@ -60,11 +61,17 @@ const NeighborhoodPlaceCardComponent = ({ place }: NeighborhoodPlaceCardProps) =
         </div>
 
         <div className={cls.ratingSection}>
-          <RatingWidget isClickable={false} rating={properties.averageRating} />
-          {Boolean(properties.averageRating) && (
-            <span className={cls.ratingValue}>{properties.averageRating?.toFixed(1)}</span>
+          {properties.ratingCount > 0 ? (
+            <>
+              <RatingWidget isClickable={false} rating={properties.averageRating} />
+              {Boolean(properties.averageRating) && (
+                <span className={cls.ratingValue}>{properties.averageRating?.toFixed(1)}</span>
+              )}
+              <span className={cls.ratingCount}>({properties.ratingCount} reviews)</span>
+            </>
+          ) : (
+            <span className={cls.noRatings}>No ratings yet — be the first</span>
           )}
-          {properties.ratingCount > 0 && <span className={cls.ratingCount}>({properties.ratingCount} reviews)</span>}
         </div>
 
         {properties.description && <p className={cls.description}>{properties.description}</p>}
@@ -93,5 +100,7 @@ const NeighborhoodPlaceCardComponent = ({ place }: NeighborhoodPlaceCardProps) =
 export const NeighborhoodPlaceCard = memo(
   NeighborhoodPlaceCardComponent,
   (prev, next) =>
-    prev.place.id === next.place.id && prev.place.properties.isFavorite === next.place.properties.isFavorite,
+    prev.place.id === next.place.id &&
+    prev.place.properties.isFavorite === next.place.properties.isFavorite &&
+    prev.onOpen === next.onOpen,
 );

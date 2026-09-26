@@ -1,0 +1,25 @@
+.section {
+  max-width: 1000px;
+  margin: 0 auto 48px;
+  padding: 0 20px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  color: #111111;
+  margin-bottom: 8px;
+
+  @media (max-width: 900px) {
+    font-size: 20px;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}

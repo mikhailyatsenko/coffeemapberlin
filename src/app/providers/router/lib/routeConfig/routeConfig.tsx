@@ -86,7 +86,7 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   },
   [AppRoutes.NEIGHBORHOOD]: {
     path: RoutePaths.neighborhood,
-    element: <NeighborhoodPage />,
+    element: <NeighborhoodPage notFound={<NotFoundPage />} />,
   },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,
