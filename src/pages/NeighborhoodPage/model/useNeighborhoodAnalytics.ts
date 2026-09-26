@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { type ShortlistId } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { useAuthStore } from 'shared/stores/auth';
 import { type NeighborhoodSection } from '../types';
@@ -6,17 +7,19 @@ import { type NeighborhoodSection } from '../types';
 interface NeighborhoodAnalyticsOptions {
   slug: string | undefined;
   neighborhood: string;
+  shortlistsShown: number;
   placesTotal: number;
   isLoaded: boolean;
 }
 
 /**
  * Sends `neighborhood_view` once per page view, when the data has loaded, and
- * gives each section a stable callback for `neighborhood_card_click`.
+ * gives the sections callbacks for `shortlist_view` and `neighborhood_card_click`.
  */
 export const useNeighborhoodAnalytics = ({
   slug,
   neighborhood,
+  shortlistsShown,
   placesTotal,
   isLoaded,
 }: NeighborhoodAnalyticsOptions) => {
@@ -26,8 +29,20 @@ export const useNeighborhoodAnalytics = ({
   useEffect(() => {
     if (!isLoaded || viewTrackedForRef.current === slug) return;
     viewTrackedForRef.current = slug;
-    trackEvent('neighborhood_view', { neighborhood, shortlists_shown: 0, places_total: placesTotal, actor });
-  }, [isLoaded, slug, neighborhood, placesTotal, actor]);
+    trackEvent('neighborhood_view', {
+      neighborhood,
+      shortlists_shown: shortlistsShown,
+      places_total: placesTotal,
+      actor,
+    });
+  }, [isLoaded, slug, neighborhood, shortlistsShown, placesTotal, actor]);
+
+  const trackShortlistView = useCallback(
+    (shortlist: ShortlistId) => {
+      trackEvent('shortlist_view', { neighborhood, shortlist, actor });
+    },
+    [neighborhood, actor],
+  );
 
   const trackCardOpen = useCallback(
     (section: NeighborhoodSection) => {
@@ -36,15 +51,5 @@ export const useNeighborhoodAnalytics = ({
     [neighborhood, actor],
   );
 
-  return useMemo(
-    () => ({
-      trackTopRatedCardOpen: () => {
-        trackCardOpen('top_rated');
-      },
-      trackAllCardOpen: () => {
-        trackCardOpen('all');
-      },
-    }),
-    [trackCardOpen],
-  );
+  return { trackShortlistView, trackCardOpen };
 };

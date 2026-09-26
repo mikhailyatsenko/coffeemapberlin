@@ -156,3 +156,35 @@ export const GET_AVAILABLE_TAGS = gql`
     }
   }
 `;
+
+export const GET_NEIGHBORHOOD_SHORTLISTS = gql`
+  query NeighborhoodShortlists($neighborhood: String!) {
+    neighborhoodShortlists(neighborhood: $neighborhood) {
+      id
+      amenities
+      places {
+        id
+        type
+        geometry {
+          type
+          coordinates
+        }
+        properties {
+          id
+          name
+          description
+          address
+          image
+          instagram
+          averageRating
+          ratingCount
+          favoriteCount
+          isFavorite
+          googleId
+          neighborhood
+        }
+      }
+      total
+    }
+  }
+`;

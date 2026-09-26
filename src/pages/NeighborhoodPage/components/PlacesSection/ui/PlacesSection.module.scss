@@ -2,6 +2,8 @@
   max-width: 1000px;
   margin: 0 auto 48px;
   padding: 0 20px;
+  /* A URL hash lands the title below the fixed 60px navbar, not under it. */
+  scroll-margin-top: 76px;
 
   @media (max-width: 768px) {
     padding: 0 16px;

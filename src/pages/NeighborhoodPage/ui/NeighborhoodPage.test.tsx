@@ -3,7 +3,12 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { FilteredPlacesDocument, type FilteredPlacesQuery } from 'shared/generated/graphql';
+import {
+  FilteredPlacesDocument,
+  type FilteredPlacesQuery,
+  NeighborhoodShortlistsDocument,
+  ShortlistId,
+} from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { setUser } from 'shared/stores/auth';
 import { NeighborhoodPage } from './NeighborhoodPage';
@@ -41,14 +46,54 @@ const filteredPlacesMock = (variables: Record<string, unknown>, places: Place[])
   },
 });
 
+interface ShortlistData {
+  places: Place[];
+  total: number;
+}
+
+type Shortlists = Partial<Record<ShortlistId, ShortlistData>>;
+
+const SHORTLIST_ORDER = [
+  ShortlistId.work,
+  ShortlistId.dogFriendly,
+  ShortlistId.outdoorSeating,
+  ShortlistId.breakfastBrunch,
+];
+
+/** The server always returns all four Shortlists, in this order. */
+const shortlistsMock = (neighborhood: string, shortlists: Shortlists): MockedResponse => ({
+  request: { query: NeighborhoodShortlistsDocument, variables: { neighborhood } },
+  result: {
+    data: {
+      neighborhoodShortlists: SHORTLIST_ORDER.map((id) => ({
+        __typename: 'Shortlist',
+        id,
+        amenities: ['Some Amenity'],
+        places: shortlists[id]?.places ?? [],
+        total: shortlists[id]?.total ?? 0,
+      })),
+    },
+  },
+});
+
+/** A Shortlist of `count` Places whose ids start with `prefix`. */
+const shortlist = (prefix: string, count: number): ShortlistData => ({
+  places: Array.from({ length: Math.min(count, 5) }, (_, i) => place(`${prefix}${i}`, 4.5 - i / 10, 5)),
+  total: count,
+});
+
 const renderPage = ({
   topRated,
   all,
+  shortlists = {},
+  shortlistsFail = false,
   slug = 'mitte',
   path = `/neighborhood/${slug}`,
 }: {
   topRated: Place[];
   all: Place[];
+  shortlists?: Shortlists;
+  shortlistsFail?: boolean;
   slug?: string;
   path?: string;
 }) =>
@@ -57,6 +102,12 @@ const renderPage = ({
       mocks={[
         filteredPlacesMock({ neighborhood: slug, minRating: 4.5 }, topRated),
         filteredPlacesMock({ neighborhood: slug }, all),
+        shortlistsFail
+          ? {
+              request: { query: NeighborhoodShortlistsDocument, variables: { neighborhood: slug } },
+              error: new Error('down'),
+            }
+          : shortlistsMock(slug, shortlists),
       ]}
     >
       <MemoryRouter initialEntries={[path]}>
@@ -72,6 +123,34 @@ const renderPage = ({
 
 const trackedEvents = (name: string) => vi.mocked(trackEvent).mock.calls.filter(([eventName]) => eventName === name);
 
+/** Stands in for the browser's IntersectionObserver; `enterViewport` fires it for one element. */
+const observed = new Map<Element, FakeIntersectionObserver>();
+class FakeIntersectionObserver {
+  constructor(private readonly callback: IntersectionObserverCallback) {}
+
+  observe(element: Element) {
+    observed.set(element, this);
+  }
+
+  unobserve(element: Element) {
+    observed.delete(element);
+  }
+
+  disconnect() {
+    for (const [element, observer] of observed) if (observer === this) observed.delete(element);
+  }
+
+  fire(element: Element) {
+    const entry = { target: element, isIntersecting: true } as unknown as IntersectionObserverEntry;
+    this.callback([entry], this as unknown as IntersectionObserver);
+  }
+}
+const enterViewport = (element: Element) => {
+  act(() => {
+    observed.get(element)?.fire(element);
+  });
+};
+
 const section = (name: RegExp) => screen.getByRole('region', { name });
 const cardNames = (region: HTMLElement) =>
   within(region)
@@ -81,10 +160,13 @@ const cardNames = (region: HTMLElement) =>
 describe('NeighborhoodPage', () => {
   beforeEach(() => {
     setUser(null);
+    vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
   });
 
   afterEach(() => {
     vi.mocked(trackEvent).mockClear();
+    vi.unstubAllGlobals();
+    observed.clear();
   });
 
   it('shows Top rated first and then every Place in the Neighborhood', async () => {
@@ -161,6 +243,116 @@ describe('NeighborhoodPage', () => {
     });
     expect(trackedEvents('neighborhood_view')).toEqual([
       ['neighborhood_view', { neighborhood: 'Mitte', shortlists_shown: 0, places_total: 2, actor: 'guest' }],
+    ]);
+  });
+
+  it('shows the Shortlists between Top rated and the full list, in the server order', async () => {
+    renderPage({
+      topRated: [place('a', 4.8, 10)],
+      all: [place('a', 4.8, 10)],
+      shortlists: {
+        work: shortlist('w', 7),
+        dogFriendly: shortlist('d', 3),
+        outdoorSeating: shortlist('o', 4),
+        breakfastBrunch: shortlist('b', 5),
+      },
+    });
+
+    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    expect(screen.getAllByRole('region').map((region) => region.getAttribute('aria-labelledby'))).toEqual([
+      'top-rated-title',
+      'work-title',
+      'dog-friendly-title',
+      'outdoor-seating-title',
+      'breakfast-brunch-title',
+      'all-places-title',
+    ]);
+    expect(cardNames(section(/^work$/i))).toEqual(['Place w0', 'Place w1', 'Place w2', 'Place w3', 'Place w4']);
+    expect(section(/dog friendly/i)).toBeInTheDocument();
+    expect(section(/outdoor seating/i)).toBeInTheDocument();
+    expect(section(/breakfast & brunch/i)).toBeInTheDocument();
+  });
+
+  it('gives each Shortlist its anchor as the section id', async () => {
+    renderPage({
+      topRated: [],
+      all: [place('a', 4.8, 10)],
+      shortlists: {
+        work: shortlist('w', 3),
+        dogFriendly: shortlist('d', 3),
+        outdoorSeating: shortlist('o', 3),
+        breakfastBrunch: shortlist('b', 3),
+      },
+    });
+
+    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    expect(section(/^work$/i)).toHaveAttribute('id', 'work');
+    expect(section(/dog friendly/i)).toHaveAttribute('id', 'dog-friendly');
+    expect(section(/outdoor seating/i)).toHaveAttribute('id', 'outdoor-seating');
+    expect(section(/breakfast & brunch/i)).toHaveAttribute('id', 'breakfast-brunch');
+  });
+
+  it('hides a Shortlist with fewer than 3 Places', async () => {
+    renderPage({
+      topRated: [],
+      all: [place('a', 4.8, 10)],
+      shortlists: { work: shortlist('w', 2), dogFriendly: shortlist('d', 3) },
+    });
+
+    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    expect(screen.queryByRole('region', { name: /^work$/i })).not.toBeInTheDocument();
+    expect(section(/dog friendly/i)).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /outdoor seating/i })).not.toBeInTheDocument();
+  });
+
+  it('still lists the Places when the Shortlists fail to load', async () => {
+    renderPage({ topRated: [place('a', 4.8, 10)], all: [place('a', 4.8, 10)], shortlistsFail: true });
+
+    expect(await screen.findByRole('region', { name: /all 1 places in mitte/i })).toBeInTheDocument();
+    expect(section(/top rated/i)).toBeInTheDocument();
+    expect(screen.queryByText(/couldn’t load/i)).not.toBeInTheDocument();
+  });
+
+  it('counts the Shortlists shown in neighborhood_view', async () => {
+    renderPage({
+      topRated: [],
+      all: [place('a', 4.8, 10)],
+      shortlists: { work: shortlist('w', 2), dogFriendly: shortlist('d', 3), breakfastBrunch: shortlist('b', 9) },
+    });
+
+    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    expect(trackedEvents('neighborhood_view')).toEqual([
+      ['neighborhood_view', { neighborhood: 'Mitte', shortlists_shown: 2, places_total: 1, actor: 'guest' }],
+    ]);
+  });
+
+  it('sends shortlist_view once when a Shortlist first enters the viewport', async () => {
+    renderPage({
+      topRated: [],
+      all: [place('a', 4.8, 10)],
+      shortlists: { dogFriendly: shortlist('d', 3), outdoorSeating: shortlist('o', 3) },
+    });
+
+    const dogFriendly = await screen.findByRole('region', { name: /dog friendly/i });
+    expect(trackedEvents('shortlist_view')).toEqual([]);
+    enterViewport(dogFriendly);
+    enterViewport(dogFriendly);
+    expect(trackedEvents('shortlist_view')).toEqual([
+      ['shortlist_view', { neighborhood: 'Mitte', shortlist: 'dogFriendly', actor: 'guest' }],
+    ]);
+  });
+
+  it('sends the Shortlist id as the section of a Shortlist card', async () => {
+    renderPage({
+      topRated: [],
+      all: [place('a', 4.8, 10)],
+      shortlists: { outdoorSeating: shortlist('o', 3) },
+    });
+
+    const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
+    await userEvent.click(within(outdoor).getByRole('heading', { name: 'Place o1' }));
+    expect(trackedEvents('neighborhood_card_click')).toEqual([
+      ['neighborhood_card_click', { neighborhood: 'Mitte', section: 'outdoorSeating', actor: 'guest' }],
     ]);
   });
 

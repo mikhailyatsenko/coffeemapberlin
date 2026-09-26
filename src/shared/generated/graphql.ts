@@ -265,7 +265,6 @@ export interface MutationaddTextReviewArgs {
   guestId?: InputMaybe<Scalars['String']['input']>;
   guestSecret?: InputMaybe<Scalars['String']['input']>;
   placeId: Scalars['ID']['input'];
-  reviewImages?: InputMaybe<Scalars['Int']['input']>;
   text: Scalars['String']['input'];
 }
 
@@ -457,6 +456,7 @@ export interface Query {
   currentUser?: Maybe<User>;
   favoritePlaces: FavoritePlace[];
   filteredPlaces: PlacesResponse;
+  neighborhoodShortlists: Shortlist[];
   place: Place;
   placeReviews: PlaceReviews;
   places: PlacesResponse;
@@ -480,6 +480,11 @@ export interface QueryfilteredPlacesArgs {
   additionalInfo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   minRating?: InputMaybe<Scalars['Float']['input']>;
   neighborhood?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+}
+
+
+export interface QueryneighborhoodShortlistsArgs {
+  neighborhood: Scalars['String']['input'];
 }
 
 
@@ -525,6 +530,24 @@ export interface Review {
   userId?: Maybe<Scalars['ID']['output']>;
   userName: Scalars['String']['output'];
   userRating?: Maybe<Scalars['Float']['output']>;
+}
+
+export interface Shortlist {
+  __typename?: 'Shortlist';
+  /** Canonical Amenity names, for the map's Filters. */
+  amenities: Array<Scalars['String']['output']>;
+  id: ShortlistId;
+  /** Top 5 by Average rating. */
+  places: Place[];
+  /** All Places that qualify. */
+  total: Scalars['Int']['output'];
+}
+
+export enum ShortlistId {
+  breakfastBrunch = 'breakfastBrunch',
+  dogFriendly = 'dogFriendly',
+  outdoorSeating = 'outdoorSeating',
+  work = 'work',
 }
 
 export interface StringFilterInput {
@@ -756,6 +779,13 @@ export type GetAvailableTagsQueryVariables = Exact<Record<string, never>>;
 
 
 export interface GetAvailableTagsQuery { __typename?: 'Query', availableAdditionalInfoTags: { __typename?: 'AdditionalInfoTagsResponse', tags: string[] } }
+
+export type NeighborhoodShortlistsQueryVariables = Exact<{
+  neighborhood: Scalars['String']['input'];
+}>;
+
+
+export interface NeighborhoodShortlistsQuery { __typename?: 'Query', neighborhoodShortlists: Array<{ __typename?: 'Shortlist', id: ShortlistId, amenities: string[], total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, googleId?: string | null, neighborhood?: string | null } }> }> }
 
 export type ReportInaccuracyMutationVariables = Exact<{
   placeId: Scalars['String']['input'];
@@ -1905,6 +1935,70 @@ export type GetAvailableTagsQueryHookResult = ReturnType<typeof useGetAvailableT
 export type GetAvailableTagsLazyQueryHookResult = ReturnType<typeof useGetAvailableTagsLazyQuery>;
 export type GetAvailableTagsSuspenseQueryHookResult = ReturnType<typeof useGetAvailableTagsSuspenseQuery>;
 export type GetAvailableTagsQueryResult = Apollo.QueryResult<GetAvailableTagsQuery, GetAvailableTagsQueryVariables>;
+export const NeighborhoodShortlistsDocument = gql`
+    query NeighborhoodShortlists($neighborhood: String!) {
+  neighborhoodShortlists(neighborhood: $neighborhood) {
+    id
+    amenities
+    places {
+      id
+      type
+      geometry {
+        type
+        coordinates
+      }
+      properties {
+        id
+        name
+        description
+        address
+        image
+        instagram
+        averageRating
+        ratingCount
+        favoriteCount
+        isFavorite
+        googleId
+        neighborhood
+      }
+    }
+    total
+  }
+}
+    `;
+
+/**
+ * __useNeighborhoodShortlistsQuery__
+ *
+ * To run a query within a React component, call `useNeighborhoodShortlistsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useNeighborhoodShortlistsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNeighborhoodShortlistsQuery({
+ *   variables: {
+ *      neighborhood: // value for 'neighborhood'
+ *   },
+ * });
+ */
+export function useNeighborhoodShortlistsQuery(baseOptions: Apollo.QueryHookOptions<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables> & ({ variables: NeighborhoodShortlistsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>(NeighborhoodShortlistsDocument, options);
+      }
+export function useNeighborhoodShortlistsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>(NeighborhoodShortlistsDocument, options);
+        }
+export function useNeighborhoodShortlistsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>(NeighborhoodShortlistsDocument, options);
+        }
+export type NeighborhoodShortlistsQueryHookResult = ReturnType<typeof useNeighborhoodShortlistsQuery>;
+export type NeighborhoodShortlistsLazyQueryHookResult = ReturnType<typeof useNeighborhoodShortlistsLazyQuery>;
+export type NeighborhoodShortlistsSuspenseQueryHookResult = ReturnType<typeof useNeighborhoodShortlistsSuspenseQuery>;
+export type NeighborhoodShortlistsQueryResult = Apollo.QueryResult<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>;
 export const ReportInaccuracyDocument = gql`
     mutation ReportInaccuracy($placeId: String!, $placeName: String!, $message: String!, $captchaToken: String) {
   reportInaccuracy(

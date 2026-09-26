@@ -3,7 +3,9 @@ import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
 import { Spinner } from 'shared/ui/Loader';
 import { AllPlaces } from '../components/AllPlaces';
+import { ShortlistBlock } from '../components/ShortlistBlock';
 import { TopRatedPlaces } from '../components/TopRatedPlaces';
+import { useScrollToHash } from '../hooks/useScrollToHash';
 import { useNeighborhoodAnalytics } from '../model/useNeighborhoodAnalytics';
 import { useNeighborhoodPlaces } from '../model/useNeighborhoodPlaces';
 import { type NeighborhoodPageProps } from '../types';
@@ -11,13 +13,15 @@ import cls from './NeighborhoodPage.module.scss';
 
 export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   const { neighborhood: slug } = useParams<{ neighborhood: string }>();
-  const { status, displayNeighborhood, topRated, all, total } = useNeighborhoodPlaces(slug);
-  const { trackTopRatedCardOpen, trackAllCardOpen } = useNeighborhoodAnalytics({
+  const { status, displayNeighborhood, topRated, shortlists, all, total } = useNeighborhoodPlaces(slug);
+  const { trackShortlistView, trackCardOpen } = useNeighborhoodAnalytics({
     slug,
     neighborhood: displayNeighborhood,
+    shortlistsShown: shortlists.length,
     placesTotal: total,
     isLoaded: status === 'loaded',
   });
+  useScrollToHash(status === 'loaded');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,13 +51,32 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
       )}
       {status === 'loaded' && (
         <>
-          <TopRatedPlaces places={topRated} onCardOpen={trackTopRatedCardOpen} />
+          <TopRatedPlaces
+            places={topRated}
+            onCardOpen={() => {
+              trackCardOpen('top_rated');
+            }}
+          />
+          {shortlists.map((shortlist) => (
+            <ShortlistBlock
+              key={`${slug}-${shortlist.id}`}
+              shortlist={shortlist}
+              onView={() => {
+                trackShortlistView(shortlist.id);
+              }}
+              onCardOpen={() => {
+                trackCardOpen(shortlist.id);
+              }}
+            />
+          ))}
           <AllPlaces
             key={slug}
             neighborhood={displayNeighborhood}
             places={all}
             total={total}
-            onCardOpen={trackAllCardOpen}
+            onCardOpen={() => {
+              trackCardOpen('all');
+            }}
           />
         </>
       )}
