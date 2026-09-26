@@ -35,8 +35,12 @@ export interface CardContributionProps {
   placeId: string;
   /** The person's own Rating for the Place, if any. */
   ownRating?: number | null;
+  /** The Characteristics the person marked in their own Review for the Place, if any. */
+  ownCharacteristics?: readonly Characteristic[] | null;
   /** The page section the card sits in, for analytics. */
   section: string;
+  /** The Characteristic to ask about once the person has a Rating; none on cards that ask nothing. */
+  question?: Characteristic;
 }
 
 export interface RateBlockProps extends Pick<OneTapRatingProps, 'placeId' | 'rating'> {

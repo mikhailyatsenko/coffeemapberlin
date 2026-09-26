@@ -33,3 +33,11 @@
   border: none;
   cursor: pointer;
 }
+
+.question {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-self: stretch;
+  margin-top: 4px;
+}

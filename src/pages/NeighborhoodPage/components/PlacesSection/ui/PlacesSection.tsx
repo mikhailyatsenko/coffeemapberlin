@@ -1,6 +1,7 @@
 import { type ReactNode, type Ref } from 'react';
 import { CardContribution } from 'features/RateNow';
 import { NeighborhoodPlaceCard } from 'entities/NeighborhoodPlaceCard';
+import { type Characteristic } from 'shared/generated/graphql';
 import { type NeighborhoodPlace, type NeighborhoodSection } from '../../../types';
 import cls from './PlacesSection.module.scss';
 
@@ -11,13 +12,24 @@ interface PlacesSectionProps {
   /** Which section the cards are in, for analytics. */
   section: NeighborhoodSection;
   places: readonly NeighborhoodPlace[];
+  /** The Characteristic each card asks about once the person has rated its Place; none by default. */
+  question?: Characteristic;
   onCardOpen: () => void;
   ref?: Ref<HTMLElement>;
   children?: ReactNode;
 }
 
 /** A titled list of Place cards; `children` go under the list. */
-export const PlacesSection = ({ id, title, section, places, onCardOpen, ref, children }: PlacesSectionProps) => (
+export const PlacesSection = ({
+  id,
+  title,
+  section,
+  places,
+  question,
+  onCardOpen,
+  ref,
+  children,
+}: PlacesSectionProps) => (
   <section ref={ref} id={id} className={cls.section} aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`} className={cls.title}>
       {title}
@@ -29,7 +41,13 @@ export const PlacesSection = ({ id, title, section, places, onCardOpen, ref, chi
           place={place}
           onOpen={onCardOpen}
           contribution={
-            <CardContribution placeId={place.id} ownRating={place.properties.ownRating} section={section} />
+            <CardContribution
+              placeId={place.id}
+              ownRating={place.properties.ownRating}
+              ownCharacteristics={place.properties.ownCharacteristics}
+              section={section}
+              question={question}
+            />
           }
         />
       ))}

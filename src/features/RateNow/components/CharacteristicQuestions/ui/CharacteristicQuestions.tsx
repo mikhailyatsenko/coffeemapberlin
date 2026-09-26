@@ -1,6 +1,7 @@
 import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
 
 import { type SavingToggles } from '../../../types';
+import { CharacteristicQuestion } from '../../CharacteristicQuestion';
 import { ErrorAlert } from '../../ErrorAlert';
 import { useCharacteristicQuestions } from '../model/useCharacteristicQuestions';
 import cls from './CharacteristicQuestions.module.scss';
@@ -21,29 +22,16 @@ export const CharacteristicQuestions = (props: CharacteristicQuestionsProps) => 
   return (
     <div ref={containerRef} className={cls.CharacteristicQuestions}>
       {questions.map(({ characteristic, text }) => (
-        <fieldset key={characteristic} className={cls.question}>
-          <legend className={cls.text}>{text}</legend>
-          <div className={cls.answers}>
-            <button
-              type="button"
-              className={cls.yes}
-              onClick={async () => {
-                await answerYes(characteristic);
-              }}
-            >
-              Yes
-            </button>
-            <button
-              type="button"
-              className={cls.skip}
-              onClick={() => {
-                skip(characteristic);
-              }}
-            >
-              Skip
-            </button>
-          </div>
-        </fieldset>
+        <CharacteristicQuestion
+          key={characteristic}
+          text={text}
+          onYes={async () => {
+            await answerYes(characteristic);
+          }}
+          onSkip={() => {
+            skip(characteristic);
+          }}
+        />
       ))}
       {hasMoreQuestions && (
         <button type="button" className={cls.more} onClick={showMoreQuestions}>

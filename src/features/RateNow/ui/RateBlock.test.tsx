@@ -554,7 +554,7 @@ describe('RateBlock', () => {
       expect(trackedEvents('characteristic_answered')).toEqual([
         [
           'characteristic_answered',
-          { place_id: placeId, actor: 'guest', characteristic: 'friendlyStaff', answer: 'yes' },
+          { place_id: placeId, actor: 'guest', characteristic: 'friendlyStaff', answer: 'yes', surface: 'place_page' },
         ],
       ]);
     });
@@ -574,7 +574,13 @@ describe('RateBlock', () => {
     expect(trackedEvents('characteristic_answered')).toEqual([
       [
         'characteristic_answered',
-        { place_id: placeId, actor: 'guest', characteristic: 'pleasantAtmosphere', answer: 'skip' },
+        {
+          place_id: placeId,
+          actor: 'guest',
+          characteristic: 'pleasantAtmosphere',
+          answer: 'skip',
+          surface: 'place_page',
+        },
       ],
     ]);
     expect(ensureGuestIdentity).not.toHaveBeenCalled();

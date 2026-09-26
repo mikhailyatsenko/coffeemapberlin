@@ -36,7 +36,6 @@ const place = (id: string): Place => ({
     instagram: '',
     averageRating: 4.2,
     isFavorite: false,
-    ownRating: null,
     googleId: null,
     neighborhood: 'Mitte',
   },
@@ -51,7 +50,18 @@ const filteredResult = vi.fn(() => ({
   data: {
     filteredPlaces: {
       __typename: 'FilteredPlacesResult',
-      places: [{ ...place('dog'), properties: { ...place('dog').properties, ratingCount: 3, favoriteCount: 0 } }],
+      places: [
+        {
+          ...place('dog'),
+          properties: {
+            ...place('dog').properties,
+            ratingCount: 3,
+            favoriteCount: 0,
+            ownRating: null,
+            ownCharacteristics: null,
+          },
+        },
+      ],
       total: 1,
     },
   },

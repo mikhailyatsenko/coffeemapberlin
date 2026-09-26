@@ -21,7 +21,7 @@ interface ShortlistBlockProps {
 export const ShortlistBlock = ({ shortlist, neighborhood, onView, onCardOpen, onMapOpen }: ShortlistBlockProps) => {
   const ref = useRef<HTMLElement>(null);
   useOnFirstView(ref, onView);
-  const { title, anchor } = SHORTLISTS[shortlist.id];
+  const { title, anchor, question } = SHORTLISTS[shortlist.id];
 
   return (
     <PlacesSection
@@ -30,6 +30,7 @@ export const ShortlistBlock = ({ shortlist, neighborhood, onView, onCardOpen, on
       title={title}
       section={shortlist.id}
       places={shortlist.places}
+      question={question}
       onCardOpen={onCardOpen}
     >
       <div className={cls.seeAll}>

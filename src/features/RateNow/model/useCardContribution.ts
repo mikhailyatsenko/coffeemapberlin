@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { type CardContributionProps } from '../types';
 
@@ -19,6 +19,7 @@ export const useCardContribution = ({ placeId, ownRating }: Pick<CardContributio
     setTappedRating(null);
   }
   const [isChanging, setIsChanging] = useState(false);
+  const changeButtonRef = useRef<HTMLButtonElement>(null);
 
   const currentRating = tappedRating ?? ownRating ?? null;
   const showsBeans = isChanging || currentRating === null;
@@ -45,5 +46,5 @@ export const useCardContribution = ({ placeId, ownRating }: Pick<CardContributio
     setIsChanging(true);
   };
 
-  return { currentRating, showsBeans, handleRate, handleSaved, handleSaveFailed, startChange };
+  return { changeButtonRef, currentRating, showsBeans, handleRate, handleSaved, handleSaveFailed, startChange };
 };

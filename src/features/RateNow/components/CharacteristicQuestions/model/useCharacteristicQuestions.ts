@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useToggleCharacteristic } from 'shared/api';
 import { type Characteristic, type CharacteristicCounts } from 'shared/generated/graphql';
-import { trackEvent } from 'shared/lib/analytics';
 import { getSaveErrorMessage, getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 
@@ -9,6 +8,7 @@ import { QUESTION_BATCH_SIZE } from '../../../constants/questions';
 import { PLACE_PAGE_SURFACE } from '../../../constants/surface';
 import { getActor } from '../../../lib/getActor';
 import { getRemainingQuestions } from '../../../lib/getRemainingQuestions';
+import { trackCharacteristicAnswered } from '../../../lib/trackCharacteristicAnswered';
 import { trackContributionFailed } from '../../../lib/trackContributionFailed';
 import { type SavingToggles } from '../../../types';
 
@@ -70,7 +70,7 @@ export const useCharacteristicQuestions = ({
       try {
         await toggleChar(characteristic);
         setError(null);
-        trackEvent('characteristic_answered', { place_id: placeId, actor, characteristic, answer: 'yes' });
+        trackCharacteristicAnswered(placeId, actor, PLACE_PAGE_SURFACE, { characteristic, answer: 'yes' });
       } catch (saveError) {
         // Its question comes back: it is still in the batch, or in a later one if "More questions?" was used meanwhile.
         setError(getSaveErrorMessage(saveError));
@@ -86,7 +86,7 @@ export const useCharacteristicQuestions = ({
     shouldMoveFocusRef.current = true;
     onSkip(characteristic);
     setError(null);
-    trackEvent('characteristic_answered', { place_id: placeId, actor: getActor(user), characteristic, answer: 'skip' });
+    trackCharacteristicAnswered(placeId, getActor(user), PLACE_PAGE_SURFACE, { characteristic, answer: 'skip' });
   };
 
   return { containerRef, questions, hasMoreQuestions, showMoreQuestions, answerYes, skip, error };
