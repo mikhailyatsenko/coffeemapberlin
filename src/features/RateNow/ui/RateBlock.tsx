@@ -1,6 +1,7 @@
 import { AddPhotos } from '../components/AddPhotos';
 import { CharacteristicQuestions } from '../components/CharacteristicQuestions';
 import { YourMarks } from '../components/YourMarks';
+import { PLACE_PAGE_SURFACE } from '../constants/surface';
 import { useRateBlock } from '../model/useRateBlock';
 import { type RateBlockHandle, type RateBlockProps } from '../types';
 import { OneTapRating } from './OneTapRating';
@@ -40,6 +41,7 @@ export const RateBlock = (props: RateBlockProps) => {
         <OneTapRating
           placeId={placeId}
           rating={rating}
+          surfaceParams={PLACE_PAGE_SURFACE}
           onRate={handleRate}
           onSaved={handleSaved}
           onFailed={handleSaveFailed}

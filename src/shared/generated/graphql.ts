@@ -429,6 +429,10 @@ export interface PlaceProperties {
   name: Scalars['String']['output'];
   neighborhood?: Maybe<Scalars['String']['output']>;
   openingHours?: Maybe<OpeningHour[]>;
+  /** The Characteristics the caller marked in their own Review. Filled by filteredPlaces and neighborhoodShortlists only, null elsewhere. */
+  ownCharacteristics?: Maybe<Characteristic[]>;
+  /** The caller's own Rating (User or Guest). Filled by filteredPlaces and neighborhoodShortlists only, null elsewhere. */
+  ownRating?: Maybe<Scalars['Int']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
   ratingCount: Scalars['Int']['output'];
   reviews: Review[];
@@ -768,7 +772,7 @@ export type FilteredPlacesQueryVariables = Exact<{
 }>;
 
 
-export interface FilteredPlacesQuery { __typename?: 'Query', filteredPlaces: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, googleId?: string | null, neighborhood?: string | null } }> } }
+export interface FilteredPlacesQuery { __typename?: 'Query', filteredPlaces: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, ownRating?: number | null, googleId?: string | null, neighborhood?: string | null } }> } }
 
 export type AvailableNeighborhoodsQueryVariables = Exact<Record<string, never>>;
 
@@ -785,7 +789,7 @@ export type NeighborhoodShortlistsQueryVariables = Exact<{
 }>;
 
 
-export interface NeighborhoodShortlistsQuery { __typename?: 'Query', neighborhoodShortlists: Array<{ __typename?: 'Shortlist', id: ShortlistId, amenities: string[], total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, googleId?: string | null, neighborhood?: string | null } }> }> }
+export interface NeighborhoodShortlistsQuery { __typename?: 'Query', neighborhoodShortlists: Array<{ __typename?: 'Shortlist', id: ShortlistId, amenities: string[], total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, ownRating?: number | null, googleId?: string | null, neighborhood?: string | null } }> }> }
 
 export type ReportInaccuracyMutationVariables = Exact<{
   placeId: Scalars['String']['input'];
@@ -1813,6 +1817,7 @@ export const FilteredPlacesDocument = gql`
         ratingCount
         favoriteCount
         isFavorite
+        ownRating
         googleId
         neighborhood
       }
@@ -1958,6 +1963,7 @@ export const NeighborhoodShortlistsDocument = gql`
         ratingCount
         favoriteCount
         isFavorite
+        ownRating
         googleId
         neighborhood
       }

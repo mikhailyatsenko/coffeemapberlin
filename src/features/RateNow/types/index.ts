@@ -8,8 +8,19 @@ export interface RateButtonProps {
   onClick: () => void;
 }
 
+/** Where a contribution was made, sent with `rating_saved` and `contribution_failed`. */
+export type SurfaceParams =
+  | { surface: 'place_page' }
+  | {
+      surface: 'neighborhood_card';
+      /** The page section the card sits in: `top_rated`, a Shortlist id or `all`. */
+      section: string;
+    };
+
 export interface OneTapRatingProps {
   placeId: string;
+  /** Where the beans are. On the Place page, its queries refresh after a save. */
+  surfaceParams: SurfaceParams;
   /** The person's current Rating for the Place, if any. */
   rating?: number | null;
   /** Called on a tap that starts a save, before the server answers. */
@@ -18,6 +29,14 @@ export interface OneTapRatingProps {
   onSaved?: (rating: number, reviewId: string) => void;
   /** Called when a save fails; the beans are back on the previous Rating and show the message. */
   onFailed?: () => void;
+}
+
+export interface CardContributionProps {
+  placeId: string;
+  /** The person's own Rating for the Place, if any. */
+  ownRating?: number | null;
+  /** The page section the card sits in, for analytics. */
+  section: string;
 }
 
 export interface RateBlockProps extends Pick<OneTapRatingProps, 'placeId' | 'rating'> {

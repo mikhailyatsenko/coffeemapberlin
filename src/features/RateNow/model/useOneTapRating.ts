@@ -1,3 +1,4 @@
+import { useApolloClient } from '@apollo/client';
 import { useRef, useState } from 'react';
 import { PlaceDocument, PlaceReviewsDocument, useAddRatingMutation } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
@@ -14,8 +15,9 @@ import { type OneTapRatingProps } from '../types';
  * Saves a Rating on one tap. The tapped Rating shows at once; a failure puts the
  * previous one back and returns a message. Needs no Place page query in the cache.
  */
-export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: OneTapRatingProps) => {
+export const useOneTapRating = ({ placeId, rating, surfaceParams, onRate, onSaved, onFailed }: OneTapRatingProps) => {
   const user = useAuthStore((s) => s.user);
+  const { cache } = useApolloClient();
   const [pendingRating, setPendingRating] = useState<number | null>(null);
   const [savedRating, setSavedRating] = useState<number | null>(null);
   // Once the caller passes a different current Rating (refetched, or changed elsewhere), it wins.
@@ -45,14 +47,23 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
       // Guests rate too; the captcha runs once, when the identity is issued.
       const guestCredentials = await contributionCredentials(!!user);
 
+      const isPlacePage = surfaceParams.surface === 'place_page';
       const { data } = await addRating({
         variables: { placeId, rating: newRating, ...guestCredentials },
         // In the background: the Rating already shows, and callers may have no Place page open.
-        refetchQueries: [
-          { query: PlaceDocument, variables: { placeId } },
-          { query: PlaceReviewsDocument, variables: { placeId } },
-        ],
+        refetchQueries: isPlacePage
+          ? [
+              { query: PlaceDocument, variables: { placeId } },
+              { query: PlaceReviewsDocument, variables: { placeId } },
+            ]
+          : [],
       });
+      if (!isPlacePage) {
+        // Elsewhere the Place page's data is dropped rather than refetched, so the Place page loads fresh on the
+        // next visit while the new Average rating stays out of this page view.
+        cache.evict({ id: 'ROOT_QUERY', fieldName: 'place', args: { placeId } });
+        cache.evict({ id: 'ROOT_QUERY', fieldName: 'placeReviews', args: { placeId } });
+      }
       setSavedRating(newRating);
       setError(null);
       trackEvent('rating_saved', {
@@ -60,13 +71,14 @@ export const useOneTapRating = ({ placeId, rating, onRate, onSaved, onFailed }: 
         actor,
         rating: newRating,
         is_change: confirmedRating !== null,
+        ...surfaceParams,
       });
       const reviewId = data?.addRating.reviewId;
       if (reviewId) onSaved?.(newRating, reviewId);
     } catch (saveError) {
       console.error('Error adding rating:', saveError);
       setError(getSaveErrorMessage(saveError));
-      trackContributionFailed(placeId, actor, { kind: 'rating', reason: getSaveErrorReason(saveError) });
+      trackContributionFailed(placeId, actor, surfaceParams, { kind: 'rating', reason: getSaveErrorReason(saveError) });
       onFailed?.();
     } finally {
       setPendingRating(null);

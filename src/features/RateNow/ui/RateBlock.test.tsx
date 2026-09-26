@@ -464,7 +464,7 @@ describe('RateBlock', () => {
     expect(thanks()).toHaveTextContent('Your rating: 5');
     await waitFor(() => {
       expect(trackedEvents('rating_saved')).toEqual([
-        ['rating_saved', { place_id: placeId, actor: 'guest', rating: 5, is_change: true }],
+        ['rating_saved', { place_id: placeId, actor: 'guest', rating: 5, is_change: true, surface: 'place_page' }],
       ]);
     });
   });
@@ -593,7 +593,10 @@ describe('RateBlock', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/check your connection/i);
     expect(askedQuestions()).toEqual(['Delicious filter coffee?', 'Pleasant atmosphere?', 'Yummy eats?']);
     expect(trackedEvents('contribution_failed')).toEqual([
-      ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'characteristic', reason: 'network' }],
+      [
+        'contribution_failed',
+        { place_id: placeId, actor: 'guest', kind: 'characteristic', reason: 'network', surface: 'place_page' },
+      ],
     ]);
     expect(trackedEvents('characteristic_answered')).toEqual([]);
   });
@@ -608,7 +611,10 @@ describe('RateBlock', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/ad blocker/i);
     expect(askedQuestions()).toContain('Yummy eats?');
     expect(trackedEvents('contribution_failed')).toEqual([
-      ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'characteristic', reason: 'recaptcha' }],
+      [
+        'contribution_failed',
+        { place_id: placeId, actor: 'guest', kind: 'characteristic', reason: 'recaptcha', surface: 'place_page' },
+      ],
     ]);
   });
 
@@ -1039,7 +1045,7 @@ describe('RateBlock', () => {
       expect(await screen.findByRole('alert')).toHaveTextContent(message);
       expect(within(thumbnailOf('a.jpg')).getByText(message)).toBeInTheDocument();
       expect(trackedEvents('contribution_failed')).toEqual([
-        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason }],
+        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason, surface: 'place_page' }],
       ]);
       expect(trackedEvents('photos_uploaded')).toHaveLength(0);
     });
@@ -1056,8 +1062,14 @@ describe('RateBlock', () => {
       expect(within(thumbnailOf('b.jpg')).getByText(/ad blocker/i)).toBeInTheDocument();
       expect(trackedEvents('photos_uploaded')).toHaveLength(0);
       expect(trackedEvents('contribution_failed')).toEqual([
-        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'recaptcha' }],
-        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'recaptcha' }],
+        [
+          'contribution_failed',
+          { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'recaptcha', surface: 'place_page' },
+        ],
+        [
+          'contribution_failed',
+          { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'recaptcha', surface: 'place_page' },
+        ],
       ]);
     });
 
@@ -1097,7 +1109,10 @@ describe('RateBlock', () => {
       expect(within(unreadable).queryByRole('button', { name: /Retry/ })).not.toBeInTheDocument();
       expect(screen.getByRole('alert')).toHaveTextContent("This photo couldn't be read, try a JPEG or PNG");
       expect(trackedEvents('contribution_failed')).toEqual([
-        ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'unreadable' }],
+        [
+          'contribution_failed',
+          { place_id: placeId, actor: 'guest', kind: 'photo', reason: 'unreadable', surface: 'place_page' },
+        ],
       ]);
     });
 

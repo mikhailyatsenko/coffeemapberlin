@@ -6,6 +6,7 @@ import { getSaveErrorMessage, getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 
 import { QUESTION_BATCH_SIZE } from '../../../constants/questions';
+import { PLACE_PAGE_SURFACE } from '../../../constants/surface';
 import { getActor } from '../../../lib/getActor';
 import { getRemainingQuestions } from '../../../lib/getRemainingQuestions';
 import { trackContributionFailed } from '../../../lib/trackContributionFailed';
@@ -73,7 +74,10 @@ export const useCharacteristicQuestions = ({
       } catch (saveError) {
         // Its question comes back: it is still in the batch, or in a later one if "More questions?" was used meanwhile.
         setError(getSaveErrorMessage(saveError));
-        trackContributionFailed(placeId, actor, { kind: 'characteristic', reason: getSaveErrorReason(saveError) });
+        trackContributionFailed(placeId, actor, PLACE_PAGE_SURFACE, {
+          kind: 'characteristic',
+          reason: getSaveErrorReason(saveError),
+        });
       }
     });
   };

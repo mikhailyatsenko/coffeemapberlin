@@ -22,6 +22,7 @@ export const AllPlaces = ({ neighborhood, places, total, onCardOpen }: AllPlaces
     <PlacesSection
       id="all-places"
       title={`All ${total} Places in ${neighborhood}`}
+      section="all"
       places={sortedPlaces.slice(0, visibleCount)}
       onCardOpen={onCardOpen}
     >

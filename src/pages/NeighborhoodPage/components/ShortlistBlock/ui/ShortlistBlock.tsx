@@ -24,7 +24,14 @@ export const ShortlistBlock = ({ shortlist, neighborhood, onView, onCardOpen, on
   const { title, anchor } = SHORTLISTS[shortlist.id];
 
   return (
-    <PlacesSection ref={ref} id={anchor} title={title} places={shortlist.places} onCardOpen={onCardOpen}>
+    <PlacesSection
+      ref={ref}
+      id={anchor}
+      title={title}
+      section={shortlist.id}
+      places={shortlist.places}
+      onCardOpen={onCardOpen}
+    >
       <div className={cls.seeAll}>
         <Link
           to={RoutePaths.main}

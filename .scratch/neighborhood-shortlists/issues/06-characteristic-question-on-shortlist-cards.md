@@ -6,6 +6,7 @@
 
 **Status:** ready-for-agent
 
+- [ ] The card contribution component (`CardContribution` in `features/RateNow`) also takes the person's `ownCharacteristics`; 05 left it out as unused, so add the field to the `FilteredPlaces` and `NeighborhoodShortlists` queries (the server fills it) and pass it from the page
 - [ ] The card contribution component takes an optional Characteristic to ask; the page passes it from the Shortlist's constant, none for Top rated and full-list cards
 - [ ] The question reuses the Yes / Skip UI of `CharacteristicQuestions`: no batching, no "More questions?", no "Your marks", no Photo button, no Review text link
 - [ ] Shown only once a Rating exists and only when the Characteristic isn't in `ownCharacteristics`; Yes is never sent for a marked one

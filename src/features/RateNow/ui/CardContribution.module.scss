@@ -1,0 +1,35 @@
+.CardContribution {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+
+  [hidden] {
+    display: none;
+  }
+}
+
+.beans > div {
+  /* On a card the beans and their message line up with the text, not centred as on the Place page. */
+  align-items: flex-start;
+}
+
+.heading {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rating {
+  margin: 0;
+  font-size: 14px;
+}
+
+.change {
+  padding: 0;
+  color: var(--accent-secondary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

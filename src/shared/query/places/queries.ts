@@ -131,6 +131,7 @@ export const GET_FILTERED_PLACES = gql`
           ratingCount
           favoriteCount
           isFavorite
+          ownRating
           googleId
           neighborhood
         }
@@ -180,6 +181,7 @@ export const GET_NEIGHBORHOOD_SHORTLISTS = gql`
           ratingCount
           favoriteCount
           isFavorite
+          ownRating
           googleId
           neighborhood
         }

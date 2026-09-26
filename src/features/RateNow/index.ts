@@ -1,4 +1,6 @@
 export {
+  CardContribution,
+  type CardContributionProps,
   OneTapRating,
   type OneTapRatingProps,
   RateBlock,

@@ -71,7 +71,7 @@ const refetchMocks = (): MockedResponse[] => [
 const renderOneTapRating = (mocks: MockedResponse[], props: Partial<OneTapRatingProps> = {}) =>
   render(
     <MockedProvider mocks={mocks}>
-      <OneTapRating placeId={placeId} {...props} />
+      <OneTapRating placeId={placeId} surfaceParams={{ surface: 'place_page' }} {...props} />
     </MockedProvider>,
   );
 
@@ -127,7 +127,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
 
     await waitFor(() => {
       expect(trackedEvents('rating_saved')).toEqual([
-        ['rating_saved', { place_id: placeId, actor: 'guest', rating: 4, is_change: false }],
+        ['rating_saved', { place_id: placeId, actor: 'guest', rating: 4, is_change: false, surface: 'place_page' }],
       ]);
     });
     expect(trackedEvents('contribution_failed')).toEqual([]);
@@ -142,7 +142,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
 
     await waitFor(() => {
       expect(trackedEvents('rating_saved')).toEqual([
-        ['rating_saved', { place_id: placeId, actor: 'guest', rating: 4, is_change: true }],
+        ['rating_saved', { place_id: placeId, actor: 'guest', rating: 4, is_change: true, surface: 'place_page' }],
       ]);
     });
   });
@@ -160,7 +160,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     // The Rating was deleted elsewhere, e.g. from the person's Review card.
     rerender(
       <MockedProvider mocks={mocks}>
-        <OneTapRating placeId={placeId} rating={null} onSaved={onSaved} />
+        <OneTapRating placeId={placeId} surfaceParams={{ surface: 'place_page' }} rating={null} onSaved={onSaved} />
       </MockedProvider>,
     );
 
@@ -185,7 +185,7 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     });
     expect(ensureGuestIdentity).not.toHaveBeenCalled();
     expect(trackedEvents('rating_saved')).toEqual([
-      ['rating_saved', { place_id: placeId, actor: 'user', rating: 4, is_change: false }],
+      ['rating_saved', { place_id: placeId, actor: 'user', rating: 4, is_change: false, surface: 'place_page' }],
     ]);
   });
 
@@ -201,7 +201,10 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     expect(bean(4)).not.toBeChecked();
     expect(onSaved).not.toHaveBeenCalled();
     expect(trackedEvents('contribution_failed')).toEqual([
-      ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'rating', reason: 'network' }],
+      [
+        'contribution_failed',
+        { place_id: placeId, actor: 'guest', kind: 'rating', reason: 'network', surface: 'place_page' },
+      ],
     ]);
     expect(trackedEvents('rating_saved')).toEqual([]);
     expect(unhandled).toEqual([]);
@@ -221,7 +224,10 @@ describe('OneTapRating with no Place page queries in the cache', () => {
     expect(screen.getAllByRole('radio').filter((radio) => radio.getAttribute('aria-checked') === 'true')).toEqual([]);
     expect(addRating).not.toHaveBeenCalled();
     expect(trackedEvents('contribution_failed')).toEqual([
-      ['contribution_failed', { place_id: placeId, actor: 'guest', kind: 'rating', reason: 'recaptcha' }],
+      [
+        'contribution_failed',
+        { place_id: placeId, actor: 'guest', kind: 'rating', reason: 'recaptcha', surface: 'place_page' },
+      ],
     ]);
     expect(unhandled).toEqual([]);
   });

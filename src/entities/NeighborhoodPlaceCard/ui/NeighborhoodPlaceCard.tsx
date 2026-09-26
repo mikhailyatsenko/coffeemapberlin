@@ -1,5 +1,4 @@
-import { memo } from 'react';
-import { generatePath, useNavigate } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 import instagram from 'shared/assets/instagram.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
@@ -9,8 +8,7 @@ import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
 import { type NeighborhoodPlaceCardProps } from '../types';
 import cls from './NeighborhoodPlaceCard.module.scss';
 
-const NeighborhoodPlaceCardComponent = ({ place, onOpen }: NeighborhoodPlaceCardProps) => {
-  const navigate = useNavigate();
+export const NeighborhoodPlaceCard = ({ place, onOpen, contribution }: NeighborhoodPlaceCardProps) => {
   const { properties } = place;
 
   const handleInstagramClick = (e: React.MouseEvent) => {
@@ -28,14 +26,9 @@ const NeighborhoodPlaceCardComponent = ({ place, onOpen }: NeighborhoodPlaceCard
     : 'places-images/default-place.jpg';
 
   return (
-    <div
-      onClick={() => {
-        onOpen?.();
-        navigate({ pathname: placePath });
-      }}
-      className={cls.card}
-    >
-      <div className={cls.imageContainer}>
+    // Only the title and the photo open the Place page, so taps elsewhere (the contribution) stay on the card.
+    <article className={cls.card} aria-labelledby={`place-card-${properties.id}`}>
+      <Link to={placePath} onClick={onOpen} className={cls.imageContainer} tabIndex={-1} aria-hidden="true">
         <ImgWithLoader
           loading="lazy"
           src={imageSrc}
@@ -43,11 +36,15 @@ const NeighborhoodPlaceCardComponent = ({ place, onOpen }: NeighborhoodPlaceCard
           className={cls.image}
           errorFallbackUrl="/places-images/default-place.jpg"
         />
-      </div>
+      </Link>
       <div className={cls.content}>
         <div className={cls.header}>
           <div className={cls.titleSection}>
-            <h3 className={cls.title}>{properties.name}</h3>
+            <h3 id={`place-card-${properties.id}`} className={cls.title}>
+              <Link to={placePath} onClick={onOpen} className={cls.titleLink}>
+                {properties.name}
+              </Link>
+            </h3>
             {properties.neighborhood && (
               <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badge} />
             )}
@@ -74,6 +71,8 @@ const NeighborhoodPlaceCardComponent = ({ place, onOpen }: NeighborhoodPlaceCard
           )}
         </div>
 
+        {contribution}
+
         {properties.description && <p className={cls.description}>{properties.description}</p>}
 
         <div className={cls.footer}>
@@ -93,14 +92,6 @@ const NeighborhoodPlaceCardComponent = ({ place, onOpen }: NeighborhoodPlaceCard
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 };
-
-export const NeighborhoodPlaceCard = memo(
-  NeighborhoodPlaceCardComponent,
-  (prev, next) =>
-    prev.place.id === next.place.id &&
-    prev.place.properties.isFavorite === next.place.properties.isFavorite &&
-    prev.onOpen === next.onOpen,
-);

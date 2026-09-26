@@ -12,5 +12,7 @@ interface TopRatedPlacesProps {
 export const TopRatedPlaces = ({ places, onCardOpen }: TopRatedPlacesProps) => {
   const sortedPlaces = useMemo(() => sortPlaces(places), [places]);
   if (sortedPlaces.length === 0) return null;
-  return <PlacesSection id="top-rated" title="Top rated" places={sortedPlaces} onCardOpen={onCardOpen} />;
+  return (
+    <PlacesSection id="top-rated" title="Top rated" section="top_rated" places={sortedPlaces} onCardOpen={onCardOpen} />
+  );
 };

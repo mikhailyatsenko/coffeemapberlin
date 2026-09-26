@@ -1,25 +1,36 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  AddRatingDocument,
   FilteredPlacesDocument,
   type FilteredPlacesQuery,
   NeighborhoodShortlistsDocument,
   ShortlistId,
 } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
+import type * as guestModule from 'shared/lib/guest';
+import { ensureGuestIdentity } from 'shared/lib/guest';
 import { setUser } from 'shared/stores/auth';
 import { resetFilters, setSearchQuery, useFiltersStore } from 'shared/stores/filters';
 import { setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { NeighborhoodPage } from './NeighborhoodPage';
 
 vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
+vi.mock('shared/lib/guest', async (importOriginal) => {
+  const ensureGuestIdentity = vi.fn();
+  return {
+    ...(await importOriginal<typeof guestModule>()),
+    ensureGuestIdentity,
+    contributionCredentials: (isSignedIn: boolean) => (isSignedIn ? Promise.resolve({}) : ensureGuestIdentity()),
+  };
+});
 
 type Place = FilteredPlacesQuery['filteredPlaces']['places'][number];
 
-const place = (id: string, averageRating: number, ratingCount: number): Place => ({
+const place = (id: string, averageRating: number, ratingCount: number, ownRating: number | null = null): Place => ({
   __typename: 'Place',
   id,
   type: 'Feature',
@@ -36,6 +47,7 @@ const place = (id: string, averageRating: number, ratingCount: number): Place =>
     ratingCount,
     favoriteCount: 0,
     isFavorite: false,
+    ownRating,
     googleId: null,
     neighborhood: 'Mitte',
   },
@@ -91,6 +103,31 @@ const shortlist = (prefix: string, count: number): ShortlistData => ({
   total: count,
 });
 
+const guest = { guestId: 'guest-1', guestSecret: 'secret-1' };
+
+const addRatingMock = (placeId: string, rating: number, onCall = () => {}): MockedResponse => ({
+  request: { query: AddRatingDocument, variables: { placeId, rating, ...guest } },
+  result: () => {
+    onCall();
+    return {
+      data: {
+        addRating: {
+          __typename: 'AddRatingResponse',
+          averageRating: 3,
+          ratingCount: 99,
+          reviewId: 'review-1',
+          userRating: rating,
+        },
+      },
+    };
+  },
+});
+
+const failingAddRatingMock = (placeId: string, rating: number): MockedResponse => ({
+  request: { query: AddRatingDocument, variables: { placeId, rating, ...guest } },
+  error: new Error('Network down'),
+});
+
 const renderPage = ({
   topRated,
   all,
@@ -98,6 +135,7 @@ const renderPage = ({
   shortlistsFail = false,
   slug = 'mitte',
   path = `/neighborhood/${slug}`,
+  mocks = [],
 }: {
   topRated: Place[];
   all: Place[];
@@ -105,6 +143,7 @@ const renderPage = ({
   shortlistsFail?: boolean;
   slug?: string;
   path?: string;
+  mocks?: MockedResponse[];
 }) =>
   render(
     <MockedProvider
@@ -117,6 +156,7 @@ const renderPage = ({
               error: new Error('down'),
             }
           : shortlistsMock(slug, shortlists),
+        ...mocks,
       ]}
     >
       <MemoryRouter initialEntries={[path]}>
@@ -161,6 +201,11 @@ const enterViewport = (element: Element) => {
 };
 
 const section = (name: RegExp) => screen.getByRole('region', { name });
+/** The card of the Place named `name` in a section. */
+const card = (region: HTMLElement, name: string) => within(region).getByRole('article', { name });
+const bean = (cardElement: HTMLElement, rating: number) =>
+  within(cardElement).getByRole('radio', { name: `${rating} of 5` });
+
 const cardNames = (region: HTMLElement) =>
   within(region)
     .getAllByRole('heading', { level: 3 })
@@ -169,11 +214,13 @@ const cardNames = (region: HTMLElement) =>
 describe('NeighborhoodPage', () => {
   beforeEach(() => {
     setUser(null);
+    vi.mocked(ensureGuestIdentity).mockResolvedValue(guest);
     vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
   });
 
   afterEach(() => {
     vi.mocked(trackEvent).mockClear();
+    vi.mocked(ensureGuestIdentity).mockReset();
     resetFilters();
     setSearchQuery('');
     setShowFavorites(false);
@@ -362,7 +409,7 @@ describe('NeighborhoodPage', () => {
     });
 
     const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-    await userEvent.click(within(outdoor).getByRole('heading', { name: 'Place o1' }));
+    await userEvent.click(within(outdoor).getByRole('link', { name: 'Place o1' }));
     expect(trackedEvents('neighborhood_card_click')).toEqual([
       ['neighborhood_card_click', { neighborhood: 'Mitte', section: 'outdoorSeating', actor: 'guest' }],
     ]);
@@ -372,7 +419,7 @@ describe('NeighborhoodPage', () => {
     renderPage({ topRated: [place('a', 4.8, 10)], all: [place('a', 4.8, 10), place('b', 4.1, 3)] });
 
     const topRated = await screen.findByRole('region', { name: /top rated/i });
-    await userEvent.click(within(topRated).getByRole('heading', { name: 'Place a' }));
+    await userEvent.click(within(topRated).getByRole('link', { name: 'Place a' }));
     expect(await screen.findByText('Place page')).toBeInTheDocument();
     expect(trackedEvents('neighborhood_card_click')).toEqual([
       ['neighborhood_card_click', { neighborhood: 'Mitte', section: 'top_rated', actor: 'guest' }],
@@ -383,7 +430,7 @@ describe('NeighborhoodPage', () => {
     renderPage({ topRated: [place('a', 4.8, 10)], all: [place('a', 4.8, 10), place('b', 4.1, 3)] });
 
     const all = await screen.findByRole('region', { name: /all 2 places in mitte/i });
-    await userEvent.click(within(all).getByRole('heading', { name: 'Place b' }));
+    await userEvent.click(within(all).getByRole('link', { name: 'Place b' }));
     expect(trackedEvents('neighborhood_card_click')).toEqual([
       ['neighborhood_card_click', { neighborhood: 'Mitte', section: 'all', actor: 'guest' }],
     ]);
@@ -412,5 +459,113 @@ describe('NeighborhoodPage', () => {
     expect(trackedEvents('shortlist_map_click')).toEqual([
       ['shortlist_map_click', { neighborhood: 'Mitte', shortlist: 'work', count: 7, actor: 'guest' }],
     ]);
+  });
+
+  describe('rating from a card', () => {
+    // Place a sits in Outdoor seating and in the full list.
+    const shortlists = (a: Place) => ({
+      outdoorSeating: { places: [a, place('o1', 4.4, 5), place('o2', 4.3, 5)], total: 3 },
+    });
+
+    it('saves a Guest Rating on one tap and shows it on every card of the Place, without leaving the page', async () => {
+      const user = userEvent.setup();
+      const addRating = vi.fn();
+      const a = place('a', 4.8, 10);
+      renderPage({
+        topRated: [],
+        all: [place('b', 4.9, 2), a],
+        shortlists: shortlists(a),
+        mocks: [addRatingMock('a', 4, addRating)],
+      });
+
+      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
+      const all = section(/all 2 places in mitte/i);
+      expect(within(card(outdoor, 'Place a')).getByText('Been here? Rate it')).toBeInTheDocument();
+      await user.click(bean(card(outdoor, 'Place a'), 4));
+
+      expect(within(card(outdoor, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(within(card(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      });
+      expect(addRating).toHaveBeenCalledTimes(1);
+      expect(screen.queryByText('Place page')).not.toBeInTheDocument();
+      // The Average rating and the order stay as the page view showed them.
+      expect(within(card(all, 'Place a')).getByText('4.8')).toBeInTheDocument();
+      expect(cardNames(all)).toEqual(['Place b', 'Place a']);
+      expect(within(card(all, 'Place b')).getByText('Been here? Rate it')).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('puts the beans back with the reason when the save fails', async () => {
+      const user = userEvent.setup();
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      renderPage({ topRated: [], all: [place('a', 4.8, 10)], mocks: [failingAddRatingMock('a', 4)] });
+
+      const all = await screen.findByRole('region', { name: /all 1 places in mitte/i });
+      await user.click(bean(card(all, 'Place a'), 4));
+
+      expect(await within(card(all, 'Place a')).findByRole('alert')).toHaveTextContent(/check your connection/i);
+      expect(bean(card(all, 'Place a'), 4)).not.toBeChecked();
+      expect(within(card(all, 'Place a')).queryByText(/Your rating/)).not.toBeInTheDocument();
+      vi.mocked(console.error).mockRestore();
+    });
+
+    it('shows the Rating a returning visitor gave earlier, and lets them change it', async () => {
+      const user = userEvent.setup();
+      renderPage({ topRated: [], all: [place('a', 4.8, 10, 3)] });
+
+      const all = await screen.findByRole('region', { name: /all 1 places in mitte/i });
+      expect(within(card(all, 'Place a')).getByText(/Your rating: 3/)).toBeInTheDocument();
+      expect(within(card(all, 'Place a')).queryByText('Been here? Rate it')).not.toBeInTheDocument();
+      await user.click(within(card(all, 'Place a')).getByRole('button', { name: 'change' }));
+      expect(bean(card(all, 'Place a'), 3)).toBeChecked();
+    });
+
+    it('sends rating_saved and contribution_failed with the card surface and section', async () => {
+      const user = userEvent.setup();
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      const a = place('a', 4.8, 10);
+      renderPage({
+        topRated: [],
+        all: [a, place('b', 4.1, 3)],
+        shortlists: shortlists(a),
+        mocks: [addRatingMock('a', 5), failingAddRatingMock('b', 2)],
+      });
+
+      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
+      await user.click(bean(card(outdoor, 'Place a'), 5));
+      await waitFor(() => {
+        expect(trackedEvents('rating_saved')).toEqual([
+          [
+            'rating_saved',
+            {
+              place_id: 'a',
+              actor: 'guest',
+              rating: 5,
+              is_change: false,
+              surface: 'neighborhood_card',
+              section: 'outdoorSeating',
+            },
+          ],
+        ]);
+      });
+      await user.click(bean(card(section(/all 2 places in mitte/i), 'Place b'), 2));
+      await waitFor(() => {
+        expect(trackedEvents('contribution_failed')).toEqual([
+          [
+            'contribution_failed',
+            {
+              place_id: 'b',
+              actor: 'guest',
+              kind: 'rating',
+              reason: 'network',
+              surface: 'neighborhood_card',
+              section: 'all',
+            },
+          ],
+        ]);
+      });
+      vi.mocked(console.error).mockRestore();
+    });
   });
 });

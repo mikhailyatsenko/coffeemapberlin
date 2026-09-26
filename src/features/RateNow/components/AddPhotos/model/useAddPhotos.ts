@@ -7,6 +7,7 @@ import { type PhotoFailureReason, usePhotoUpload } from 'shared/lib/photoUpload'
 import { getSaveErrorReason } from 'shared/lib/saveError';
 import { useAuthStore } from 'shared/stores/auth';
 
+import { PLACE_PAGE_SURFACE } from '../../../constants/surface';
 import { getActor } from '../../../lib/getActor';
 import { trackContributionFailed } from '../../../lib/trackContributionFailed';
 import { type AddPhotosProps } from '../types';
@@ -56,7 +57,7 @@ export const useAddPhotos = ({ placeId, reviewId, reviewPhotoCount, hasReviewTex
     if (!reasons.length) return;
     setAlertReason(reasons[reasons.length - 1]);
     reasons.forEach((reason) => {
-      trackContributionFailed(placeId, getActor(user), { kind: 'photo', reason });
+      trackContributionFailed(placeId, getActor(user), PLACE_PAGE_SURFACE, { kind: 'photo', reason });
     });
   };
 
