@@ -1,7 +1,7 @@
 import { type SaveErrorReason } from 'shared/lib/saveError';
 
 /** Why a Photo failed, as sent with `contribution_failed`. */
-export type PhotoFailureReason = SaveErrorReason | 'rate_limited' | 'limit_reached' | 'unreadable';
+export type PhotoFailureReason = SaveErrorReason | 'rate_limited' | 'limit_reached' | 'in_progress' | 'unreadable';
 
 /**
  * - `pending`: downscaled and waiting to upload;

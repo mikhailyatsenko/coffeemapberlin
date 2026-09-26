@@ -6,5 +6,6 @@ export const PHOTO_FAILURE_MESSAGES: Record<PhotoFailureReason, string> = {
   ...SAVE_ERROR_MESSAGES,
   rate_limited: 'Too many photos for now, try again later',
   limit_reached: `This review already has ${MAX_PHOTOS_PER_REVIEW} photos`,
+  in_progress: 'Another photo is still uploading, try again in a minute',
   unreadable: "This photo couldn't be read, try a JPEG or PNG",
 };

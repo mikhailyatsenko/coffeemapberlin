@@ -61,11 +61,12 @@ The feature ships with GA events, a baseline and a success threshold (see Furthe
 
 - **Shared Photo thumbnails (`shared/ui`)**: the thumbnail grid moved out of the `AddTextReview` feature's private `UploadReviewImages`. Purely presentational: thumbnails, progress, saved checkmark, per-Photo error, remove-before-upload (used only by the form), Retry, "Add more". No data imports.
 - **Shared Photo upload (`shared/lib`)**: the upload moved out of `AddTextReview`, plus the client-side downscale. Uploads one Photo per `uploadReviewImage` call, sequentially, reports per-Photo progress, saved and failed states, takes an `AbortSignal`, and never rolls back a saved Photo. It must use the Apollo client from React context (the generated mutation hook or `useApolloClient`), not the module-level client, so tests can mock it with `MockedProvider`. It also takes the Review's current Photo count and drops files beyond 10 − count, reporting how many were dropped. A file that fails to decode or downscale becomes a failed Photo with reason `unreadable`. It no longer clears the whole selection.
-- **Error reasons**: the save-error mapping gains `rate_limited` (server code `RATE_LIMITED`), `limit_reached` (`IMAGE_LIMIT_REACHED`) and `unreadable` (client decode/downscale failure or server `BAD_USER_INPUT` "too large"), next to `recaptcha` and `network`. Messages:
+- **Error reasons**: the save-error mapping gains `rate_limited` (server code `RATE_LIMITED`), `limit_reached` (`IMAGE_LIMIT_REACHED`), `in_progress` (`UPLOAD_IN_PROGRESS`: another upload holds the Review, such as a timed-out one that may still land) and `unreadable` (client decode/downscale failure or server `BAD_USER_INPUT` "too large"), next to `recaptcha` and `network`. Messages:
   - `network`: the existing message;
   - `recaptcha`: the existing message;
   - `rate_limited`: "Too many photos for now, try again later";
   - `limit_reached`: "This review already has 10 photos";
+  - `in_progress`: "Another photo is still uploading, try again in a minute";
   - `unreadable`: "This photo couldn't be read, try a JPEG or PNG".
 - **`RateNow` feature**: a new private `AddPhotos` sub-component in the block. The block renders it as its own row under the thank-you, independent of the questions, not inside the thank-you container (that stays reserved for Visits).
   - `RateBlock` gets two new props: the own Review's id (if any) and its Photo count.
@@ -103,7 +104,7 @@ The feature ships with GA events, a baseline and a success threshold (see Furthe
 |---|---|---|
 | `photo_button_click` | "Add a photo" or "Add more" tapped in the block | none |
 | `photos_uploaded` | a batch settles with at least one saved Photo | `count` (saved), `had_text` |
-| `contribution_failed` | a Photo fails | `kind: 'photo'`, `reason` (`network` / `recaptcha` / `rate_limited` / `limit_reached` / `unreadable`) |
+| `contribution_failed` | a Photo fails | `kind: 'photo'`, `reason` (`network` / `recaptcha` / `rate_limited` / `limit_reached` / `in_progress` / `unreadable`) |
 
 No event per file. The Review text form sends no new events.
 

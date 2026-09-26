@@ -1018,6 +1018,11 @@ describe('RateBlock', () => {
     it.each([
       { code: 'RATE_LIMITED', reason: 'rate_limited', message: 'Too many photos for now, try again later' },
       { code: 'IMAGE_LIMIT_REACHED', reason: 'limit_reached', message: 'This review already has 10 photos' },
+      {
+        code: 'UPLOAD_IN_PROGRESS',
+        reason: 'in_progress',
+        message: 'Another photo is still uploading, try again in a minute',
+      },
       // The server's "too large".
       { code: 'BAD_USER_INPUT', reason: 'unreadable', message: "This photo couldn't be read, try a JPEG or PNG" },
       {

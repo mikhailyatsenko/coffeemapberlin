@@ -5,6 +5,8 @@ import { type PhotoFailureReason } from './types';
 const REASON_BY_CODE: Record<string, PhotoFailureReason> = {
   RATE_LIMITED: 'rate_limited',
   IMAGE_LIMIT_REACHED: 'limit_reached',
+  // Another upload holds the Review, e.g. one that timed out and may still land.
+  UPLOAD_IN_PROGRESS: 'in_progress',
   // The server's only BAD_USER_INPUT for a Photo is an empty or too large file.
   BAD_USER_INPUT: 'unreadable',
 };
