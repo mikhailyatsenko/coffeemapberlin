@@ -22,6 +22,7 @@ import {
 } from 'shared/stores/places';
 import { Loader } from 'shared/ui/Loader';
 import { ErrorLoadingPlaces } from '../components/ErrorLoadingPlaces/ui/ErrorLoadingPlaces';
+import { useApplyFiltersOnArrival } from '../hooks/useApplyFiltersOnArrival';
 
 export const MainPage = () => {
   const places = usePlacesStore((state) => state.places);
@@ -29,7 +30,7 @@ export const MainPage = () => {
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const hasInitialBatchLoaded = usePlacesStore((state) => state.hasInitialBatchLoaded);
   const hasMoreBatchLoaded = usePlacesStore((state) => state.hasMoreBatchLoaded);
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const guestFavIds = useGuestFavoritesStore((s) => s.ids);
 
   // Use separate selectors to avoid creating new objects on each render
@@ -110,6 +111,13 @@ export const MainPage = () => {
       usePlacesStore.setState({ filteredPlaces: null });
     }
   }, [hasActiveFilters, minRating, neighborhood, selectedTags, fetchFilteredPlaces]);
+
+  const applyFiltersOnArrival = useCallback(() => {
+    // Results of the Filters from an earlier visit would show until the current ones load.
+    usePlacesStore.setState({ filteredPlaces: null });
+    handleApplyFilters();
+  }, [handleApplyFilters]);
+  useApplyFiltersOnArrival(applyFiltersOnArrival);
 
   const handleResetFilters = useCallback(() => {
     // Clear filtered places when filters are reset

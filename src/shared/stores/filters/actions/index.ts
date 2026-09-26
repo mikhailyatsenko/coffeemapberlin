@@ -1,4 +1,5 @@
 import { useFiltersStore } from '../hooks';
+import { type FiltersState } from '../types';
 
 export const setMinRating = (minRating: number) => {
   useFiltersStore.setState({ minRating });
@@ -41,9 +42,14 @@ export const setSearchQuery = (searchQuery: string) => {
 };
 
 export const resetFilters = () => {
-  useFiltersStore.setState({
-    minRating: 0,
-    neighborhood: [],
-    selectedTags: [],
-  });
+  setFilters({ minRating: 0, neighborhood: [], selectedTags: [] });
+};
+
+/** Replaces all three Filters at once. */
+export const setFilters = ({
+  minRating,
+  neighborhood,
+  selectedTags,
+}: Pick<FiltersState, 'minRating' | 'neighborhood' | 'selectedTags'>) => {
+  useFiltersStore.setState({ minRating, neighborhood, selectedTags });
 };

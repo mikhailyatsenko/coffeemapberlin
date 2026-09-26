@@ -1,0 +1,28 @@
+.seeAll {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.seeAllLink {
+  padding: 8px 14px;
+  border: 1px solid var(--text-primary);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background-color: var(--text-primary);
+    color: var(--text-inverse);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-outline-light);
+  }
+}

@@ -3,6 +3,9 @@ import { Characteristic, ShortlistId } from 'shared/generated/graphql';
 /** Top rated holds Places with at least this Average rating. */
 export const TOP_RATED_MIN_RATING = 4.5;
 
+/** A Place makes a Shortlist with at least this Average rating; "See all on the map" filters by it. */
+export const SHORTLIST_MIN_RATING = 4;
+
 /** A Shortlist with fewer Places than this is hidden in that Neighborhood. */
 export const SHORTLIST_MIN_PLACES = 3;
 

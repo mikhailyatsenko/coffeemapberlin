@@ -14,7 +14,7 @@ import cls from './NeighborhoodPage.module.scss';
 export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   const { neighborhood: slug } = useParams<{ neighborhood: string }>();
   const { status, displayNeighborhood, topRated, shortlists, all, total } = useNeighborhoodPlaces(slug);
-  const { trackShortlistView, trackCardOpen } = useNeighborhoodAnalytics({
+  const { trackShortlistView, trackShortlistMapOpen, trackCardOpen } = useNeighborhoodAnalytics({
     slug,
     neighborhood: displayNeighborhood,
     shortlistsShown: shortlists.length,
@@ -61,11 +61,15 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
             <ShortlistBlock
               key={`${slug}-${shortlist.id}`}
               shortlist={shortlist}
+              neighborhood={displayNeighborhood}
               onView={() => {
                 trackShortlistView(shortlist.id);
               }}
               onCardOpen={() => {
                 trackCardOpen(shortlist.id);
+              }}
+              onMapOpen={() => {
+                trackShortlistMapOpen(shortlist.id, shortlist.total);
               }}
             />
           ))}

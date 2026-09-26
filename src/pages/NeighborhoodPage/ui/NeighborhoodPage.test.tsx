@@ -11,6 +11,8 @@ import {
 } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { setUser } from 'shared/stores/auth';
+import { resetFilters, setSearchQuery, useFiltersStore } from 'shared/stores/filters';
+import { setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { NeighborhoodPage } from './NeighborhoodPage';
 
 vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
@@ -60,6 +62,13 @@ const SHORTLIST_ORDER = [
   ShortlistId.breakfastBrunch,
 ];
 
+const AMENITIES: Record<ShortlistId, string[]> = {
+  work: ['Good for working on laptop', 'Wi-Fi'],
+  dogFriendly: ['Dogs allowed'],
+  outdoorSeating: ['Outdoor seating'],
+  breakfastBrunch: ['Breakfast'],
+};
+
 /** The server always returns all four Shortlists, in this order. */
 const shortlistsMock = (neighborhood: string, shortlists: Shortlists): MockedResponse => ({
   request: { query: NeighborhoodShortlistsDocument, variables: { neighborhood } },
@@ -68,7 +77,7 @@ const shortlistsMock = (neighborhood: string, shortlists: Shortlists): MockedRes
       neighborhoodShortlists: SHORTLIST_ORDER.map((id) => ({
         __typename: 'Shortlist',
         id,
-        amenities: ['Some Amenity'],
+        amenities: AMENITIES[id],
         places: shortlists[id]?.places ?? [],
         total: shortlists[id]?.total ?? 0,
       })),
@@ -165,6 +174,9 @@ describe('NeighborhoodPage', () => {
 
   afterEach(() => {
     vi.mocked(trackEvent).mockClear();
+    resetFilters();
+    setSearchQuery('');
+    setShowFavorites(false);
     vi.unstubAllGlobals();
     observed.clear();
   });
@@ -374,6 +386,31 @@ describe('NeighborhoodPage', () => {
     await userEvent.click(within(all).getByRole('heading', { name: 'Place b' }));
     expect(trackedEvents('neighborhood_card_click')).toEqual([
       ['neighborhood_card_click', { neighborhood: 'Mitte', section: 'all', actor: 'guest' }],
+    ]);
+  });
+
+  it('opens the map filtered by the Neighborhood, the Shortlist’s Amenities and 4+ Rating on "See all N on the map"', async () => {
+    setSearchQuery('bonanza');
+    setShowFavorites(true);
+    renderPage({
+      topRated: [],
+      all: [place('a', 4.8, 10)],
+      shortlists: { work: shortlist('w', 7), dogFriendly: shortlist('d', 3) },
+    });
+
+    const work = await screen.findByRole('region', { name: /^work$/i });
+    await userEvent.click(within(work).getByRole('link', { name: 'See all 7 on the map' }));
+
+    expect(await screen.findByText('Map')).toBeInTheDocument();
+    expect(useFiltersStore.getState()).toMatchObject({
+      neighborhood: ['Mitte'],
+      selectedTags: ['Good for working on laptop', 'Wi-Fi'],
+      minRating: 4,
+      searchQuery: '',
+    });
+    expect(usePlacesStore.getState().showFavorites).toBe(false);
+    expect(trackedEvents('shortlist_map_click')).toEqual([
+      ['shortlist_map_click', { neighborhood: 'Mitte', shortlist: 'work', count: 7, actor: 'guest' }],
     ]);
   });
 });
