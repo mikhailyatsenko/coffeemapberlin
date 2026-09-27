@@ -1,6 +1,6 @@
 # Anyone can suggest a missing Place; the admin approves in one click
 
-Status: ready-for-agent
+Status: done
 
 ## Problem
 

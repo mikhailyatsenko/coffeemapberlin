@@ -1,6 +1,6 @@
 # Spec: Place suggestions
 
-Status: ready-for-agent
+Status: done
 Origin: [Anyone can suggest a missing Place; the admin approves in one click](issues/01-place-suggestions.md). Decision record: [ADR 0002: the admin acts through signed links](../../docs/adr/0002-admin-acts-through-signed-links.md); Guests as in [ADR 0001](../../docs/adr/0001-guest-reviews-without-account.md).
 
 ## Problem Statement
