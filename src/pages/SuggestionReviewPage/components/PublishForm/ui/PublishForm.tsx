@@ -4,7 +4,8 @@ import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { BERLIN_NEIGHBORHOODS } from '../../../constants';
 import { placePath } from '../../../lib/links';
-import { type GoogleIdLookup, type PublishError, type PublishFormValues } from '../../../types';
+import { useReviewPhotos } from '../../../model/useReviewPhotos';
+import { type GoogleIdLookup, type PublishError, type PublishFormValues, type ReviewLink } from '../../../types';
 import { FindOnGoogle } from '../../FindOnGoogle';
 import { KeptPhotos } from '../../KeptPhotos';
 import { type SentFields, usePublishForm } from '../model/usePublishForm';
@@ -13,6 +14,8 @@ import cls from './PublishForm.module.scss';
 interface PublishFormProps {
   /** What was sent; the form starts from it. */
   suggestion: SentFields;
+  /** Authorizes the admin's photo uploads and deletes. */
+  reviewLink: ReviewLink;
   onPublish: (values: PublishFormValues) => Promise<void>;
   /** Why the last Publish failed; the form keeps its values. */
   publishError: PublishError | null;
@@ -22,19 +25,24 @@ interface PublishFormProps {
   disabled?: boolean;
 }
 
-/** The Place as it will go live. Publish stays disabled until it has a name, address, a pin in Berlin and a Neighborhood. */
+/**
+ * The Place as it will go live. Publish stays disabled until it has a name, address, a pin in Berlin and a
+ * Neighborhood, and while a photo is uploading or being deleted.
+ */
 export const PublishForm = ({
   suggestion,
+  reviewLink,
   onPublish,
   publishError,
   googleIdLookup,
   disabled = false,
 }: PublishFormProps) => {
-  const { form, googleIdOwner, chooseGoogleId, photoPaths, removePhoto } = usePublishForm(
+  const { form, googleIdOwner, chooseGoogleId, photoPaths, updatePhotoPaths } = usePublishForm(
     suggestion,
     publishError,
     googleIdLookup.candidates,
   );
+  const photos = useReviewPhotos(reviewLink, photoPaths, updatePhotoPaths);
   const {
     register,
     handleSubmit,
@@ -95,7 +103,7 @@ export const PublishForm = ({
           error={errors.googlePlaceId?.message}
         />
         <FindOnGoogle lookup={googleIdLookup} onUse={chooseGoogleId} />
-        <KeptPhotos paths={photoPaths} onRemove={removePhoto} />
+        <KeptPhotos photos={photos} disabled={disabled || isSubmitting} />
         {googleIdOwner ? (
           <p className={cls.submitError} role="alert">
             This Google Place ID already belongs to a Place.{' '}
@@ -113,7 +121,7 @@ export const PublishForm = ({
           size="lg"
           theme="success"
           type="submit"
-          disabled={!isValid || Boolean(googleIdOwner) || disabled}
+          disabled={!isValid || Boolean(googleIdOwner) || disabled || photos.isBusy}
           loading={isSubmitting}
         >
           Publish

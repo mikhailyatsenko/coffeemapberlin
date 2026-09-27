@@ -11,7 +11,7 @@ const REASON_BY_CODE: Record<string, PhotoFailureReason> = {
   BAD_USER_INPUT: 'unreadable',
 };
 
-/** Why a photo upload (`uploadReviewImage` or `uploadPlaceSuggestionPhoto`) failed. */
+/** Why a photo upload (`uploadReviewImage`, `uploadPlaceSuggestionPhoto` or its admin twin) failed. */
 export const getPhotoFailureReason = (error: unknown): PhotoFailureReason => {
   if (error instanceof ApolloError) {
     const code = error.graphQLErrors[0]?.extensions?.code;

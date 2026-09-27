@@ -31,6 +31,7 @@ export const SuggestionReviewPage = () => {
         <SentSuggestion suggestion={suggestion} />
         <PublishForm
           suggestion={suggestion}
+          reviewLink={{ id, token: token ?? '' }}
           onPublish={review.publish}
           publishError={review.publishError}
           googleIdLookup={googleIdLookup}

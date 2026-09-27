@@ -1,48 +1,98 @@
-import { photoThumbnailUrl } from '../../../lib/links';
+import { useRef } from 'react';
+import { MAX_PHOTOS } from 'shared/lib/photoUpload';
+import { RegularButton } from 'shared/ui/RegularButton';
+import { type ReviewPhotos } from '../../../model/useReviewPhotos';
+import { StoredPhoto } from '../../StoredPhoto';
+import { UploadingPhoto } from '../../UploadingPhoto';
 import cls from './KeptPhotos.module.scss';
 
 interface KeptPhotosProps {
-  /** The photos Publish will keep, in upload order. */
-  paths: string[];
-  onRemove: (path: string) => void;
+  photos: ReviewPhotos;
+  /** A decision is on its way; the photos wait. */
+  disabled: boolean;
 }
 
-/** The suggestion's photos that go live with the Place; the first becomes its card image. */
-export const KeptPhotos = ({ paths, onRemove }: KeptPhotosProps) => (
-  <section className={cls.KeptPhotos} aria-labelledby="kept-photos-title">
-    <h3 id="kept-photos-title" className={cls.heading}>
-      Photos
-    </h3>
-    {paths.length === 0 ? (
-      <p className={cls.note}>No photos, the Place keeps the default card image</p>
-    ) : (
-      <ul className={cls.grid} aria-label="Photos to publish">
-        {paths.map((path, index) => (
-          <li key={path} className={cls.item}>
-            <img
-              className={cls.image}
-              src={photoThumbnailUrl(path)}
-              alt={index === 0 ? `Photo ${index + 1}, the card image` : `Photo ${index + 1}`}
-              loading="lazy"
+/**
+ * The photos that go live with the Place, the first as its card image: the suggestion's stored photos, then the
+ * admin's own on their way up.
+ */
+export const KeptPhotos = ({ photos, disabled }: KeptPhotosProps) => {
+  const { paths, uploads, room, roomNotice, deletingPath, deleteFailed } = photos;
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const isEmpty = paths.length === 0 && uploads.length === 0;
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    // Lets the same file be picked again.
+    e.target.value = '';
+    if (files.length) void photos.pick(files);
+  };
+
+  return (
+    <section className={cls.KeptPhotos} aria-labelledby="kept-photos-title">
+      <h3 id="kept-photos-title" className={cls.heading}>
+        Photos
+      </h3>
+      {isEmpty ? (
+        <p className={cls.note}>No photos, the Place keeps the default card image</p>
+      ) : (
+        <ul className={cls.grid} aria-label="Photos to publish">
+          {paths.map((path, index) => (
+            <StoredPhoto
+              key={path}
+              path={path}
+              position={index + 1}
+              onMakeCardImage={photos.makeCardImage}
+              onDelete={photos.deleteStoredPhoto}
+              isDeleting={deletingPath === path}
+              disabled={disabled || deletingPath !== null}
             />
-            {index === 0 && (
-              <span className={cls.cardMark} aria-hidden="true">
-                Card image
-              </span>
-            )}
-            <button
-              className={cls.remove}
-              type="button"
-              onClick={() => {
-                onRemove(path);
-              }}
-              aria-label={`Remove photo ${index + 1}`}
-            >
-              <span aria-hidden="true">✕</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    )}
-  </section>
-);
+          ))}
+          {uploads.map((photo) => (
+            <UploadingPhoto
+              key={photo.id}
+              photo={photo}
+              onRetry={photos.retry}
+              onRemove={photos.removeUpload}
+              disabled={disabled}
+            />
+          ))}
+        </ul>
+      )}
+      {deleteFailed && (
+        <p className={cls.error} role="alert">
+          We couldn&apos;t delete the photo. Please try again.
+        </p>
+      )}
+      {room > 0 ? (
+        <>
+          {/* No `capture`, so phones offer the library as well as the camera. */}
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={onChange}
+            aria-label="Add Place photos"
+          />
+          <RegularButton
+            className={cls.add}
+            leftIcon={<span aria-hidden="true">📷</span>}
+            size="sm"
+            variant="ghost"
+            onClick={() => inputRef.current?.click()}
+            disabled={disabled}
+          >
+            Add photos (up to {room})
+          </RegularButton>
+        </>
+      ) : (
+        <p className={cls.note}>{MAX_PHOTOS} photos, the most allowed. Delete one to add another</p>
+      )}
+      <p className={cls.note} aria-live="polite">
+        {roomNotice}
+      </p>
+    </section>
+  );
+};
