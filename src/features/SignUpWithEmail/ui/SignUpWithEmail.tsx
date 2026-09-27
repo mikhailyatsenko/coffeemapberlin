@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useRegisterUserMutation } from 'shared/generated/graphql';
 import { executeRecaptcha } from 'shared/lib/recaptcha';
@@ -62,7 +62,9 @@ export const SignUpWithEmail = ({
     <div className={cls.content}>
       {isLoading ? <Loader /> : null}
       <h2>Create account</h2>
-      <div className={cls.continueWithSocial}>{continueWithSocial?.map(async (social) => await social)}</div>
+      <div className={cls.continueWithSocial}>
+        {continueWithSocial?.map((social, idx) => <React.Fragment key={idx}>{social}</React.Fragment>)}
+      </div>
       <div className={cls.or}>or</div>
       <FormProvider {...form}>
         <form className={cls.registerWithEmail} onSubmit={handleSubmit(signUpWithEmailHandler)}>
