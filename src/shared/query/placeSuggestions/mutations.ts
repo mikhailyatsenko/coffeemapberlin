@@ -41,3 +41,15 @@ export const REJECT_PLACE_SUGGESTION = gql`
     }
   }
 `;
+
+export const UPLOAD_PLACE_SUGGESTION_PHOTO_AS_ADMIN = gql`
+  mutation UploadPlaceSuggestionPhotoAsAdmin($id: ID!, $token: String!, $fileBuffer: String!) {
+    uploadPlaceSuggestionPhotoAsAdmin(id: $id, token: $token, fileBuffer: $fileBuffer)
+  }
+`;
+
+export const DELETE_PLACE_SUGGESTION_PHOTO = gql`
+  mutation DeletePlaceSuggestionPhoto($id: ID!, $token: String!, $path: String!) {
+    deletePlaceSuggestionPhoto(id: $id, token: $token, path: $path)
+  }
+`;

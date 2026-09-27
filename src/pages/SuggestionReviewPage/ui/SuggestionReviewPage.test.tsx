@@ -1,10 +1,11 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  DeletePlaceSuggestionPhotoDocument,
   FindGoogleIdsForSuggestionDocument,
   type FindGoogleIdsForSuggestionQuery,
   PlaceSuggester,
@@ -14,8 +15,12 @@ import {
   PublishPlaceSuggestionDocument,
   type PublishPlaceSuggestionInput,
   RejectPlaceSuggestionDocument,
+  UploadPlaceSuggestionPhotoAsAdminDocument,
 } from 'shared/generated/graphql';
+import { resizeAndConvert } from 'shared/lib/image';
 import { SuggestionReviewPage } from './SuggestionReviewPage';
+
+vi.mock('shared/lib/image', () => ({ resizeAndConvert: vi.fn() }));
 
 const ID = 'suggestion-1';
 const TOKEN = 'signed-token';
@@ -113,6 +118,40 @@ const failedFindGoogleIdsMock: MockedResponse = {
   },
 };
 
+const DOWNSCALED = 'downscaled';
+const DOWNSCALED_BASE64 = btoa(DOWNSCALED);
+
+/** One `uploadPlaceSuggestionPhotoAsAdmin`, storing `path` or failing with `code`; `onCall` counts what reached the network. */
+const adminUploadMock = (
+  { path, code, delay }: { path?: string; code?: string; delay?: number },
+  onCall = () => {},
+): MockedResponse => ({
+  request: {
+    query: UploadPlaceSuggestionPhotoAsAdminDocument,
+    variables: { id: ID, token: TOKEN, fileBuffer: DOWNSCALED_BASE64 },
+  },
+  delay,
+  result: () => {
+    onCall();
+    return code
+      ? { errors: [new GraphQLError('Nope', { extensions: { code } })] }
+      : { data: { uploadPlaceSuggestionPhotoAsAdmin: path } };
+  },
+});
+
+/** One `deletePlaceSuggestionPhoto` of `path`, confirmed or failed; `onCall` counts what reached the network. */
+const deletePhotoMock = (path: string, { fails = false } = {}, onCall = () => {}): MockedResponse => ({
+  request: { query: DeletePlaceSuggestionPhotoDocument, variables: { id: ID, token: TOKEN, path } },
+  result: () => {
+    onCall();
+    return fails
+      ? { errors: [new GraphQLError('Nope', { extensions: { code: 'INTERNAL_SERVER_ERROR' } })] }
+      : { data: { deletePlaceSuggestionPhoto: true } };
+  },
+});
+
+const photoFile = (name: string) => new File(['original'], name, { type: 'image/jpeg' });
+
 const renderPage = (mocks: MockedResponse[], url = `/suggestions/${ID}/review?token=${TOKEN}`) =>
   render(
     <MockedProvider mocks={mocks}>
@@ -137,6 +176,12 @@ const fillPlace = async (user: ReturnType<typeof userEvent.setup>, coordinates =
 };
 
 describe('SuggestionReviewPage', () => {
+  beforeEach(() => {
+    vi.mocked(resizeAndConvert).mockResolvedValue(new Blob([DOWNSCALED], { type: 'image/webp' }));
+    URL.createObjectURL = vi.fn(() => 'blob:photo');
+    URL.revokeObjectURL = vi.fn();
+  });
+
   describe('while pending', () => {
     it('shows what was sent, who sent it and similar pending suggestions, with the form prefilled', async () => {
       renderPage([
@@ -359,18 +404,44 @@ describe('SuggestionReviewPage', () => {
       expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
     });
 
-    it('leaves a removed photo out of Publish, and the next one becomes the card image', async () => {
+    const photoItem = (position: number) => within(photoList()).getAllByRole('listitem')[position - 1];
+
+    it('asks Delete/Cancel on the photo, and Cancel keeps it without asking the server', async () => {
+      const user = userEvent.setup();
+      let deleted = false;
+      renderPage([
+        reviewMock(suggestion({ photos: PHOTOS })),
+        deletePhotoMock(PHOTOS[1], {}, () => {
+          deleted = true;
+        }),
+      ]);
+      await waitForForm();
+
+      await user.click(screen.getByRole('button', { name: /^delete photo 2$/i }));
+      const confirm = within(photoItem(2)).getByRole('group', { name: /delete photo 2\?/i });
+      await user.click(within(confirm).getByRole('button', { name: /cancel/i }));
+
+      expect(within(photoList()).getAllByRole('img')).toHaveLength(3);
+      expect(within(photoItem(2)).queryByRole('group')).not.toBeInTheDocument();
+      expect(deleted).toBe(false);
+    });
+
+    it('erases a deleted photo on the server, the next one becomes the card image and Publish leaves it out', async () => {
       const user = userEvent.setup();
       renderPage([
         reviewMock(suggestion({ photos: PHOTOS })),
+        deletePhotoMock(PHOTOS[0]),
         publishMock(publishInput({ photoPaths: [PHOTOS[1], PHOTOS[2]] })),
       ]);
       await waitForForm();
 
-      await user.click(screen.getByRole('button', { name: /remove photo 1/i }));
+      await user.click(screen.getByRole('button', { name: /^delete photo 1$/i }));
+      await user.click(within(photoItem(1)).getByRole('button', { name: /^delete$/i }));
 
+      await waitFor(() => {
+        expect(within(photoList()).getAllByRole('img')).toHaveLength(2);
+      });
       const images = within(photoList()).getAllByRole('img');
-      expect(images).toHaveLength(2);
       expect(images[0]).toHaveAttribute('src', expect.stringContaining(PHOTOS[1]));
       expect(images[0]).toHaveAccessibleName(/card image/i);
 
@@ -380,19 +451,206 @@ describe('SuggestionReviewPage', () => {
       expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
     });
 
-    it('publishes with no photos once all are removed, keeping the default card image', async () => {
+    it('keeps a photo whose delete failed and says so', async () => {
       const user = userEvent.setup();
-      renderPage([reviewMock(suggestion({ photos: [PHOTOS[0]] })), publishMock(publishInput({ photoPaths: [] }))]);
+      renderPage([
+        reviewMock(suggestion({ photos: PHOTOS })),
+        deletePhotoMock(PHOTOS[1], { fails: true }),
+        publishMock(publishInput({ photoPaths: PHOTOS })),
+      ]);
       await waitForForm();
 
-      await user.click(screen.getByRole('button', { name: /remove photo 1/i }));
+      await user.click(screen.getByRole('button', { name: /^delete photo 2$/i }));
+      await user.click(within(photoItem(2)).getByRole('button', { name: /^delete$/i }));
 
-      expect(screen.getByText(/no photos, the place keeps the default card image/i)).toBeInTheDocument();
+      expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't delete the photo/i);
+      expect(within(photoList()).getAllByRole('img')).toHaveLength(3);
 
       await fillPlace(user);
       await user.click(publishButton());
 
       expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    it('publishes with no photos once all are deleted, keeping the default card image', async () => {
+      const user = userEvent.setup();
+      renderPage([
+        reviewMock(suggestion({ photos: [PHOTOS[0]] })),
+        deletePhotoMock(PHOTOS[0]),
+        publishMock(publishInput({ photoPaths: [] })),
+      ]);
+      await waitForForm();
+
+      await user.click(screen.getByRole('button', { name: /^delete photo 1$/i }));
+      await user.click(screen.getByRole('button', { name: /^delete$/i }));
+
+      expect(await screen.findByText(/no photos, the place keeps the default card image/i)).toBeInTheDocument();
+
+      await fillPlace(user);
+      await user.click(publishButton());
+
+      expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    it('"Make card image" moves a photo to the front and Publish sends that order', async () => {
+      const user = userEvent.setup();
+      renderPage([
+        reviewMock(suggestion({ photos: PHOTOS })),
+        publishMock(publishInput({ photoPaths: [PHOTOS[2], PHOTOS[0], PHOTOS[1]] })),
+      ]);
+      await waitForForm();
+      expect(screen.queryByRole('button', { name: /make photo 1 the card image/i })).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: /make photo 3 the card image/i }));
+
+      const images = within(photoList()).getAllByRole('img');
+      expect(images[0]).toHaveAttribute('src', expect.stringContaining(PHOTOS[2]));
+      expect(images[0]).toHaveAccessibleName(/card image/i);
+      expect(images[1]).not.toHaveAccessibleName(/card image/i);
+
+      await fillPlace(user);
+      await user.click(publishButton());
+
+      expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    describe("the admin's own photos", () => {
+      const ADMIN_PHOTO = '/place-suggestions/suggestion-1/admin.jpg';
+
+      const pickPhotos = async (user: ReturnType<typeof userEvent.setup>, files: File[]) => {
+        await user.upload(screen.getByLabelText(/add place photos/i), files);
+      };
+
+      it('uploads a picked photo at once, adds it to the end of the list and publishes it', async () => {
+        const user = userEvent.setup();
+        renderPage([
+          reviewMock(suggestion({ photos: [PHOTOS[0]] })),
+          adminUploadMock({ path: ADMIN_PHOTO }),
+          publishMock(publishInput({ photoPaths: [PHOTOS[0], ADMIN_PHOTO] })),
+        ]);
+        await waitForForm();
+
+        await pickPhotos(user, [photoFile('front.jpg')]);
+
+        await waitFor(() => {
+          expect(within(photoList()).getAllByRole('img')).toHaveLength(2);
+        });
+        const images = within(photoList()).getAllByRole('img');
+        expect(images[1]).toHaveAttribute('src', expect.stringContaining(ADMIN_PHOTO));
+
+        await fillPlace(user);
+        await user.click(publishButton());
+
+        expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+      });
+      it('shows each upload in progress, keeps Publish disabled until it settles', async () => {
+        const user = userEvent.setup();
+        renderPage([reviewMock(suggestion()), adminUploadMock({ path: ADMIN_PHOTO, delay: 50 })]);
+        await waitForForm();
+        await fillPlace(user);
+
+        await pickPhotos(user, [photoFile('front.jpg')]);
+
+        expect(await screen.findByRole('progressbar', { name: /upload progress for front.jpg/i })).toBeInTheDocument();
+        expect(publishButton()).toBeDisabled();
+        await waitFor(() => {
+          expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        });
+        expect(publishButton()).toBeEnabled();
+      });
+
+      it('marks a failed upload, leaves it out of Publish and uploads it again on Retry', async () => {
+        const user = userEvent.setup();
+        let retried = false;
+        renderPage([
+          reviewMock(suggestion({ photos: [PHOTOS[0]] })),
+          adminUploadMock({ code: 'INTERNAL_SERVER_ERROR' }),
+          publishMock(publishInput({ photoPaths: [PHOTOS[0]] })),
+          adminUploadMock({ path: ADMIN_PHOTO }, () => {
+            retried = true;
+          }),
+        ]);
+        await waitForForm();
+        await fillPlace(user);
+
+        await pickPhotos(user, [photoFile('front.jpg')]);
+
+        const retry = await screen.findByRole('button', { name: /retry front.jpg/i });
+        expect(screen.getByText(/couldn't save that/i)).toBeInTheDocument();
+        expect(publishButton()).toBeEnabled();
+
+        await user.click(retry);
+
+        await waitFor(() => {
+          expect(retried).toBe(true);
+        });
+        await waitFor(() => {
+          expect(within(photoList()).getAllByRole('img')[1]).toHaveAttribute(
+            'src',
+            expect.stringContaining(ADMIN_PHOTO),
+          );
+        });
+        expect(screen.queryByRole('button', { name: /retry/i })).not.toBeInTheDocument();
+      });
+
+      it('publishes without a photo that failed to upload', async () => {
+        const user = userEvent.setup();
+        renderPage([
+          reviewMock(suggestion({ photos: [PHOTOS[0]] })),
+          adminUploadMock({ code: 'INTERNAL_SERVER_ERROR' }),
+          publishMock(publishInput({ photoPaths: [PHOTOS[0]] })),
+        ]);
+        await waitForForm();
+        await fillPlace(user);
+
+        await pickPhotos(user, [photoFile('front.jpg')]);
+        await screen.findByRole('button', { name: /retry front.jpg/i });
+        await user.click(publishButton());
+
+        expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+      });
+
+      it('offers only the slots left and uploads just the first photos of an over-pick', async () => {
+        const user = userEvent.setup();
+        const stored = Array.from({ length: 8 }, (_, i) => `/place-suggestions/suggestion-1/${i}.jpg`);
+        let uploads = 0;
+        const countUpload = () => {
+          uploads += 1;
+        };
+        renderPage([
+          reviewMock(suggestion({ photos: stored })),
+          adminUploadMock({ path: '/place-suggestions/suggestion-1/x.jpg' }, countUpload),
+          adminUploadMock({ path: '/place-suggestions/suggestion-1/y.jpg' }, countUpload),
+          adminUploadMock({ path: '/place-suggestions/suggestion-1/z.jpg' }, countUpload),
+        ]);
+        await waitForForm();
+        expect(screen.getByRole('button', { name: /add photos \(up to 2\)/i })).toBeInTheDocument();
+
+        await pickPhotos(user, [photoFile('x.jpg'), photoFile('y.jpg'), photoFile('z.jpg')]);
+
+        expect(await screen.findByText(/only 2 more fit; the rest weren't added/i)).toBeInTheDocument();
+        await waitFor(() => {
+          expect(within(photoList()).getAllByRole('img')).toHaveLength(10);
+        });
+        expect(uploads).toBe(2);
+        expect(screen.getByText('10 photos, the most allowed. Delete one to add another')).toBeInTheDocument();
+        expect(screen.queryByLabelText(/add place photos/i)).not.toBeInTheDocument();
+      });
+
+      it('replaces the picker with a note at 10 photos, and a delete brings it back', async () => {
+        const user = userEvent.setup();
+        const stored = Array.from({ length: 10 }, (_, i) => `/place-suggestions/suggestion-1/${i}.jpg`);
+        renderPage([reviewMock(suggestion({ photos: stored })), deletePhotoMock(stored[0])]);
+        await waitForForm();
+
+        expect(screen.getByText('10 photos, the most allowed. Delete one to add another')).toBeInTheDocument();
+        expect(screen.queryByLabelText(/add place photos/i)).not.toBeInTheDocument();
+
+        await user.click(screen.getByRole('button', { name: /^delete photo 1$/i }));
+        await user.click(screen.getByRole('button', { name: /^delete$/i }));
+
+        expect(await screen.findByRole('button', { name: /add photos \(up to 1\)/i })).toBeInTheDocument();
+      });
     });
 
     it('says when no photos were sent', async () => {

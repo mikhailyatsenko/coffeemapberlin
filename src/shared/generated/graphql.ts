@@ -248,6 +248,13 @@ export interface Mutation {
   createGuestIdentity: GuestIdentityPayload;
   deleteAccount: SuccessResponse;
   deleteAvatar: SuccessResponse;
+  /**
+   * Deletes one photo of a Place suggestion, the suggester's or the admin's,
+   * authorized only by the review link's token. The path must sit in this
+   * suggestion's own ImageKit folder; a path already gone still succeeds, so a
+   * retried delete is safe.
+   */
+  deletePlaceSuggestionPhoto: Scalars['Boolean']['output'];
   deleteReview: DeleteReviewResult;
   loginWithGoogle?: Maybe<AuthPayload>;
   logout?: Maybe<LogoutResponse>;
@@ -279,6 +286,13 @@ export interface Mutation {
    * Returns the new photo count.
    */
   uploadPlaceSuggestionPhoto: UploadPlaceSuggestionPhotoResponse;
+  /**
+   * Attaches one photo to a Place suggestion as the admin, authorized only by
+   * the review link's token (ADR 0002 in the frontend repo) rather than
+   * ownership. Same rules as uploadPlaceSuggestionPhoto (pending only, the same
+   * shared 10-photo cap) but no rate limit. Returns the new photo's own path.
+   */
+  uploadPlaceSuggestionPhotoAsAdmin: Scalars['String']['output'];
   uploadReviewImage: UploadReviewImageResponse;
   validatePasswordResetToken: SuccessResponse;
 }
@@ -322,6 +336,13 @@ export interface MutationcontactFormArgs {
 
 export interface MutationcreateGuestIdentityArgs {
   captchaToken?: InputMaybe<Scalars['String']['input']>;
+}
+
+
+export interface MutationdeletePlaceSuggestionPhotoArgs {
+  id: Scalars['ID']['input'];
+  path: Scalars['String']['input'];
+  token: Scalars['String']['input'];
 }
 
 
@@ -434,6 +455,13 @@ export interface MutationuploadPlaceSuggestionPhotoArgs {
   guestId?: InputMaybe<Scalars['String']['input']>;
   guestSecret?: InputMaybe<Scalars['String']['input']>;
   suggestionId: Scalars['ID']['input'];
+}
+
+
+export interface MutationuploadPlaceSuggestionPhotoAsAdminArgs {
+  fileBuffer: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
 }
 
 
@@ -945,6 +973,24 @@ export type RejectPlaceSuggestionMutationVariables = Exact<{
 
 
 export interface RejectPlaceSuggestionMutation { __typename?: 'Mutation', rejectPlaceSuggestion: { __typename?: 'PlaceSuggestionOutcome', status: PlaceSuggestionStatus, publishedPlaceId?: string | null } }
+
+export type UploadPlaceSuggestionPhotoAsAdminMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+  fileBuffer: Scalars['String']['input'];
+}>;
+
+
+export interface UploadPlaceSuggestionPhotoAsAdminMutation { __typename?: 'Mutation', uploadPlaceSuggestionPhotoAsAdmin: string }
+
+export type DeletePlaceSuggestionPhotoMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+}>;
+
+
+export interface DeletePlaceSuggestionPhotoMutation { __typename?: 'Mutation', deletePlaceSuggestionPhoto: boolean }
 
 export type PlaceSuggestionForReviewQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1902,6 +1948,76 @@ export function useRejectPlaceSuggestionMutation(baseOptions?: Apollo.MutationHo
 export type RejectPlaceSuggestionMutationHookResult = ReturnType<typeof useRejectPlaceSuggestionMutation>;
 export type RejectPlaceSuggestionMutationResult = Apollo.MutationResult<RejectPlaceSuggestionMutation>;
 export type RejectPlaceSuggestionMutationOptions = Apollo.BaseMutationOptions<RejectPlaceSuggestionMutation, RejectPlaceSuggestionMutationVariables>;
+export const UploadPlaceSuggestionPhotoAsAdminDocument = gql`
+    mutation UploadPlaceSuggestionPhotoAsAdmin($id: ID!, $token: String!, $fileBuffer: String!) {
+  uploadPlaceSuggestionPhotoAsAdmin(
+    id: $id
+    token: $token
+    fileBuffer: $fileBuffer
+  )
+}
+    `;
+export type UploadPlaceSuggestionPhotoAsAdminMutationFn = Apollo.MutationFunction<UploadPlaceSuggestionPhotoAsAdminMutation, UploadPlaceSuggestionPhotoAsAdminMutationVariables>;
+
+/**
+ * __useUploadPlaceSuggestionPhotoAsAdminMutation__
+ *
+ * To run a mutation, you first call `useUploadPlaceSuggestionPhotoAsAdminMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadPlaceSuggestionPhotoAsAdminMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadPlaceSuggestionPhotoAsAdminMutation, { data, loading, error }] = useUploadPlaceSuggestionPhotoAsAdminMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      token: // value for 'token'
+ *      fileBuffer: // value for 'fileBuffer'
+ *   },
+ * });
+ */
+export function useUploadPlaceSuggestionPhotoAsAdminMutation(baseOptions?: Apollo.MutationHookOptions<UploadPlaceSuggestionPhotoAsAdminMutation, UploadPlaceSuggestionPhotoAsAdminMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadPlaceSuggestionPhotoAsAdminMutation, UploadPlaceSuggestionPhotoAsAdminMutationVariables>(UploadPlaceSuggestionPhotoAsAdminDocument, options);
+      }
+export type UploadPlaceSuggestionPhotoAsAdminMutationHookResult = ReturnType<typeof useUploadPlaceSuggestionPhotoAsAdminMutation>;
+export type UploadPlaceSuggestionPhotoAsAdminMutationResult = Apollo.MutationResult<UploadPlaceSuggestionPhotoAsAdminMutation>;
+export type UploadPlaceSuggestionPhotoAsAdminMutationOptions = Apollo.BaseMutationOptions<UploadPlaceSuggestionPhotoAsAdminMutation, UploadPlaceSuggestionPhotoAsAdminMutationVariables>;
+export const DeletePlaceSuggestionPhotoDocument = gql`
+    mutation DeletePlaceSuggestionPhoto($id: ID!, $token: String!, $path: String!) {
+  deletePlaceSuggestionPhoto(id: $id, token: $token, path: $path)
+}
+    `;
+export type DeletePlaceSuggestionPhotoMutationFn = Apollo.MutationFunction<DeletePlaceSuggestionPhotoMutation, DeletePlaceSuggestionPhotoMutationVariables>;
+
+/**
+ * __useDeletePlaceSuggestionPhotoMutation__
+ *
+ * To run a mutation, you first call `useDeletePlaceSuggestionPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePlaceSuggestionPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePlaceSuggestionPhotoMutation, { data, loading, error }] = useDeletePlaceSuggestionPhotoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      token: // value for 'token'
+ *      path: // value for 'path'
+ *   },
+ * });
+ */
+export function useDeletePlaceSuggestionPhotoMutation(baseOptions?: Apollo.MutationHookOptions<DeletePlaceSuggestionPhotoMutation, DeletePlaceSuggestionPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePlaceSuggestionPhotoMutation, DeletePlaceSuggestionPhotoMutationVariables>(DeletePlaceSuggestionPhotoDocument, options);
+      }
+export type DeletePlaceSuggestionPhotoMutationHookResult = ReturnType<typeof useDeletePlaceSuggestionPhotoMutation>;
+export type DeletePlaceSuggestionPhotoMutationResult = Apollo.MutationResult<DeletePlaceSuggestionPhotoMutation>;
+export type DeletePlaceSuggestionPhotoMutationOptions = Apollo.BaseMutationOptions<DeletePlaceSuggestionPhotoMutation, DeletePlaceSuggestionPhotoMutationVariables>;
 export const PlaceSuggestionForReviewDocument = gql`
     query PlaceSuggestionForReview($id: ID!, $token: String!) {
   placeSuggestionForReview(id: $id, token: $token) {

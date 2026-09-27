@@ -15,7 +15,7 @@ interface GoogleIdOwner {
 }
 
 /**
- * The Publish form, started from what was sent, all photos kept. `googleIdOwner` is set while
+ * The Publish form, started from what was sent, all stored photos in upload order. `googleIdOwner` is set while
  * the Google Place ID field holds an ID that belongs to a Place: one the server
  * rejected as a duplicate, or a Google candidate already on the map.
  */
@@ -57,13 +57,10 @@ export const usePublishForm = (
     form.setValue('googlePlaceId', id, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
   };
 
-  const removePhoto = (path: string) => {
-    form.setValue(
-      'photoPaths',
-      photoPaths.filter((kept) => kept !== path),
-      { shouldDirty: true },
-    );
+  /** Changes the photo list from its latest value, so an upload or delete that settles later sees the others. */
+  const updatePhotoPaths = (change: (paths: string[]) => string[]) => {
+    form.setValue('photoPaths', change(form.getValues('photoPaths')), { shouldDirty: true });
   };
 
-  return { form, googleIdOwner: findOwner(), chooseGoogleId, photoPaths, removePhoto };
+  return { form, googleIdOwner: findOwner(), chooseGoogleId, photoPaths, updatePhotoPaths };
 };

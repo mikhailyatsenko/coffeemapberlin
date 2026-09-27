@@ -1,6 +1,8 @@
 import { useApolloClient } from '@apollo/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  UploadPlaceSuggestionPhotoAsAdminDocument,
+  type UploadPlaceSuggestionPhotoAsAdminMutation,
   UploadPlaceSuggestionPhotoDocument,
   type UploadPlaceSuggestionPhotoMutation,
   UploadReviewImageDocument,
@@ -14,7 +16,8 @@ import { preparePhoto } from './preparePhoto';
 import { isUploadable, type Photo, type PhotoFailureReason } from './types';
 
 /**
- * Uploads Review Photos, or the Place photos of a Place suggestion, through our own server, one mutation per file.
+ * Uploads Review Photos, or the Place photos of a Place suggestion (the suggester's or the admin's), through our own
+ * server, one mutation per file.
  *
  * ImageKit's browser upload signature covers only token+expire, so a folder can
  * never be pinned down client-side; sending the bytes to our server is the only
@@ -23,14 +26,21 @@ import { isUploadable, type Photo, type PhotoFailureReason } from './types';
  * than a Review whose counter points at files that were never uploaded.
  */
 
-/** Where the Photos go: a saved Review, or a submitted Place suggestion. */
-export type UploadTarget = ({ reviewId: string } | { suggestionId: string }) & {
-  guestCredentials: Partial<GuestIdentity>;
+/**
+ * Where the Photos go: a saved Review or a submitted Place suggestion under the person's identity, or a
+ * pending Place suggestion under the admin's review link token (ADR 0002).
+ */
+export type UploadTarget = (
+  | (({ reviewId: string } | { suggestionId: string }) & { guestCredentials: Partial<GuestIdentity> })
+  | { suggestionId: string; adminToken: string }
+) & {
   signal?: AbortSignal;
 };
 
 export interface UploadResult {
   saved: number;
+  /** The stored paths of the Photos saved in this run, in order; only an admin upload returns them. */
+  paths: string[];
   /** One reason per Photo that failed in this run. */
   failures: PhotoFailureReason[];
   aborted: boolean;
@@ -99,8 +109,8 @@ export const usePhotoUpload = (existingCount: number) => {
    */
   const uploadPhotos = useCallback(
     async (ids: string[], target: UploadTarget): Promise<UploadResult> => {
-      const { guestCredentials, signal } = target;
-      const result: UploadResult = { saved: 0, failures: [], aborted: false };
+      const { signal } = target;
+      const result: UploadResult = { saved: 0, paths: [], failures: [], aborted: false };
       setIsUploading(true);
 
       for (const id of ids) {
@@ -117,16 +127,25 @@ export const usePhotoUpload = (existingCount: number) => {
         try {
           const fileBuffer = await fileToBase64(file);
           const context = { fetchOptions: { signal } };
-          if ('reviewId' in target) {
+          if ('adminToken' in target) {
+            const { data } = await client.mutate<UploadPlaceSuggestionPhotoAsAdminMutation>({
+              mutation: UploadPlaceSuggestionPhotoAsAdminDocument,
+              variables: { id: target.suggestionId, token: target.adminToken, fileBuffer },
+              context,
+            });
+            // Without its path the photo can't join the list, so it fails and can be retried.
+            if (!data) throw new Error('The admin upload returned no path');
+            result.paths.push(data.uploadPlaceSuggestionPhotoAsAdmin);
+          } else if ('reviewId' in target) {
             await client.mutate<UploadReviewImageMutation>({
               mutation: UploadReviewImageDocument,
-              variables: { reviewId: target.reviewId, fileBuffer, ...guestCredentials },
+              variables: { reviewId: target.reviewId, fileBuffer, ...target.guestCredentials },
               context,
             });
           } else {
             await client.mutate<UploadPlaceSuggestionPhotoMutation>({
               mutation: UploadPlaceSuggestionPhotoDocument,
-              variables: { suggestionId: target.suggestionId, fileBuffer, ...guestCredentials },
+              variables: { suggestionId: target.suggestionId, fileBuffer, ...target.guestCredentials },
               context,
             });
           }

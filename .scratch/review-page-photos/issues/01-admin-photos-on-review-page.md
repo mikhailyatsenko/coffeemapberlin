@@ -12,21 +12,21 @@ See [the spec](../spec.md).
 
 **Blocked by:** backend `../coffemap-server/.scratch/review-page-photos/issues/01-admin-photos-by-review-link.md`.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Codegen runs against the backend with its admin upload and delete operations
-- [ ] Photos are picked on the review page and upload through the shared photo upload flow, with a new upload target: the suggestion and its admin token. Downscaling, formats and size are those of Review Photos
-- [ ] Each photo shows uploading / done / failed, and a failed one can be retried
-- [ ] An uploaded photo joins the end of the list; a failed one is left out of Publish
-- [ ] The picker offers only the slots left (10 minus stored and in-flight photos)
-- [ ] An over-pick uploads the first photos that fit and says the rest weren't added
-- [ ] At 10 photos the note replaces the picker
-- [ ] The delete control opens Delete/Cancel on that photo
-- [ ] Delete removes the photo from the list once the server confirms; a failed delete keeps it and shows an error
-- [ ] "Make card image" moves a photo to the front, and the Publish input's `photoPaths` follows that order
-- [ ] Publish stays disabled while any photo is pending or uploading
-- [ ] Usable at phone width
-- [ ] Component tests with mocked Apollo, extending the page's existing test, cover:
+- [x] Codegen runs against the backend with its admin upload and delete operations
+- [x] Photos are picked on the review page and upload through the shared photo upload flow, with a new upload target: the suggestion and its admin token. Downscaling, formats and size are those of Review Photos
+- [x] Each photo shows uploading / done / failed, and a failed one can be retried
+- [x] An uploaded photo joins the end of the list; a failed one is left out of Publish
+- [x] The picker offers only the slots left (10 minus stored and in-flight photos)
+- [x] An over-pick uploads the first photos that fit and says the rest weren't added
+- [x] At 10 photos the note replaces the picker
+- [x] The delete control opens Delete/Cancel on that photo
+- [x] Delete removes the photo from the list once the server confirms; a failed delete keeps it and shows an error
+- [x] "Make card image" moves a photo to the front, and the Publish input's `photoPaths` follows that order
+- [x] Publish stays disabled while any photo is pending or uploading
+- [x] Usable at phone width
+- [x] Component tests with mocked Apollo, extending the page's existing test, cover:
   - upload states and retry;
   - an uploaded photo joining the list;
   - Delete/Cancel and a failed delete;

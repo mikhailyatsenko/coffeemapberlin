@@ -15,8 +15,14 @@ export interface PublishFormValues {
   website: string;
   phone: string;
   googlePlaceId: string;
-  /** The suggestion's photos to keep, in upload order; the first becomes the card image. */
+  /** The suggestion's stored photos, the card image first, then in upload order unless the admin moved one. */
   photoPaths: string[];
+}
+
+/** The review link's parts: every admin operation on the suggestion takes both (ADR 0002). */
+export interface ReviewLink {
+  id: string;
+  token: string;
 }
 
 export interface Coordinates {
