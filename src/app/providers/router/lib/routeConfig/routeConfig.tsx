@@ -14,6 +14,7 @@ import { NotFoundPage } from 'pages/NotFoundPage';
 import { PlacePage } from 'pages/PlacePage';
 import { PrivacyPolicyPage } from 'pages/PrivacyPolicyPage';
 import { ResetPasswordPage } from 'pages/ResetPasswordPage';
+import { SuggestPlacePage } from 'pages/SuggestPlacePage';
 import { AppRoutes, RoutePaths } from 'shared/constants';
 import { PrivateRoute } from '../../ui/PrivateRoute';
 
@@ -87,6 +88,10 @@ export const routeConfig: Partial<Record<AppRoutes, AppRouteConfig>> = {
   [AppRoutes.NEIGHBORHOOD]: {
     path: RoutePaths.neighborhood,
     element: <NeighborhoodPage notFound={<NotFoundPage />} />,
+  },
+  [AppRoutes.SUGGEST_PLACE]: {
+    path: RoutePaths.suggestPlace,
+    element: <SuggestPlacePage />,
   },
   [AppRoutes.NOT_FOUND]: {
     path: RoutePaths.not_found,

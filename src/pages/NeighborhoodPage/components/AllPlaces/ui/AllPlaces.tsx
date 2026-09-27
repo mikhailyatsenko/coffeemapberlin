@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { RoutePaths } from 'shared/constants';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { sortPlaces } from '../../../lib/sortPlaces';
 import { type NeighborhoodPlace } from '../../../types';
@@ -37,6 +39,9 @@ export const AllPlaces = ({ neighborhood, places, total, onCardOpen }: AllPlaces
           </RegularButton>
         </div>
       )}
+      <p className={cls.suggest}>
+        Know a Place that’s missing? <Link to={`/${RoutePaths.suggestPlace}`}>Suggest it</Link>
+      </p>
     </PlacesSection>
   );
 };

@@ -244,6 +244,8 @@ export interface Mutation {
   resetPassword: SuccessResponse;
   setNewPassword: SuccessResponse;
   signInWithEmail: AuthPayload;
+  /** Returns the id of the new suggestion. */
+  submitPlaceSuggestion: Scalars['ID']['output'];
   toggleCharacteristic: SuccessResponse;
   toggleFavorite: Scalars['Boolean']['output'];
   updatePersonalData: SuccessResponse;
@@ -351,6 +353,13 @@ export interface MutationsignInWithEmailArgs {
 }
 
 
+export interface MutationsubmitPlaceSuggestionArgs {
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
+  input: PlaceSuggestionInput;
+}
+
+
 export interface MutationtoggleCharacteristicArgs {
   characteristic: Characteristic;
   guestId?: InputMaybe<Scalars['String']['input']>;
@@ -445,6 +454,56 @@ export interface PlaceReviews {
   reviews: Review[];
 }
 
+export enum PlaceSuggester {
+  guest = 'guest',
+  user = 'user',
+}
+
+/** What the admin sees on the review page. Never carries the Guest's email. */
+export interface PlaceSuggestionForReview {
+  __typename?: 'PlaceSuggestionForReview';
+  address: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  instagram?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  /** Paths of the photos sent with the suggestion. */
+  photos: Array<Scalars['String']['output']>;
+  /** Set once the suggestion is published. */
+  publishedPlaceId?: Maybe<Scalars['ID']['output']>;
+  /** Other pending suggestions with a similar name. */
+  similarPending: SimilarPlaceSuggestion[];
+  status: PlaceSuggestionStatus;
+  suggestedBy: PlaceSuggester;
+}
+
+/**
+ * Text is trimmed; a blank optional field counts as missing. Longer input fails
+ * with BAD_USER_INPUT.
+ */
+export interface PlaceSuggestionInput {
+  /** Required, at most 300 characters. */
+  address: Scalars['String']['input'];
+  /** At most 500 characters. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Where to tell a Guest that their Place was added. Ignored for signed-in
+   * Users, whose account email is used instead. At most 254 characters and must
+   * look like an email.
+   */
+  email?: InputMaybe<Scalars['String']['input']>;
+  /** At most 200 characters. */
+  instagram?: InputMaybe<Scalars['String']['input']>;
+  /** Required, at most 200 characters. */
+  name: Scalars['String']['input'];
+}
+
+export enum PlaceSuggestionStatus {
+  pending = 'pending',
+  published = 'published',
+  rejected = 'rejected',
+}
+
 export interface PlacesResponse {
   __typename?: 'PlacesResponse';
   places: Place[];
@@ -463,6 +522,11 @@ export interface Query {
   neighborhoodShortlists: Shortlist[];
   place: Place;
   placeReviews: PlaceReviews;
+  /**
+   * Opens a Place suggestion from the admin's review link. The token is the only
+   * authorization; a wrong token and an unknown id fail the same way.
+   */
+  placeSuggestionForReview: PlaceSuggestionForReview;
   places: PlacesResponse;
   userReviewActivity: UserReviewActivity[];
 }
@@ -499,6 +563,12 @@ export interface QueryplaceArgs {
 
 export interface QueryplaceReviewsArgs {
   placeId: Scalars['ID']['input'];
+}
+
+
+export interface QueryplaceSuggestionForReviewArgs {
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
 }
 
 
@@ -552,6 +622,13 @@ export enum ShortlistId {
   dogFriendly = 'dogFriendly',
   outdoorSeating = 'outdoorSeating',
   work = 'work',
+}
+
+export interface SimilarPlaceSuggestion {
+  __typename?: 'SimilarPlaceSuggestion';
+  address: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 }
 
 export interface StringFilterInput {
@@ -728,6 +805,15 @@ export type GetArticleQueryVariables = Exact<{
 
 export interface GetArticleQuery { __typename?: 'Query', articles: Array<{ __typename?: 'Article', documentId: string, title: string, slug: string, description: string, content: string, author?: string | null, featured?: boolean | null, tags?: Array<string | null> | null, viewCount?: number | null, publishedAt?: any | null, createdAt?: any | null, updatedAt?: any | null, coverImage?: { __typename?: 'UploadFile', url: string, formats?: any | null, width?: number | null, height?: number | null, alternativeText?: string | null } | null, gallery?: Array<{ __typename?: 'UploadFile', url: string, formats?: any | null, alternativeText?: string | null, width?: number | null, height?: number | null }> | null, seo?: { __typename?: 'ComponentSharedSeo', metaTitle?: string | null, metaDescription?: string | null, canonicalURL?: string | null, metaImage?: { __typename?: 'UploadFile', url: string } | null } | null }> }
 
+export type SubmitPlaceSuggestionMutationVariables = Exact<{
+  input: PlaceSuggestionInput;
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export interface SubmitPlaceSuggestionMutation { __typename?: 'Mutation', submitPlaceSuggestion: string }
+
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
 }>;
@@ -790,6 +876,11 @@ export type NeighborhoodShortlistsQueryVariables = Exact<{
 
 
 export interface NeighborhoodShortlistsQuery { __typename?: 'Query', neighborhoodShortlists: Array<{ __typename?: 'Shortlist', id: ShortlistId, amenities: string[], total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, favoriteCount: number, isFavorite: boolean, ownRating?: number | null, ownCharacteristics?: Characteristic[] | null, googleId?: string | null, neighborhood?: string | null } }> }> }
+
+export type PlaceNamesQueryVariables = Exact<Record<string, never>>;
+
+
+export interface PlaceNamesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', places: Array<{ __typename?: 'Place', id: string, properties: { __typename?: 'PlaceProperties', id: string, name: string } }> } }
 
 export type ReportInaccuracyMutationVariables = Exact<{
   placeId: Scalars['String']['input'];
@@ -1514,6 +1605,43 @@ export type GetArticleQueryHookResult = ReturnType<typeof useGetArticleQuery>;
 export type GetArticleLazyQueryHookResult = ReturnType<typeof useGetArticleLazyQuery>;
 export type GetArticleSuspenseQueryHookResult = ReturnType<typeof useGetArticleSuspenseQuery>;
 export type GetArticleQueryResult = Apollo.QueryResult<GetArticleQuery, GetArticleQueryVariables>;
+export const SubmitPlaceSuggestionDocument = gql`
+    mutation SubmitPlaceSuggestion($input: PlaceSuggestionInput!, $guestId: String, $guestSecret: String) {
+  submitPlaceSuggestion(
+    input: $input
+    guestId: $guestId
+    guestSecret: $guestSecret
+  )
+}
+    `;
+export type SubmitPlaceSuggestionMutationFn = Apollo.MutationFunction<SubmitPlaceSuggestionMutation, SubmitPlaceSuggestionMutationVariables>;
+
+/**
+ * __useSubmitPlaceSuggestionMutation__
+ *
+ * To run a mutation, you first call `useSubmitPlaceSuggestionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubmitPlaceSuggestionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [submitPlaceSuggestionMutation, { data, loading, error }] = useSubmitPlaceSuggestionMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
+ *   },
+ * });
+ */
+export function useSubmitPlaceSuggestionMutation(baseOptions?: Apollo.MutationHookOptions<SubmitPlaceSuggestionMutation, SubmitPlaceSuggestionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SubmitPlaceSuggestionMutation, SubmitPlaceSuggestionMutationVariables>(SubmitPlaceSuggestionDocument, options);
+      }
+export type SubmitPlaceSuggestionMutationHookResult = ReturnType<typeof useSubmitPlaceSuggestionMutation>;
+export type SubmitPlaceSuggestionMutationResult = Apollo.MutationResult<SubmitPlaceSuggestionMutation>;
+export type SubmitPlaceSuggestionMutationOptions = Apollo.BaseMutationOptions<SubmitPlaceSuggestionMutation, SubmitPlaceSuggestionMutationVariables>;
 export const ToggleFavoriteDocument = gql`
     mutation ToggleFavorite($placeId: ID!) {
   toggleFavorite(placeId: $placeId)
@@ -2007,6 +2135,51 @@ export type NeighborhoodShortlistsQueryHookResult = ReturnType<typeof useNeighbo
 export type NeighborhoodShortlistsLazyQueryHookResult = ReturnType<typeof useNeighborhoodShortlistsLazyQuery>;
 export type NeighborhoodShortlistsSuspenseQueryHookResult = ReturnType<typeof useNeighborhoodShortlistsSuspenseQuery>;
 export type NeighborhoodShortlistsQueryResult = Apollo.QueryResult<NeighborhoodShortlistsQuery, NeighborhoodShortlistsQueryVariables>;
+export const PlaceNamesDocument = gql`
+    query PlaceNames {
+  places {
+    places {
+      id
+      properties {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __usePlaceNamesQuery__
+ *
+ * To run a query within a React component, call `usePlaceNamesQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlaceNamesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlaceNamesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePlaceNamesQuery(baseOptions?: Apollo.QueryHookOptions<PlaceNamesQuery, PlaceNamesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PlaceNamesQuery, PlaceNamesQueryVariables>(PlaceNamesDocument, options);
+      }
+export function usePlaceNamesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlaceNamesQuery, PlaceNamesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PlaceNamesQuery, PlaceNamesQueryVariables>(PlaceNamesDocument, options);
+        }
+export function usePlaceNamesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PlaceNamesQuery, PlaceNamesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PlaceNamesQuery, PlaceNamesQueryVariables>(PlaceNamesDocument, options);
+        }
+export type PlaceNamesQueryHookResult = ReturnType<typeof usePlaceNamesQuery>;
+export type PlaceNamesLazyQueryHookResult = ReturnType<typeof usePlaceNamesLazyQuery>;
+export type PlaceNamesSuspenseQueryHookResult = ReturnType<typeof usePlaceNamesSuspenseQuery>;
+export type PlaceNamesQueryResult = Apollo.QueryResult<PlaceNamesQuery, PlaceNamesQueryVariables>;
 export const ReportInaccuracyDocument = gql`
     mutation ReportInaccuracy($placeId: String!, $placeName: String!, $message: String!, $captchaToken: String) {
   reportInaccuracy(

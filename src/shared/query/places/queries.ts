@@ -192,3 +192,18 @@ export const GET_NEIGHBORHOOD_SHORTLISTS = gql`
     }
   }
 `;
+
+// Every Place's name, for matching a name against the map
+export const PLACE_NAMES = gql`
+  query PlaceNames {
+    places {
+      places {
+        id
+        properties {
+          id
+          name
+        }
+      }
+    }
+  }
+`;

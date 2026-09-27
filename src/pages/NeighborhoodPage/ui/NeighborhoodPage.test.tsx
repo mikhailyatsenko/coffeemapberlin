@@ -298,6 +298,14 @@ describe('NeighborhoodPage', () => {
     expect(within(all).queryByRole('button', { name: 'Show 20 more' })).not.toBeInTheDocument();
   });
 
+  it('offers to suggest a missing Place under the full list', async () => {
+    renderPage({ topRated: [], all: [place('b', 4.1, 3)] });
+
+    const all = await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    expect(within(all).getByText(/know a place that’s missing\?/i)).toBeInTheDocument();
+    expect(within(all).getByRole('link', { name: 'Suggest it' })).toHaveAttribute('href', '/suggest');
+  });
+
   it('shows Not found for an unknown Neighborhood and stays there', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     try {
