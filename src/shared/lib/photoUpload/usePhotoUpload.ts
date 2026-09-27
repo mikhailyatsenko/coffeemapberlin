@@ -1,15 +1,20 @@
 import { useApolloClient } from '@apollo/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { UploadReviewImageDocument, type UploadReviewImageMutation } from 'shared/generated/graphql';
+import {
+  UploadPlaceSuggestionPhotoDocument,
+  type UploadPlaceSuggestionPhotoMutation,
+  UploadReviewImageDocument,
+  type UploadReviewImageMutation,
+} from 'shared/generated/graphql';
 import { type GuestIdentity } from 'shared/lib/guest';
-import { MAX_PHOTOS_PER_REVIEW } from './constants';
+import { MAX_PHOTOS } from './constants';
 import { fileToBase64 } from './fileToBase64';
 import { getPhotoFailureReason } from './getPhotoFailureReason';
 import { preparePhoto } from './preparePhoto';
 import { isUploadable, type Photo, type PhotoFailureReason } from './types';
 
 /**
- * Uploads Review Photos through our own server, one mutation per file.
+ * Uploads Review Photos, or the Place photos of a Place suggestion, through our own server, one mutation per file.
  *
  * ImageKit's browser upload signature covers only token+expire, so a folder can
  * never be pinned down client-side; sending the bytes to our server is the only
@@ -18,11 +23,11 @@ import { isUploadable, type Photo, type PhotoFailureReason } from './types';
  * than a Review whose counter points at files that were never uploaded.
  */
 
-export interface UploadTarget {
-  reviewId: string;
+/** Where the Photos go: a saved Review, or a submitted Place suggestion. */
+export type UploadTarget = ({ reviewId: string } | { suggestionId: string }) & {
   guestCredentials: Partial<GuestIdentity>;
   signal?: AbortSignal;
-}
+};
 
 export interface UploadResult {
   saved: number;
@@ -32,8 +37,8 @@ export interface UploadResult {
 }
 
 /**
- * The Photos a person picked for one Review, and their upload.
- * @param existingCount Photos the Review already has; they count against its limit.
+ * The photos a person picked for one Review or Place suggestion, and their upload.
+ * @param existingCount Photos it already has; they count against its limit.
  */
 export const usePhotoUpload = (existingCount: number) => {
   const client = useApolloClient();
@@ -46,7 +51,7 @@ export const usePhotoUpload = (existingCount: number) => {
   const photosRef = useRef(photos);
   photosRef.current = photos;
 
-  const room = Math.max(0, MAX_PHOTOS_PER_REVIEW - existingCount - preparingCount - photos.filter(isUploadable).length);
+  const room = Math.max(0, MAX_PHOTOS - existingCount - preparingCount - photos.filter(isUploadable).length);
   const isPreparing = preparingCount > 0;
 
   const update = (id: string, patch: Partial<Photo>) => {
@@ -54,7 +59,7 @@ export const usePhotoUpload = (existingCount: number) => {
   };
 
   /**
-   * Keeps as many files as the Review has room for and downscales them.
+   * Keeps as many files as there is room for and downscales them.
    * @returns how many files it dropped, and the Photos it added: pending, or failed as `unreadable`.
    */
   const add = async (files: File[]): Promise<{ dropped: number; added: Photo[] }> => {
@@ -90,10 +95,11 @@ export const usePhotoUpload = (existingCount: number) => {
 
   /**
    * Uploads just these Photos: ones picked a moment ago, or a failed one again.
-   * Sequential on purpose: the server assigns image_1, image_2, ... in the order it accepts them.
+   * Sequential on purpose: the server keeps Photos in the order it accepts them.
    */
   const uploadPhotos = useCallback(
-    async (ids: string[], { reviewId, guestCredentials, signal }: UploadTarget): Promise<UploadResult> => {
+    async (ids: string[], target: UploadTarget): Promise<UploadResult> => {
+      const { guestCredentials, signal } = target;
       const result: UploadResult = { saved: 0, failures: [], aborted: false };
       setIsUploading(true);
 
@@ -109,11 +115,21 @@ export const usePhotoUpload = (existingCount: number) => {
         update(id, { status: 'uploading', reason: undefined });
 
         try {
-          await client.mutate<UploadReviewImageMutation>({
-            mutation: UploadReviewImageDocument,
-            variables: { reviewId, fileBuffer: await fileToBase64(file), ...guestCredentials },
-            context: { fetchOptions: { signal } },
-          });
+          const fileBuffer = await fileToBase64(file);
+          const context = { fetchOptions: { signal } };
+          if ('reviewId' in target) {
+            await client.mutate<UploadReviewImageMutation>({
+              mutation: UploadReviewImageDocument,
+              variables: { reviewId: target.reviewId, fileBuffer, ...guestCredentials },
+              context,
+            });
+          } else {
+            await client.mutate<UploadPlaceSuggestionPhotoMutation>({
+              mutation: UploadPlaceSuggestionPhotoDocument,
+              variables: { suggestionId: target.suggestionId, fileBuffer, ...guestCredentials },
+              context,
+            });
+          }
           update(id, { status: 'saved' });
           result.saved += 1;
         } catch (error) {

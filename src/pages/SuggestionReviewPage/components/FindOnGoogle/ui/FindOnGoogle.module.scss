@@ -1,0 +1,51 @@
+.FindOnGoogle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+.candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.candidate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mapsLink {
+  min-width: 0;
+  font-size: 14px;
+  color: #000000;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+.onMap {
+  font-size: 13px;
+  color: #919191;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
+.note {
+  font-size: 13px;
+  color: #919191;
+}
+
+.error {
+  font-size: 13px;
+  color: #fd5353;
+}

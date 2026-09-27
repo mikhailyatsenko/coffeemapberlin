@@ -16,6 +16,7 @@ export enum AppRoutes {
   PLACE_PAGE = 'placePage',
   NEIGHBORHOOD = 'neighborhood',
   SUGGEST_PLACE = 'suggestPlace',
+  SUGGESTION_REVIEW = 'suggestionReview',
 }
 
 export const RoutePaths: Record<AppRoutes, string> = {
@@ -36,4 +37,5 @@ export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.DISCLAIMER]: 'disclaimer',
   [AppRoutes.NEIGHBORHOOD]: 'neighborhood/:neighborhood',
   [AppRoutes.SUGGEST_PLACE]: 'suggest',
+  [AppRoutes.SUGGESTION_REVIEW]: 'suggestions/:id/review',
 };

@@ -1,10 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { type PhotoUpload } from 'shared/lib/photoUpload';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { validationSchema } from '../../../lib/validationSchema';
 import { type Suggester, type SuggestPlaceFormValues } from '../../../types';
 import { SimilarPlaces } from '../../SimilarPlaces';
+import { SuggestionPhotoPicker } from '../../SuggestionPhotoPicker';
 import cls from './SuggestPlaceForm.module.scss';
 
 interface SuggestPlaceFormProps {
@@ -13,9 +15,11 @@ interface SuggestPlaceFormProps {
   onSubmit: (values: SuggestPlaceFormValues) => Promise<void>;
   /** Why the last submit failed; the form keeps its values. */
   errorMessage: string | null;
+  /** The picked photos; they upload once the suggestion is created. */
+  photoUpload: Pick<PhotoUpload, 'photos' | 'room' | 'roomNotice' | 'isPreparing' | 'add' | 'remove'>;
 }
 
-export const SuggestPlaceForm = ({ suggester, onSubmit, errorMessage }: SuggestPlaceFormProps) => {
+export const SuggestPlaceForm = ({ suggester, onSubmit, errorMessage, photoUpload }: SuggestPlaceFormProps) => {
   const form = useForm<SuggestPlaceFormValues>({
     mode: 'onTouched',
     resolver: yupResolver(validationSchema),
@@ -46,6 +50,7 @@ export const SuggestPlaceForm = ({ suggester, onSubmit, errorMessage }: SuggestP
           type="text"
           error={errors.instagram?.message}
         />
+        <SuggestionPhotoPicker photoUpload={photoUpload} disabled={isSubmitting} />
         {suggester === 'guest' && (
           <div className={cls.email}>
             <FormField
@@ -67,7 +72,7 @@ export const SuggestPlaceForm = ({ suggester, onSubmit, errorMessage }: SuggestP
           className={cls.submitButton}
           size="lg"
           type="submit"
-          loading={isSubmitting || suggester === 'unknown'}
+          loading={isSubmitting || suggester === 'unknown' || photoUpload.isPreparing}
         >
           Suggest this Place
         </RegularButton>
