@@ -1029,7 +1029,7 @@ describe('RateBlock', () => {
 
     it.each([
       { code: 'RATE_LIMITED', reason: 'rate_limited', message: 'Too many photos for now, try again later' },
-      { code: 'IMAGE_LIMIT_REACHED', reason: 'limit_reached', message: 'This review already has 10 photos' },
+      { code: 'IMAGE_LIMIT_REACHED', reason: 'limit_reached', message: 'Already 10 photos, the most allowed' },
       {
         code: 'UPLOAD_IN_PROGRESS',
         reason: 'in_progress',
@@ -1162,7 +1162,7 @@ describe('RateBlock', () => {
       await user.click(screen.getByRole('button', { name: 'Retry a.jpg' }));
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toHaveTextContent('This review already has 10 photos');
+        expect(screen.getByRole('alert')).toHaveTextContent('Already 10 photos, the most allowed');
       });
       expect(trackedEvents('contribution_failed').map(([, params]) => params?.reason)).toEqual([
         'network',

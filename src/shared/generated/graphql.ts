@@ -919,6 +919,16 @@ export type SubmitPlaceSuggestionMutationVariables = Exact<{
 
 export interface SubmitPlaceSuggestionMutation { __typename?: 'Mutation', submitPlaceSuggestion: string }
 
+export type UploadPlaceSuggestionPhotoMutationVariables = Exact<{
+  suggestionId: Scalars['ID']['input'];
+  fileBuffer: Scalars['String']['input'];
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export interface UploadPlaceSuggestionPhotoMutation { __typename?: 'Mutation', uploadPlaceSuggestionPhoto: { __typename?: 'UploadPlaceSuggestionPhotoResponse', photoCount: number } }
+
 export type PublishPlaceSuggestionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
   token: Scalars['String']['input'];
@@ -942,7 +952,7 @@ export type PlaceSuggestionForReviewQueryVariables = Exact<{
 }>;
 
 
-export interface PlaceSuggestionForReviewQuery { __typename?: 'Query', placeSuggestionForReview: { __typename?: 'PlaceSuggestionForReview', id: string, name: string, address: string, description?: string | null, instagram?: string | null, suggestedBy: PlaceSuggester, status: PlaceSuggestionStatus, publishedPlaceId?: string | null, similarPending: Array<{ __typename?: 'SimilarPlaceSuggestion', id: string, name: string, address: string }> } }
+export interface PlaceSuggestionForReviewQuery { __typename?: 'Query', placeSuggestionForReview: { __typename?: 'PlaceSuggestionForReview', id: string, name: string, address: string, description?: string | null, instagram?: string | null, suggestedBy: PlaceSuggester, status: PlaceSuggestionStatus, publishedPlaceId?: string | null, photos: string[], similarPending: Array<{ __typename?: 'SimilarPlaceSuggestion', id: string, name: string, address: string }> } }
 
 export type FindGoogleIdsForSuggestionQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1780,6 +1790,47 @@ export function useSubmitPlaceSuggestionMutation(baseOptions?: Apollo.MutationHo
 export type SubmitPlaceSuggestionMutationHookResult = ReturnType<typeof useSubmitPlaceSuggestionMutation>;
 export type SubmitPlaceSuggestionMutationResult = Apollo.MutationResult<SubmitPlaceSuggestionMutation>;
 export type SubmitPlaceSuggestionMutationOptions = Apollo.BaseMutationOptions<SubmitPlaceSuggestionMutation, SubmitPlaceSuggestionMutationVariables>;
+export const UploadPlaceSuggestionPhotoDocument = gql`
+    mutation UploadPlaceSuggestionPhoto($suggestionId: ID!, $fileBuffer: String!, $guestId: String, $guestSecret: String) {
+  uploadPlaceSuggestionPhoto(
+    suggestionId: $suggestionId
+    fileBuffer: $fileBuffer
+    guestId: $guestId
+    guestSecret: $guestSecret
+  ) {
+    photoCount
+  }
+}
+    `;
+export type UploadPlaceSuggestionPhotoMutationFn = Apollo.MutationFunction<UploadPlaceSuggestionPhotoMutation, UploadPlaceSuggestionPhotoMutationVariables>;
+
+/**
+ * __useUploadPlaceSuggestionPhotoMutation__
+ *
+ * To run a mutation, you first call `useUploadPlaceSuggestionPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadPlaceSuggestionPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadPlaceSuggestionPhotoMutation, { data, loading, error }] = useUploadPlaceSuggestionPhotoMutation({
+ *   variables: {
+ *      suggestionId: // value for 'suggestionId'
+ *      fileBuffer: // value for 'fileBuffer'
+ *      guestId: // value for 'guestId'
+ *      guestSecret: // value for 'guestSecret'
+ *   },
+ * });
+ */
+export function useUploadPlaceSuggestionPhotoMutation(baseOptions?: Apollo.MutationHookOptions<UploadPlaceSuggestionPhotoMutation, UploadPlaceSuggestionPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadPlaceSuggestionPhotoMutation, UploadPlaceSuggestionPhotoMutationVariables>(UploadPlaceSuggestionPhotoDocument, options);
+      }
+export type UploadPlaceSuggestionPhotoMutationHookResult = ReturnType<typeof useUploadPlaceSuggestionPhotoMutation>;
+export type UploadPlaceSuggestionPhotoMutationResult = Apollo.MutationResult<UploadPlaceSuggestionPhotoMutation>;
+export type UploadPlaceSuggestionPhotoMutationOptions = Apollo.BaseMutationOptions<UploadPlaceSuggestionPhotoMutation, UploadPlaceSuggestionPhotoMutationVariables>;
 export const PublishPlaceSuggestionDocument = gql`
     mutation PublishPlaceSuggestion($id: ID!, $token: String!, $input: PublishPlaceSuggestionInput!) {
   publishPlaceSuggestion(id: $id, token: $token, input: $input) {
@@ -1862,6 +1913,7 @@ export const PlaceSuggestionForReviewDocument = gql`
     suggestedBy
     status
     publishedPlaceId
+    photos
     similarPending {
       id
       name

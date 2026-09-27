@@ -11,6 +11,7 @@ export const PLACE_SUGGESTION_FOR_REVIEW = gql`
       suggestedBy
       status
       publishedPlaceId
+      photos
       similarPending {
         id
         name

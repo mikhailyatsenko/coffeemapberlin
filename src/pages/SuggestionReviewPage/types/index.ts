@@ -15,6 +15,8 @@ export interface PublishFormValues {
   website: string;
   phone: string;
   googlePlaceId: string;
+  /** The suggestion's photos to keep, in upload order; the first becomes the card image. */
+  photoPaths: string[];
 }
 
 export interface Coordinates {

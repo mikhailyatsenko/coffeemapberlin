@@ -34,6 +34,7 @@ const suggestion = (overrides: Partial<Suggestion> = {}): Suggestion => ({
   suggestedBy: PlaceSuggester.guest,
   status: PlaceSuggestionStatus.pending,
   publishedPlaceId: null,
+  photos: [],
   similarPending: [],
   ...overrides,
 });
@@ -61,6 +62,7 @@ const publishInput = (overrides: Partial<PublishPlaceSuggestionInput> = {}): Pub
   neighborhood: 'Neukölln',
   description: 'Great flat white',
   instagram: '@kaffeekiez',
+  photoPaths: [],
   ...overrides,
 });
 
@@ -322,6 +324,82 @@ describe('SuggestionReviewPage', () => {
 
       await user.type(field(/^google place id/i), '2');
       expect(publishButton()).toBeEnabled();
+    });
+  });
+
+  describe('photos', () => {
+    const PHOTOS = [
+      '/place-suggestions/suggestion-1/a.jpg',
+      '/place-suggestions/suggestion-1/b.jpg',
+      '/place-suggestions/suggestion-1/c.jpg',
+    ];
+
+    const photoList = () => screen.getByRole('list', { name: /photos to publish/i });
+
+    it('shows the photos in upload order, the first marked as the card image', async () => {
+      renderPage([reviewMock(suggestion({ photos: PHOTOS }))]);
+      await waitForForm();
+
+      const images = within(photoList()).getAllByRole('img');
+      expect(images.map((image) => image.getAttribute('src'))).toEqual(
+        PHOTOS.map((path) => expect.stringContaining(path) as string),
+      );
+      expect(images[0]).toHaveAccessibleName(/card image/i);
+      expect(images[1]).not.toHaveAccessibleName(/card image/i);
+    });
+
+    it('publishes all photos when none is removed', async () => {
+      const user = userEvent.setup();
+      renderPage([reviewMock(suggestion({ photos: PHOTOS })), publishMock(publishInput({ photoPaths: PHOTOS }))]);
+      await waitForForm();
+
+      await fillPlace(user);
+      await user.click(publishButton());
+
+      expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    it('leaves a removed photo out of Publish, and the next one becomes the card image', async () => {
+      const user = userEvent.setup();
+      renderPage([
+        reviewMock(suggestion({ photos: PHOTOS })),
+        publishMock(publishInput({ photoPaths: [PHOTOS[1], PHOTOS[2]] })),
+      ]);
+      await waitForForm();
+
+      await user.click(screen.getByRole('button', { name: /remove photo 1/i }));
+
+      const images = within(photoList()).getAllByRole('img');
+      expect(images).toHaveLength(2);
+      expect(images[0]).toHaveAttribute('src', expect.stringContaining(PHOTOS[1]));
+      expect(images[0]).toHaveAccessibleName(/card image/i);
+
+      await fillPlace(user);
+      await user.click(publishButton());
+
+      expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    it('publishes with no photos once all are removed, keeping the default card image', async () => {
+      const user = userEvent.setup();
+      renderPage([reviewMock(suggestion({ photos: [PHOTOS[0]] })), publishMock(publishInput({ photoPaths: [] }))]);
+      await waitForForm();
+
+      await user.click(screen.getByRole('button', { name: /remove photo 1/i }));
+
+      expect(screen.getByText(/no photos, the place keeps the default card image/i)).toBeInTheDocument();
+
+      await fillPlace(user);
+      await user.click(publishButton());
+
+      expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    it('says when no photos were sent', async () => {
+      renderPage([reviewMock(suggestion())]);
+      await waitForForm();
+
+      expect(screen.getByText(/no photos, the place keeps the default card image/i)).toBeInTheDocument();
     });
   });
 

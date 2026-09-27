@@ -28,4 +28,5 @@ export const validationSchema = Yup.object({
   website: Yup.string().trim().defined(),
   phone: Yup.string().trim().defined(),
   googlePlaceId: Yup.string().trim().defined(),
+  photoPaths: Yup.array(Yup.string().required()).defined(),
 });

@@ -5,13 +5,13 @@ export type PhotoFailureReason = SaveErrorReason | 'rate_limited' | 'limit_reach
 
 /**
  * - `pending`: downscaled and waiting to upload;
- * - `uploading`: its `uploadReviewImage` is in flight;
- * - `saved`: attached to the Review, never rolled back;
+ * - `uploading`: its upload mutation is in flight;
+ * - `saved`: attached to its Review or Place suggestion, never rolled back;
  * - `failed`: see `reason`; an `unreadable` one is never sent.
  */
 export type PhotoStatus = 'pending' | 'uploading' | 'saved' | 'failed';
 
-/** One picked file on its way to a Review. */
+/** One picked file on its way to a Review (a Photo) or a Place suggestion (a Place photo). */
 export interface Photo {
   id: string;
   name: string;
@@ -23,5 +23,5 @@ export interface Photo {
   reason?: PhotoFailureReason;
 }
 
-/** Whether a Photo can reach the Review: an unreadable one never does, so it takes no room. */
+/** Whether a Photo can be uploaded: an unreadable one never is, so it takes no room. */
 export const isUploadable = (photo: Photo) => photo.reason !== 'unreadable';

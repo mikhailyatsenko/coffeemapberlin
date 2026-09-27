@@ -1,6 +1,6 @@
 const CHUNK_SIZE = 0x8000;
 
-/** The file's bytes as base64, the form `uploadReviewImage` takes them in. */
+/** The file's bytes as base64, the form the upload mutations take them in. */
 export const fileToBase64 = async (file: File): Promise<string> => {
   const bytes = new Uint8Array(await file.arrayBuffer());
   let binary = '';

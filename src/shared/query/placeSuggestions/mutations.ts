@@ -6,6 +6,24 @@ export const SUBMIT_PLACE_SUGGESTION = gql`
   }
 `;
 
+export const UPLOAD_PLACE_SUGGESTION_PHOTO = gql`
+  mutation UploadPlaceSuggestionPhoto(
+    $suggestionId: ID!
+    $fileBuffer: String!
+    $guestId: String
+    $guestSecret: String
+  ) {
+    uploadPlaceSuggestionPhoto(
+      suggestionId: $suggestionId
+      fileBuffer: $fileBuffer
+      guestId: $guestId
+      guestSecret: $guestSecret
+    ) {
+      photoCount
+    }
+  }
+`;
+
 export const PUBLISH_PLACE_SUGGESTION = gql`
   mutation PublishPlaceSuggestion($id: ID!, $token: String!, $input: PublishPlaceSuggestionInput!) {
     publishPlaceSuggestion(id: $id, token: $token, input: $input) {

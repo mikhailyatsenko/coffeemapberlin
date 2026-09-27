@@ -7,7 +7,7 @@ import { type GoogleIdCandidate, type PublishError, type PublishFormValues } fro
 type Suggestion = PlaceSuggestionForReviewQuery['placeSuggestionForReview'];
 
 /** What was sent as a starting point; the rest the admin fills in. */
-export type SentFields = Pick<Suggestion, 'name' | 'address' | 'description' | 'instagram'>;
+export type SentFields = Pick<Suggestion, 'name' | 'address' | 'description' | 'instagram' | 'photos'>;
 
 /** A Place that already has the Google Place ID in the field; its id is unknown when the server didn't name it. */
 interface GoogleIdOwner {
@@ -15,7 +15,7 @@ interface GoogleIdOwner {
 }
 
 /**
- * The Publish form, started from what was sent. `googleIdOwner` is set while
+ * The Publish form, started from what was sent, all photos kept. `googleIdOwner` is set while
  * the Google Place ID field holds an ID that belongs to a Place: one the server
  * rejected as a duplicate, or a Google candidate already on the map.
  */
@@ -37,10 +37,12 @@ export const usePublishForm = (
       website: '',
       phone: '',
       googlePlaceId: '',
+      photoPaths: sent.photos,
     },
   });
   const googlePlaceId = useWatch({ control: form.control, name: 'googlePlaceId' });
   const googleId = googlePlaceId.trim();
+  const photoPaths = useWatch({ control: form.control, name: 'photoPaths' });
 
   const findOwner = (): GoogleIdOwner | null => {
     if (!googleId) return null;
@@ -55,5 +57,13 @@ export const usePublishForm = (
     form.setValue('googlePlaceId', id, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
   };
 
-  return { form, googleIdOwner: findOwner(), chooseGoogleId };
+  const removePhoto = (path: string) => {
+    form.setValue(
+      'photoPaths',
+      photoPaths.filter((kept) => kept !== path),
+      { shouldDirty: true },
+    );
+  };
+
+  return { form, googleIdOwner: findOwner(), chooseGoogleId, photoPaths, removePhoto };
 };

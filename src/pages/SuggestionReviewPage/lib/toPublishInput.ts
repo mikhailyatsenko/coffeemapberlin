@@ -13,6 +13,7 @@ export const toPublishInput = ({
   website,
   phone,
   googlePlaceId,
+  photoPaths,
 }: PublishFormValues): PublishPlaceSuggestionInput => {
   const parsed = parseCoordinates(coordinates);
   // The schema has already checked the coordinates; this only narrows the type.
@@ -28,5 +29,7 @@ export const toPublishInput = ({
     ...(website && { website }),
     ...(phone && { phone }),
     ...(googlePlaceId && { googlePlaceId }),
+    // Always sent: without it the server keeps none.
+    photoPaths,
   };
 };

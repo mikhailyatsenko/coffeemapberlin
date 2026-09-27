@@ -1,2 +1,2 @@
-/** The server's cap on Photos per Review. */
-export const MAX_PHOTOS_PER_REVIEW = 10;
+/** The server's cap on Photos per Review, and on photos per Place suggestion. */
+export const MAX_PHOTOS = 10;

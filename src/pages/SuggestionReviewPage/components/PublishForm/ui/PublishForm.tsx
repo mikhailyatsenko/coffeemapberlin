@@ -6,6 +6,7 @@ import { BERLIN_NEIGHBORHOODS } from '../../../constants';
 import { placePath } from '../../../lib/links';
 import { type GoogleIdLookup, type PublishError, type PublishFormValues } from '../../../types';
 import { FindOnGoogle } from '../../FindOnGoogle';
+import { KeptPhotos } from '../../KeptPhotos';
 import { type SentFields, usePublishForm } from '../model/usePublishForm';
 import cls from './PublishForm.module.scss';
 
@@ -29,7 +30,11 @@ export const PublishForm = ({
   googleIdLookup,
   disabled = false,
 }: PublishFormProps) => {
-  const { form, googleIdOwner, chooseGoogleId } = usePublishForm(suggestion, publishError, googleIdLookup.candidates);
+  const { form, googleIdOwner, chooseGoogleId, photoPaths, removePhoto } = usePublishForm(
+    suggestion,
+    publishError,
+    googleIdLookup.candidates,
+  );
   const {
     register,
     handleSubmit,
@@ -90,6 +95,7 @@ export const PublishForm = ({
           error={errors.googlePlaceId?.message}
         />
         <FindOnGoogle lookup={googleIdLookup} onUse={chooseGoogleId} />
+        <KeptPhotos paths={photoPaths} onRemove={removePhoto} />
         {googleIdOwner ? (
           <p className={cls.submitError} role="alert">
             This Google Place ID already belongs to a Place.{' '}

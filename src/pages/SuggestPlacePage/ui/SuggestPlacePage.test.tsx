@@ -1,12 +1,18 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PlaceNamesDocument, type PlaceSuggestionInput, SubmitPlaceSuggestionDocument } from 'shared/generated/graphql';
+import {
+  PlaceNamesDocument,
+  type PlaceSuggestionInput,
+  SubmitPlaceSuggestionDocument,
+  UploadPlaceSuggestionPhotoDocument,
+} from 'shared/generated/graphql';
 import type * as guestModule from 'shared/lib/guest';
 import { ensureGuestIdentity } from 'shared/lib/guest';
+import { resizeAndConvert } from 'shared/lib/image';
 import { setUser, useAuthStore } from 'shared/stores/auth';
 import { SuggestPlacePage } from './SuggestPlacePage';
 
@@ -19,7 +25,12 @@ vi.mock('shared/lib/guest', async (importOriginal) => {
   };
 });
 
+vi.mock('shared/lib/image', () => ({ resizeAndConvert: vi.fn() }));
+
 const guest = { guestId: 'guest-1', guestSecret: 'secret-1' };
+const SUGGESTION_ID = 'suggestion-1';
+const DOWNSCALED = 'downscaled';
+const DOWNSCALED_BASE64 = btoa(DOWNSCALED);
 
 const signIn = () => {
   setUser({ id: 'user-1', displayName: 'Ada', email: 'ada@example.com', isGoogleUserUserWithoutPassword: false });
@@ -49,7 +60,7 @@ const submitMock = (
   request: { query: SubmitPlaceSuggestionDocument, variables: { input, ...credentials } },
   result: () => {
     onCall();
-    return { data: { submitPlaceSuggestion: 'suggestion-1' } };
+    return { data: { submitPlaceSuggestion: SUGGESTION_ID } };
   },
 });
 
@@ -59,6 +70,30 @@ const failedSubmitMock = (input: PlaceSuggestionInput, code?: string): MockedRes
     ? { result: { errors: [new GraphQLError('Nope', { extensions: { code } })] } }
     : { error: new Error('Network down') }),
 });
+
+/** One `uploadPlaceSuggestionPhoto`, answered or failed with `code`; `onCall` counts what reached the network. */
+const uploadMock = (
+  { credentials = guest, code, delay }: { credentials?: Partial<typeof guest>; code?: string; delay?: number } = {},
+  onCall = () => {},
+): MockedResponse => ({
+  request: {
+    query: UploadPlaceSuggestionPhotoDocument,
+    variables: { suggestionId: SUGGESTION_ID, fileBuffer: DOWNSCALED_BASE64, ...credentials },
+  },
+  delay,
+  result: () => {
+    onCall();
+    return code
+      ? { errors: [new GraphQLError('Nope', { extensions: { code } })] }
+      : { data: { uploadPlaceSuggestionPhoto: { __typename: 'UploadPlaceSuggestionPhotoResponse', photoCount: 1 } } };
+  },
+});
+
+const photo = (name: string) => new File(['original'], name, { type: 'image/jpeg' });
+
+const pickPhotos = async (user: ReturnType<typeof userEvent.setup>, files: File[]) => {
+  await user.upload(screen.getByLabelText('Add photos of the Place'), files);
+};
 
 const renderPage = (mocks: MockedResponse[] = [], names?: string[]) =>
   render(
@@ -86,6 +121,9 @@ describe('SuggestPlacePage', () => {
     setUser(null);
     vi.mocked(ensureGuestIdentity).mockReset();
     vi.mocked(ensureGuestIdentity).mockResolvedValue(guest);
+    vi.mocked(resizeAndConvert).mockResolvedValue(new Blob([DOWNSCALED], { type: 'image/webp' }));
+    URL.createObjectURL = vi.fn(() => 'blob:photo');
+    URL.revokeObjectURL = vi.fn();
   });
 
   describe('validation', () => {
@@ -291,6 +329,129 @@ describe('SuggestPlacePage', () => {
       expect(await screen.findByRole('alert')).toHaveTextContent("We couldn't send your suggestion. Please try again.");
       expect(field(/^name/i)).toHaveValue('Kaffee Kiez');
       expect(submitButton()).toBeEnabled();
+    });
+  });
+
+  describe('photos', () => {
+    const required = { name: 'Kaffee Kiez', address: 'Weserstr. 1' };
+    const thanks = async () => await screen.findByText(/we usually check suggestions within a couple of days/i);
+    const photoList = () => screen.getByRole('list', { name: /photo/i });
+
+    it('shows previews that can be removed before submitting, and uploads only the ones left', async () => {
+      const user = userEvent.setup();
+      const onUpload = vi.fn();
+      renderPage([submitMock(required, guest), uploadMock({}, onUpload)]);
+
+      await fillRequired(user);
+      await pickPhotos(user, [photo('front.jpg'), photo('blurry.jpg')]);
+      expect(within(photoList()).getAllByRole('img')).toHaveLength(2);
+
+      await user.click(screen.getByRole('button', { name: /remove photo 2: blurry.jpg/i }));
+      expect(within(photoList()).getAllByRole('img')).toHaveLength(1);
+
+      await user.click(submitButton());
+      await thanks();
+
+      expect(await screen.findByText('Saved')).toBeInTheDocument();
+      expect(onUpload).toHaveBeenCalledTimes(1);
+    });
+
+    it('takes at most 10', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await pickPhotos(
+        user,
+        Array.from({ length: 12 }, (_, i) => photo(`p${i}.jpg`)),
+      );
+
+      expect(await screen.findByText("Only 10 more fit; the rest weren't added")).toBeInTheDocument();
+      expect(within(photoList()).getAllByRole('img')).toHaveLength(10);
+      expect(screen.queryByRole('button', { name: /add more/i })).not.toBeInTheDocument();
+    });
+
+    it('uploads them one by one after the suggestion is created, each showing its own state', async () => {
+      const user = userEvent.setup();
+      renderPage([submitMock(required, guest), uploadMock({ delay: 30 }), uploadMock({ delay: 30 })]);
+
+      await fillRequired(user);
+      await pickPhotos(user, [photo('front.jpg'), photo('bar.jpg')]);
+      await user.click(submitButton());
+      await thanks();
+
+      expect(await screen.findByRole('progressbar', { name: /upload progress for front.jpg/i })).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getAllByText('Saved')).toHaveLength(2);
+      });
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    });
+
+    it("uploads a User's photos without Guest credentials", async () => {
+      signIn();
+      const user = userEvent.setup();
+      renderPage([submitMock(required), uploadMock({ credentials: {} })]);
+
+      await fillRequired(user);
+      await pickPhotos(user, [photo('front.jpg')]);
+      await user.click(submitButton());
+      await thanks();
+
+      expect(await screen.findByText('Saved')).toBeInTheDocument();
+    });
+
+    it('names a failed photo on the thank-you and uploads it again on Retry', async () => {
+      const user = userEvent.setup();
+      const onRetry = vi.fn();
+      renderPage([
+        submitMock(required, guest),
+        uploadMock(),
+        uploadMock({ code: 'INTERNAL_SERVER_ERROR' }),
+        uploadMock({}, onRetry),
+      ]);
+
+      await fillRequired(user);
+      await pickPhotos(user, [photo('front.jpg'), photo('bar.jpg')]);
+      await user.click(submitButton());
+      await thanks();
+
+      const failure = await screen.findByRole('alert');
+      expect(failure).toHaveTextContent(/bar\.jpg/);
+      expect(failure).not.toHaveTextContent(/front\.jpg/);
+
+      await user.click(screen.getByRole('button', { name: 'Retry bar.jpg' }));
+
+      await waitFor(() => {
+        expect(screen.getAllByText('Saved')).toHaveLength(2);
+      });
+      expect(onRetry).toHaveBeenCalledTimes(1);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('gives the Guest photo limit its own message', async () => {
+      const user = userEvent.setup();
+      renderPage([submitMock(required, guest), uploadMock({ code: 'RATE_LIMITED' })]);
+
+      await fillRequired(user);
+      await pickPhotos(user, [photo('front.jpg')]);
+      await user.click(submitButton());
+      await thanks();
+
+      expect(await screen.findByText('Too many photos for now, try again later')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Retry front.jpg' })).toBeInTheDocument();
+    });
+
+    it('keeps the picked photos when the suggestion itself fails', async () => {
+      const user = userEvent.setup();
+      const onUpload = vi.fn();
+      renderPage([failedSubmitMock(required), uploadMock({}, onUpload)]);
+
+      await fillRequired(user);
+      await pickPhotos(user, [photo('front.jpg')]);
+      await user.click(submitButton());
+
+      expect(await screen.findByRole('alert')).toHaveTextContent("We couldn't send your suggestion");
+      expect(within(photoList()).getAllByRole('img')).toHaveLength(1);
+      expect(onUpload).not.toHaveBeenCalled();
     });
   });
 });
