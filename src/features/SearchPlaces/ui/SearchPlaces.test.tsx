@@ -1,5 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { setSearchQuery, useFiltersStore } from 'shared/stores/filters';
 import { EmptySearchResults } from './EmptySearchResults';
@@ -63,14 +64,27 @@ describe('EmptySearchResults', () => {
     setSearchQuery('zzz');
   });
 
+  const renderEmpty = (query: string) =>
+    render(
+      <MemoryRouter>
+        <EmptySearchResults query={query} />
+      </MemoryRouter>,
+    );
+
   it('shows the trimmed query and clears it on click', async () => {
-    render(<EmptySearchResults query="  zzz  " />);
+    renderEmpty('  zzz  ');
 
     expect(screen.getByText('“zzz”')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: /clear search/i }));
 
     expect(useFiltersStore.getState().searchQuery).toBe('');
+  });
+
+  it('offers to suggest the missing Place', () => {
+    renderEmpty('zzz');
+
+    expect(screen.getByRole('link', { name: 'Suggest it' })).toHaveAttribute('href', '/suggest');
   });
 });
 

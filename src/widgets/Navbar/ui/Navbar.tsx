@@ -72,6 +72,17 @@ export const Navbar = () => {
                 setIsBurgerActive(false);
               }}
               className={({ isActive }) => (isActive ? `${cls.active} ${cls.navLink}` : '')}
+              to={`/${RoutePaths.suggestPlace}`}
+            >
+              Suggest a Place
+            </NavLink>
+          </li>
+          <li className={cls.navItem}>
+            <NavLink
+              onClick={() => {
+                setIsBurgerActive(false);
+              }}
+              className={({ isActive }) => (isActive ? `${cls.active} ${cls.navLink}` : '')}
               to={'journal'}
             >
               Journal

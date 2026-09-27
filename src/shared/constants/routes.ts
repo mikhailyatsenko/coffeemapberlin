@@ -15,6 +15,7 @@ export enum AppRoutes {
   DISCLAIMER = 'disclaimer',
   PLACE_PAGE = 'placePage',
   NEIGHBORHOOD = 'neighborhood',
+  SUGGEST_PLACE = 'suggestPlace',
 }
 
 export const RoutePaths: Record<AppRoutes, string> = {
@@ -34,4 +35,5 @@ export const RoutePaths: Record<AppRoutes, string> = {
   [AppRoutes.PRIVACY]: 'privacy-policy',
   [AppRoutes.DISCLAIMER]: 'disclaimer',
   [AppRoutes.NEIGHBORHOOD]: 'neighborhood/:neighborhood',
+  [AppRoutes.SUGGEST_PLACE]: 'suggest',
 };

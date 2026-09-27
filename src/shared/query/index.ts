@@ -6,3 +6,4 @@ export * from './user';
 export * from './contact';
 export * from './reportInaccuracy';
 export * from './guest';
+export * from './placeSuggestions';

@@ -1,0 +1,28 @@
+.SuggestPlaceForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.email {
+  width: 100%;
+}
+
+.caption {
+  margin-top: -8px;
+  font-size: 13px;
+  color: #919191;
+}
+
+.submitError {
+  width: 100%;
+  margin-top: 12px;
+  color: #fd5353;
+  font-size: 14px;
+  text-align: center;
+}
+
+.submitButton {
+  margin-top: 20px;
+}
