@@ -153,6 +153,11 @@ export interface ContactFormResponse {
   success: Scalars['Boolean']['output'];
 }
 
+export interface CoordinatesInput {
+  lat: Scalars['Float']['input'];
+  lng: Scalars['Float']['input'];
+}
+
 export interface DeleteReviewResult {
   __typename?: 'DeleteReviewResult';
   averageRating: Scalars['Float']['output'];
@@ -236,8 +241,16 @@ export interface Mutation {
   deleteReview: DeleteReviewResult;
   loginWithGoogle?: Maybe<AuthPayload>;
   logout?: Maybe<LogoutResponse>;
+  /**
+   * Publishes a Place suggestion as a new Place and emails the suggester. A
+   * repeat call changes nothing and returns the outcome already decided; a bad
+   * token fails like every admin operation (ADR 0002 in the frontend repo).
+   */
+  publishPlaceSuggestion: PlaceSuggestionOutcome;
   refreshToken: RefreshTokenResponse;
   registerUser: SuccessResponse;
+  /** Rejects a Place suggestion. A repeat call changes nothing. */
+  rejectPlaceSuggestion: PlaceSuggestionOutcome;
   reportInaccuracy: ReportInaccuracyResponse;
   requestPasswordReset: SuccessResponse;
   resendConfirmationEmail: SuccessResponse;
@@ -307,11 +320,24 @@ export interface MutationloginWithGoogleArgs {
 }
 
 
+export interface MutationpublishPlaceSuggestionArgs {
+  id: Scalars['ID']['input'];
+  input: PublishPlaceSuggestionInput;
+  token: Scalars['String']['input'];
+}
+
+
 export interface MutationregisterUserArgs {
   captchaToken?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+}
+
+
+export interface MutationrejectPlaceSuggestionArgs {
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
 }
 
 
@@ -498,6 +524,14 @@ export interface PlaceSuggestionInput {
   name: Scalars['String']['input'];
 }
 
+/** What Publish or Reject return: the outcome just decided, or, on a repeat call, the one already decided. */
+export interface PlaceSuggestionOutcome {
+  __typename?: 'PlaceSuggestionOutcome';
+  /** Set once the suggestion is published. */
+  publishedPlaceId?: Maybe<Scalars['ID']['output']>;
+  status: PlaceSuggestionStatus;
+}
+
 export enum PlaceSuggestionStatus {
   pending = 'pending',
   published = 'published',
@@ -508,6 +542,32 @@ export interface PlacesResponse {
   __typename?: 'PlacesResponse';
   places: Place[];
   total: Scalars['Int']['output'];
+}
+
+/**
+ * What Publish needs to complete the Place. Text is trimmed; a blank optional
+ * field counts as missing.
+ */
+export interface PublishPlaceSuggestionInput {
+  /** Required. */
+  address: Scalars['String']['input'];
+  /** Required, inside Berlin's bounding box (lat 52.33–52.68, lng 13.08–13.77). */
+  coordinates: CoordinatesInput;
+  description?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fails Publish with DUPLICATE_GOOGLE_PLACE_ID if it already belongs to a
+   * Place; the existing Place's id is the last word of the error message.
+   */
+  googlePlaceId?: InputMaybe<Scalars['String']['input']>;
+  instagram?: InputMaybe<Scalars['String']['input']>;
+  /** Required. */
+  name: Scalars['String']['input'];
+  /** Required, one of the twelve Berlin Neighborhoods, in the spelling Places use. */
+  neighborhood: Scalars['String']['input'];
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Paths of the suggestion's photos to keep, in upload order. Ignored for now. */
+  photoPaths?: InputMaybe<Array<Scalars['String']['input']>>;
+  website?: InputMaybe<Scalars['String']['input']>;
 }
 
 export interface Query {
@@ -813,6 +873,31 @@ export type SubmitPlaceSuggestionMutationVariables = Exact<{
 
 
 export interface SubmitPlaceSuggestionMutation { __typename?: 'Mutation', submitPlaceSuggestion: string }
+
+export type PublishPlaceSuggestionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+  input: PublishPlaceSuggestionInput;
+}>;
+
+
+export interface PublishPlaceSuggestionMutation { __typename?: 'Mutation', publishPlaceSuggestion: { __typename?: 'PlaceSuggestionOutcome', status: PlaceSuggestionStatus, publishedPlaceId?: string | null } }
+
+export type RejectPlaceSuggestionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+}>;
+
+
+export interface RejectPlaceSuggestionMutation { __typename?: 'Mutation', rejectPlaceSuggestion: { __typename?: 'PlaceSuggestionOutcome', status: PlaceSuggestionStatus, publishedPlaceId?: string | null } }
+
+export type PlaceSuggestionForReviewQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+}>;
+
+
+export interface PlaceSuggestionForReviewQuery { __typename?: 'Query', placeSuggestionForReview: { __typename?: 'PlaceSuggestionForReview', id: string, name: string, address: string, description?: string | null, instagram?: string | null, suggestedBy: PlaceSuggester, status: PlaceSuggestionStatus, publishedPlaceId?: string | null, similarPending: Array<{ __typename?: 'SimilarPlaceSuggestion', id: string, name: string, address: string }> } }
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1642,6 +1727,130 @@ export function useSubmitPlaceSuggestionMutation(baseOptions?: Apollo.MutationHo
 export type SubmitPlaceSuggestionMutationHookResult = ReturnType<typeof useSubmitPlaceSuggestionMutation>;
 export type SubmitPlaceSuggestionMutationResult = Apollo.MutationResult<SubmitPlaceSuggestionMutation>;
 export type SubmitPlaceSuggestionMutationOptions = Apollo.BaseMutationOptions<SubmitPlaceSuggestionMutation, SubmitPlaceSuggestionMutationVariables>;
+export const PublishPlaceSuggestionDocument = gql`
+    mutation PublishPlaceSuggestion($id: ID!, $token: String!, $input: PublishPlaceSuggestionInput!) {
+  publishPlaceSuggestion(id: $id, token: $token, input: $input) {
+    status
+    publishedPlaceId
+  }
+}
+    `;
+export type PublishPlaceSuggestionMutationFn = Apollo.MutationFunction<PublishPlaceSuggestionMutation, PublishPlaceSuggestionMutationVariables>;
+
+/**
+ * __usePublishPlaceSuggestionMutation__
+ *
+ * To run a mutation, you first call `usePublishPlaceSuggestionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePublishPlaceSuggestionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [publishPlaceSuggestionMutation, { data, loading, error }] = usePublishPlaceSuggestionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      token: // value for 'token'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function usePublishPlaceSuggestionMutation(baseOptions?: Apollo.MutationHookOptions<PublishPlaceSuggestionMutation, PublishPlaceSuggestionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PublishPlaceSuggestionMutation, PublishPlaceSuggestionMutationVariables>(PublishPlaceSuggestionDocument, options);
+      }
+export type PublishPlaceSuggestionMutationHookResult = ReturnType<typeof usePublishPlaceSuggestionMutation>;
+export type PublishPlaceSuggestionMutationResult = Apollo.MutationResult<PublishPlaceSuggestionMutation>;
+export type PublishPlaceSuggestionMutationOptions = Apollo.BaseMutationOptions<PublishPlaceSuggestionMutation, PublishPlaceSuggestionMutationVariables>;
+export const RejectPlaceSuggestionDocument = gql`
+    mutation RejectPlaceSuggestion($id: ID!, $token: String!) {
+  rejectPlaceSuggestion(id: $id, token: $token) {
+    status
+    publishedPlaceId
+  }
+}
+    `;
+export type RejectPlaceSuggestionMutationFn = Apollo.MutationFunction<RejectPlaceSuggestionMutation, RejectPlaceSuggestionMutationVariables>;
+
+/**
+ * __useRejectPlaceSuggestionMutation__
+ *
+ * To run a mutation, you first call `useRejectPlaceSuggestionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRejectPlaceSuggestionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [rejectPlaceSuggestionMutation, { data, loading, error }] = useRejectPlaceSuggestionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useRejectPlaceSuggestionMutation(baseOptions?: Apollo.MutationHookOptions<RejectPlaceSuggestionMutation, RejectPlaceSuggestionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RejectPlaceSuggestionMutation, RejectPlaceSuggestionMutationVariables>(RejectPlaceSuggestionDocument, options);
+      }
+export type RejectPlaceSuggestionMutationHookResult = ReturnType<typeof useRejectPlaceSuggestionMutation>;
+export type RejectPlaceSuggestionMutationResult = Apollo.MutationResult<RejectPlaceSuggestionMutation>;
+export type RejectPlaceSuggestionMutationOptions = Apollo.BaseMutationOptions<RejectPlaceSuggestionMutation, RejectPlaceSuggestionMutationVariables>;
+export const PlaceSuggestionForReviewDocument = gql`
+    query PlaceSuggestionForReview($id: ID!, $token: String!) {
+  placeSuggestionForReview(id: $id, token: $token) {
+    id
+    name
+    address
+    description
+    instagram
+    suggestedBy
+    status
+    publishedPlaceId
+    similarPending {
+      id
+      name
+      address
+    }
+  }
+}
+    `;
+
+/**
+ * __usePlaceSuggestionForReviewQuery__
+ *
+ * To run a query within a React component, call `usePlaceSuggestionForReviewQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlaceSuggestionForReviewQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlaceSuggestionForReviewQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function usePlaceSuggestionForReviewQuery(baseOptions: Apollo.QueryHookOptions<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables> & ({ variables: PlaceSuggestionForReviewQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>(PlaceSuggestionForReviewDocument, options);
+      }
+export function usePlaceSuggestionForReviewLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>(PlaceSuggestionForReviewDocument, options);
+        }
+export function usePlaceSuggestionForReviewSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>(PlaceSuggestionForReviewDocument, options);
+        }
+export type PlaceSuggestionForReviewQueryHookResult = ReturnType<typeof usePlaceSuggestionForReviewQuery>;
+export type PlaceSuggestionForReviewLazyQueryHookResult = ReturnType<typeof usePlaceSuggestionForReviewLazyQuery>;
+export type PlaceSuggestionForReviewSuspenseQueryHookResult = ReturnType<typeof usePlaceSuggestionForReviewSuspenseQuery>;
+export type PlaceSuggestionForReviewQueryResult = Apollo.QueryResult<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>;
 export const ToggleFavoriteDocument = gql`
     mutation ToggleFavorite($placeId: ID!) {
   toggleFavorite(placeId: $placeId)
