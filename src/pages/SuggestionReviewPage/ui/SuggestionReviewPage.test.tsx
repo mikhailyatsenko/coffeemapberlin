@@ -5,6 +5,8 @@ import { GraphQLError } from 'graphql';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 import {
+  FindGoogleIdsForSuggestionDocument,
+  type FindGoogleIdsForSuggestionQuery,
   PlaceSuggester,
   PlaceSuggestionForReviewDocument,
   type PlaceSuggestionForReviewQuery,
@@ -89,6 +91,26 @@ const rejectMock = (onCall = () => {}): MockedResponse => ({
   },
 });
 
+type CandidateResult = FindGoogleIdsForSuggestionQuery['findGoogleIdsForSuggestion'][number];
+
+const candidate = (googleId: string, existingPlaceId: string | null = null): CandidateResult => ({
+  __typename: 'GoogleIdCandidate',
+  googleId,
+  existingPlaceId,
+});
+
+const findGoogleIdsMock = (candidates: CandidateResult[]): MockedResponse => ({
+  request: { query: FindGoogleIdsForSuggestionDocument, variables: { id: ID, token: TOKEN } },
+  result: { data: { findGoogleIdsForSuggestion: candidates } },
+});
+
+const failedFindGoogleIdsMock: MockedResponse = {
+  request: { query: FindGoogleIdsForSuggestionDocument, variables: { id: ID, token: TOKEN } },
+  result: {
+    errors: [new GraphQLError('Google lookup failed', { extensions: { code: 'GOOGLE_LOOKUP_FAILED' } })],
+  },
+};
+
 const renderPage = (mocks: MockedResponse[], url = `/suggestions/${ID}/review?token=${TOKEN}`) =>
   render(
     <MockedProvider mocks={mocks}>
@@ -103,6 +125,7 @@ const renderPage = (mocks: MockedResponse[], url = `/suggestions/${ID}/review?to
 const field = (label: RegExp) => screen.getByLabelText(label);
 const publishButton = () => screen.getByRole('button', { name: /^publish/i });
 const rejectButton = () => screen.getByRole('button', { name: /^reject/i });
+const findOnGoogleButton = () => screen.getByRole('button', { name: /find on google/i });
 const waitForForm = async () => await screen.findByRole('button', { name: /^publish/i });
 
 const fillPlace = async (user: ReturnType<typeof userEvent.setup>, coordinates = '52.4861, 13.4411') => {
@@ -299,6 +322,127 @@ describe('SuggestionReviewPage', () => {
 
       await user.type(field(/^google place id/i), '2');
       expect(publishButton()).toBeEnabled();
+    });
+  });
+
+  describe('Find on Google', () => {
+    it('asks Google only on a press and lists each candidate as a Google Maps link', async () => {
+      const user = userEvent.setup();
+      renderPage([
+        reviewMock(suggestion()),
+        findGoogleIdsMock([candidate('ChIJfree'), candidate('ChIJtaken', PLACE_ID)]),
+      ]);
+      await waitForForm();
+      expect(screen.queryByRole('list', { name: /google candidates/i })).not.toBeInTheDocument();
+
+      await user.click(findOnGoogleButton());
+
+      const list = await screen.findByRole('list', { name: /google candidates/i });
+      const [free, taken] = within(list).getAllByRole('listitem');
+      const freeLink = within(free).getByRole('link', { name: 'ChIJfree' });
+      expect(freeLink).toHaveAttribute('href', 'https://www.google.com/maps/place/?q=place_id:ChIJfree');
+      expect(freeLink).toHaveAttribute('target', '_blank');
+      expect(within(free).getByRole('button', { name: /use/i })).toBeInTheDocument();
+      expect(within(free).queryByText(/already on the map/i)).not.toBeInTheDocument();
+
+      expect(within(taken).getByRole('link', { name: 'ChIJtaken' })).toHaveAttribute(
+        'href',
+        'https://www.google.com/maps/place/?q=place_id:ChIJtaken',
+      );
+      expect(within(taken).getByText(/already on the map/i)).toBeInTheDocument();
+      expect(within(taken).getByRole('link', { name: /open that place/i })).toHaveAttribute(
+        'href',
+        `/place/${PLACE_ID}`,
+      );
+      expect(within(taken).queryByRole('button', { name: /use/i })).not.toBeInTheDocument();
+    });
+
+    it('"Use" puts the ID into the Google Place ID field, and Publish sends it', async () => {
+      const user = userEvent.setup();
+      renderPage([
+        reviewMock(suggestion()),
+        findGoogleIdsMock([candidate('ChIJfree')]),
+        publishMock(publishInput({ googlePlaceId: 'ChIJfree' })),
+      ]);
+      await waitForForm();
+      await fillPlace(user);
+
+      await user.click(findOnGoogleButton());
+      await user.click(await screen.findByRole('button', { name: /use/i }));
+
+      expect(field(/^google place id/i)).toHaveValue('ChIJfree');
+      await user.click(publishButton());
+      expect(await screen.findByRole('status')).toHaveTextContent(/published/i);
+    });
+
+    it('keeps Publish disabled while the field holds an ID that belongs to a Place', async () => {
+      const user = userEvent.setup();
+      renderPage([reviewMock(suggestion()), findGoogleIdsMock([candidate('ChIJtaken', PLACE_ID)])]);
+      await waitForForm();
+      await fillPlace(user);
+      await user.click(findOnGoogleButton());
+      await screen.findByRole('list', { name: /google candidates/i });
+
+      await user.type(field(/^google place id/i), 'ChIJtaken');
+
+      expect(publishButton()).toBeDisabled();
+      expect(screen.getByRole('alert')).toHaveTextContent(/already belongs to a place/i);
+      await user.type(field(/^google place id/i), '2');
+      expect(publishButton()).toBeEnabled();
+    });
+
+    it('says Google found nothing and Publish works without an ID', async () => {
+      const user = userEvent.setup();
+      renderPage([reviewMock(suggestion()), findGoogleIdsMock([])]);
+      await waitForForm();
+      await fillPlace(user);
+
+      await user.click(findOnGoogleButton());
+
+      expect(await screen.findByText(/google found nothing, you can publish without it/i)).toBeInTheDocument();
+      expect(publishButton()).toBeEnabled();
+    });
+
+    it('says when the lookup failed', async () => {
+      const user = userEvent.setup();
+      renderPage([reviewMock(suggestion()), failedFindGoogleIdsMock]);
+      await waitForForm();
+
+      await user.click(findOnGoogleButton());
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't ask google/i);
+    });
+
+    it('drops the earlier candidates when a later lookup fails', async () => {
+      const user = userEvent.setup();
+      renderPage([
+        reviewMock(suggestion()),
+        findGoogleIdsMock([candidate('ChIJtaken', PLACE_ID)]),
+        failedFindGoogleIdsMock,
+      ]);
+      await waitForForm();
+      await fillPlace(user);
+      await user.type(field(/^google place id/i), 'ChIJtaken');
+      await user.click(findOnGoogleButton());
+      await screen.findByRole('list', { name: /google candidates/i });
+      expect(publishButton()).toBeDisabled();
+
+      await user.click(findOnGoogleButton());
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't ask google/i);
+      expect(screen.queryByRole('list', { name: /google candidates/i })).not.toBeInTheDocument();
+      expect(publishButton()).toBeEnabled();
+    });
+
+    it('shows the button as busy while Google is asked', async () => {
+      const user = userEvent.setup();
+      renderPage([reviewMock(suggestion()), { ...findGoogleIdsMock([]), delay: 50 }]);
+      await waitForForm();
+
+      await user.click(findOnGoogleButton());
+
+      expect(findOnGoogleButton()).toHaveAttribute('aria-busy', 'true');
+      expect(await screen.findByText(/google found nothing/i)).toBeInTheDocument();
     });
   });
 

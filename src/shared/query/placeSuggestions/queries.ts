@@ -19,3 +19,12 @@ export const PLACE_SUGGESTION_FOR_REVIEW = gql`
     }
   }
 `;
+
+export const FIND_GOOGLE_IDS_FOR_SUGGESTION = gql`
+  query FindGoogleIdsForSuggestion($id: ID!, $token: String!) {
+    findGoogleIdsForSuggestion(id: $id, token: $token) {
+      googleId
+      existingPlaceId
+    }
+  }
+`;

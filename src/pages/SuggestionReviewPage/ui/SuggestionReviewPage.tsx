@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { useGoogleIdLookup } from '../api/useGoogleIdLookup';
 import { PublishForm } from '../components/PublishForm';
 import { ReviewOutcome } from '../components/ReviewOutcome';
 import { SentSuggestion } from '../components/SentSuggestion';
@@ -12,7 +13,9 @@ import cls from './SuggestionReviewPage.module.scss';
 export const SuggestionReviewPage = () => {
   const { id = '' } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const review = useSuggestionReview(id, searchParams.get('token'));
+  const token = searchParams.get('token');
+  const review = useSuggestionReview(id, token);
+  const googleIdLookup = useGoogleIdLookup(id, token);
   const { suggestion, outcome } = review;
 
   const content = () => {
@@ -30,6 +33,7 @@ export const SuggestionReviewPage = () => {
           suggestion={suggestion}
           onPublish={review.publish}
           publishError={review.publishError}
+          googleIdLookup={googleIdLookup}
           disabled={review.isDeciding}
         />
         <div className={cls.reject}>

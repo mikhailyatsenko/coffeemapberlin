@@ -1,10 +1,11 @@
 import { FormProvider } from 'react-hook-form';
-import { generatePath, Link } from 'react-router-dom';
-import { RoutePaths } from 'shared/constants';
+import { Link } from 'react-router-dom';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import { BERLIN_NEIGHBORHOODS } from '../../../constants';
-import { type PublishError, type PublishFormValues } from '../../../types';
+import { placePath } from '../../../lib/links';
+import { type GoogleIdLookup, type PublishError, type PublishFormValues } from '../../../types';
+import { FindOnGoogle } from '../../FindOnGoogle';
 import { type SentFields, usePublishForm } from '../model/usePublishForm';
 import cls from './PublishForm.module.scss';
 
@@ -14,13 +15,21 @@ interface PublishFormProps {
   onPublish: (values: PublishFormValues) => Promise<void>;
   /** Why the last Publish failed; the form keeps its values. */
   publishError: PublishError | null;
+  /** "Find on Google" for the Google Place ID field. */
+  googleIdLookup: GoogleIdLookup;
   /** A Reject is on its way; Publish waits for it. */
   disabled?: boolean;
 }
 
 /** The Place as it will go live. Publish stays disabled until it has a name, address, a pin in Berlin and a Neighborhood. */
-export const PublishForm = ({ suggestion, onPublish, publishError, disabled = false }: PublishFormProps) => {
-  const { form, isDuplicate } = usePublishForm(suggestion, publishError);
+export const PublishForm = ({
+  suggestion,
+  onPublish,
+  publishError,
+  googleIdLookup,
+  disabled = false,
+}: PublishFormProps) => {
+  const { form, googleIdOwner, chooseGoogleId } = usePublishForm(suggestion, publishError, googleIdLookup.candidates);
   const {
     register,
     handleSubmit,
@@ -80,28 +89,25 @@ export const PublishForm = ({ suggestion, onPublish, publishError, disabled = fa
           type="text"
           error={errors.googlePlaceId?.message}
         />
-        {publishError && (
+        <FindOnGoogle lookup={googleIdLookup} onUse={chooseGoogleId} />
+        {googleIdOwner ? (
           <p className={cls.submitError} role="alert">
-            {publishError.kind === 'duplicate' ? (
-              <>
-                This Google Place ID already belongs to a Place.{' '}
-                {publishError.existingPlaceId && (
-                  <Link to={generatePath(`/${RoutePaths.placePage}`, { id: publishError.existingPlaceId })}>
-                    Open that Place
-                  </Link>
-                )}
-              </>
-            ) : (
-              "We couldn't publish it. Please try again."
-            )}
+            This Google Place ID already belongs to a Place.{' '}
+            {googleIdOwner.placeId && <Link to={placePath(googleIdOwner.placeId)}>Open that Place</Link>}
           </p>
+        ) : (
+          publishError?.kind === 'failed' && (
+            <p className={cls.submitError} role="alert">
+              We couldn&apos;t publish it. Please try again.
+            </p>
+          )
         )}
         <RegularButton
           className={cls.publishButton}
           size="lg"
           theme="success"
           type="submit"
-          disabled={!isValid || isDuplicate || disabled}
+          disabled={!isValid || Boolean(googleIdOwner) || disabled}
           loading={isSubmitting}
         >
           Publish

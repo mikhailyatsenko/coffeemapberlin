@@ -191,6 +191,16 @@ export interface Geometry {
 }
 
 /**
+ * A Google Place ID candidate for a suggestion, from the free "IDs Only" Text
+ * Search. existingPlaceId is set when a Place already carries this ID.
+ */
+export interface GoogleIdCandidate {
+  __typename?: 'GoogleIdCandidate';
+  existingPlaceId?: Maybe<Scalars['ID']['output']>;
+  googleId: Scalars['String']['output'];
+}
+
+/**
  * Credentials issued once after a successful captcha check. The client stores both
  * values in localStorage; the raw secret is never returned again.
  */
@@ -263,6 +273,12 @@ export interface Mutation {
   toggleFavorite: Scalars['Boolean']['output'];
   updatePersonalData: SuccessResponse;
   uploadAvatar: UploadAvatarResponse;
+  /**
+   * Attaches one photo to a Place suggestion. Only the suggester, only while
+   * `pending`, at most 10; Guests count towards the existing Guest photo limit.
+   * Returns the new photo count.
+   */
+  uploadPlaceSuggestionPhoto: UploadPlaceSuggestionPhotoResponse;
   uploadReviewImage: UploadReviewImageResponse;
   validatePasswordResetToken: SuccessResponse;
 }
@@ -410,6 +426,14 @@ export interface MutationuploadAvatarArgs {
   fileBuffer: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
+}
+
+
+export interface MutationuploadPlaceSuggestionPhotoArgs {
+  fileBuffer: Scalars['String']['input'];
+  guestId?: InputMaybe<Scalars['String']['input']>;
+  guestSecret?: InputMaybe<Scalars['String']['input']>;
+  suggestionId: Scalars['ID']['input'];
 }
 
 
@@ -565,7 +589,11 @@ export interface PublishPlaceSuggestionInput {
   /** Required, one of the twelve Berlin Neighborhoods, in the spelling Places use. */
   neighborhood: Scalars['String']['input'];
   phone?: InputMaybe<Scalars['String']['input']>;
-  /** Paths of the suggestion's photos to keep, in upload order. Ignored for now. */
+  /**
+   * Paths of the suggestion's photos to keep, in upload order; must belong to
+   * this suggestion. The first becomes the Place's card image; the rest are
+   * deleted.
+   */
   photoPaths?: InputMaybe<Array<Scalars['String']['input']>>;
   website?: InputMaybe<Scalars['String']['input']>;
 }
@@ -579,6 +607,11 @@ export interface Query {
   currentUser?: Maybe<User>;
   favoritePlaces: FavoritePlace[];
   filteredPlaces: PlacesResponse;
+  /**
+   * Up to three Google Place ID candidates for a suggestion, free ("IDs Only"
+   * Text Search). A bad token fails like every other admin operation.
+   */
+  findGoogleIdsForSuggestion: GoogleIdCandidate[];
   neighborhoodShortlists: Shortlist[];
   place: Place;
   placeReviews: PlaceReviews;
@@ -608,6 +641,12 @@ export interface QueryfilteredPlacesArgs {
   additionalInfo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   minRating?: InputMaybe<Scalars['Float']['input']>;
   neighborhood?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+}
+
+
+export interface QueryfindGoogleIdsForSuggestionArgs {
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
 }
 
 
@@ -725,6 +764,12 @@ export interface UploadFile {
   size?: Maybe<Scalars['Float']['output']>;
   url: Scalars['String']['output'];
   width?: Maybe<Scalars['Int']['output']>;
+}
+
+export interface UploadPlaceSuggestionPhotoResponse {
+  __typename?: 'UploadPlaceSuggestionPhotoResponse';
+  /** Number of photos stored for the suggestion after this upload. */
+  photoCount: Scalars['Int']['output'];
 }
 
 export interface UploadReviewImageResponse {
@@ -898,6 +943,14 @@ export type PlaceSuggestionForReviewQueryVariables = Exact<{
 
 
 export interface PlaceSuggestionForReviewQuery { __typename?: 'Query', placeSuggestionForReview: { __typename?: 'PlaceSuggestionForReview', id: string, name: string, address: string, description?: string | null, instagram?: string | null, suggestedBy: PlaceSuggester, status: PlaceSuggestionStatus, publishedPlaceId?: string | null, similarPending: Array<{ __typename?: 'SimilarPlaceSuggestion', id: string, name: string, address: string }> } }
+
+export type FindGoogleIdsForSuggestionQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  token: Scalars['String']['input'];
+}>;
+
+
+export interface FindGoogleIdsForSuggestionQuery { __typename?: 'Query', findGoogleIdsForSuggestion: Array<{ __typename?: 'GoogleIdCandidate', googleId: string, existingPlaceId?: string | null }> }
 
 export type ToggleFavoriteMutationVariables = Exact<{
   placeId: Scalars['ID']['input'];
@@ -1851,6 +1904,48 @@ export type PlaceSuggestionForReviewQueryHookResult = ReturnType<typeof usePlace
 export type PlaceSuggestionForReviewLazyQueryHookResult = ReturnType<typeof usePlaceSuggestionForReviewLazyQuery>;
 export type PlaceSuggestionForReviewSuspenseQueryHookResult = ReturnType<typeof usePlaceSuggestionForReviewSuspenseQuery>;
 export type PlaceSuggestionForReviewQueryResult = Apollo.QueryResult<PlaceSuggestionForReviewQuery, PlaceSuggestionForReviewQueryVariables>;
+export const FindGoogleIdsForSuggestionDocument = gql`
+    query FindGoogleIdsForSuggestion($id: ID!, $token: String!) {
+  findGoogleIdsForSuggestion(id: $id, token: $token) {
+    googleId
+    existingPlaceId
+  }
+}
+    `;
+
+/**
+ * __useFindGoogleIdsForSuggestionQuery__
+ *
+ * To run a query within a React component, call `useFindGoogleIdsForSuggestionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindGoogleIdsForSuggestionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindGoogleIdsForSuggestionQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useFindGoogleIdsForSuggestionQuery(baseOptions: Apollo.QueryHookOptions<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables> & ({ variables: FindGoogleIdsForSuggestionQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables>(FindGoogleIdsForSuggestionDocument, options);
+      }
+export function useFindGoogleIdsForSuggestionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables>(FindGoogleIdsForSuggestionDocument, options);
+        }
+export function useFindGoogleIdsForSuggestionSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables>(FindGoogleIdsForSuggestionDocument, options);
+        }
+export type FindGoogleIdsForSuggestionQueryHookResult = ReturnType<typeof useFindGoogleIdsForSuggestionQuery>;
+export type FindGoogleIdsForSuggestionLazyQueryHookResult = ReturnType<typeof useFindGoogleIdsForSuggestionLazyQuery>;
+export type FindGoogleIdsForSuggestionSuspenseQueryHookResult = ReturnType<typeof useFindGoogleIdsForSuggestionSuspenseQuery>;
+export type FindGoogleIdsForSuggestionQueryResult = Apollo.QueryResult<FindGoogleIdsForSuggestionQuery, FindGoogleIdsForSuggestionQueryVariables>;
 export const ToggleFavoriteDocument = gql`
     mutation ToggleFavorite($placeId: ID!) {
   toggleFavorite(placeId: $placeId)

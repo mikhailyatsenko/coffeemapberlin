@@ -32,3 +32,18 @@ export interface SuggestionOutcome {
 export type PublishError =
   | { kind: 'duplicate'; googlePlaceId: string; existingPlaceId: string | null }
   | { kind: 'failed' };
+
+/** A Google Place ID matched to the suggestion; `existingPlaceId` is set when a Place already has it. */
+export interface GoogleIdCandidate {
+  googleId: string;
+  existingPlaceId: string | null;
+}
+
+/** "Find on Google": up to three free Google Place ID candidates, asked for on a press. */
+export interface GoogleIdLookup {
+  find: () => void;
+  /** Null until Google has answered; an empty list means it found nothing. */
+  candidates: GoogleIdCandidate[] | null;
+  isFinding: boolean;
+  findFailed: boolean;
+}
