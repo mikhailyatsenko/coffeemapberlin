@@ -3,7 +3,7 @@ import { forwardRef, memo } from 'react';
 import { type RegularButtonProps } from '../types';
 import cls from './RegularButton.module.scss';
 
-const styles: Record<string, string> = cls as unknown as Record<string, string>;
+const styles: Record<string, string> = cls;
 
 export const RegularButton = memo(
   forwardRef<HTMLButtonElement, RegularButtonProps>(

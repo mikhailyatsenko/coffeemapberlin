@@ -48,7 +48,7 @@ describe('VirtualizedList swipe hint (mobile)', () => {
     );
     // jsdom has no Element.scrollTo
     scrollTo = vi.fn();
-    Element.prototype.scrollTo = scrollTo as unknown as typeof Element.prototype.scrollTo;
+    Element.prototype.scrollTo = scrollTo;
   });
 
   afterEach(() => {

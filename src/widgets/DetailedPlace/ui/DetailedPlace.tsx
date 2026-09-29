@@ -92,7 +92,7 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
   const openOnMap = useCallback(() => {
     if (placeData?.place?.geometry.coordinates) {
       // send a new array reference to force store subscribers to react even if values are equal
-      setCurrentPlacePosition(placeData.place.geometry.coordinates as [number, number]);
+      setCurrentPlacePosition(placeData.place.geometry.coordinates);
     }
 
     navigate({ pathname: '/' });

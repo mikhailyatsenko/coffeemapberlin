@@ -39,8 +39,8 @@ export const Header: React.FC<HeaderProps> = ({
         {characteristicKeys.map((charKey) => (
           <CharacteristicCountsIcon
             key={charKey}
-            characteristic={charKey as Characteristic}
-            characteristicData={characteristicCounts[charKey as Characteristic]}
+            characteristic={charKey}
+            characteristicData={characteristicCounts[charKey]}
           />
         ))}
       </div>
