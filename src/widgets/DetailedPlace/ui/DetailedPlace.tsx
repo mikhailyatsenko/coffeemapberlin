@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { RateBlock, type RateBlockHandle, RateButton } from 'features/RateNow';
 import { SendReportInaccuracyForm } from 'features/SendReportInaccuracyForm';
-import { IMAGEKIT_CDN_URL } from 'shared/constants';
+import { IMAGEKIT_CDN_URL, ZERO_CHARACTERISTIC_COUNTS } from 'shared/constants';
 import { usePlaceQuery } from 'shared/generated/graphql';
 import { type Characteristic } from 'shared/generated/graphql';
 import { setCurrentPlacePosition } from 'shared/stores/places';
@@ -197,11 +197,13 @@ const DetailedPlaceComponent: React.FC<{ placeId: string }> = ({ placeId }) => {
     images,
     website,
     ratingCount,
-    characteristicCounts,
+    characteristicCounts: rawCharacteristicCounts,
     openingHours,
     phone,
     googleId,
   } = placeData.place.properties;
+  // Filled by `place` only; falls back to all-zero counts elsewhere (see PlaceProperties.characteristicCounts).
+  const characteristicCounts = rawCharacteristicCounts ?? ZERO_CHARACTERISTIC_COUNTS;
   return (
     <div className={cls.page}>
       <Helmet>

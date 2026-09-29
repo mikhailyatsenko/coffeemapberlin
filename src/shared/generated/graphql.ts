@@ -5,7 +5,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends Record<string, unknown>> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends Record<string, unknown>, K extends keyof T> = { [_ in K]?: never };
+export type MakeEmpty<T extends Record<string, unknown>, K extends keyof T> = Partial<Record<K, never>>;
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
@@ -100,7 +100,7 @@ export enum Characteristic {
   outdoorSeating = 'outdoorSeating',
   petFriendly = 'petFriendly',
   pleasantAtmosphere = 'pleasantAtmosphere',
-  yummyEats = 'yummyEats',
+  yummyEats = 'yummyEats'
 }
 
 export interface CharacteristicCounts {
@@ -504,7 +504,8 @@ export interface PlaceProperties {
   additionalInfo?: Maybe<Scalars['JSON']['output']>;
   address: Scalars['String']['output'];
   averageRating?: Maybe<Scalars['Float']['output']>;
-  characteristicCounts: CharacteristicCounts;
+  /** How many Reviews marked each Characteristic. Filled by place only, null elsewhere. */
+  characteristicCounts?: Maybe<CharacteristicCounts>;
   description: Scalars['String']['output'];
   favoriteCount: Scalars['Int']['output'];
   googleId?: Maybe<Scalars['String']['output']>;
@@ -522,7 +523,6 @@ export interface PlaceProperties {
   ownRating?: Maybe<Scalars['Int']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
   ratingCount: Scalars['Int']['output'];
-  reviews: Review[];
   website?: Maybe<Scalars['String']['output']>;
 }
 
@@ -534,7 +534,7 @@ export interface PlaceReviews {
 
 export enum PlaceSuggester {
   guest = 'guest',
-  user = 'user',
+  user = 'user'
 }
 
 /** What the admin sees on the review page. Never carries the Guest's email. */
@@ -587,7 +587,7 @@ export interface PlaceSuggestionOutcome {
 export enum PlaceSuggestionStatus {
   pending = 'pending',
   published = 'published',
-  rejected = 'rejected',
+  rejected = 'rejected'
 }
 
 export interface PlacesResponse {
@@ -748,7 +748,7 @@ export enum ShortlistId {
   breakfastBrunch = 'breakfastBrunch',
   dogFriendly = 'dogFriendly',
   outdoorSeating = 'outdoorSeating',
-  work = 'work',
+  work = 'work'
 }
 
 export interface SimilarPlaceSuggestion {
@@ -1043,7 +1043,7 @@ export type PlaceQueryVariables = Exact<{
 }>;
 
 
-export interface PlaceQuery { __typename?: 'Query', place: { __typename?: 'Place', id: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, images?: string[] | null, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, ratingCount: number, googleId?: string | null, additionalInfo?: any | null, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts: { __typename?: 'CharacteristicCounts', deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } } } }
+export interface PlaceQuery { __typename?: 'Query', place: { __typename?: 'Place', id: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, images?: string[] | null, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, ratingCount: number, googleId?: string | null, additionalInfo?: any | null, phone?: string | null, website?: string | null, openingHours?: Array<{ __typename?: 'OpeningHour', day: string, hours: string }> | null, characteristicCounts?: { __typename?: 'CharacteristicCounts', deliciousFilterCoffee: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, pleasantAtmosphere: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, friendlyStaff: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, freeWifi: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, yummyEats: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, affordablePrices: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, petFriendly: { __typename?: 'CharacteristicData', pressed: boolean, count: number }, outdoorSeating: { __typename?: 'CharacteristicData', pressed: boolean, count: number } } | null } } }
 
 export type FilteredPlacesQueryVariables = Exact<{
   neighborhood?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;

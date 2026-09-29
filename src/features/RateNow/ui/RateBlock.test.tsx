@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { GraphQLError } from 'graphql';
 import { useRef } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ZERO_CHARACTERISTIC_COUNTS } from 'shared/constants';
 import {
   AddRatingDocument,
   Characteristic,
@@ -49,9 +50,9 @@ const IN_FLIGHT_MS = 300;
 const unmarked = { __typename: 'CharacteristicData', pressed: false, count: 0 } as const;
 const marked = { __typename: 'CharacteristicData', pressed: true, count: 1 } as const;
 
-const placeWith = (markedCharacteristics: Characteristic[] = []): PlaceQuery => {
+const placeWith = (markedCharacteristics: Characteristic[] | null = []): PlaceQuery => {
   const characteristicData = (characteristic: Characteristic) =>
-    markedCharacteristics.includes(characteristic) ? marked : unmarked;
+    markedCharacteristics?.includes(characteristic) ? marked : unmarked;
   return {
     __typename: 'Query',
     place: {
@@ -75,17 +76,20 @@ const placeWith = (markedCharacteristics: Characteristic[] = []): PlaceQuery => 
         additionalInfo: null,
         phone: null,
         website: null,
-        characteristicCounts: {
-          __typename: 'CharacteristicCounts',
-          deliciousFilterCoffee: characteristicData(Characteristic.deliciousFilterCoffee),
-          pleasantAtmosphere: characteristicData(Characteristic.pleasantAtmosphere),
-          friendlyStaff: characteristicData(Characteristic.friendlyStaff),
-          freeWifi: characteristicData(Characteristic.freeWifi),
-          yummyEats: characteristicData(Characteristic.yummyEats),
-          affordablePrices: characteristicData(Characteristic.affordablePrices),
-          petFriendly: characteristicData(Characteristic.petFriendly),
-          outdoorSeating: characteristicData(Characteristic.outdoorSeating),
-        },
+        characteristicCounts:
+          markedCharacteristics === null
+            ? null
+            : {
+                __typename: 'CharacteristicCounts',
+                deliciousFilterCoffee: characteristicData(Characteristic.deliciousFilterCoffee),
+                pleasantAtmosphere: characteristicData(Characteristic.pleasantAtmosphere),
+                friendlyStaff: characteristicData(Characteristic.friendlyStaff),
+                freeWifi: characteristicData(Characteristic.freeWifi),
+                yummyEats: characteristicData(Characteristic.yummyEats),
+                affordablePrices: characteristicData(Characteristic.affordablePrices),
+                petFriendly: characteristicData(Characteristic.petFriendly),
+                outdoorSeating: characteristicData(Characteristic.outdoorSeating),
+              },
       },
     },
   } as unknown as PlaceQuery;
@@ -254,7 +258,7 @@ const Harness = ({
   });
   const ownReview = reviewsData?.placeReviews.reviews.find((review) => review.isOwnReview);
   if (!data?.place) return null;
-  const { characteristicCounts } = data.place.properties;
+  const characteristicCounts = data.place.properties.characteristicCounts ?? ZERO_CHARACTERISTIC_COUNTS;
 
   return (
     <>
@@ -305,7 +309,7 @@ const renderRateBlock = (
     ownReviewPhotoCount = 0,
     watchesReviews = false,
   }: {
-    markedCharacteristics?: Characteristic[];
+    markedCharacteristics?: Characteristic[] | null;
     hasReviewText?: boolean;
     onAddReviewText?: () => void;
     withRateButton?: boolean;
@@ -562,6 +566,22 @@ describe('RateBlock', () => {
     expect(askedQuestions()).toEqual(['Pleasant atmosphere?', 'Affordable prices?']);
     expect(screen.getByText('Friendly staff count: 1')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('marks a Characteristic in "Your marks" from the zero baseline when characteristicCounts starts null', async () => {
+    const user = userEvent.setup();
+    const toggle = vi.fn();
+    renderRateBlock([toggleCharacteristicMock({ characteristic: Characteristic.yummyEats, onCall: toggle })], 4, {
+      markedCharacteristics: null,
+    });
+
+    await user.click(answer('Yummy eats?', 'Yes'));
+
+    await waitFor(() => {
+      expect(toggle).toHaveBeenCalledTimes(1);
+    });
+    // Proves the toggle actually lands in the cache instead of silently doing nothing.
+    expect(await screen.findByRole('button', { name: 'Remove Yummy Eats' })).toBeInTheDocument();
   });
 
   it('sends nothing on Skip and does not ask again during this page view', async () => {

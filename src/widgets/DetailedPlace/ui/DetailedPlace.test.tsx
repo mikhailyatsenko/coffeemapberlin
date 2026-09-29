@@ -3,6 +3,7 @@ import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
 import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ZERO_CHARACTERISTIC_COUNTS } from 'shared/constants';
 import { PlaceDocument, type PlaceQuery, PlaceReviewsDocument, type PlaceReviewsQuery } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import { setUser } from 'shared/stores/auth';
@@ -12,7 +13,20 @@ vi.mock('shared/lib/analytics', () => ({ trackEvent: vi.fn() }));
 
 const unmarked = { __typename: 'CharacteristicData', pressed: false, count: 0 } as const;
 
-const place = (placeId: string, name: string): PlaceQuery =>
+// Same Characteristic keys as the production default, so a schema change can't silently drift out of sync.
+const zeroCounts = {
+  __typename: 'CharacteristicCounts',
+  ...(Object.fromEntries(Object.keys(ZERO_CHARACTERISTIC_COUNTS).map((key) => [key, unmarked])) as Record<
+    keyof Omit<typeof ZERO_CHARACTERISTIC_COUNTS, '__typename'>,
+    typeof unmarked
+  >),
+};
+
+const place = (
+  placeId: string,
+  name: string,
+  characteristicCounts: typeof zeroCounts | null = zeroCounts,
+): PlaceQuery =>
   ({
     __typename: 'Query',
     place: {
@@ -36,17 +50,7 @@ const place = (placeId: string, name: string): PlaceQuery =>
         additionalInfo: null,
         phone: null,
         website: null,
-        characteristicCounts: {
-          __typename: 'CharacteristicCounts',
-          deliciousFilterCoffee: unmarked,
-          pleasantAtmosphere: unmarked,
-          friendlyStaff: unmarked,
-          freeWifi: unmarked,
-          yummyEats: unmarked,
-          affordablePrices: unmarked,
-          petFriendly: unmarked,
-          outdoorSeating: unmarked,
-        },
+        characteristicCounts,
       },
     },
   }) as unknown as PlaceQuery;
@@ -77,9 +81,9 @@ const reviews = (placeId: string, ownRating?: number): PlaceReviewsQuery => ({
   },
 });
 
-const placeMock = (placeId: string, name: string): MockedResponse => ({
+const placeMock = (placeId: string, name: string, characteristicCounts?: typeof zeroCounts | null): MockedResponse => ({
   request: { query: PlaceDocument, variables: { placeId } },
-  result: { data: place(placeId, name) },
+  result: { data: place(placeId, name, characteristicCounts) },
 });
 
 const reviewsMock = (
@@ -227,5 +231,14 @@ describe('DetailedPlace rate block', () => {
 
     expect(await screen.findByText('Five Elephant')).toBeInTheDocument();
     expect(await findBeansHeading()).toBeInTheDocument();
+  });
+
+  it('starts the Characteristic questions from zero counts when characteristicCounts is null', async () => {
+    renderPlacePage([placeMock('a', 'Bonanza', null), reviewsMock('a', { ownRating: 4 })], 'a');
+
+    await ratedBlock();
+
+    // None of the Characteristics count as pressed, so the block still asks about them.
+    expect(await screen.findByText('Delicious filter coffee?')).toBeInTheDocument();
   });
 });
