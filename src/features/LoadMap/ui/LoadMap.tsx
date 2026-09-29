@@ -107,9 +107,7 @@ export const LoadMap = ({ placesGeo }: LoadMapProps) => {
   }, [eventFeatureData, idToPropertiesMap]);
 
   const popupCoordinates =
-    eventFeatureData?.geometry && eventFeatureData.geometry.type === 'Point'
-      ? (eventFeatureData.geometry.coordinates as [number, number])
-      : null;
+    eventFeatureData?.geometry?.type === 'Point' ? (eventFeatureData.geometry.coordinates as [number, number]) : null;
 
   const handleMouseEnter = useCallback(() => {
     const canvas = mapRef.current?.getCanvas();

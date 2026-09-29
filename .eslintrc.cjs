@@ -172,6 +172,13 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'boundaries', '@eslint-community/eslint-comments'],
   rules: {
+    // standard-with-typescript targets typescript-eslint v6 and still names rules that v8 removed.
+    // ban-types' successors come with plugin:@typescript-eslint/recommended; the formatting ones are Prettier's.
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/comma-dangle': 'off',
+    '@typescript-eslint/lines-between-class-members': 'off',
+    '@typescript-eslint/no-throw-literal': 'off',
+    '@typescript-eslint/only-throw-error': 'error',
     '@eslint-community/eslint-comments/require-description': 'error',
     '@eslint-community/eslint-comments/no-unlimited-disable': 'error',
     'no-restricted-syntax': ['warn', ...globalRestrictedSyntax],
@@ -224,19 +231,6 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     'comma-dangle': 'off',
-    '@typescript-eslint/comma-dangle': [
-      'error',
-      {
-        arrays: 'always-multiline',
-        objects: 'always-multiline',
-        imports: 'always-multiline',
-        exports: 'always-multiline',
-        functions: 'always-multiline',
-        enums: 'always-multiline',
-        generics: 'always-multiline',
-        tuples: 'always-multiline',
-      },
-    ],
     'prefer-const': 'warn',
     '@typescript-eslint/no-floating-promises': 'off',
     '@typescript-eslint/strict-boolean-expressions': 'off',

@@ -22,7 +22,7 @@ export const OpeningHoursList: React.FC<{ openingHours: OpeningHoursProps['openi
     <div className={cls.openingHoursList}>
       {sortedOpeningHours.map(({ day, hours }) => (
         <div key={day} className={clsx(cls.openingHoursItem, { [cls.today]: day === todayDay })}>
-          <span className={cls.openingHoursDay}>{DAY_SHORT_NAMES[day as keyof typeof DAY_SHORT_NAMES]}</span>
+          <span className={cls.openingHoursDay}>{DAY_SHORT_NAMES[day]}</span>
           <span className={cls.openingHoursTime}>{hours}</span>
         </div>
       ))}
