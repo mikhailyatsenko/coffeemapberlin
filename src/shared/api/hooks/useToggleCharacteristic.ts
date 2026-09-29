@@ -1,4 +1,5 @@
 import { type ApolloCache } from '@apollo/client';
+import { ZERO_CHARACTERISTIC_COUNTS } from 'shared/constants';
 import {
   useToggleCharacteristicMutation,
   type Characteristic,
@@ -9,7 +10,7 @@ import { ensureGuestIdentity } from 'shared/lib/guest';
 import { useAuthStore } from 'shared/stores/auth';
 
 export const useToggleCharacteristic = (placeId: string) => {
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
 
   const [toggleCharacteristic, { error }] = useToggleCharacteristicMutation({
     optimisticResponse: {
@@ -28,31 +29,35 @@ export const useToggleCharacteristic = (placeId: string) => {
 
   const updatePlaceCache = (cache: ApolloCache<unknown>, placeId: string, characteristic: Characteristic) => {
     const existingData = cache.readQuery<PlaceQuery>({ query: PlaceDocument, variables: { placeId } });
-    if (existingData?.place) {
-      const currentCharacteristic = existingData.place.properties.characteristicCounts[characteristic];
-      cache.writeQuery<PlaceQuery>({
-        query: PlaceDocument,
-        variables: { placeId },
-        data: {
-          place: {
-            ...existingData.place,
-            properties: {
-              ...existingData.place.properties,
-              characteristicCounts: {
-                ...existingData.place.properties.characteristicCounts,
-                [characteristic]: {
-                  ...currentCharacteristic,
-                  pressed: !currentCharacteristic.pressed,
-                  count: currentCharacteristic.pressed
-                    ? currentCharacteristic.count - 1
-                    : currentCharacteristic.count + 1,
-                },
+    const place = existingData?.place;
+    if (!place) return;
+
+    // Same zero baseline the Place page renders from when characteristicCounts came back null,
+    // so the toggle still lands in the cache instead of silently doing nothing.
+    const characteristicCounts = place.properties.characteristicCounts ?? ZERO_CHARACTERISTIC_COUNTS;
+    const currentCharacteristic = characteristicCounts[characteristic];
+    cache.writeQuery<PlaceQuery>({
+      query: PlaceDocument,
+      variables: { placeId },
+      data: {
+        place: {
+          ...place,
+          properties: {
+            ...place.properties,
+            characteristicCounts: {
+              ...characteristicCounts,
+              [characteristic]: {
+                ...currentCharacteristic,
+                pressed: !currentCharacteristic.pressed,
+                count: currentCharacteristic.pressed
+                  ? currentCharacteristic.count - 1
+                  : currentCharacteristic.count + 1,
               },
             },
           },
         },
-      });
-    }
+      },
+    });
   };
 
   /**
