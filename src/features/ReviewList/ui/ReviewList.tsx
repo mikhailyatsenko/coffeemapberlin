@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useDeleteReview } from 'shared/api';
-import { useAuthStore } from 'shared/stores/auth';
+import { useHasProvenIdentity } from 'shared/hooks';
 import { ReviewCard } from 'shared/ui/ReviewCard';
 import { sortReviews } from '../lib/sortReviews';
 import { type ReviewListProps } from '../types';
@@ -15,7 +15,7 @@ const ReviewListComponent = ({
   onWriteReview,
 }: ReviewListProps) => {
   const { handleDeleteReview } = useDeleteReview(placeId);
-  const { user } = useAuthStore();
+  const canDelete = useHasProvenIdentity();
 
   if (reviews.length === 0)
     return (
@@ -58,7 +58,7 @@ const ReviewListComponent = ({
             reviewText={review.text ?? undefined}
             userName={review.userName}
             isOwnReview={review.isOwnReview}
-            canDelete={Boolean(user)}
+            canDelete={canDelete}
             userAvatar={review.userAvatar ?? undefined}
             handleDeleteReview={handleDeleteReview}
             createdAt={review.createdAt}

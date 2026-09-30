@@ -7,13 +7,13 @@ import {
   GetPlacesDocument,
   PlaceReviewsDocument,
 } from 'shared/generated/graphql';
-import { useAuthStore } from 'shared/stores/auth';
+import { useHasProvenIdentity } from 'shared/hooks';
 import { showLoginRequired } from 'shared/stores/modal';
 
 type DeleteOptions = 'deleteReviewText' | 'deleteRating' | 'deleteAll';
 
 export function useDeleteReview(placeId: string) {
-  const { user } = useAuthStore();
+  const hasProvenIdentity = useHasProvenIdentity();
   const [deleteReview, { loading: deleteReviewLoading, error: deleteReviewError }] = useDeleteReviewMutation({
     update(cache, result, { variables }) {
       if (result.data?.deleteReview) {
@@ -111,7 +111,7 @@ export function useDeleteReview(placeId: string) {
 
   const handleDeleteReview = useCallback(
     async (reviewId: string, deleteOptions: DeleteOptions = 'deleteAll'): Promise<void> => {
-      if (!user) {
+      if (!hasProvenIdentity) {
         showLoginRequired();
         return;
       }
@@ -122,7 +122,7 @@ export function useDeleteReview(placeId: string) {
         throw err;
       }
     },
-    [user, deleteReview],
+    [hasProvenIdentity, deleteReview],
   );
 
   return {
