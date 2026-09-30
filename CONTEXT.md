@@ -9,8 +9,8 @@ A venue listed on the map. Coffee shops are the typical kind, but not the only o
 _Avoid_: Coffee shop, cafe, spot, location
 
 **Neighborhood**:
-The Berlin Bezirk a Place is in, one of the city's twelve, e.g. Friedrichshain-Kreuzberg.
-_Avoid_: District, area, Kiez, Ortsteil
+The area a Place is in: one of Berlin's twelve Bezirke, plus Dahlwitz-Hoppegarten (a Brandenburg town just outside Berlin with Places on the map), thirteen in total, e.g. Friedrichshain-Kreuzberg.
+_Avoid_: District, area, Kiez, Ortsteil, Bezirk (not all thirteen are one)
 
 **Amenity**:
 A factual feature of a Place imported from Google, such as dine-in or wheelchair access. Data, not opinion.
