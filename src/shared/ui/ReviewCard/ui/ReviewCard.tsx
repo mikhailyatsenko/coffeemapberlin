@@ -19,7 +19,7 @@ interface ReviewCardProps {
   rating?: number;
   reviewImages: number;
   isOwnReview?: boolean;
-  /** A guest owns their review and may edit it, but deleting needs an account. */
+  /** Whether the viewer proved ownership (signed-in User or stored Guest identity). */
   canDelete?: boolean;
   handleDeleteReview?: (id: string) => void;
   createdAt: string;
