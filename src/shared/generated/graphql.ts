@@ -387,11 +387,13 @@ export interface MutationreportInaccuracyArgs {
 
 
 export interface MutationrequestPasswordResetArgs {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
   email: Scalars['String']['input'];
 }
 
 
 export interface MutationresendConfirmationEmailArgs {
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
   email: Scalars['String']['input'];
 }
 
@@ -867,6 +869,7 @@ export interface ConfirmEmailMutation { __typename?: 'Mutation', confirmEmail: {
 
 export type ResendConfirmationEmailMutationVariables = Exact<{
   email: Scalars['String']['input'];
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -874,6 +877,7 @@ export interface ResendConfirmationEmailMutation { __typename?: 'Mutation', rese
 
 export type RequestPasswordResetMutationVariables = Exact<{
   email: Scalars['String']['input'];
+  captchaToken?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -1372,8 +1376,8 @@ export type ConfirmEmailMutationHookResult = ReturnType<typeof useConfirmEmailMu
 export type ConfirmEmailMutationResult = Apollo.MutationResult<ConfirmEmailMutation>;
 export type ConfirmEmailMutationOptions = Apollo.BaseMutationOptions<ConfirmEmailMutation, ConfirmEmailMutationVariables>;
 export const ResendConfirmationEmailDocument = gql`
-    mutation ResendConfirmationEmail($email: String!) {
-  resendConfirmationEmail(email: $email) {
+    mutation ResendConfirmationEmail($email: String!, $captchaToken: String) {
+  resendConfirmationEmail(email: $email, captchaToken: $captchaToken) {
     success
   }
 }
@@ -1394,6 +1398,7 @@ export type ResendConfirmationEmailMutationFn = Apollo.MutationFunction<ResendCo
  * const [resendConfirmationEmailMutation, { data, loading, error }] = useResendConfirmationEmailMutation({
  *   variables: {
  *      email: // value for 'email'
+ *      captchaToken: // value for 'captchaToken'
  *   },
  * });
  */
@@ -1405,8 +1410,8 @@ export type ResendConfirmationEmailMutationHookResult = ReturnType<typeof useRes
 export type ResendConfirmationEmailMutationResult = Apollo.MutationResult<ResendConfirmationEmailMutation>;
 export type ResendConfirmationEmailMutationOptions = Apollo.BaseMutationOptions<ResendConfirmationEmailMutation, ResendConfirmationEmailMutationVariables>;
 export const RequestPasswordResetDocument = gql`
-    mutation RequestPasswordReset($email: String!) {
-  requestPasswordReset(email: $email) {
+    mutation RequestPasswordReset($email: String!, $captchaToken: String) {
+  requestPasswordReset(email: $email, captchaToken: $captchaToken) {
     success
   }
 }
@@ -1427,6 +1432,7 @@ export type RequestPasswordResetMutationFn = Apollo.MutationFunction<RequestPass
  * const [requestPasswordResetMutation, { data, loading, error }] = useRequestPasswordResetMutation({
  *   variables: {
  *      email: // value for 'email'
+ *      captchaToken: // value for 'captchaToken'
  *   },
  * });
  */

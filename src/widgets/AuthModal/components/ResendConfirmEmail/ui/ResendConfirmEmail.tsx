@@ -1,10 +1,12 @@
 import { type ApolloError } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useLocation } from 'react-router-dom';
 import { useResendConfirmationEmailMutation } from 'shared/generated/graphql';
+import { executeRecaptcha } from 'shared/lib/recaptcha';
+import { getSaveErrorMessage } from 'shared/lib/saveError';
 import { hideModal } from 'shared/stores/modal';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
@@ -20,7 +22,7 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
   };
 
   const onCompleted = useCallback(() => {
-    toast.success('Confirmation email sent successfully!', { position: 'top-center' });
+    toast.success("If an account needs confirming, we've sent an email.", { position: 'top-center' });
     hideModal();
   }, []);
 
@@ -32,6 +34,7 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
     onCompleted,
     onError,
   });
+  const [isMintingToken, setIsMintingToken] = useState(false);
 
   const form = useForm<{ email: string }>({
     defaultValues: { email: email || '' },
@@ -50,9 +53,18 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
     }
   }, [email, form]);
 
-  const onSubmit = (data: { email: string }) => {
-    if (data.email) {
-      resendConfirmationEmailMutation({ variables: { email: data.email } });
+  const onSubmit = async (data: { email: string }) => {
+    if (!data.email) return;
+
+    setIsMintingToken(true);
+    try {
+      // v3 tokens are single use and expire in two minutes, so one is minted per submit.
+      const captchaToken = await executeRecaptcha('resend_confirmation_email');
+      resendConfirmationEmailMutation({ variables: { email: data.email, captchaToken } });
+    } catch (err) {
+      toast.error(getSaveErrorMessage(err), { position: 'top-center' });
+    } finally {
+      setIsMintingToken(false);
     }
   };
 
@@ -69,7 +81,7 @@ export const ResendConfirmEmail = ({ isExpired }: ResendConfirmEmailProps) => {
             fieldName="email"
             error={errors.email?.message}
           />
-          <RegularButton disabled={!form.formState.isValid || loading} type="submit">
+          <RegularButton disabled={!form.formState.isValid || loading || isMintingToken} type="submit">
             Resend
           </RegularButton>
         </form>

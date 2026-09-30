@@ -64,16 +64,16 @@ export const CONFIRM_EMAIL = gql`
 `;
 
 export const RESEND_CONFIRMATION_EMAIL = gql`
-  mutation ResendConfirmationEmail($email: String!) {
-    resendConfirmationEmail(email: $email) {
+  mutation ResendConfirmationEmail($email: String!, $captchaToken: String) {
+    resendConfirmationEmail(email: $email, captchaToken: $captchaToken) {
       success
     }
   }
 `;
 
 export const REQUEST_PASSWORD_RESET = gql`
-  mutation RequestPasswordReset($email: String!) {
-    requestPasswordReset(email: $email) {
+  mutation RequestPasswordReset($email: String!, $captchaToken: String) {
+    requestPasswordReset(email: $email, captchaToken: $captchaToken) {
       success
     }
   }
