@@ -7,7 +7,13 @@
  * form is otherwise accepted on any other.
  */
 
-export type RecaptchaAction = 'create_guest_identity' | 'register_user' | 'contact_form' | 'report_inaccuracy';
+export type RecaptchaAction =
+  | 'create_guest_identity'
+  | 'register_user'
+  | 'contact_form'
+  | 'report_inaccuracy'
+  | 'request_password_reset'
+  | 'resend_confirmation_email';
 
 const SITE_KEY =
   process.env.VITE_ENV === 'development'
@@ -44,7 +50,7 @@ let loader: Promise<Grecaptcha> | null = null;
 const loadRecaptcha = async (): Promise<Grecaptcha> => {
   if (loader) return await loader;
 
-  loader = new Promise<Grecaptcha>((resolve, reject) => {
+  const attempt = new Promise<Grecaptcha>((resolve, reject) => {
     if (!SITE_KEY) {
       reject(new Error('reCAPTCHA site key is not configured'));
       return;
@@ -74,14 +80,19 @@ const loadRecaptcha = async (): Promise<Grecaptcha> => {
     script.async = true;
     script.onload = onReady;
     script.onerror = () => {
-      // Allow a later attempt to retry the load instead of caching the failure.
-      loader = null;
       reject(new RecaptchaUnavailableError('reCAPTCHA failed to load'));
     };
     document.head.appendChild(script);
   });
 
-  return await loader;
+  loader = attempt;
+  try {
+    return await attempt;
+  } catch (err) {
+    // Allow a later attempt to retry instead of caching the failure forever.
+    loader = null;
+    throw err;
+  }
 };
 
 /**

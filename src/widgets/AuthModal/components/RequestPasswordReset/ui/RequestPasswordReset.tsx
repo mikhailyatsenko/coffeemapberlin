@@ -1,10 +1,12 @@
 import { type ApolloError } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import * as Yup from 'yup';
 import { useRequestPasswordResetMutation } from 'shared/generated/graphql';
+import { executeRecaptcha } from 'shared/lib/recaptcha';
+import { getSaveErrorMessage } from 'shared/lib/saveError';
 import { FormField } from 'shared/ui/FormField';
 import { RegularButton } from 'shared/ui/RegularButton';
 import cls from './RequestPasswordReset.module.scss';
@@ -28,6 +30,7 @@ export const RequestPasswordReset = ({ onSent }: RequestPasswordResetProps) => {
   }, []);
 
   const [requestPasswordReset, { loading }] = useRequestPasswordResetMutation({ onCompleted, onError });
+  const [isMintingToken, setIsMintingToken] = useState(false);
 
   const form = useForm<{ email: string }>({
     defaultValues: { email: '' },
@@ -40,9 +43,18 @@ export const RequestPasswordReset = ({ onSent }: RequestPasswordResetProps) => {
     formState: { errors, isValid },
   } = form;
 
-  const onSubmit = (data: { email: string }) => {
-    if (data.email) {
-      requestPasswordReset({ variables: { email: data.email } });
+  const onSubmit = async (data: { email: string }) => {
+    if (!data.email) return;
+
+    setIsMintingToken(true);
+    try {
+      // v3 tokens are single use and expire in two minutes, so one is minted per submit.
+      const captchaToken = await executeRecaptcha('request_password_reset');
+      requestPasswordReset({ variables: { email: data.email, captchaToken } });
+    } catch (err) {
+      toast.error(getSaveErrorMessage(err), { position: 'top-center' });
+    } finally {
+      setIsMintingToken(false);
     }
   };
 
@@ -53,7 +65,7 @@ export const RequestPasswordReset = ({ onSent }: RequestPasswordResetProps) => {
       <FormProvider {...form}>
         <form className={cls.form} onSubmit={handleSubmit(onSubmit)}>
           <FormField fieldName="email" type="email" labelText="E-mail" error={errors.email?.message} />
-          <RegularButton type="submit" disabled={!isValid || loading}>
+          <RegularButton type="submit" disabled={!isValid || loading || isMintingToken}>
             Send reset link
           </RegularButton>
         </form>
