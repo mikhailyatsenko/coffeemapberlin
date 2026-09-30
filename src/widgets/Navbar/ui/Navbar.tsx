@@ -13,14 +13,13 @@ export const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.addEventListener('scroll', () => {
+    const handleScroll = () => {
       setIsBurgerActive(false);
-    });
+    };
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', () => {
-        setIsBurgerActive(false);
-      });
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -113,16 +112,19 @@ export const Navbar = () => {
         </ul>
         <AuthIndicator />
         <AuthModal />
-        <div
+        <button
+          type="button"
           onClick={() => {
             setIsBurgerActive((prevState) => !prevState);
           }}
           className={clsx(cls.hamburger, isBurgerActive && cls.active)}
+          aria-expanded={isBurgerActive}
+          aria-label={isBurgerActive ? 'Close menu' : 'Open menu'}
         >
           <span className={cls.bar}></span>
           <span className={cls.bar}></span>
           <span className={cls.bar}></span>
-        </div>
+        </button>
       </div>
     </nav>
   );

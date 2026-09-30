@@ -50,6 +50,9 @@ li {
   display: none;
   cursor: pointer;
   z-index: 5;
+  padding: 0;
+  border: none;
+  background: none;
 }
 .bar {
   width: 25px;
@@ -94,11 +97,12 @@ li {
     transform: rotate(-45deg) translateY(-11.5px);
   }
   .menuOverlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+    background-color: var(--overlay);
     z-index: 3;
   }
 
