@@ -83,7 +83,7 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        Best Bars in Your Area
+        Neighborhoods
         <span className={cls.arrow} aria-hidden="true">
           {isOpen ? '▲' : '▼'}
         </span>
@@ -105,7 +105,7 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
                 <button className={cls.closeButton} onClick={closeDropdown} aria-label="Close dropdown" type="button">
                   ×
                 </button>
-                <div className={cls.modalTitle}>Best Bars in Your Area</div>
+                <div className={cls.modalTitle}>Neighborhoods</div>
                 <div className={cls.modalList}>
                   <NeighborhoodList className={cls.modalItem} onItemClick={handleSelect} />
                 </div>

@@ -44,4 +44,10 @@ describe('Navbar', () => {
     expect(screen.getByRole('button', { name: /open menu/i })).toHaveAttribute('aria-expanded', 'false');
     expect(document.querySelector('.menuOverlay')).not.toBeInTheDocument();
   });
+
+  it('labels the neighborhoods dropdown trigger "Neighborhoods"', () => {
+    renderNavbar();
+
+    expect(screen.getByRole('button', { name: 'Neighborhoods' })).toBeInTheDocument();
+  });
 });
