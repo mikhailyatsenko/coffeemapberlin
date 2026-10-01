@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import searchIcon from 'shared/assets/search-icon-alt.svg';
 import { resetFilters } from 'shared/stores/filters';
 import cls from './EmptyFilterResults.module.scss';
 
@@ -15,7 +16,7 @@ const EmptyFilterResultsComponent = ({ onResetFilters }: EmptyFilterResultsProps
   return (
     <div className={cls.container}>
       <div className={cls.content}>
-        <div className={cls.icon}>🔍</div>
+        <img className={cls.icon} src={searchIcon} alt="" />
         <h3 className={cls.title}>No places found</h3>
         <p className={cls.message}>
           No places match your current filters. Try adjusting your search criteria or reset the filters to see all

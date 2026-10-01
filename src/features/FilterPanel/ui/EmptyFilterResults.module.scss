@@ -12,7 +12,8 @@
 }
 
 .icon {
-  font-size: 64px;
+  width: 64px;
+  height: 64px;
   margin-bottom: 24px;
   opacity: 0.6;
 }
@@ -40,7 +41,7 @@
   transition: all 0.2s;
   border: none;
   background-color: var(--accent-primary);
-  color: var(--text-primary);
+  color: var(--text-inverse);
 
   &:hover {
     background-color: var(--accent-primary-hover);
