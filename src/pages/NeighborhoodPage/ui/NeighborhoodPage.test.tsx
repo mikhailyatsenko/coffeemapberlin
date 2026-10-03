@@ -273,8 +273,14 @@ describe('NeighborhoodPage', () => {
   it('leaves Top rated out when no Place has 4.5 or higher', async () => {
     renderPage({ topRated: [], all: [place('b', 4.1, 3)] });
 
-    expect(await screen.findByRole('region', { name: /all 1 places in mitte/i })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: /all 1 place in mitte/i })).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: /top rated/i })).not.toBeInTheDocument();
+  });
+
+  it('names the full list in the singular for a Neighborhood with one Place', async () => {
+    renderPage({ topRated: [], all: [place('b', 4.1, 3)] });
+
+    expect(await screen.findByRole('heading', { name: 'All 1 Place in Mitte' })).toBeInTheDocument();
   });
 
   it('puts Places without a Rating last and marks them', async () => {
@@ -301,7 +307,7 @@ describe('NeighborhoodPage', () => {
   it('offers to suggest a missing Place under the full list', async () => {
     renderPage({ topRated: [], all: [place('b', 4.1, 3)] });
 
-    const all = await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
     expect(within(all).getByText(/know a place that’s missing\?/i)).toBeInTheDocument();
     expect(within(all).getByRole('link', { name: 'Suggest it' })).toHaveAttribute('href', '/suggest');
   });
@@ -353,7 +359,7 @@ describe('NeighborhoodPage', () => {
       },
     });
 
-    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    await screen.findByRole('region', { name: /all 1 place in mitte/i });
     expect(screen.getAllByRole('region').map((region) => region.getAttribute('aria-labelledby'))).toEqual([
       'top-rated-title',
       'work-title',
@@ -380,7 +386,7 @@ describe('NeighborhoodPage', () => {
       },
     });
 
-    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    await screen.findByRole('region', { name: /all 1 place in mitte/i });
     expect(section(/^work$/i)).toHaveAttribute('id', 'work');
     expect(section(/dog friendly/i)).toHaveAttribute('id', 'dog-friendly');
     expect(section(/outdoor seating/i)).toHaveAttribute('id', 'outdoor-seating');
@@ -394,7 +400,7 @@ describe('NeighborhoodPage', () => {
       shortlists: { work: shortlist('w', 2), dogFriendly: shortlist('d', 3) },
     });
 
-    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    await screen.findByRole('region', { name: /all 1 place in mitte/i });
     expect(screen.queryByRole('region', { name: /^work$/i })).not.toBeInTheDocument();
     expect(section(/dog friendly/i)).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: /outdoor seating/i })).not.toBeInTheDocument();
@@ -403,7 +409,7 @@ describe('NeighborhoodPage', () => {
   it('still lists the Places when the Shortlists fail to load', async () => {
     renderPage({ topRated: [place('a', 4.8, 10)], all: [place('a', 4.8, 10)], shortlistsFail: true });
 
-    expect(await screen.findByRole('region', { name: /all 1 places in mitte/i })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: /all 1 place in mitte/i })).toBeInTheDocument();
     expect(section(/top rated/i)).toBeInTheDocument();
     expect(screen.queryByText(/couldn’t load/i)).not.toBeInTheDocument();
   });
@@ -415,7 +421,7 @@ describe('NeighborhoodPage', () => {
       shortlists: { work: shortlist('w', 2), dogFriendly: shortlist('d', 3), breakfastBrunch: shortlist('b', 9) },
     });
 
-    await screen.findByRole('region', { name: /all 1 places in mitte/i });
+    await screen.findByRole('region', { name: /all 1 place in mitte/i });
     expect(trackedEvents('neighborhood_view')).toEqual([
       ['neighborhood_view', { neighborhood: 'Mitte', shortlists_shown: 2, places_total: 1, actor: 'guest' }],
     ]);
@@ -537,7 +543,7 @@ describe('NeighborhoodPage', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {});
       renderPage({ topRated: [], all: [place('a', 4.8, 10)], mocks: [failingAddRatingMock('a', 4)] });
 
-      const all = await screen.findByRole('region', { name: /all 1 places in mitte/i });
+      const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
       await user.click(bean(card(all, 'Place a'), 4));
 
       expect(await within(card(all, 'Place a')).findByRole('alert')).toHaveTextContent(/check your connection/i);
@@ -550,7 +556,7 @@ describe('NeighborhoodPage', () => {
       const user = userEvent.setup();
       renderPage({ topRated: [], all: [place('a', 4.8, 10, 3)] });
 
-      const all = await screen.findByRole('region', { name: /all 1 places in mitte/i });
+      const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
       expect(within(card(all, 'Place a')).getByText(/Your rating: 3/)).toBeInTheDocument();
       expect(within(card(all, 'Place a')).queryByText('Been here? Rate it')).not.toBeInTheDocument();
       await user.click(within(card(all, 'Place a')).getByRole('button', { name: 'change' }));
@@ -635,7 +641,7 @@ describe('NeighborhoodPage', () => {
         expect(within(card(dogs, 'Place a')).getByRole('group', { name: 'Pet friendly?' })).toBeInTheDocument();
       });
       expect(cardQuestion(card(section(/top rated/i), 'Place a'))).not.toBeInTheDocument();
-      expect(cardQuestion(card(section(/all 1 places in mitte/i), 'Place a'))).not.toBeInTheDocument();
+      expect(cardQuestion(card(section(/all 1 place in mitte/i), 'Place a'))).not.toBeInTheDocument();
     });
 
     it('asks nothing about a Characteristic the person already marked', async () => {
