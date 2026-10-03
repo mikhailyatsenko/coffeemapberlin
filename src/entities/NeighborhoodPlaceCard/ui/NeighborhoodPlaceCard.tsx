@@ -64,7 +64,9 @@ export const NeighborhoodPlaceCard = ({ place, onOpen, contribution }: Neighborh
               {Boolean(properties.averageRating) && (
                 <span className={cls.ratingValue}>{properties.averageRating?.toFixed(1)}</span>
               )}
-              <span className={cls.ratingCount}>({properties.ratingCount} reviews)</span>
+              <span className={cls.ratingCount}>
+                ({properties.ratingCount} review{properties.ratingCount !== 1 ? 's' : ''})
+              </span>
             </>
           ) : (
             <span className={cls.noRatings}>No ratings yet — be the first</span>

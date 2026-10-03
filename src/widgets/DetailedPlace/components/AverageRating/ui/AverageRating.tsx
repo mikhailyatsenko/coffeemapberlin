@@ -15,7 +15,9 @@ export const AverageRating = ({ averageRating, ratingCount }: AverageRatingProps
         <span>/5</span>
       </div>
       <RatingWidget isClickable={false} rating={averageRating} />
-      {ratingCount && <p className={cls.ratingCount}>from {ratingCount} ratings</p>}
+      {Boolean(ratingCount) && (
+        <p className={cls.ratingCount}>{`from ${ratingCount} rating${ratingCount !== 1 ? 's' : ''}`}</p>
+      )}
     </div>
   );
 };
