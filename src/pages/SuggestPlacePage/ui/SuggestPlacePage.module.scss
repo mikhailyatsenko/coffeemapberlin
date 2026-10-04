@@ -1,31 +1,65 @@
+/* The split photo layout of Contact; on mobile the photo is a banner above the form, not behind it. */
+$navbar-height: 60px;
+
 .SuggestPlacePage {
-  max-width: 560px;
-  min-height: 100vh;
-  padding-top: 80px;
-  padding-bottom: 40px;
+  display: flex;
+  min-height: calc(100vh - #{$navbar-height});
+  @media (width <= 767px) {
+    flex-direction: column;
+  }
 }
 
-.title {
-  margin-bottom: 12px;
-  font-size: 32px;
-  font-weight: 500;
+.photoPanel {
+  /* The form is taller than the screen, so the photo stays in view while it scrolls. */
+  position: sticky;
+  top: $navbar-height;
+  align-self: flex-start;
+  width: 50%;
+  height: calc(100vh - #{$navbar-height});
+  padding: 20px;
+  background: url('../../../shared/assets/suggest-place.jpg');
+  background-size: cover;
+  background-position: center;
+  color: var(--text-inverse);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  @media (width <= 1023px) {
+    width: 40%;
+  }
+  @media (width <= 767px) {
+    position: static;
+    align-self: stretch;
+    width: 100%;
+    height: auto;
+    padding: 48px 16px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3)),
+      url('../../../shared/assets/suggest-place.jpg');
+  }
 }
 
 .subtitle {
-  margin-bottom: 24px;
-  font-size: 16px;
-  font-weight: 300;
-  color: #919191;
-  text-align: center;
+  font-size: 18px;
 }
 
-@media (max-width: 900px) {
-  .title {
-    font-size: 24px;
+.formPanel {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  @media (width <= 1023px) {
+    width: 60%;
   }
+  @media (width <= 767px) {
+    width: 100%;
+    padding: 24px 16px 40px;
+  }
+}
 
-  .subtitle {
-    font-size: 14px;
-  }
+.formColumn {
+  width: 100%;
+  max-width: 560px;
 }

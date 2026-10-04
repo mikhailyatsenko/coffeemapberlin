@@ -8,29 +8,37 @@ export const SuggestPlacePage = () => {
   const { suggester, submit, submitted, errorMessage, photoUpload, retryPhoto } = useSubmitPlaceSuggestion();
 
   return (
-    <main className={`${cls.SuggestPlacePage} container`}>
+    <main className={cls.SuggestPlacePage}>
       <Helmet>
         <title>Suggest a Place | Berlin Coffee Map</title>
       </Helmet>
-      <h1 className={cls.title}>Suggest a Place</h1>
-      {submitted ? (
-        <SuggestionThanks
-          willEmail={submitted.willEmail}
-          photos={photoUpload.photos}
-          isUploading={photoUpload.isUploading}
-          onRetryPhoto={retryPhoto}
-        />
-      ) : (
-        <>
-          <p className={cls.subtitle}>Know a good Place that isn&apos;t on the map yet? Tell us about it.</p>
-          <SuggestPlaceForm
-            suggester={suggester}
-            onSubmit={submit}
-            errorMessage={errorMessage}
-            photoUpload={photoUpload}
-          />
-        </>
-      )}
+      <div className={cls.photoPanel}>
+        <div>
+          <h1>Suggest a Place</h1>
+          {!submitted && (
+            <p className={cls.subtitle}>Know a good Place that isn&apos;t on the map yet? Tell us about it.</p>
+          )}
+        </div>
+      </div>
+      <div className={cls.formPanel}>
+        <div className={cls.formColumn}>
+          {submitted ? (
+            <SuggestionThanks
+              willEmail={submitted.willEmail}
+              photos={photoUpload.photos}
+              isUploading={photoUpload.isUploading}
+              onRetryPhoto={retryPhoto}
+            />
+          ) : (
+            <SuggestPlaceForm
+              suggester={suggester}
+              onSubmit={submit}
+              errorMessage={errorMessage}
+              photoUpload={photoUpload}
+            />
+          )}
+        </div>
+      </div>
     </main>
   );
 };

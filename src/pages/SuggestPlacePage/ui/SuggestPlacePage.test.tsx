@@ -126,6 +126,23 @@ describe('SuggestPlacePage', () => {
     URL.revokeObjectURL = vi.fn();
   });
 
+  it('keeps the heading through the thank-you, and the subtext only until submitting', async () => {
+    const user = userEvent.setup();
+    renderPage([submitMock({ name: 'Kaffee Kiez', address: 'Weserstr. 1' }, guest)]);
+    const heading = () => screen.getByRole('heading', { level: 1, name: 'Suggest a Place' });
+    const subtext = "Know a good Place that isn't on the map yet? Tell us about it.";
+
+    expect(heading()).toBeInTheDocument();
+    expect(screen.getByText(subtext)).toBeInTheDocument();
+
+    await fillRequired(user);
+    await user.click(submitButton());
+
+    expect(await screen.findByText(/we usually check suggestions within a couple of days/i)).toBeInTheDocument();
+    expect(heading()).toBeInTheDocument();
+    expect(screen.queryByText(subtext)).not.toBeInTheDocument();
+  });
+
   describe('validation', () => {
     it('keeps the submit disabled until the name and address are given, with every optional field empty', async () => {
       const user = userEvent.setup();
