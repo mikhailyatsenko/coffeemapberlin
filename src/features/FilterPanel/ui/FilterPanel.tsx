@@ -2,6 +2,7 @@ import { useEffect, memo, useCallback } from 'react';
 import { useGetAvailableTagsQuery } from 'shared/generated/graphql';
 import { useWidth } from 'shared/hooks/useWidth';
 import { resetFilters, setFilterPanelOpen, useFiltersStore } from 'shared/stores/filters';
+import { Spinner } from 'shared/ui/Loader';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
 import { FilterFooter } from '../components/FilterFooter';
 import { FilterHeader } from '../components/FilterHeader';
@@ -70,7 +71,9 @@ const FilterPanelComponent = ({ onApplyFilters, onResetFilters, hasActiveFilters
         <RatingFilter minRating={minRating} />
         <NeighborhoodFilter neighborhood={neighborhood} />
         {loadingTags ? (
-          'Loading features...'
+          <div className={cls.tagsLoading} role="status" aria-label="Loading features">
+            <Spinner />
+          </div>
         ) : (
           <TagsFilter isMobile={isMobile} availableTags={availableTags} selectedTags={selectedTags} />
         )}
