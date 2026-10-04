@@ -6,6 +6,7 @@ import { executeRecaptcha } from 'shared/lib/recaptcha';
 import { FormField } from 'shared/ui/FormField';
 import { Loader } from 'shared/ui/Loader';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { PASSWORD_MIN_LENGTH } from '../constants';
 import { validationSchemaSignUpWithEmail } from '../lib/validationSchema';
 import { type SignUpWithEmailData, type SignUpWithEmailProps } from '../types';
 import cls from './SignUpWithEmail.module.scss';
@@ -70,7 +71,13 @@ export const SignUpWithEmail = ({
         <form className={cls.registerWithEmail} onSubmit={handleSubmit(signUpWithEmailHandler)}>
           <FormField fieldName="displayName" type="text" labelText="Name" error={errors.displayName?.message} />
           <FormField fieldName="email" type="email" labelText="E-mail" error={errors.email?.message} />
-          <FormField fieldName="password" type="password" labelText="Password" error={errors.password?.message} />
+          <FormField
+            fieldName="password"
+            type="password"
+            labelText="Password"
+            hint={`At least ${PASSWORD_MIN_LENGTH} characters`}
+            error={errors.password?.message}
+          />
           <FormField
             fieldName="repeatPassword"
             type="password"

@@ -4,13 +4,15 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] `FormField` gains an optional `hint` prop, rendered when there's no active `error` for that field.
-- [ ] When an `error` is present, the error message takes priority over the hint (the hint doesn't show alongside or instead of a real validation error).
-- [ ] Sign up's password field shows a hint ("At least 8 characters" or equivalent) before any input.
-- [ ] No other `FormField` call site is changed — the new prop is optional and unused elsewhere.
-- [ ] Existing password-length and password-match validation behavior (live, disabled-until-valid submit) is unchanged.
-- [ ] A test (extending `SignUpWithEmail`'s coverage, or modeled on `SignInWithEmail.test.tsx` if none exists) asserts the hint renders before input, and is replaced by the error once validation fails.
+- [x] `FormField` gains an optional `hint` prop, rendered when there's no active `error` for that field.
+- [x] When an `error` is present, the error message takes priority over the hint (the hint doesn't show alongside or instead of a real validation error).
+- [x] Sign up's password field shows a hint ("At least 8 characters" or equivalent) before any input.
+- [x] No other `FormField` call site is changed — the new prop is optional and unused elsewhere.
+- [x] Existing password-length and password-match validation behavior (live, disabled-until-valid submit) is unchanged.
+- [x] A test (extending `SignUpWithEmail`'s coverage, or modeled on `SignInWithEmail.test.tsx` if none exists) asserts the hint renders before input, and is replaced by the error once validation fails.
 
 Source: [Ten quick UI fixes spec](../spec.md), Implementation Decisions §9.
+
+**Notes:** The field points at whichever message it shows (hint or error) via `aria-describedby`, so every `FormField` with an error now also announces it to screen readers; the test reads the hint and the error as the field's accessible description. The 8-character minimum is a `PASSWORD_MIN_LENGTH` constant shared by the schema and the hint. Boy-scout: the slice root `index.ts` now re-exports `SignUpWithEmail` by name instead of `export *`, and `FormField`'s `errorContainer` is renamed `messageContainer`.

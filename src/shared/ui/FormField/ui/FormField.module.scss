@@ -70,11 +70,14 @@ textarea.formField {
   border-color: #fd5353;
 }
 
-.errorContainer {
+.messageContainer {
   height: 14px;
+  font-size: 10px;
   .errorMessage {
-    font-size: 10px;
     color: #fd5353;
+  }
+  .hintMessage {
+    color: var(--text-secondary);
   }
 }
 
