@@ -21,14 +21,14 @@ interface SuggestPlaceFormProps {
 
 export const SuggestPlaceForm = ({ suggester, onSubmit, errorMessage, photoUpload }: SuggestPlaceFormProps) => {
   const form = useForm<SuggestPlaceFormValues>({
-    mode: 'onTouched',
+    mode: 'onChange',
     resolver: yupResolver(validationSchema),
     defaultValues: { name: '', address: '', description: '', instagram: '', email: '' },
   });
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = form;
   const name = useWatch({ control, name: 'name' });
 
@@ -72,6 +72,7 @@ export const SuggestPlaceForm = ({ suggester, onSubmit, errorMessage, photoUploa
           className={cls.submitButton}
           size="lg"
           type="submit"
+          disabled={!isValid}
           loading={isSubmitting || suggester === 'unknown' || photoUpload.isPreparing}
         >
           Suggest this Place

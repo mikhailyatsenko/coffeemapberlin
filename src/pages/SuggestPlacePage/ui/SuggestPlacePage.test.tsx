@@ -127,15 +127,46 @@ describe('SuggestPlacePage', () => {
   });
 
   describe('validation', () => {
-    it('asks for the name and address on submit and sends nothing', async () => {
+    it('keeps the submit disabled until the name and address are given, with every optional field empty', async () => {
       const user = userEvent.setup();
       renderPage();
 
-      await user.click(submitButton());
+      expect(submitButton()).toBeDisabled();
+      expect(submitButton()).not.toHaveAttribute('aria-busy');
 
-      expect(await screen.findByText('Name is required')).toBeInTheDocument();
-      expect(screen.getByText('Address is required')).toBeInTheDocument();
+      await user.type(field(/^name/i), 'Kaffee Kiez');
+      expect(submitButton()).toBeDisabled();
+
+      await user.type(field(/^address/i), 'Weserstr. 1');
+      await waitFor(() => {
+        expect(submitButton()).toBeEnabled();
+      });
+    });
+
+    it('sends nothing while the submit is disabled', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await user.type(field(/^name/i), 'Kaffee Kiez');
+      expect(submitButton()).toBeDisabled();
+      await user.click(submitButton());
+      await user.type(field(/^name/i), '{Enter}');
+
       expect(ensureGuestIdentity).not.toHaveBeenCalled();
+      expect(screen.queryByText(/we usually check suggestions/i)).not.toBeInTheDocument();
+    });
+
+    it('asks for the name and address as soon as they are cleared', async () => {
+      const user = userEvent.setup();
+      renderPage();
+
+      await fillRequired(user);
+      await user.clear(field(/^name/i));
+      expect(await screen.findByText('Name is required')).toBeInTheDocument();
+
+      await user.clear(field(/^address/i));
+      expect(await screen.findByText('Address is required')).toBeInTheDocument();
+      expect(submitButton()).toBeDisabled();
     });
 
     it('treats a blank name as missing', async () => {
@@ -144,36 +175,53 @@ describe('SuggestPlacePage', () => {
 
       await user.type(field(/^name/i), '   ');
       await user.type(field(/^address/i), 'Weserstr. 1');
-      await user.click(submitButton());
 
       expect(await screen.findByText('Name is required')).toBeInTheDocument();
-      expect(ensureGuestIdentity).not.toHaveBeenCalled();
+      expect(submitButton()).toBeDisabled();
     });
 
-    it('rejects text over the limits, field by field', async () => {
+    it('rejects text over the limits as it is pasted, field by field', async () => {
       const user = userEvent.setup();
       renderPage();
 
+      await user.type(field(/^address/i), 'Weserstr. 1');
       await user.click(field(/^name/i));
       await user.paste('n'.repeat(201));
+      expect(await screen.findByText('Name must be 200 characters or less')).toBeInTheDocument();
+
       await user.click(field(/what makes it good/i));
       await user.paste('d'.repeat(501));
-      await user.click(submitButton());
-
-      expect(await screen.findByText('Name must be 200 characters or less')).toBeInTheDocument();
-      expect(screen.getByText('Keep it to 500 characters or less')).toBeInTheDocument();
+      expect(await screen.findByText('Keep it to 500 characters or less')).toBeInTheDocument();
+      expect(submitButton()).toBeDisabled();
     });
 
-    it('rejects an email that is not one', async () => {
+    it('lets a User, who has no email field, submit with just the name and address', async () => {
+      signIn();
+      const user = userEvent.setup();
+      renderPage();
+
+      await fillRequired(user);
+
+      await waitFor(() => {
+        expect(submitButton()).toBeEnabled();
+      });
+    });
+
+    it("blocks a Guest's email that is not one until it is cleared", async () => {
       const user = userEvent.setup();
       renderPage();
 
       await fillRequired(user);
       await user.type(field(/^email/i), 'not-an-email');
-      await user.click(submitButton());
 
       expect(await screen.findByText('Enter a valid email')).toBeInTheDocument();
-      expect(ensureGuestIdentity).not.toHaveBeenCalled();
+      expect(submitButton()).toBeDisabled();
+
+      await user.clear(field(/^email/i));
+      await waitFor(() => {
+        expect(submitButton()).toBeEnabled();
+      });
+      expect(screen.queryByText('Enter a valid email')).not.toBeInTheDocument();
     });
   });
 
@@ -230,6 +278,7 @@ describe('SuggestPlacePage', () => {
     renderPage();
 
     expect(submitButton()).toBeDisabled();
+    expect(submitButton()).toHaveAttribute('aria-busy', 'true');
     expect(screen.queryByLabelText(/^email/i)).not.toBeInTheDocument();
   });
 
@@ -317,6 +366,7 @@ describe('SuggestPlacePage', () => {
       );
       expect(field(/^name/i)).toHaveValue('Kaffee Kiez');
       expect(field(/^address/i)).toHaveValue('Weserstr. 1');
+      expect(submitButton()).toBeEnabled();
     });
 
     it('shows a generic message on any other failure and keeps what was typed', async () => {
