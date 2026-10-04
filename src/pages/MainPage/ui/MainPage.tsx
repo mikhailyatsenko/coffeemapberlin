@@ -44,6 +44,9 @@ export const MainPage = () => {
     () => minRating > 0 || neighborhood.length > 0 || selectedTags.length > 0,
     [minRating, neighborhood, selectedTags],
   );
+  // Counts kinds of Filters, not selected values: a count of Amenities could run past a hundred
+  const activeFilterCount =
+    (minRating > 0 ? 1 : 0) + (neighborhood.length > 0 ? 1 : 0) + (selectedTags.length > 0 ? 1 : 0);
 
   // Indicate loading only for initial data loading. More data is loading in the background.
   const appendUniquePlaces = useCallback((incomingPlaces?: Place[] | null, isInitial?: boolean) => {
@@ -162,8 +165,9 @@ export const MainPage = () => {
     features: showEmptyResults ? [] : searchedPlaces,
   };
 
+  // Like the old dot, the count shows only once the Filters' results have loaded
   const filterButton = !showFavorites && (
-    <FloatingFilterButton hasActiveFilters={hasActiveFilters && filteredPlaces !== null} inline />
+    <FloatingFilterButton activeFilterCount={filteredPlaces !== null ? activeFilterCount : 0} inline />
   );
 
   if (hasError) {

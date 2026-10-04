@@ -2,7 +2,12 @@ import { MockedProvider, type MockedResponse } from '@apollo/client/testing';
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FilteredPlacesDocument, GetPlacesDocument, type GetPlacesQuery } from 'shared/generated/graphql';
+import {
+  FilteredPlacesDocument,
+  GetPlacesDocument,
+  type FilteredPlacesQueryVariables,
+  type GetPlacesQuery,
+} from 'shared/generated/graphql';
 import { resetFilters, setMinRating, setNeighborhood, setSelectedTags } from 'shared/stores/filters';
 import { usePlacesStore } from 'shared/stores/places';
 import { MainPage } from './MainPage';
@@ -67,7 +72,13 @@ const filteredResult = vi.fn(() => ({
   },
 }));
 
-const renderMap = () =>
+const ALL_FILTERS_VARIABLES: FilteredPlacesQueryVariables = {
+  minRating: 4,
+  neighborhood: ['Mitte'],
+  additionalInfo: ['Dogs allowed'],
+};
+
+const renderMap = (filteredVariables: FilteredPlacesQueryVariables = ALL_FILTERS_VARIABLES) =>
   render(
     <MockedProvider
       mocks={[
@@ -76,7 +87,7 @@ const renderMap = () =>
         {
           request: {
             query: FilteredPlacesDocument,
-            variables: { minRating: 4, neighborhood: ['Mitte'], additionalInfo: ['Dogs allowed'] },
+            variables: filteredVariables,
           },
           result: filteredResult,
         },
@@ -137,5 +148,32 @@ describe('MainPage', () => {
       expect(mapPlaces()).toEqual(['Place a', 'Place b', 'Place dog']);
     });
     expect(filteredResult).not.toHaveBeenCalled();
+  });
+
+  it('shows on the filter button how many kinds of Filters are active', async () => {
+    setMinRating(4);
+    renderMap({ minRating: 4 });
+
+    const button = await screen.findByRole('button', { name: 'Open filters, 1 active' });
+    expect(button.textContent).toBe('1');
+  });
+
+  it('counts the Amenities as one kind of Filter however many are selected', async () => {
+    setNeighborhood(['Mitte']);
+    setSelectedTags(['Dogs allowed', 'Wifi']);
+    setMinRating(4);
+    renderMap({ minRating: 4, neighborhood: ['Mitte'], additionalInfo: ['Dogs allowed', 'Wifi'] });
+
+    const button = await screen.findByRole('button', { name: 'Open filters, 3 active' });
+    expect(button.textContent).toBe('3');
+  });
+
+  it('shows no count on the filter button when no Filters are active', async () => {
+    renderMap();
+
+    await vi.waitFor(() => {
+      expect(mapPlaces()).toEqual(['Place a', 'Place b', 'Place dog']);
+    });
+    expect(screen.getByRole('button', { name: 'Open filters' }).textContent).toBe('');
   });
 });

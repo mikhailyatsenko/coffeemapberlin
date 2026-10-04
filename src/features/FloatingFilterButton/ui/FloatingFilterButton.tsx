@@ -4,12 +4,13 @@ import { setFilterPanelOpen, useFiltersStore } from 'shared/stores/filters';
 import cls from './FloatingFilterButton.module.scss';
 
 interface FloatingFilterButtonProps {
-  hasActiveFilters: boolean;
+  activeFilterCount: number;
   inline?: boolean;
 }
 
-const FloatingFilterButtonComponent = ({ hasActiveFilters, inline = false }: FloatingFilterButtonProps) => {
+const FloatingFilterButtonComponent = ({ activeFilterCount, inline = false }: FloatingFilterButtonProps) => {
   const isOpen = useFiltersStore((state) => state.isFilterPanelOpen);
+  const hasActiveFilters = activeFilterCount > 0;
 
   const handleClick = () => {
     setFilterPanelOpen(!isOpen);
@@ -20,10 +21,10 @@ const FloatingFilterButtonComponent = ({ hasActiveFilters, inline = false }: Flo
       className={`${cls.floatingButton} ${hasActiveFilters ? cls.active : ''} ${inline ? cls.inline : ''}`}
       onClick={handleClick}
       type="button"
-      aria-label="Open filters"
+      aria-label={hasActiveFilters ? `Open filters, ${activeFilterCount} active` : 'Open filters'}
     >
       <img src={filterIcon} alt="" className={cls.icon} />
-      {hasActiveFilters && <span className={cls.badge} />}
+      {hasActiveFilters && <span className={cls.badge}>{activeFilterCount}</span>}
     </button>
   );
 };
