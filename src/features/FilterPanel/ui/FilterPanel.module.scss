@@ -56,3 +56,11 @@
     padding: 20px;
   }
 }
+
+// At least the Features section's title plus one row of tags, so the section doesn't collapse while loading
+.tagsLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+}
