@@ -6,6 +6,7 @@ interface FormFieldProps {
   fieldName: string;
   type?: string;
   error?: string | undefined;
+  hint?: string;
   value?: string;
   labelText?: string;
   autoComplete?: string;
@@ -18,6 +19,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   fieldName,
   type,
   error,
+  hint,
   labelText,
   autoComplete,
   autoFocus,
@@ -25,6 +27,9 @@ export const FormField: React.FC<FormFieldProps> = ({
   onValueChange,
 }) => {
   const { control } = useFormContext();
+  // An active error takes the hint's place, so the field only ever describes itself by one message.
+  const message = error ?? hint;
+  const messageId = `${fieldName}-message`;
 
   return (
     <div className={`${cls.formGroup} ${type === 'hidden' ? cls.hiddenGroup : ''}`}>
@@ -45,6 +50,7 @@ export const FormField: React.FC<FormFieldProps> = ({
             autoFocus,
             disabled,
             id: fieldName,
+            'aria-describedby': message ? messageId : undefined,
             onChange: handleChange,
           };
 
@@ -60,7 +66,13 @@ export const FormField: React.FC<FormFieldProps> = ({
         {labelText}
       </label>
 
-      <div className={cls.errorContainer}>{error && <p className={cls.errorMessage}>{error}</p>}</div>
+      <div className={cls.messageContainer}>
+        {message && (
+          <p id={messageId} className={error ? cls.errorMessage : cls.hintMessage}>
+            {message}
+          </p>
+        )}
+      </div>
     </div>
   );
 };
