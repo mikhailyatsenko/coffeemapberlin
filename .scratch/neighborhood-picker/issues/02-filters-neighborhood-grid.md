@@ -4,12 +4,12 @@
 
 **Blocked by:** 01 (Show the nav's Neighborhoods as a compact grid, expanding inline in the mobile menu) — it creates the `NeighborhoodGrid` entity.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] The section shows a group named "Neighborhood" holding an "All" cell and a cell per Neighborhood, in the shared grid: three columns in the desktop modal, two in the mobile bottom sheet.
-- [ ] With no selection, "All" is pressed and every Neighborhood is not pressed (`aria-pressed`).
-- [ ] Tapping two Neighborhoods marks both pressed and "All" not pressed; tapping one again unpresses it; tapping "All" unpresses every Neighborhood and presses "All".
-- [ ] The section has no scroll box of its own; the modal's scroll is the only one. The old list and pill styles are removed.
-- [ ] Loading shows "Loading neighborhoods..." and empty or error shows "No neighborhoods available", each as one line in place of the grid.
-- [ ] `FilterPanel.test.tsx` covers the pressed-state behavior above with a mock returning a few real Neighborhoods; the Features spinner test still passes.
-- [ ] Checked in the browser at 1440×900 and 390×844: the grid matches the nav picker's cell look.
+- [x] The section shows a group named "Neighborhood" holding an "All" cell and a cell per Neighborhood, in the shared grid: three columns in the desktop modal, two in the mobile bottom sheet.
+- [x] With no selection, "All" is pressed and every Neighborhood is not pressed (`aria-pressed`).
+- [x] Tapping two Neighborhoods marks both pressed and "All" not pressed; tapping one again unpresses it; tapping "All" unpresses every Neighborhood and presses "All".
+- [x] The section has no scroll box of its own; the modal's scroll is the only one. The old list and pill styles are removed.
+- [x] Loading shows "Loading neighborhoods..." and empty or error shows "No neighborhoods available", each as one line in place of the grid.
+- [x] `FilterPanel.test.tsx` covers the pressed-state behavior above with a mock returning a few real Neighborhoods; the Features spinner test still passes.
+- [x] Checked in the browser at 1440×900 and 390×844: the grid matches the nav picker's cell look.
