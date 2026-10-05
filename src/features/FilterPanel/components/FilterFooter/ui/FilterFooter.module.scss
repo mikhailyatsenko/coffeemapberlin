@@ -2,14 +2,40 @@
   position: sticky;
   bottom: 0;
   background-color: var(--bg-secondary);
-  display: flex;
-  gap: 12px;
   padding: 16px 24px;
   border-top: 1px solid var(--border-primary);
   z-index: 10;
   @media (max-width: 900px) {
     padding: 16px 20px;
   }
+}
+
+.resultCount {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--text-primary);
+  transition: opacity 0.2s;
+
+  &:empty {
+    margin: 0;
+  }
+}
+
+.updating {
+  opacity: 0.5;
+}
+
+.hint {
+  display: block;
+  font-size: 13px;
+  color: var(--accent-primary-active);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
 }
 
 .resetButton,

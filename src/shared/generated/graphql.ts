@@ -1080,6 +1080,15 @@ export type PlaceNamesQueryVariables = Exact<Record<string, never>>;
 
 export interface PlaceNamesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', places: Array<{ __typename?: 'Place', id: string, properties: { __typename?: 'PlaceProperties', id: string, name: string } }> } }
 
+export type FilteredPlacesCountQueryVariables = Exact<{
+  neighborhood?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+  minRating?: InputMaybe<Scalars['Float']['input']>;
+  additionalInfo?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export interface FilteredPlacesCountQuery { __typename?: 'Query', filteredPlaces: { __typename?: 'PlacesResponse', total: number } }
+
 export type ReportInaccuracyMutationVariables = Exact<{
   placeId: Scalars['String']['input'];
   placeName: Scalars['String']['input'];
@@ -2658,6 +2667,52 @@ export type PlaceNamesQueryHookResult = ReturnType<typeof usePlaceNamesQuery>;
 export type PlaceNamesLazyQueryHookResult = ReturnType<typeof usePlaceNamesLazyQuery>;
 export type PlaceNamesSuspenseQueryHookResult = ReturnType<typeof usePlaceNamesSuspenseQuery>;
 export type PlaceNamesQueryResult = Apollo.QueryResult<PlaceNamesQuery, PlaceNamesQueryVariables>;
+export const FilteredPlacesCountDocument = gql`
+    query FilteredPlacesCount($neighborhood: [String], $minRating: Float, $additionalInfo: [String]) {
+  filteredPlaces(
+    neighborhood: $neighborhood
+    minRating: $minRating
+    additionalInfo: $additionalInfo
+  ) {
+    total
+  }
+}
+    `;
+
+/**
+ * __useFilteredPlacesCountQuery__
+ *
+ * To run a query within a React component, call `useFilteredPlacesCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFilteredPlacesCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFilteredPlacesCountQuery({
+ *   variables: {
+ *      neighborhood: // value for 'neighborhood'
+ *      minRating: // value for 'minRating'
+ *      additionalInfo: // value for 'additionalInfo'
+ *   },
+ * });
+ */
+export function useFilteredPlacesCountQuery(baseOptions?: Apollo.QueryHookOptions<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>(FilteredPlacesCountDocument, options);
+      }
+export function useFilteredPlacesCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>(FilteredPlacesCountDocument, options);
+        }
+export function useFilteredPlacesCountSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>(FilteredPlacesCountDocument, options);
+        }
+export type FilteredPlacesCountQueryHookResult = ReturnType<typeof useFilteredPlacesCountQuery>;
+export type FilteredPlacesCountLazyQueryHookResult = ReturnType<typeof useFilteredPlacesCountLazyQuery>;
+export type FilteredPlacesCountSuspenseQueryHookResult = ReturnType<typeof useFilteredPlacesCountSuspenseQuery>;
+export type FilteredPlacesCountQueryResult = Apollo.QueryResult<FilteredPlacesCountQuery, FilteredPlacesCountQueryVariables>;
 export const ReportInaccuracyDocument = gql`
     mutation ReportInaccuracy($placeId: String!, $placeName: String!, $message: String!, $captchaToken: String) {
   reportInaccuracy(

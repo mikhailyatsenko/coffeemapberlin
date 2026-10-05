@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 
 # Filters modal: a searchable, collapsed Features list and a live result count (items 19 and 20 of the ui-ux-audit map)
 

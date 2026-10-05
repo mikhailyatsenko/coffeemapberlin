@@ -207,3 +207,11 @@ export const PLACE_NAMES = gql`
     }
   }
 `;
+
+export const GET_FILTERED_PLACES_COUNT = gql`
+  query FilteredPlacesCount($neighborhood: [String], $minRating: Float, $additionalInfo: [String]) {
+    filteredPlaces(neighborhood: $neighborhood, minRating: $minRating, additionalInfo: $additionalInfo) {
+      total
+    }
+  }
+`;

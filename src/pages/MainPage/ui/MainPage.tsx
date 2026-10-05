@@ -7,7 +7,7 @@ import { FloatingFilterButton } from 'features/FloatingFilterButton';
 import { EmptySearchResults, SearchPlaces, filterPlacesByName } from 'features/SearchPlaces';
 import { useGetPlacesQuery, useFilteredPlacesLazyQuery } from 'shared/generated/graphql';
 import { useAuthStore } from 'shared/stores/auth';
-import { useFiltersStore } from 'shared/stores/filters';
+import { toFilteredPlacesVariables, useFiltersStore } from 'shared/stores/filters';
 import { useGuestFavoritesStore } from 'shared/stores/guestFavorites';
 
 import {
@@ -102,13 +102,7 @@ export const MainPage = () => {
 
   const handleApplyFilters = useCallback(() => {
     if (hasActiveFilters) {
-      fetchFilteredPlaces({
-        variables: {
-          minRating: minRating > 0 ? minRating : undefined,
-          neighborhood: neighborhood.length > 0 ? neighborhood : undefined,
-          additionalInfo: selectedTags.length > 0 ? selectedTags : undefined,
-        },
-      });
+      fetchFilteredPlaces({ variables: toFilteredPlacesVariables({ minRating, neighborhood, selectedTags }) });
     } else {
       // Clear filtered places if no active filters
       usePlacesStore.setState({ filteredPlaces: null });
