@@ -1,3 +1,14 @@
-export * from './hooks';
-export * from './actions';
-export type * from './types';
+export { useFiltersStore } from './hooks';
+export {
+  setMinRating,
+  toggleNeighborhood,
+  setNeighborhood,
+  toggleTag,
+  setSelectedTags,
+  setFilterPanelOpen,
+  setSearchQuery,
+  resetFilters,
+  setFilters,
+} from './actions';
+export { toFilteredPlacesVariables } from './lib/toFilteredPlacesVariables';
+export type { FiltersState } from './types';

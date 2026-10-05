@@ -4,6 +4,7 @@ import { useWidth } from 'shared/hooks/useWidth';
 import { resetFilters, setFilterPanelOpen, useFiltersStore } from 'shared/stores/filters';
 import { Spinner } from 'shared/ui/Loader';
 import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
+import { useResultCount } from '../api/useResultCount';
 import { FilterFooter } from '../components/FilterFooter';
 import { FilterHeader } from '../components/FilterHeader';
 import { NeighborhoodFilter } from '../components/NeighborhoodFilter';
@@ -25,6 +26,8 @@ const FilterPanelComponent = ({ onApplyFilters, onResetFilters, hasActiveFilters
   const selectedTags = useFiltersStore((state) => state.selectedTags);
   const width = useWidth();
   const isMobile = width <= 900;
+
+  const resultCount = useResultCount();
 
   const { data: tagsData, loading: loadingTags } = useGetAvailableTagsQuery({ skip: !isOpen });
   const availableTags = tagsData?.availableAdditionalInfoTags?.tags || [];
@@ -79,7 +82,12 @@ const FilterPanelComponent = ({ onApplyFilters, onResetFilters, hasActiveFilters
         )}
       </div>
 
-      <FilterFooter hasActiveFilters={hasActiveFilters} onReset={handleReset} onApply={handleApply} />
+      <FilterFooter
+        hasActiveFilters={hasActiveFilters}
+        resultCount={resultCount}
+        onReset={handleReset}
+        onApply={handleApply}
+      />
     </div>
   );
 
