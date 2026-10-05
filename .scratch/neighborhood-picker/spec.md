@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 
 # Neighborhood picker: a compact grid in the nav and in Filters (items 16 and 15 of the ui-ux-audit map)
 
