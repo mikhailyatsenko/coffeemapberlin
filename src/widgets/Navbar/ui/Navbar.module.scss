@@ -110,6 +110,9 @@ li {
     position: fixed;
     right: -100%;
     top: 60px;
+    max-height: calc(100dvh - 60px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     padding-bottom: 20px;
     flex-direction: column;
     width: 100%;
@@ -119,12 +122,28 @@ li {
     z-index: 4;
   }
   .navItem {
+    width: 100%;
     color: var(--text-primary);
     padding: 28px 0;
-    &:hover,
-    &:active {
-      transform: scale(0.97);
-      color: var(--text-secondary);
+
+    &:hover {
+      color: var(--text-primary);
+    }
+
+    /* The item's own link or disclosure trigger, not the whole li, so presses in the Neighborhoods grid don't shrink it. */
+    > a {
+      display: inline-block;
+    }
+
+    > a,
+    button[aria-expanded] {
+      transition: transform 0.2s;
+
+      &:hover,
+      &:active {
+        transform: scale(0.97);
+        color: var(--text-secondary);
+      }
     }
   }
 

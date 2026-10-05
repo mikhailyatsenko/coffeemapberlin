@@ -63,7 +63,7 @@ export const Navbar = () => {
             </NavLink>
           </li>
           <li className={cls.navItem}>
-            <NeighborhoodDropdown onSelect={handleNeighborhoodSelect} />
+            <NeighborhoodDropdown onSelect={handleNeighborhoodSelect} isMobileMenuOpen={isBurgerActive} />
           </li>
           <li className={cls.navItem}>
             <NavLink

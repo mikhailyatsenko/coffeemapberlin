@@ -1,18 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { NeighborhoodGrid, NeighborhoodGridCell } from 'entities/NeighborhoodGrid';
 import { useAvailableNeighborhoodsQuery } from 'shared/generated/graphql';
-import { useWidth } from 'shared/hooks/useWidth';
-import { PortalToBody } from 'shared/ui/Portals/PortalToBody';
+import { useNeighborhoodPanel } from '../hooks/useNeighborhoodPanel';
+import { type NeighborhoodDropdownProps } from '../types';
 import cls from './NeighborhoodDropdown.module.scss';
 
-interface NeighborhoodDropdownProps {
-  onSelect: (neighborhood: string) => void;
-}
-
-export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const width = useWidth();
-  const isMobile = width <= 900;
+export const NeighborhoodDropdown = ({ onSelect, isMobileMenuOpen }: NeighborhoodDropdownProps) => {
+  const { isOpen, isMobile, panelRef, toggle, close } = useNeighborhoodPanel(isMobileMenuOpen);
 
   const { data, loading, error } = useAvailableNeighborhoodsQuery({
     fetchPolicy: 'cache-and-network',
@@ -20,68 +13,35 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
 
   const neighborhoods: string[] = data?.availableNeighborhoods.neighborhoods ?? [];
 
-  const closeDropdown = () => {
-    setIsOpen(false);
-  };
-  const toggleDropdown = () => {
-    setIsOpen((prev) => !prev);
-  };
+  const renderNeighborhoods = () => {
+    if (loading && neighborhoods.length === 0) return <p className={cls.status}>Loading...</p>;
+    if (error || neighborhoods.length === 0) return <p className={cls.status}>No neighborhoods</p>;
 
-  const handleSelect = (neighborhood: string) => {
-    onSelect(neighborhood);
-    closeDropdown();
-  };
-
-  useEffect(() => {
-    if (isMobile) return;
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        closeDropdown();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, isMobile]);
-
-  const NeighborhoodList = ({ className, onItemClick }: { className: string; onItemClick: (n: string) => void }) => (
-    <>
-      {loading && (
-        <button key="loading" className={className} type="button" disabled>
-          Loading...
-        </button>
-      )}
-      {!loading && (error || neighborhoods.length === 0) && (
-        <button key="empty" className={className} type="button" disabled>
-          No neighborhoods
-        </button>
-      )}
-      {!loading &&
-        !error &&
-        neighborhoods.map((neighborhood) => (
-          <button
+    return (
+      <NeighborhoodGrid label="Neighborhoods">
+        {neighborhoods.map((neighborhood) => (
+          <NeighborhoodGridCell
             key={neighborhood}
-            className={className}
             onClick={() => {
-              onItemClick(neighborhood);
+              onSelect(neighborhood);
+              close();
             }}
-            type="button"
           >
             {neighborhood}
-          </button>
+          </NeighborhoodGridCell>
         ))}
-    </>
-  );
+      </NeighborhoodGrid>
+    );
+  };
+
   return (
-    <div className={cls.dropdown} ref={dropdownRef}>
+    <div className={cls.dropdown} ref={panelRef}>
       <button
-        className={`${cls.dropdownButton} ${isOpen ? cls.active : ''}`}
-        onClick={toggleDropdown}
+        className={cls.dropdownButton}
+        onClick={toggle}
         type="button"
         aria-expanded={isOpen}
-        aria-haspopup="true"
+        aria-haspopup={isMobile ? undefined : 'true'}
       >
         Neighborhoods
         <span className={cls.arrow} aria-hidden="true">
@@ -89,35 +49,7 @@ export const NeighborhoodDropdown = ({ onSelect }: NeighborhoodDropdownProps) =>
         </span>
       </button>
 
-      {isOpen &&
-        (isMobile ? (
-          // mobile modal
-          <PortalToBody>
-            <div className={cls.modalOverlay} onClick={closeDropdown}>
-              <div
-                className={cls.modalMenu}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                role="dialog"
-                aria-modal="true"
-              >
-                <button className={cls.closeButton} onClick={closeDropdown} aria-label="Close dropdown" type="button">
-                  ×
-                </button>
-                <div className={cls.modalTitle}>Neighborhoods</div>
-                <div className={cls.modalList}>
-                  <NeighborhoodList className={cls.modalItem} onItemClick={handleSelect} />
-                </div>
-              </div>
-            </div>
-          </PortalToBody>
-        ) : (
-          // desktop dropdown
-          <div className={cls.dropdownMenu}>
-            <NeighborhoodList className={cls.dropdownItem} onItemClick={handleSelect} />
-          </div>
-        ))}
+      {isOpen && <div className={isMobile ? cls.inlinePanel : cls.dropdownPanel}>{renderNeighborhoods()}</div>}
     </div>
   );
 };
