@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 
 # Suggest a Place polish: live validation and the Contact photo look (items 11 and 18 of the ui-ux-audit map)
 

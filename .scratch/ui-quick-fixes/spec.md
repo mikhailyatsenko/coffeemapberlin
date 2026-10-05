@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 
 # Ten quick UI fixes (Tier 1 of the ui-ux-audit map)
 
