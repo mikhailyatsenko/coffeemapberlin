@@ -1,12 +1,29 @@
 import { MockedProvider } from '@apollo/client/testing';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AvailableNeighborhoodsDocument, GetAvailableTagsDocument } from 'shared/generated/graphql';
-import { resetFilters, setFilterPanelOpen } from 'shared/stores/filters';
+import { resetFilters, setFilterPanelOpen, useFiltersStore } from 'shared/stores/filters';
 import { FilterPanel } from './FilterPanel';
 
 const NEIGHBORHOODS = ['Mitte', 'Pankow', 'Charlottenburg-Wilmersdorf'];
+
+// Server order (alphabetical); common: Cash only, Dogs allowed, Free Wi-Fi, Outdoor seating, Vegan options
+const TAGS = [
+  'Board games',
+  'Cash only',
+  'Cash-only',
+  'Cozy',
+  'Dogs allowed',
+  'Fireplace',
+  'Free Wi-Fi',
+  'Live music',
+  'Outdoor seating',
+  'Rooftop',
+  'Specialty coffee',
+  'Vegan options',
+  'Wi-Fi',
+];
 
 const renderPanel = () =>
   render(
@@ -16,7 +33,7 @@ const renderPanel = () =>
           request: { query: GetAvailableTagsDocument },
           result: {
             data: {
-              availableAdditionalInfoTags: { __typename: 'AdditionalInfoTagsResponse', tags: ['Dogs allowed'] },
+              availableAdditionalInfoTags: { __typename: 'AdditionalInfoTagsResponse', tags: TAGS },
             },
           },
         },
@@ -93,5 +110,123 @@ describe('FilterPanel', () => {
     for (const name of NEIGHBORHOODS) {
       expect(within(group).getByRole('button', { name })).toHaveAttribute('aria-pressed', 'false');
     }
+  });
+
+  describe('Features', () => {
+    const openFeatures = async () => {
+      setFilterPanelOpen(true);
+      renderPanel();
+      await screen.findByRole('button', { name: 'Dogs allowed' });
+    };
+
+    it('opens collapsed to the common Features, and "Show all" expands and collapses the list', async () => {
+      const user = userEvent.setup();
+      await openFeatures();
+
+      for (const name of ['Cash only', 'Dogs allowed', 'Free Wi-Fi', 'Outdoor seating', 'Vegan options']) {
+        expect(screen.getByRole('button', { name })).toBeInTheDocument();
+      }
+      expect(screen.queryByRole('button', { name: 'Board games' })).not.toBeInTheDocument();
+
+      const toggle = screen.getByRole('button', { name: 'Show all 13 features' });
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+      await user.click(toggle);
+      expect(screen.getByRole('button', { name: 'Board games' })).toBeInTheDocument();
+      expect(toggle).toHaveTextContent('Show fewer');
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+      await user.click(toggle);
+      expect(screen.queryByRole('button', { name: 'Board games' })).not.toBeInTheDocument();
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('narrows the Features to matches across all of them, ignoring case, spaces and hyphens', async () => {
+      const user = userEvent.setup();
+      await openFeatures();
+      const search = screen.getByRole('searchbox', { name: 'Search features' });
+
+      await user.type(search, 'cash only');
+      expect(screen.getByRole('button', { name: 'Cash only' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Cash-only' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Dogs allowed' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /show all/i })).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Clear features search' }));
+      expect(search).toHaveValue('');
+      await user.type(search, 'WIFI');
+      expect(screen.getByRole('button', { name: 'Free Wi-Fi' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Wi-Fi' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Cash only' })).not.toBeInTheDocument();
+    });
+
+    it('keeps a Feature selected via search visible and pressed after the search is cleared', async () => {
+      const user = userEvent.setup();
+      await openFeatures();
+      const search = screen.getByRole('searchbox', { name: 'Search features' });
+
+      await user.type(search, 'board');
+      const boardGames = screen.getByRole('button', { name: 'Board games' });
+      expect(boardGames).toHaveAttribute('aria-pressed', 'false');
+      await user.click(boardGames);
+      expect(boardGames).toHaveAttribute('aria-pressed', 'true');
+
+      await user.click(screen.getByRole('button', { name: 'Clear features search' }));
+      expect(screen.getByRole('button', { name: 'Board games' })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.getByRole('button', { name: 'Dogs allowed' })).toHaveAttribute('aria-pressed', 'false');
+      expect(screen.queryByRole('button', { name: 'Rooftop' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /show all/i })).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('says no Features match, and "Clear search" brings the collapsed list back', async () => {
+      const user = userEvent.setup();
+      await openFeatures();
+
+      await user.type(screen.getByRole('searchbox', { name: 'Search features' }), 'sauna');
+      expect(screen.getByText(/No features match “sauna”/)).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Dogs allowed' })).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Clear search' }));
+      expect(screen.queryByText(/No features match/)).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Dogs allowed' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Show all 13 features' })).toBeInTheDocument();
+    });
+
+    it('clears a non-empty search on Escape and keeps the modal open; Escape again closes it', async () => {
+      const user = userEvent.setup();
+      await openFeatures();
+      const search = screen.getByRole('searchbox', { name: 'Search features' });
+
+      await user.type(search, 'dogs');
+      await user.keyboard('{Escape}');
+      expect(search).toHaveValue('');
+      expect(useFiltersStore.getState().isFilterPanelOpen).toBe(true);
+      expect(screen.getByRole('searchbox', { name: 'Search features' })).toBeInTheDocument();
+
+      await user.keyboard('{Escape}');
+      expect(useFiltersStore.getState().isFilterPanelOpen).toBe(false);
+      expect(screen.queryByRole('searchbox', { name: 'Search features' })).not.toBeInTheDocument();
+    });
+
+    it('opens again with an empty search and the list collapsed, keeping the selected Features', async () => {
+      const user = userEvent.setup();
+      await openFeatures();
+
+      await user.click(screen.getByRole('button', { name: 'Show all 13 features' }));
+      await user.click(screen.getByRole('button', { name: 'Rooftop' }));
+      await user.type(screen.getByRole('searchbox', { name: 'Search features' }), 'roof');
+
+      act(() => {
+        setFilterPanelOpen(false);
+      });
+      act(() => {
+        setFilterPanelOpen(true);
+      });
+
+      expect(await screen.findByRole('searchbox', { name: 'Search features' })).toHaveValue('');
+      expect(screen.getByRole('button', { name: 'Rooftop' })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.queryByRole('button', { name: 'Board games' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Show all 13 features' })).toHaveAttribute('aria-expanded', 'false');
+    });
   });
 });

@@ -6,3 +6,19 @@ export const RATING_OPTIONS = [
   { value: 4.5, label: '4.5+' },
   { value: 5, label: '5' },
 ] as const;
+
+/** Features shown before "Show all", spelled exactly as the server sends them; missing ones just don't show */
+export const COMMON_FEATURES = [
+  'Free Wi-Fi',
+  'Good for working on laptop',
+  'Quiet',
+  'Outdoor seating',
+  'Dogs allowed',
+  'Vegan options',
+  'Vegetarian options',
+  'Breakfast',
+  'Brunch',
+  'Takeaway',
+  'Wheelchair accessible entrance',
+  'Cash only',
+] as const;
