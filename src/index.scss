@@ -30,7 +30,7 @@ body {
   font-size: 16px;
   color: var(--text-primary);
   font-family: 'Roboto Slab', serif;
-  font-weight: 200;
+  font-weight: var(--font-weight-light);
   font-style: normal;
 }
 
@@ -58,7 +58,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 200;
+  font-weight: var(--font-weight-medium);
 }
 
 h1 {

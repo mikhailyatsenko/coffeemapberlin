@@ -66,6 +66,20 @@
   --badge-gray: #616161c6;
   --badge-text: var(--text-inverse);
 
+  /* Font Weights
+   * The only weights the site uses; stylelint allows font-weight only through these tokens.
+   * Roboto Slab is self-hosted at 200 and 500 only (see index.html), kept at two faces for web vitals;
+   * there is no 400 and no bold face.
+   *
+   * Converting an old value to a step:
+   *   100, 200, 300, lighter              -> light   (no visible change: 100 and 300 rendered as 200)
+   *   400, normal, 500                    -> medium  (no visible change: 400 rendered as 500)
+   *   600, 700, bold, bolder              -> medium  (loses the browser's synthesized bold)
+   * The table is the default: when the old value plainly contradicts the text's role
+   * (12px meta text pinned to 200), pick the role's step instead. */
+  --font-weight-light: 200; /* body text and large text: the brand's look */
+  --font-weight-medium: 500; /* headings, labels, names, emphasis; small and meta text, about 14px and below */
+
   /* Footer / Navbar specific */
   --bg-footer: #141414;
   --text-footer: #626262;

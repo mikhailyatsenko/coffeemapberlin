@@ -7,7 +7,7 @@
 **Status:** ready-for-agent
 
 - [ ] A new `RatingSummary` in `shared/ui` takes `averageRating`, `ratingCount` and an optional `size: 'small' | 'medium'` (default `medium`; it only changes sizing). It is exported by name and has no data imports.
-- [ ] When `ratingCount > 0` it shows the display-only beans, the Average rating via `toFixed(1)` at medium weight, and "(N ratings)" / "(1 rating)" in a muted color at regular weight. When `ratingCount` is 0 it shows only "No ratings yet — be the first" in a muted color at regular weight.
+- [ ] When `ratingCount > 0` it shows the display-only beans, the Average rating via `toFixed(1)` at medium weight, and "(N ratings)" / "(1 rating)" in a muted color at medium weight. When `ratingCount` is 0 it shows only "No ratings yet — be the first" in a muted color at medium weight (the scale has two steps, light and medium; see ticket 01's comment).
 - [ ] `NeighborhoodPlaceCard` renders its rating row through `RatingSummary`. Its props and public API stay the same.
 - [ ] `PlaceCard` renders `RatingSummary size="small"` in place of the beans and bare number. On a 390px-wide screen a rated Place's row stays on one line and the card keeps its height.
 - [ ] The `GetPlaces` query selects `ratingCount`, and the generated code is updated with `npm run codegen`. Fixtures typed as `GetPlaces` Places gain the field, and `MainPage.test.tsx` passes otherwise unchanged.

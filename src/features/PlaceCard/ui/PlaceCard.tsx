@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { type Position } from 'geojson';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useRef } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 // import { useToggleFavorite } from 'shared/api';
 import instagram from 'shared/assets/instagram.svg';
@@ -8,13 +8,13 @@ import instagram from 'shared/assets/instagram.svg';
 import showPlacePointOnMap from 'shared/assets/show-on-map.svg';
 import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { type GetPlacesQuery } from 'shared/generated/graphql';
-import { useWidth } from 'shared/hooks';
 import { setCurrentPlacePosition, setShowFavorites, usePlacesStore } from 'shared/stores/places';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
+import { useNameOverflow } from '../hooks/useNameOverflow';
 import cls from './PlaceCard.module.scss';
 
 interface PlaceCardProps {
@@ -27,8 +27,6 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
   const showFavorites = usePlacesStore((state) => state.showFavorites);
   const nameRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const [nameScrollWidth, setNameScrollWidth] = useState<number>();
-  const [shouldNameScroll, setShouldNameScroll] = useState(false);
 
   const handleInstagramClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -56,24 +54,9 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
 
   const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
 
-  const width = useWidth();
-  const isMobile = width <= 767;
-  useEffect(() => {
-    if (nameRef?.current?.clientWidth) {
-      setNameScrollWidth(nameRef?.current?.scrollWidth);
-    }
-  }, []);
+  const nameOverflow = useNameOverflow(nameRef, properties.name);
+  const shouldNameScroll = nameOverflow > 0;
 
-  useEffect(() => {
-    if (nameScrollWidth) {
-      if (isMobile) {
-        // TODO constants
-        setShouldNameScroll(nameScrollWidth > 198);
-      } else {
-        setShouldNameScroll(nameScrollWidth > 258);
-      }
-    }
-  }, [nameScrollWidth, isMobile]);
   return (
     <div
       onClick={() => {
@@ -95,9 +78,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
             <h4
               ref={nameRef}
               style={
-                nameScrollWidth && shouldNameScroll
-                  ? { ['--scroll-distance' as unknown as string]: `${(isMobile ? 198 : 258) - nameScrollWidth}px` }
-                  : undefined
+                shouldNameScroll ? { ['--scroll-distance' as unknown as string]: `${-nameOverflow}px` } : undefined
               }
               className={clsx({ [cls.marquee]: shouldNameScroll })}
             >
