@@ -13,7 +13,7 @@ import { AddToFavButton } from 'shared/ui/AddToFavButton';
 
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
-import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
+import { RatingSummary } from 'shared/ui/RatingSummary';
 import { useNameOverflow } from '../hooks/useNameOverflow';
 import cls from './PlaceCard.module.scss';
 
@@ -95,10 +95,7 @@ const PlaceCardComponent = ({ properties, coordinates, index }: PlaceCardProps) 
             />
           </div>
         </div>
-        <div className={cls.rating}>
-          <RatingWidget isClickable={false} rating={properties.averageRating} />{' '}
-          {Boolean(properties.averageRating) && properties.averageRating}
-        </div>
+        <RatingSummary averageRating={properties.averageRating} ratingCount={properties.ratingCount} size="small" />
         {properties.description && <div className={cls.description}>{properties.description}</div>}
         {properties.neighborhood && (
           <BadgePill text={properties.neighborhood} color="green" size="small" className={cls.badgePill} />

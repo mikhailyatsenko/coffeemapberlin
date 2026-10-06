@@ -1035,7 +1035,7 @@ export type GetPlacesQueryVariables = Exact<{
 }>;
 
 
-export interface GetPlacesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, isFavorite: boolean, neighborhood?: string | null, googleId?: string | null } }> } }
+export interface GetPlacesQuery { __typename?: 'Query', places: { __typename?: 'PlacesResponse', total: number, places: Array<{ __typename?: 'Place', id: string, type: string, geometry: { __typename?: 'Geometry', type: string, coordinates: number[] }, properties: { __typename?: 'PlaceProperties', id: string, name: string, description: string, address: string, image: string, instagram: string, averageRating?: number | null, ratingCount: number, isFavorite: boolean, neighborhood?: string | null, googleId?: string | null } }> } }
 
 export type GetFavoritePlacesQueryVariables = Exact<Record<string, never>>;
 
@@ -2219,6 +2219,7 @@ export const GetPlacesDocument = gql`
         image
         instagram
         averageRating
+        ratingCount
         isFavorite
         neighborhood
         googleId

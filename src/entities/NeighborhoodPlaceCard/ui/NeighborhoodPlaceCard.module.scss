@@ -90,31 +90,6 @@
   align-self: flex-start;
 }
 
-.ratingSection {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.ratingValue {
-  font-size: 16px;
-  font-weight: var(--font-weight-medium);
-  color: #111111;
-}
-
-.ratingCount {
-  font-size: 14px;
-  color: #919191;
-  font-weight: var(--font-weight-medium);
-}
-
-.noRatings {
-  font-size: 14px;
-  color: #919191;
-  font-weight: var(--font-weight-medium);
-}
-
 .description {
   font-size: 15px;
   font-weight: var(--font-weight-medium);

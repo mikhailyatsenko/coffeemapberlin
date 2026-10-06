@@ -18,6 +18,7 @@ export const GET_PLACES = gql`
           image
           instagram
           averageRating
+          ratingCount
           isFavorite
           neighborhood
           googleId

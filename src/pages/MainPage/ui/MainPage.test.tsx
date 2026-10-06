@@ -40,6 +40,7 @@ const place = (id: string): Place => ({
     image: '',
     instagram: '',
     averageRating: 4.2,
+    ratingCount: 5,
     isFavorite: false,
     googleId: null,
     neighborhood: 'Mitte',
