@@ -4,7 +4,7 @@ import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { BadgePill } from 'shared/ui/BadgePill';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
-import RatingWidget from 'shared/ui/RatingWidget/ui/RatingWidget';
+import { RatingSummary } from 'shared/ui/RatingSummary';
 import { type NeighborhoodPlaceCardProps } from '../types';
 import cls from './NeighborhoodPlaceCard.module.scss';
 
@@ -57,21 +57,7 @@ export const NeighborhoodPlaceCard = ({ place, onOpen, contribution }: Neighborh
           />
         </div>
 
-        <div className={cls.ratingSection}>
-          {properties.ratingCount > 0 ? (
-            <>
-              <RatingWidget isClickable={false} rating={properties.averageRating} />
-              {Boolean(properties.averageRating) && (
-                <span className={cls.ratingValue}>{properties.averageRating?.toFixed(1)}</span>
-              )}
-              <span className={cls.ratingCount}>
-                ({properties.ratingCount} review{properties.ratingCount !== 1 ? 's' : ''})
-              </span>
-            </>
-          ) : (
-            <span className={cls.noRatings}>No ratings yet — be the first</span>
-          )}
-        </div>
+        <RatingSummary averageRating={properties.averageRating} ratingCount={properties.ratingCount} />
 
         {contribution}
 

@@ -47,6 +47,8 @@ PlacePage keeps its own rating block. No backend change: `ratingCount` already e
 
 ### Weight scale (item 14)
 
+> **Amended 2026-10-05 (ticket 01):** the site keeps two faces, 200 and 500, for web vitals. There is no 400 face and no `--font-weight-regular`; the scale is light 200 and medium 500, 400/`normal` map to medium, and small/meta text that this spec puts on "regular" uses medium instead. Where the text below says regular or a 400 face, read medium and "not added".
+
 - **Tokens in `theme.css`,** next to the color tokens, in their own commented group: `--font-weight-light: 200`, `--font-weight-regular: 400`, `--font-weight-medium: 500`. A short comment per token says its role: light for body and large text, regular for small/meta text (about 14px and below), medium for headings, labels and emphasis. No semantic aliases (`--font-weight-heading`, …) — three steps are few enough to name by weight; the role rules live in the comment.
 - **Global defaults in `index.scss`:** `body` uses the light token; `h1`–`h4` use the medium token. Font sizes don't change. The `*` selector keeps setting only the family.
 - **The 400 face:** add Roboto Slab latin 400 as a self-hosted woff2 in the same folder and naming scheme as the 200 and 500 files (same font version, v35, latin subset), with its own `@font-face` in `index.html`'s inline style block, `font-display: swap`, and a `preload` link like the other two — MainPage's cards above the fold use it on first paint. No variable font, no Google Fonts link, no other faces (no 600/700).

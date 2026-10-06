@@ -13,6 +13,7 @@ const makePlace = (name: string): Place => ({
     address: '',
     image: '',
     instagram: '',
+    ratingCount: 0,
     isFavorite: false,
   },
 });

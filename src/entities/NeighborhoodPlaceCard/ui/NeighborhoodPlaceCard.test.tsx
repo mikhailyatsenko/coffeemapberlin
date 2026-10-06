@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { type NeighborhoodPlaceCardProps } from '../types';
 import { NeighborhoodPlaceCard } from './NeighborhoodPlaceCard';
 
-// The favorite button owns its own data access; the review count doesn't depend on it.
+// The favorite button owns its own data access; the rating count doesn't depend on it.
 vi.mock('shared/ui/AddToFavButton', () => ({ AddToFavButton: () => null }));
 
 const place = (ratingCount: number): NeighborhoodPlaceCardProps['place'] => ({
@@ -39,15 +39,15 @@ const renderCard = (ratingCount: number) =>
   );
 
 describe('NeighborhoodPlaceCard', () => {
-  it('reads "1 review" for a Place with one Rating', () => {
+  it('reads "1 rating" for a Place with one Rating', () => {
     renderCard(1);
 
-    expect(screen.getByText('(1 review)')).toBeInTheDocument();
+    expect(screen.getByText('(1 rating)')).toBeInTheDocument();
   });
 
-  it('reads "N reviews" for a Place with several Ratings', () => {
+  it('reads "N ratings" for a Place with several Ratings', () => {
     renderCard(3);
 
-    expect(screen.getByText('(3 reviews)')).toBeInTheDocument();
+    expect(screen.getByText('(3 ratings)')).toBeInTheDocument();
   });
 });

@@ -1,0 +1,30 @@
+.ratingSummary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-weight: var(--font-weight-medium);
+
+  &.medium {
+    gap: 8px;
+    font-size: 14px;
+
+    .value {
+      font-size: 16px;
+    }
+  }
+
+  &.small {
+    gap: 4px;
+    font-size: 12px;
+    /* The bean row's height, so an unrated Place's card is as tall as a rated one's. */
+    min-height: 31px;
+  }
+}
+
+.value {
+  color: #111111;
+}
+
+.muted {
+  color: #919191;
+}

@@ -1,6 +1,14 @@
 {
-    "plugins": ["stylelint-prettier"],
-    "rules": {
-      "prettier/prettier": true
-    }
+  "plugins": ["stylelint-prettier"],
+  "rules": {
+    "prettier/prettier": true,
+    "declaration-property-value-allowed-list": [
+      {
+        "font-weight": ["/^var\\(--font-weight-(light|medium)\\)$/", "inherit"]
+      },
+      {
+        "message": "Use a weight token: var(--font-weight-light|medium) or inherit (old values map by the table in src/shared/styles/theme.css)"
+      }
+    ]
   }
+}
