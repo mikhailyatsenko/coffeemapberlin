@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: resolved
 
 # Typography and cards: a weight scale and an honest rating on MainPage cards (items 14 and 13 of the ui-ux-audit map)
 
