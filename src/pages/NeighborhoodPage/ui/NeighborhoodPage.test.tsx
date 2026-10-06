@@ -36,6 +36,7 @@ const place = (
   ratingCount: number,
   ownRating: number | null = null,
   address = '',
+  shortlistIds: ShortlistId[] = [],
 ): Place => ({
   __typename: 'Place',
   id,
@@ -56,6 +57,7 @@ const place = (
     ownRating,
     googleId: null,
     neighborhood: 'Mitte',
+    shortlistIds,
   },
 });
 
@@ -566,6 +568,58 @@ describe('NeighborhoodPage', () => {
       expect(within(rowA).queryByText('Mitte')).not.toBeInTheDocument();
       expect(within(rowA).queryByText('A long story about the beans')).not.toBeInTheDocument();
       expect(within(row(all, 'Place new')).getByText('No ratings yet — be the first')).toBeInTheDocument();
+    });
+  });
+
+  describe('Amenity icons', () => {
+    /** The names of a card's or row's Amenity icons, in the order shown; the photo is hidden from the tree. */
+    const iconNames = (element: HTMLElement) =>
+      within(element)
+        .queryAllByRole('img')
+        .map((icon) => icon.getAttribute('aria-label'));
+
+    const a = place('a', 4.8, 10, null, '', [ShortlistId.work, ShortlistId.dogFriendly, ShortlistId.breakfastBrunch]);
+
+    it('show one named icon per Shortlist Amenity of the Place, in server order, on a shelf card and a row', async () => {
+      renderPage({ topRated: [a], all: [a] });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      const all = section(/all 1 place in mitte/i);
+      for (const element of [card(topRated, 'Place a'), row(all, 'Place a')]) {
+        expect(iconNames(element)).toEqual(['Good for work', 'Dog friendly', 'Breakfast & brunch']);
+        expect(within(element).getByTitle('Dog friendly')).toBeInTheDocument();
+      }
+    });
+
+    it('name each of the four Shortlist Amenities', async () => {
+      const every = place('e', 4.8, 10, null, '', [...SHORTLIST_ORDER]);
+      renderPage({ topRated: [every], all: [every] });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      expect(iconNames(card(topRated, 'Place e'))).toEqual([
+        'Good for work',
+        'Dog friendly',
+        'Outdoor seating',
+        'Breakfast & brunch',
+      ]);
+    });
+
+    it('show no icons for a Place without Shortlist Amenities', async () => {
+      const plain = place('p', 4.8, 10);
+      renderPage({ topRated: [plain], all: [plain] });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      expect(iconNames(card(topRated, 'Place p'))).toEqual([]);
+      expect(iconNames(row(section(/all 1 place in mitte/i), 'Place p'))).toEqual([]);
+    });
+
+    it('skip a Shortlist this build has no icon for, instead of breaking the card', async () => {
+      // A newer server may add a Shortlist before the client knows it.
+      const newer = place('n', 4.8, 10, null, '', [ShortlistId.dogFriendly, 'quiz' as ShortlistId]);
+      renderPage({ topRated: [newer], all: [newer] });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      expect(iconNames(card(topRated, 'Place n'))).toEqual(['Dog friendly']);
     });
   });
 

@@ -135,6 +135,7 @@ export const GET_FILTERED_PLACES = gql`
           ownRating
           googleId
           neighborhood
+          shortlistIds
         }
       }
       total
@@ -185,6 +186,7 @@ export const GET_NEIGHBORHOOD_SHORTLISTS = gql`
           ownRating
           googleId
           neighborhood
+          shortlistIds
         }
       }
       total

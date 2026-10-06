@@ -3,11 +3,12 @@ import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { RatingSummary } from 'shared/ui/RatingSummary';
+import { AmenityIcons } from '../components/AmenityIcons';
 import { shortAddress } from '../lib/shortAddress';
 import { type NeighborhoodPlaceRowProps } from '../types';
 import cls from './NeighborhoodPlaceRow.module.scss';
 
-/** A dense Place row for a Neighborhood's full list: small photo, name, Average rating, street, Favorite and a contribution slot. */
+/** A dense Place row for a Neighborhood's full list: small photo, name, Average rating, Amenity icons, street, Favorite and a contribution slot. */
 export const NeighborhoodPlaceRow = ({ place, onOpen, contribution }: NeighborhoodPlaceRowProps) => {
   const { properties } = place;
   const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
@@ -34,6 +35,7 @@ export const NeighborhoodPlaceRow = ({ place, onOpen, contribution }: Neighborho
           </Link>
         </h3>
         <RatingSummary averageRating={properties.averageRating} ratingCount={properties.ratingCount} size="small" />
+        <AmenityIcons shortlistIds={properties.shortlistIds} />
         {properties.address && <p className={cls.address}>{shortAddress(properties.address)}</p>}
       </div>
       {contribution && <div className={cls.contribution}>{contribution}</div>}

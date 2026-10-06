@@ -3,11 +3,12 @@ import { IMAGEKIT_CDN_URL, RoutePaths } from 'shared/constants';
 import { AddToFavButton } from 'shared/ui/AddToFavButton';
 import { ImgWithLoader } from 'shared/ui/ImgWithLoader';
 import { RatingSummary } from 'shared/ui/RatingSummary';
+import { AmenityIcons } from '../components/AmenityIcons';
 import { shortAddress } from '../lib/shortAddress';
 import { type NeighborhoodPlaceCardProps } from '../types';
 import cls from './NeighborhoodPlaceCard.module.scss';
 
-/** A compact Place card for a Neighborhood shelf: photo, name, Average rating, Favorite and street. */
+/** A compact Place card for a Neighborhood shelf: photo, name, Average rating, Favorite, Amenity icons and street. */
 export const NeighborhoodPlaceCard = ({ place, onOpen }: NeighborhoodPlaceCardProps) => {
   const { properties } = place;
   const placePath = generatePath(`/${RoutePaths.placePage}`, { id: properties.id });
@@ -44,6 +45,7 @@ export const NeighborhoodPlaceCard = ({ place, onOpen }: NeighborhoodPlaceCardPr
           </div>
         </div>
         <RatingSummary averageRating={properties.averageRating} ratingCount={properties.ratingCount} size="small" />
+        <AmenityIcons shortlistIds={properties.shortlistIds} />
         {properties.address && <p className={cls.address}>{shortAddress(properties.address)}</p>}
       </div>
     </article>
