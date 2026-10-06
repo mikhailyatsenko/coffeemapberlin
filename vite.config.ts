@@ -26,6 +26,8 @@ export default defineConfig({
     css: { modules: { classNameStrategy: 'non-scoped' } },
     // Agent worktrees hold full copies of the repo; their tests would run twice.
     exclude: [...configDefaults.exclude, '.claude/worktrees/**'],
+    // jsdom renders slow down several times on a busy machine; the 5s default then fails healthy tests.
+    testTimeout: 15_000,
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
