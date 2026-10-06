@@ -53,8 +53,12 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
         <>
           <TopRatedPlaces
             places={topRated}
+            neighborhood={displayNeighborhood}
             onCardOpen={() => {
               trackCardOpen('top_rated');
+            }}
+            onMapOpen={() => {
+              trackShortlistMapOpen('top_rated', topRated.length);
             }}
           />
           {shortlists.map((shortlist) => (

@@ -30,7 +30,13 @@ vi.mock('shared/lib/guest', async (importOriginal) => {
 
 type Place = FilteredPlacesQuery['filteredPlaces']['places'][number];
 
-const place = (id: string, averageRating: number, ratingCount: number, ownRating: number | null = null): Place => ({
+const place = (
+  id: string,
+  averageRating: number,
+  ratingCount: number,
+  ownRating: number | null = null,
+  address = '',
+): Place => ({
   __typename: 'Place',
   id,
   type: 'Feature',
@@ -40,7 +46,7 @@ const place = (id: string, averageRating: number, ratingCount: number, ownRating
     id,
     name: `Place ${id}`,
     description: '',
-    address: '',
+    address,
     image: '',
     instagram: '',
     averageRating,
@@ -194,6 +200,9 @@ class FakeIntersectionObserver {
     this.callback([entry], this as unknown as IntersectionObserver);
   }
 }
+// jsdom has no scrollIntoView; a focused shelf card calls it.
+Element.prototype.scrollIntoView = vi.fn();
+
 const enterViewport = (element: Element) => {
   act(() => {
     observed.get(element)?.fire(element);
@@ -475,13 +484,78 @@ describe('NeighborhoodPage', () => {
     ]);
   });
 
+  describe('Top rated', () => {
+    const eight = Array.from({ length: 8 }, (_, i) => place(`t${i}`, 4.5 + i / 20, 5));
+
+    it('shows the 6 best Places, best first', async () => {
+      renderPage({ topRated: eight, all: eight });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      expect(cardNames(topRated)).toEqual(['Place t7', 'Place t6', 'Place t5', 'Place t4', 'Place t3', 'Place t2']);
+    });
+
+    it('opens the map filtered by the Neighborhood and 4.5+ Rating on "See all N on the map"', async () => {
+      setSearchQuery('bonanza');
+      setShowFavorites(true);
+      useFiltersStore.setState({ selectedTags: ['Wi-Fi'] });
+      renderPage({ topRated: eight, all: eight });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      await userEvent.click(within(topRated).getByRole('link', { name: 'See all 8 on the map' }));
+
+      expect(await screen.findByText('Map')).toBeInTheDocument();
+      expect(useFiltersStore.getState()).toMatchObject({
+        neighborhood: ['Mitte'],
+        selectedTags: [],
+        minRating: 4.5,
+        searchQuery: '',
+      });
+      expect(usePlacesStore.getState().showFavorites).toBe(false);
+      expect(trackedEvents('shortlist_map_click')).toEqual([
+        ['shortlist_map_click', { neighborhood: 'Mitte', shortlist: 'top_rated', count: 8, actor: 'guest' }],
+      ]);
+    });
+  });
+
+  describe('shelf cards', () => {
+    it('show no Neighborhood badge and no "Rate it"', async () => {
+      const a = place('a', 4.8, 10);
+      renderPage({ topRated: [a], all: [a], shortlists: { work: shortlist('w', 3) } });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      for (const shelfCard of [card(topRated, 'Place a'), card(section(/^work$/i), 'Place w0')]) {
+        expect(within(shelfCard).queryByText('Mitte')).not.toBeInTheDocument();
+        expect(within(shelfCard).queryByText('Been here? Rate it')).not.toBeInTheDocument();
+        expect(within(shelfCard).queryByRole('radio')).not.toBeInTheDocument();
+      }
+      expect(
+        within(card(section(/all 1 place in mitte/i), 'Place a')).getByText('Been here? Rate it'),
+      ).toBeInTheDocument();
+    });
+
+    it.each([
+      ['Wiener Str. 62, 10999', 'Wiener Str. 62'],
+      ['Luckenwalder Str. 6b, 10963', 'Luckenwalder Str. 6b'],
+      ['c/o St. Agnes, Alexandrinenstraße 118-121, 10969', 'c/o St. Agnes, Alexandrinenstraße 118-121'],
+      ['Torstraße 1', 'Torstraße 1'],
+    ])('show the street of "%s" as "%s"', async (address, street) => {
+      const a = place('a', 4.8, 10, null, address);
+      renderPage({ topRated: [a], all: [a] });
+
+      const topRated = await screen.findByRole('region', { name: /top rated/i });
+      const shelfCard = card(topRated, 'Place a');
+      expect(within(shelfCard).getByText(street)).toBeInTheDocument();
+      expect(shelfCard).not.toHaveTextContent(/\b\d{5}\b/);
+    });
+  });
+
   describe('rating from a card', () => {
     // Place a sits in Outdoor seating and in the full list.
     const shortlists = (a: Place) => ({
       outdoorSeating: { places: [a, place('o1', 4.4, 5), place('o2', 4.3, 5)], total: 3 },
     });
 
-    it('saves a Guest Rating on one tap and shows it on every card of the Place, without leaving the page', async () => {
+    it('saves a Guest Rating on one tap from the full list, without leaving the page', async () => {
       const user = userEvent.setup();
       const addRating = vi.fn();
       const a = place('a', 4.8, 10);
@@ -492,16 +566,14 @@ describe('NeighborhoodPage', () => {
         mocks: [addRatingMock('a', 4, addRating)],
       });
 
-      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      const all = section(/all 2 places in mitte/i);
-      expect(within(card(outdoor, 'Place a')).getByText('Been here? Rate it')).toBeInTheDocument();
-      await user.click(bean(card(outdoor, 'Place a'), 4));
+      const all = await screen.findByRole('region', { name: /all 2 places in mitte/i });
+      expect(within(card(all, 'Place a')).getByText('Been here? Rate it')).toBeInTheDocument();
+      await user.click(bean(card(all, 'Place a'), 4));
 
-      expect(within(card(outdoor, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      expect(within(card(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
       await waitFor(() => {
-        expect(within(card(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+        expect(addRating).toHaveBeenCalledTimes(1);
       });
-      expect(addRating).toHaveBeenCalledTimes(1);
       expect(screen.queryByText('Place page')).not.toBeInTheDocument();
       // The Average rating and the order stay as the page view showed them.
       expect(within(card(all, 'Place a')).getByText('4.8')).toBeInTheDocument();
@@ -546,8 +618,8 @@ describe('NeighborhoodPage', () => {
         mocks: [addRatingMock('a', 5), failingAddRatingMock('b', 2)],
       });
 
-      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      await user.click(bean(card(outdoor, 'Place a'), 5));
+      const all = await screen.findByRole('region', { name: /all 2 places in mitte/i });
+      await user.click(bean(card(all, 'Place a'), 5));
       await waitFor(() => {
         expect(trackedEvents('rating_saved')).toEqual([
           [
@@ -558,12 +630,12 @@ describe('NeighborhoodPage', () => {
               rating: 5,
               is_change: false,
               surface: 'neighborhood_card',
-              section: 'outdoorSeating',
+              section: 'all',
             },
           ],
         ]);
       });
-      await user.click(bean(card(section(/all 2 places in mitte/i), 'Place b'), 2));
+      await user.click(bean(card(all, 'Place b'), 2));
       await waitFor(() => {
         expect(trackedEvents('contribution_failed')).toEqual([
           [
@@ -582,18 +654,18 @@ describe('NeighborhoodPage', () => {
       vi.mocked(console.error).mockRestore();
     });
 
-    it('asks no Characteristic question after a Rating on a Shortlist card', async () => {
+    it('asks no Characteristic question after a Rating', async () => {
       const user = userEvent.setup();
       const a = place('a', 4.8, 10);
       renderPage({ topRated: [a], all: [a], shortlists: shortlists(a), mocks: [addRatingMock('a', 4)] });
 
-      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      await user.click(bean(card(outdoor, 'Place a'), 4));
+      const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
+      await user.click(bean(card(all, 'Place a'), 4));
 
       await waitFor(() => {
         expect(trackedEvents('rating_saved')).toHaveLength(1);
       });
-      expect(within(card(outdoor, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      expect(within(card(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
       expect(screen.queryByRole('group')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Yes' })).not.toBeInTheDocument();
       expect(trackedEvents('characteristic_answered')).toEqual([]);

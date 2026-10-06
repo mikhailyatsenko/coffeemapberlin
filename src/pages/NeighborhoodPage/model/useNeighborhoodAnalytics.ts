@@ -46,7 +46,7 @@ export const useNeighborhoodAnalytics = ({
   );
 
   const trackShortlistMapOpen = useCallback(
-    (shortlist: ShortlistId, count: number) => {
+    (shortlist: Exclude<NeighborhoodSection, 'all'>, count: number) => {
       trackEvent('shortlist_map_click', { neighborhood, shortlist, count, actor });
     },
     [neighborhood, actor],

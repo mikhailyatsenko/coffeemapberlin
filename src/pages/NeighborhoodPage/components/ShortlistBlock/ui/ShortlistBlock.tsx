@@ -1,12 +1,9 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { RoutePaths } from 'shared/constants';
-import { SHORTLISTS } from '../../../constants';
+import { SHORTLIST_MIN_RATING, SHORTLISTS } from '../../../constants';
+import { showNeighborhoodOnMap } from '../../../model/showNeighborhoodOnMap';
 import { type NeighborhoodShortlist } from '../../../types';
-import { PlacesSection } from '../../PlacesSection';
+import { Shelf } from '../../Shelf';
 import { useOnFirstView } from '../hooks/useOnFirstView';
-import { showShortlistOnMap } from '../model/showShortlistOnMap';
-import cls from './ShortlistBlock.module.scss';
 
 interface ShortlistBlockProps {
   shortlist: NeighborhoodShortlist;
@@ -24,26 +21,18 @@ export const ShortlistBlock = ({ shortlist, neighborhood, onView, onCardOpen, on
   const { title, anchor } = SHORTLISTS[shortlist.id];
 
   return (
-    <PlacesSection
+    <Shelf
       ref={ref}
       id={anchor}
       title={title}
-      section={shortlist.id}
       places={shortlist.places}
+      columns={5}
+      mapCount={shortlist.total}
+      onMapOpen={() => {
+        showNeighborhoodOnMap(neighborhood, { amenities: shortlist.amenities, minRating: SHORTLIST_MIN_RATING });
+        onMapOpen();
+      }}
       onCardOpen={onCardOpen}
-    >
-      <div className={cls.seeAll}>
-        <Link
-          to={RoutePaths.main}
-          className={cls.seeAllLink}
-          onClick={() => {
-            showShortlistOnMap(neighborhood, shortlist);
-            onMapOpen();
-          }}
-        >
-          See all {shortlist.total} on the map
-        </Link>
-      </div>
-    </PlacesSection>
+    />
   );
 };
