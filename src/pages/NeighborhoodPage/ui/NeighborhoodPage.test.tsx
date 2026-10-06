@@ -488,6 +488,52 @@ describe('NeighborhoodPage', () => {
     ]);
   });
 
+  describe('header', () => {
+    it('says how many Places the Neighborhood has and how many are rated 4.5+, counting Top rated before the cut', async () => {
+      const top = Array.from({ length: 8 }, (_, i) => place(`t${i}`, 4.5 + i / 20, 5));
+      renderPage({ topRated: top, all: [...top, place('b', 4.1, 3), place('c', 3, 2)] });
+
+      expect(await screen.findByText('10 Places · 8 rated 4.5+')).toBeInTheDocument();
+      expect(screen.queryByText(/every Place on the map/)).not.toBeInTheDocument();
+    });
+
+    it('reads right in the singular', async () => {
+      const only = place('a', 4.8, 10);
+      renderPage({ topRated: [only], all: [only] });
+
+      expect(await screen.findByText('1 Place · 1 rated 4.5+')).toBeInTheDocument();
+    });
+
+    it('leaves the 4.5+ count out when no Place has it', async () => {
+      renderPage({ topRated: [], all: [place('b', 4.1, 3), place('c', 3, 2)] });
+
+      expect(await screen.findByText('2 Places')).toBeInTheDocument();
+    });
+
+    it('opens the map filtered by the Neighborhood only on "Open on the map"', async () => {
+      setSearchQuery('bonanza');
+      setShowFavorites(true);
+      useFiltersStore.setState({ selectedTags: ['Wi-Fi'], minRating: 4 });
+      const great = place('a', 4.8, 10);
+      renderPage({ topRated: [great], all: [great, place('b', 4.1, 3)] });
+
+      await userEvent.click(await screen.findByRole('link', { name: 'Open on the map' }));
+
+      expect(await screen.findByText('Map')).toBeInTheDocument();
+      expect(useFiltersStore.getState()).toMatchObject({
+        neighborhood: ['Mitte'],
+        selectedTags: [],
+        minRating: 0,
+        searchQuery: '',
+      });
+      expect(usePlacesStore.getState().showFavorites).toBe(false);
+      expect(trackedEvents('neighborhood_map_open')).toEqual([
+        ['neighborhood_map_open', { neighborhood: 'Mitte', places_total: 2, actor: 'guest' }],
+      ]);
+      expect(trackedEvents('shortlist_map_click')).toEqual([]);
+    });
+  });
+
   describe('Top rated', () => {
     const eight = Array.from({ length: 8 }, (_, i) => place(`t${i}`, 4.5 + i / 20, 5));
 

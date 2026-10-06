@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
 import { Spinner } from 'shared/ui/Loader';
 import { AllPlaces } from '../components/AllPlaces';
+import { NeighborhoodHeader } from '../components/NeighborhoodHeader';
 import { ShortlistBlock } from '../components/ShortlistBlock';
 import { TopRatedPlaces } from '../components/TopRatedPlaces';
 import { useScrollToHash } from '../hooks/useScrollToHash';
@@ -14,13 +15,14 @@ import cls from './NeighborhoodPage.module.scss';
 export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   const { neighborhood: slug } = useParams<{ neighborhood: string }>();
   const { status, displayNeighborhood, topRated, shortlists, all, total } = useNeighborhoodPlaces(slug);
-  const { trackShortlistView, trackShortlistMapOpen, trackCardOpen } = useNeighborhoodAnalytics({
-    slug,
-    neighborhood: displayNeighborhood,
-    shortlistsShown: shortlists.length,
-    placesTotal: total,
-    isLoaded: status === 'loaded',
-  });
+  const { trackShortlistView, trackShortlistMapOpen, trackCardOpen, trackNeighborhoodMapOpen } =
+    useNeighborhoodAnalytics({
+      slug,
+      neighborhood: displayNeighborhood,
+      shortlistsShown: shortlists.length,
+      placesTotal: total,
+      isLoaded: status === 'loaded',
+    });
   useScrollToHash(status === 'loaded');
 
   useEffect(() => {
@@ -34,10 +36,11 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
       <Helmet>
         <title>{`Best Coffee Places in ${displayNeighborhood} | Berlin Coffee Map`}</title>
       </Helmet>
-      <div className={cls.header}>
-        <h1>Best Coffee Places in {displayNeighborhood}</h1>
-        <p className={cls.subtitle}>The top rated Places first, then every Place on the map</p>
-      </div>
+      <NeighborhoodHeader
+        neighborhood={displayNeighborhood}
+        numbers={status === 'loaded' ? { placesTotal: total, topRatedTotal: topRated.length } : undefined}
+        onMapOpen={trackNeighborhoodMapOpen}
+      />
       {status === 'loading' && (
         <div className={cls.loadingState}>
           <Spinner size="lg" />
