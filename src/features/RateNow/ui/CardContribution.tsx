@@ -1,7 +1,4 @@
-import { CharacteristicQuestion } from '../components/CharacteristicQuestion';
-import { ErrorAlert } from '../components/ErrorAlert';
 import { useCardContribution } from '../model/useCardContribution';
-import { useCardQuestion } from '../model/useCardQuestion';
 import { type CardContributionProps, type SurfaceParams } from '../types';
 import cls from './CardContribution.module.scss';
 import { OneTapRating } from './OneTapRating';
@@ -10,20 +7,13 @@ export type { CardContributionProps };
 
 /**
  * "Been here? Rate it" on a Place card: the one-tap Rating, then the person's Rating
- * with "change" and, on cards that ask one, a question about a Characteristic.
+ * with "change".
  */
 export const CardContribution = (props: CardContributionProps) => {
   const { placeId, ownRating, section } = props;
   const surfaceParams: SurfaceParams = { surface: 'neighborhood_card', section };
-  const { changeButtonRef, currentRating, showsBeans, handleRate, handleSaved, handleSaveFailed, startChange } =
+  const { currentRating, showsBeans, handleRate, handleSaved, handleSaveFailed, startChange } =
     useCardContribution(props);
-  const { questionText, answerYes, skip, error } = useCardQuestion({
-    ...props,
-    hasRating: currentRating !== null,
-    surfaceParams,
-    // The question is gone once answered; "change" is the nearest control left.
-    onAnswer: () => changeButtonRef.current?.focus(),
-  });
 
   return (
     <div className={cls.CardContribution}>
@@ -43,18 +33,12 @@ export const CardContribution = (props: CardContributionProps) => {
         {!showsBeans && (
           <p className={cls.rating}>
             Your rating: {currentRating} ·{' '}
-            <button ref={changeButtonRef} type="button" className={cls.change} onClick={startChange}>
+            <button type="button" className={cls.change} onClick={startChange}>
               change
             </button>
           </p>
         )}
       </div>
-      {questionText && (
-        <div className={cls.question}>
-          <CharacteristicQuestion text={questionText} onYes={answerYes} onSkip={skip} />
-          {error && <ErrorAlert>{error}</ErrorAlert>}
-        </div>
-      )}
     </div>
   );
 };

@@ -5,12 +5,10 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AddRatingDocument,
-  Characteristic,
   FilteredPlacesDocument,
   type FilteredPlacesQuery,
   NeighborhoodShortlistsDocument,
   ShortlistId,
-  ToggleCharacteristicDocument,
 } from 'shared/generated/graphql';
 import { trackEvent } from 'shared/lib/analytics';
 import type * as guestModule from 'shared/lib/guest';
@@ -32,13 +30,7 @@ vi.mock('shared/lib/guest', async (importOriginal) => {
 
 type Place = FilteredPlacesQuery['filteredPlaces']['places'][number];
 
-const place = (
-  id: string,
-  averageRating: number,
-  ratingCount: number,
-  ownRating: number | null = null,
-  ownCharacteristics: Characteristic[] | null = null,
-): Place => ({
+const place = (id: string, averageRating: number, ratingCount: number, ownRating: number | null = null): Place => ({
   __typename: 'Place',
   id,
   type: 'Feature',
@@ -56,7 +48,6 @@ const place = (
     favoriteCount: 0,
     isFavorite: false,
     ownRating,
-    ownCharacteristics,
     googleId: null,
     neighborhood: 'Mitte',
   },
@@ -137,22 +128,6 @@ const failingAddRatingMock = (placeId: string, rating: number): MockedResponse =
   error: new Error('Network down'),
 });
 
-const toggleCharacteristicMock = (
-  placeId: string,
-  characteristic: Characteristic,
-  { onCall = () => {}, fails = false }: { onCall?: () => void; fails?: boolean } = {},
-): MockedResponse => ({
-  request: { query: ToggleCharacteristicDocument, variables: { placeId, characteristic, ...guest } },
-  ...(fails
-    ? { error: new Error('Network down') }
-    : {
-        result: () => {
-          onCall();
-          return { data: { toggleCharacteristic: { __typename: 'ToggleCharacteristicResult', success: true } } };
-        },
-      }),
-});
-
 const renderPage = ({
   topRated,
   all,
@@ -230,9 +205,6 @@ const section = (name: RegExp) => screen.getByRole('region', { name });
 const card = (region: HTMLElement, name: string) => within(region).getByRole('article', { name });
 const bean = (cardElement: HTMLElement, rating: number) =>
   within(cardElement).getByRole('radio', { name: `${rating} of 5` });
-
-/** The Yes / Skip question on a card, if it asks one. */
-const cardQuestion = (cardElement: HTMLElement) => within(cardElement).queryByRole('group');
 
 const cardNames = (region: HTMLElement) =>
   within(region)
@@ -609,142 +581,22 @@ describe('NeighborhoodPage', () => {
       });
       vi.mocked(console.error).mockRestore();
     });
-  });
 
-  describe('the Shortlist question on a card', () => {
-    // Place a sits in Top rated, Outdoor seating, Dog friendly and the full list.
-    const renderWithPlaceA = (a: Place, mocks: MockedResponse[] = []) =>
-      renderPage({
-        topRated: [a],
-        all: [a],
-        shortlists: {
-          outdoorSeating: { places: [a, place('o1', 4.4, 5), place('o2', 4.3, 5)], total: 3 },
-          dogFriendly: { places: [a, place('d1', 4.4, 5), place('d2', 4.3, 5)], total: 3 },
-        },
-        mocks,
-      });
-
-    it('asks nothing before a Rating, then only on Shortlist cards, about the Shortlist’s Characteristic', async () => {
+    it('asks no Characteristic question after a Rating on a Shortlist card', async () => {
       const user = userEvent.setup();
       const a = place('a', 4.8, 10);
-      renderWithPlaceA(a, [addRatingMock('a', 4)]);
+      renderPage({ topRated: [a], all: [a], shortlists: shortlists(a), mocks: [addRatingMock('a', 4)] });
 
       const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      const dogs = section(/dog friendly/i);
-      const cards = [card(section(/top rated/i), 'Place a'), card(outdoor, 'Place a'), card(dogs, 'Place a')];
-      for (const cardElement of cards) expect(cardQuestion(cardElement)).not.toBeInTheDocument();
-
       await user.click(bean(card(outdoor, 'Place a'), 4));
 
-      expect(within(card(outdoor, 'Place a')).getByRole('group', { name: 'Outdoor seating?' })).toBeInTheDocument();
       await waitFor(() => {
-        expect(within(card(dogs, 'Place a')).getByRole('group', { name: 'Pet friendly?' })).toBeInTheDocument();
+        expect(trackedEvents('rating_saved')).toHaveLength(1);
       });
-      expect(cardQuestion(card(section(/top rated/i), 'Place a'))).not.toBeInTheDocument();
-      expect(cardQuestion(card(section(/all 1 place in mitte/i), 'Place a'))).not.toBeInTheDocument();
-    });
-
-    it('asks nothing about a Characteristic the person already marked', async () => {
-      renderWithPlaceA(place('a', 4.8, 10, 4, [Characteristic.outdoorSeating]));
-
-      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      expect(cardQuestion(card(outdoor, 'Place a'))).not.toBeInTheDocument();
-      expect(
-        within(card(section(/dog friendly/i), 'Place a')).getByRole('group', { name: 'Pet friendly?' }),
-      ).toBeInTheDocument();
-    });
-
-    it('marks the Characteristic on Yes and stops asking it on every card of the Place', async () => {
-      const user = userEvent.setup();
-      const toggle = vi.fn();
-      renderWithPlaceA(place('a', 4.8, 10, 4), [
-        toggleCharacteristicMock('a', Characteristic.petFriendly, { onCall: toggle }),
-      ]);
-
-      const dogs = await screen.findByRole('region', { name: /dog friendly/i });
-      await user.click(within(card(dogs, 'Place a')).getByRole('button', { name: 'Yes' }));
-
-      await waitFor(() => {
-        expect(toggle).toHaveBeenCalledTimes(1);
-      });
-      // Gone for good once the save settles: the mark is in the Place's cached ownCharacteristics, which every card
-      // of the Place reads. A Place's cards in other Shortlists ask about their own Characteristics, so they stay.
-      await waitFor(() => {
-        expect(trackedEvents('characteristic_answered')).toHaveLength(1);
-      });
-      expect(cardQuestion(card(dogs, 'Place a'))).not.toBeInTheDocument();
-      expect(within(card(dogs, 'Place a')).getByRole('button', { name: 'change' })).toHaveFocus();
-      expect(
-        within(card(section(/outdoor seating/i), 'Place a')).getByRole('group', { name: 'Outdoor seating?' }),
-      ).toBeInTheDocument();
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-      expect(trackedEvents('characteristic_answered')).toEqual([
-        [
-          'characteristic_answered',
-          {
-            place_id: 'a',
-            actor: 'guest',
-            characteristic: 'petFriendly',
-            answer: 'yes',
-            surface: 'neighborhood_card',
-            section: 'dogFriendly',
-          },
-        ],
-      ]);
-    });
-
-    it('sends nothing on Skip and hides the question on that card only', async () => {
-      const user = userEvent.setup();
-      renderWithPlaceA(place('a', 4.8, 10, 4));
-
-      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      await user.click(within(card(outdoor, 'Place a')).getByRole('button', { name: 'Skip' }));
-
-      expect(cardQuestion(card(outdoor, 'Place a'))).not.toBeInTheDocument();
-      expect(within(card(section(/dog friendly/i), 'Place a')).getByRole('group')).toBeInTheDocument();
-      expect(ensureGuestIdentity).not.toHaveBeenCalled();
-      expect(trackedEvents('characteristic_answered')).toEqual([
-        [
-          'characteristic_answered',
-          {
-            place_id: 'a',
-            actor: 'guest',
-            characteristic: 'outdoorSeating',
-            answer: 'skip',
-            surface: 'neighborhood_card',
-            section: 'outdoorSeating',
-          },
-        ],
-      ]);
-    });
-
-    it('brings the question back with the reason when a Yes fails', async () => {
-      const user = userEvent.setup();
-      vi.spyOn(console, 'error').mockImplementation(() => {});
-      renderWithPlaceA(place('a', 4.8, 10, 4), [
-        toggleCharacteristicMock('a', Characteristic.outdoorSeating, { fails: true }),
-      ]);
-
-      const outdoor = await screen.findByRole('region', { name: /outdoor seating/i });
-      await user.click(within(card(outdoor, 'Place a')).getByRole('button', { name: 'Yes' }));
-
-      expect(await within(card(outdoor, 'Place a')).findByRole('alert')).toHaveTextContent(/check your connection/i);
-      expect(within(card(outdoor, 'Place a')).getByRole('group', { name: 'Outdoor seating?' })).toBeInTheDocument();
+      expect(within(card(outdoor, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      expect(screen.queryByRole('group')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Yes' })).not.toBeInTheDocument();
       expect(trackedEvents('characteristic_answered')).toEqual([]);
-      expect(trackedEvents('contribution_failed')).toEqual([
-        [
-          'contribution_failed',
-          {
-            place_id: 'a',
-            actor: 'guest',
-            kind: 'characteristic',
-            reason: 'network',
-            surface: 'neighborhood_card',
-            section: 'outdoorSeating',
-          },
-        ],
-      ]);
-      vi.mocked(console.error).mockRestore();
     });
   });
 });
