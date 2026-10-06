@@ -1,3 +1,29 @@
+.section {
+  margin-bottom: 48px;
+  /* A URL hash lands the title below the fixed 60px navbar, not under it. */
+  scroll-margin-top: 76px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: var(--font-weight-medium);
+  color: #111111;
+  margin-bottom: 16px;
+
+  @media (max-width: 900px) {
+    font-size: 20px;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .showMore {
   display: flex;
   justify-content: center;

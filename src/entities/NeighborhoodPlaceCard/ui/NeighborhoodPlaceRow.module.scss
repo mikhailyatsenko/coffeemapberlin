@@ -1,0 +1,88 @@
+.row {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) auto auto;
+  grid-template-areas: 'photo info contribution favorite';
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* On a phone the beans go under the name, so the row fits the screen. */
+  @media (max-width: 768px) {
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'photo info favorite'
+      'contribution contribution contribution';
+    column-gap: 12px;
+    align-items: start;
+  }
+}
+
+.imageContainer {
+  grid-area: photo;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+  color: #111111;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.address {
+  margin: 0;
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  color: #8c4c17;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contribution {
+  grid-area: contribution;
+}
+
+.favorite {
+  grid-area: favorite;
+}

@@ -210,10 +210,12 @@ const enterViewport = (element: Element) => {
 };
 
 const section = (name: RegExp) => screen.getByRole('region', { name });
-/** The card of the Place named `name` in a section. */
+/** The card of the Place named `name` in a shelf. */
 const card = (region: HTMLElement, name: string) => within(region).getByRole('article', { name });
-const bean = (cardElement: HTMLElement, rating: number) =>
-  within(cardElement).getByRole('radio', { name: `${rating} of 5` });
+/** The row of the Place named `name` in the full list. */
+const row = card;
+const bean = (rowElement: HTMLElement, rating: number) =>
+  within(rowElement).getByRole('radio', { name: `${rating} of 5` });
 
 const cardNames = (region: HTMLElement) =>
   within(region)
@@ -529,7 +531,7 @@ describe('NeighborhoodPage', () => {
         expect(within(shelfCard).queryByRole('radio')).not.toBeInTheDocument();
       }
       expect(
-        within(card(section(/all 1 place in mitte/i), 'Place a')).getByText('Been here? Rate it'),
+        within(row(section(/all 1 place in mitte/i), 'Place a')).getByText('Been here? Rate it'),
       ).toBeInTheDocument();
     });
 
@@ -549,7 +551,25 @@ describe('NeighborhoodPage', () => {
     });
   });
 
-  describe('rating from a card', () => {
+  describe('full-list rows', () => {
+    it('show the name, the Average rating and the street, without the Neighborhood badge or the description', async () => {
+      const a = place('a', 4.8, 10, null, 'Wiener Str. 62, 10999');
+      a.properties.description = 'A long story about the beans';
+      renderPage({ topRated: [], all: [a, place('new', 0, 0)] });
+
+      const all = await screen.findByRole('region', { name: /all 2 places in mitte/i });
+      const rowA = row(all, 'Place a');
+      expect(within(rowA).getByRole('link', { name: 'Place a' })).toBeInTheDocument();
+      expect(within(rowA).getByText('4.8')).toBeInTheDocument();
+      expect(within(rowA).getByText('Wiener Str. 62')).toBeInTheDocument();
+      expect(rowA).not.toHaveTextContent(/\b\d{5}\b/);
+      expect(within(rowA).queryByText('Mitte')).not.toBeInTheDocument();
+      expect(within(rowA).queryByText('A long story about the beans')).not.toBeInTheDocument();
+      expect(within(row(all, 'Place new')).getByText('No ratings yet — be the first')).toBeInTheDocument();
+    });
+  });
+
+  describe('rating from a row', () => {
     // Place a sits in Outdoor seating and in the full list.
     const shortlists = (a: Place) => ({
       outdoorSeating: { places: [a, place('o1', 4.4, 5), place('o2', 4.3, 5)], total: 3 },
@@ -567,18 +587,18 @@ describe('NeighborhoodPage', () => {
       });
 
       const all = await screen.findByRole('region', { name: /all 2 places in mitte/i });
-      expect(within(card(all, 'Place a')).getByText('Been here? Rate it')).toBeInTheDocument();
-      await user.click(bean(card(all, 'Place a'), 4));
+      expect(within(row(all, 'Place a')).getByText('Been here? Rate it')).toBeInTheDocument();
+      await user.click(bean(row(all, 'Place a'), 4));
 
-      expect(within(card(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      expect(within(row(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
       await waitFor(() => {
         expect(addRating).toHaveBeenCalledTimes(1);
       });
       expect(screen.queryByText('Place page')).not.toBeInTheDocument();
       // The Average rating and the order stay as the page view showed them.
-      expect(within(card(all, 'Place a')).getByText('4.8')).toBeInTheDocument();
+      expect(within(row(all, 'Place a')).getByText('4.8')).toBeInTheDocument();
       expect(cardNames(all)).toEqual(['Place b', 'Place a']);
-      expect(within(card(all, 'Place b')).getByText('Been here? Rate it')).toBeInTheDocument();
+      expect(within(row(all, 'Place b')).getByText('Been here? Rate it')).toBeInTheDocument();
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
 
@@ -588,11 +608,11 @@ describe('NeighborhoodPage', () => {
       renderPage({ topRated: [], all: [place('a', 4.8, 10)], mocks: [failingAddRatingMock('a', 4)] });
 
       const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
-      await user.click(bean(card(all, 'Place a'), 4));
+      await user.click(bean(row(all, 'Place a'), 4));
 
-      expect(await within(card(all, 'Place a')).findByRole('alert')).toHaveTextContent(/check your connection/i);
-      expect(bean(card(all, 'Place a'), 4)).not.toBeChecked();
-      expect(within(card(all, 'Place a')).queryByText(/Your rating/)).not.toBeInTheDocument();
+      expect(await within(row(all, 'Place a')).findByRole('alert')).toHaveTextContent(/check your connection/i);
+      expect(bean(row(all, 'Place a'), 4)).not.toBeChecked();
+      expect(within(row(all, 'Place a')).queryByText(/Your rating/)).not.toBeInTheDocument();
       vi.mocked(console.error).mockRestore();
     });
 
@@ -601,10 +621,10 @@ describe('NeighborhoodPage', () => {
       renderPage({ topRated: [], all: [place('a', 4.8, 10, 3)] });
 
       const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
-      expect(within(card(all, 'Place a')).getByText(/Your rating: 3/)).toBeInTheDocument();
-      expect(within(card(all, 'Place a')).queryByText('Been here? Rate it')).not.toBeInTheDocument();
-      await user.click(within(card(all, 'Place a')).getByRole('button', { name: 'change' }));
-      expect(bean(card(all, 'Place a'), 3)).toBeChecked();
+      expect(within(row(all, 'Place a')).getByText(/Your rating: 3/)).toBeInTheDocument();
+      expect(within(row(all, 'Place a')).queryByText('Been here? Rate it')).not.toBeInTheDocument();
+      await user.click(within(row(all, 'Place a')).getByRole('button', { name: 'change' }));
+      expect(bean(row(all, 'Place a'), 3)).toBeChecked();
     });
 
     it('sends rating_saved and contribution_failed with the card surface and section', async () => {
@@ -619,7 +639,7 @@ describe('NeighborhoodPage', () => {
       });
 
       const all = await screen.findByRole('region', { name: /all 2 places in mitte/i });
-      await user.click(bean(card(all, 'Place a'), 5));
+      await user.click(bean(row(all, 'Place a'), 5));
       await waitFor(() => {
         expect(trackedEvents('rating_saved')).toEqual([
           [
@@ -635,7 +655,7 @@ describe('NeighborhoodPage', () => {
           ],
         ]);
       });
-      await user.click(bean(card(all, 'Place b'), 2));
+      await user.click(bean(row(all, 'Place b'), 2));
       await waitFor(() => {
         expect(trackedEvents('contribution_failed')).toEqual([
           [
@@ -660,12 +680,12 @@ describe('NeighborhoodPage', () => {
       renderPage({ topRated: [a], all: [a], shortlists: shortlists(a), mocks: [addRatingMock('a', 4)] });
 
       const all = await screen.findByRole('region', { name: /all 1 place in mitte/i });
-      await user.click(bean(card(all, 'Place a'), 4));
+      await user.click(bean(row(all, 'Place a'), 4));
 
       await waitFor(() => {
         expect(trackedEvents('rating_saved')).toHaveLength(1);
       });
-      expect(within(card(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
+      expect(within(row(all, 'Place a')).getByText(/Your rating: 4/)).toBeInTheDocument();
       expect(screen.queryByRole('group')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Yes' })).not.toBeInTheDocument();
       expect(trackedEvents('characteristic_answered')).toEqual([]);
