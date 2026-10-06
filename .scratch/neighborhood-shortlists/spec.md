@@ -3,7 +3,7 @@
 Status: ready-for-agent
 Map: [Engagement: what to build so people interact more with the site](../engagement/map.md). Decision: [Which "best in Neighborhood" lists are worth showing?](../engagement/issues/06-best-in-neighborhood.md). Rank: #2 in [Rank the candidates into the final list](../engagement/issues/07-rank-candidates.md). Builds on: [One-tap contributions](../one-tap-contributions/spec.md) (in production since 2026-09-25) and [Photo without Review text](../photo-without-review-text/spec.md).
 
-**Start gate overridden:** the One-tap contributions spec says to wait for its eight-week check (~2026-11-20) before building Shortlists. On 2026-09-26 the owner chose to build now. See Further Notes.
+**Superseded in part (2026-10-06)** by [Neighborhood page redesign](../neighborhood-redesign/spec.md): Rate it on Top rated and Shortlist cards and the Characteristic question on Shortlist cards (stories 22–29) are withdrawn, and the eight-week success check is cancelled by the owner. The GA events stay.
 
 ## Problem Statement
 
@@ -22,8 +22,6 @@ Every card on the page offers "Been here? Rate it" with the one-tap Rating from 
 On the server, Amenities that Google spells in several ways (Wi-Fi / Free Wi-Fi, Cozy / Cosy, the Dogs allowed variants) are merged through one synonym table. Both the Shortlists and the map's Filters use it, so "See all 12 on the map" shows 12.
 
 An unknown Neighborhood shows the Not found page.
-
-The feature ships with GA events, a baseline and a success threshold (see Further Notes).
 
 ## User Stories
 
@@ -65,10 +63,9 @@ The feature ships with GA events, a baseline and a success threshold (see Furthe
 36. As a visitor using the map's Filters, I want "Dogs allowed" to also match Places Google lists under another spelling, so that the Filter doesn't miss Places.
 37. As a Guest who later signs in, I want Ratings and Characteristics given on cards claimed like all my Reviews, so that nothing is lost.
 38. As the owner, I want GA events for the page view, each Shortlist seen, "See all" taps, card opens, and Ratings and answers given on cards, so that I can see what the page is used for.
-39. As the owner, I want Rating events to say whether they came from the Place page or a Neighborhood card, so that I can tell the two features apart during their overlapping checks.
-40. As the owner, I want a written baseline and success threshold for eight weeks after release, so that I can decide whether to keep the Shortlists.
-41. As a developer building Visits next, I want every card on the page to know the person's own Rating for its Place, so that "Been here" badges and "4 of 41 in Mitte" can be added without another query.
-42. As a developer building the Quiz later, I want the Amenity synonym table on the server as one module, so that the Quiz reuses it instead of copying it.
+39. As the owner, I want Rating events to say whether they came from the Place page or a Neighborhood card, so that I can tell the two features apart.
+40. As a developer building Visits next, I want every card on the page to know the person's own Rating for its Place, so that "Been here" badges and "4 of 41 in Mitte" can be added without another query.
+41. As a developer building the Quiz later, I want the Amenity synonym table on the server as one module, so that the Quiz reuses it instead of copying it.
 
 ## Implementation Decisions
 
@@ -195,27 +192,7 @@ type Query {
 
 ## Further Notes
 
-**Start gate overridden (2026-09-26).** The One-tap contributions spec says to stop and rethink before building Shortlists if Ratings are below 2× the baseline at its eight-week check (~2026-11-20). The owner chose to build now instead of waiting two months: Shortlists open contribution on another page, and `surface` keeps the two features' numbers apart. So the Shortlists check window overlaps the One-tap one. Judge One-tap on `surface: 'place_page'` Ratings from GA, alongside its database totals, which now include card Ratings.
-
-**How success is measured**
-
-- **Two sources.** The database is the ground truth for how many Ratings exist, but it can't tell where a Rating came from. GA can, through `surface`, but misses visitors with ad blockers. So the totals come from the database and the split from GA. Count creation time by the Review's `_id`, not `date`, which edits rewrite.
-- **Baseline:**
-  - Neighborhood page views over the eight weeks before release, from GA (`page_view` on `/neighborhood/*`), noted in this spec on release day.
-  - Ratings from the Neighborhood page are 0 today: it allows none.
-  - Places with at least one User or Guest Rating: 90 of 408 on 2026-09-23. Take a fresh read-only count on release day.
-- **Check date:** eight weeks after release. Judge the eight-week total only.
-- **It works** when, over those eight weeks:
-  - `rating_saved` with `surface: 'neighborhood_card'` reaches at least 0.5% of Neighborhood page views, and at least 5 in total;
-  - at least one Characteristic "Yes" on a card for every three card Ratings (one question per card, so lower than the Place page's one in two);
-  - `contribution_failed` with `surface: 'neighborhood_card'` is under 10% of card Rating attempts;
-  - Places with a first User or Guest Rating grow by at least 5 more than over the eight weeks before release (the full list exists to reach unrated Places).
-- **Where it breaks, from the GA funnel:**
-  - `shortlist_view` high but `shortlist_map_click` and `neighborhood_card_click` near zero: the Shortlists aren't what people came for;
-  - card clicks healthy but card Ratings near zero: people use the page to choose, not to rate, so the beans on cards are the issue;
-  - Ratings mostly from the full list's unrated Places: good, the full list works; consider moving it up.
-- **Below 2 card Ratings in eight weeks:** keep the Shortlists for search visitors, but don't build more contribution onto cards (Visits badges, Quiz cards) before rethinking.
-- The window overlaps the One-tap check (see Start gate overridden); `surface` keeps the two apart.
+**One-tap check.** Its database totals now include Ratings from Neighborhood cards; judge One-tap on `surface: 'place_page'` Ratings from GA alongside them.
 
 **Dependencies:** reuses `OneTapRating`, the question UI, `trackEvent` and the save-error mapping from One-tap contributions. Visits (#3) will read `ownRating` on cards. The Quiz (#5) will reuse the synonym table, `filteredPlaces` synonyms and the card contribution component.
 
