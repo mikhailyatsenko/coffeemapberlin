@@ -16,6 +16,8 @@
   &.small {
     gap: 4px;
     font-size: 12px;
+    /* The bean row's height, so an unrated Place's card is as tall as a rated one's. */
+    min-height: 31px;
   }
 }
 
