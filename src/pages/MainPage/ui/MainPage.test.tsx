@@ -64,7 +64,6 @@ const filteredResult = vi.fn(() => ({
             ratingCount: 3,
             favoriteCount: 0,
             ownRating: null,
-            ownCharacteristics: null,
           },
         },
       ],

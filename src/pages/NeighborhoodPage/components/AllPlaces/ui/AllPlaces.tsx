@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { CardContribution } from 'features/RateNow';
+import { NeighborhoodPlaceRow } from 'entities/NeighborhoodPlaceCard';
 import { RoutePaths } from 'shared/constants';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { ALL_PLACES_ANCHOR } from '../../../constants';
 import { sortPlaces } from '../../../lib/sortPlaces';
 import { type NeighborhoodPlace } from '../../../types';
-import { PlacesSection } from '../../PlacesSection';
 import { ALL_PLACES_PAGE_SIZE } from '../constants';
 import cls from './AllPlaces.module.scss';
 
@@ -15,19 +17,34 @@ interface AllPlacesProps {
   onCardOpen: () => void;
 }
 
-/** Every Place of the Neighborhood, best Average rating first, 20 at a time. */
+/** Every Place of the Neighborhood as rows where people rate, best Average rating first, 20 at a time. */
 export const AllPlaces = ({ neighborhood, places, total, onCardOpen }: AllPlacesProps) => {
   const [visibleCount, setVisibleCount] = useState(ALL_PLACES_PAGE_SIZE);
   const sortedPlaces = useMemo(() => sortPlaces(places), [places]);
 
   return (
-    <PlacesSection
-      id="all-places"
-      title={`All ${total} Place${total !== 1 ? 's' : ''} in ${neighborhood}`}
-      section="all"
-      places={sortedPlaces.slice(0, visibleCount)}
-      onCardOpen={onCardOpen}
+    <section
+      id={ALL_PLACES_ANCHOR}
+      tabIndex={-1}
+      className={cls.section}
+      aria-labelledby={`${ALL_PLACES_ANCHOR}-title`}
     >
+      <h2 id={`${ALL_PLACES_ANCHOR}-title`} className={cls.title}>
+        All {total} Place{total !== 1 ? 's' : ''} in {neighborhood}
+      </h2>
+      <ul className={cls.list}>
+        {sortedPlaces.slice(0, visibleCount).map((place) => (
+          <li key={place.id}>
+            <NeighborhoodPlaceRow
+              place={place}
+              onOpen={onCardOpen}
+              contribution={
+                <CardContribution placeId={place.id} ownRating={place.properties.ownRating} section="all" />
+              }
+            />
+          </li>
+        ))}
+      </ul>
       {visibleCount < sortedPlaces.length && (
         <div className={cls.showMore}>
           <RegularButton
@@ -42,6 +59,6 @@ export const AllPlaces = ({ neighborhood, places, total, onCardOpen }: AllPlaces
       <p className={cls.suggest}>
         Know a Place that’s missing? <Link to={`/${RoutePaths.suggestPlace}`}>Suggest it</Link>
       </p>
-    </PlacesSection>
+    </section>
   );
 };

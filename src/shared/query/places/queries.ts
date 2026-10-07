@@ -133,9 +133,9 @@ export const GET_FILTERED_PLACES = gql`
           favoriteCount
           isFavorite
           ownRating
-          ownCharacteristics
           googleId
           neighborhood
+          shortlistIds
         }
       }
       total
@@ -184,9 +184,9 @@ export const GET_NEIGHBORHOOD_SHORTLISTS = gql`
           favoriteCount
           isFavorite
           ownRating
-          ownCharacteristics
           googleId
           neighborhood
+          shortlistIds
         }
       }
       total

@@ -1,0 +1,103 @@
+/* The page's `.container` side padding, which the bar's background bleeds into. */
+$gutter: 60px;
+$gutter-phone: 16px;
+$navbar-height: 60px;
+
+.switcher {
+  position: sticky;
+  top: $navbar-height;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  /* Set on the page, which also adds it to the sections' scroll margin. */
+  height: var(--section-switcher-height);
+  margin: -24px (-$gutter) 24px;
+  /* A global `nav` rule pads every nav on narrow screens; the list pads itself. */
+  padding: 0;
+  border-bottom: 1px solid var(--border-primary);
+  background-color: var(--bg-primary);
+
+  @media (width <= 480px) {
+    margin-inline: -$gutter-phone;
+  }
+}
+
+.list {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0 $gutter;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Centered while the links fit; `safe` keeps the first one reachable once they don't. */
+  justify-content: safe center;
+
+  @media (width <= 480px) {
+    padding-inline: $gutter-phone;
+  }
+}
+
+.link {
+  display: inline-block;
+  padding: 7px 14px;
+  border: 1px solid var(--border-secondary);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  color: var(--text-primary);
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    border-color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-outline-light);
+  }
+
+  &[aria-current] {
+    border-color: var(--text-primary);
+    background-color: var(--text-primary);
+    color: var(--text-inverse);
+  }
+}
+
+.count {
+  color: var(--text-secondary);
+
+  .link[aria-current] & {
+    color: inherit;
+    opacity: 0.75;
+  }
+}
+
+.pillSkeleton {
+  flex-shrink: 0;
+  /* A link's height: its 14px line, padding and border. */
+  height: 33px;
+  border-radius: 999px;
+
+  /* The usual labels' widths, one per pill of `SectionSwitcherSkeleton`, so the row looks like the one to come. */
+  $widths: 92px, 84px, 128px, 148px, 172px, 76px;
+
+  @for $i from 1 through length($widths) {
+    &:nth-child(#{$i}) {
+      width: nth($widths, $i);
+    }
+  }
+}

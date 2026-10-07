@@ -25,9 +25,9 @@ const place = (ratingCount: number): NeighborhoodPlaceCardProps['place'] => ({
     favoriteCount: 0,
     isFavorite: false,
     ownRating: null,
-    ownCharacteristics: null,
     googleId: null,
     neighborhood: 'Mitte',
+    shortlistIds: [],
   },
 });
 
