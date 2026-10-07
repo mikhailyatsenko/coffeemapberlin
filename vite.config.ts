@@ -28,6 +28,10 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, '.claude/worktrees/**'],
     // jsdom renders slow down several times on a busy machine; the 5s default then fails healthy tests.
     testTimeout: 15_000,
+    // The default runs a process with its own jsdom per core and stalls an 8 GB machine;
+    // two threads take about half the memory and leave the other cores free.
+    pool: 'threads',
+    maxWorkers: 2,
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],

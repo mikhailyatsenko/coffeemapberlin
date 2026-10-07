@@ -1,2 +1,9 @@
 npx --no-install lint-staged
-npm test
+
+# The whole suite only when what every test runs on changes: the test config, its setup or the dependencies.
+if git diff --cached --name-only | grep -qE '^(vite\.config\.ts|package(-lock)?\.json|src/shared/config/tests/)'; then
+  npm test
+else
+  # Otherwise only the tests that import a staged file, directly or not.
+  git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 npx --no-install vitest related --run --passWithNoTests
+fi
