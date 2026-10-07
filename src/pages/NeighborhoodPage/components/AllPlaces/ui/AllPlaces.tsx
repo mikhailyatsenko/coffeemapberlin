@@ -4,6 +4,7 @@ import { CardContribution } from 'features/RateNow';
 import { NeighborhoodPlaceRow } from 'entities/NeighborhoodPlaceCard';
 import { RoutePaths } from 'shared/constants';
 import { RegularButton } from 'shared/ui/RegularButton';
+import { ALL_PLACES_ANCHOR } from '../../../constants';
 import { sortPlaces } from '../../../lib/sortPlaces';
 import { type NeighborhoodPlace } from '../../../types';
 import { ALL_PLACES_PAGE_SIZE } from '../constants';
@@ -22,8 +23,13 @@ export const AllPlaces = ({ neighborhood, places, total, onCardOpen }: AllPlaces
   const sortedPlaces = useMemo(() => sortPlaces(places), [places]);
 
   return (
-    <section id="all-places" className={cls.section} aria-labelledby="all-places-title">
-      <h2 id="all-places-title" className={cls.title}>
+    <section
+      id={ALL_PLACES_ANCHOR}
+      tabIndex={-1}
+      className={cls.section}
+      aria-labelledby={`${ALL_PLACES_ANCHOR}-title`}
+    >
+      <h2 id={`${ALL_PLACES_ANCHOR}-title`} className={cls.title}>
         All {total} Place{total !== 1 ? 's' : ''} in {neighborhood}
       </h2>
       <ul className={cls.list}>

@@ -4,8 +4,13 @@ $gutter-phone: 16px;
 
 .section {
   margin-bottom: 48px;
-  /* A URL hash lands the title below the fixed 60px navbar, not under it. */
-  scroll-margin-top: 76px;
+  /* A URL hash or a switcher tap lands the title below the fixed 60px navbar and the switcher. */
+  scroll-margin-top: calc(76px + var(--section-switcher-height, 0px));
+
+  /* A switcher tap focuses the section only to move the Tab order there; it is no control. */
+  &:focus {
+    outline: none;
+  }
 }
 
 .title {

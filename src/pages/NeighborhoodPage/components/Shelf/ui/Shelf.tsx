@@ -23,7 +23,7 @@ interface ShelfProps {
 
 /** A titled grid of compact Place cards, a carousel on a phone, with "See all N on the map" under it. */
 export const Shelf = ({ id, title, places, columns, mapCount, onMapOpen, onCardOpen, ref }: ShelfProps) => (
-  <section ref={ref} id={id} className={cls.section} aria-labelledby={`${id}-title`}>
+  <section ref={ref} id={id} tabIndex={-1} className={cls.section} aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`} className={cls.title}>
       {title}
     </h2>

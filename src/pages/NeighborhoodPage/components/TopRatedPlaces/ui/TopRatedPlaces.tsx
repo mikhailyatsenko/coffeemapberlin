@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { TOP_RATED_MIN_RATING } from '../../../constants';
+import { TOP_RATED_ANCHOR, TOP_RATED_MIN_RATING } from '../../../constants';
 import { sortPlaces } from '../../../lib/sortPlaces';
 import { showNeighborhoodOnMap } from '../../../model/showNeighborhoodOnMap';
 import { type NeighborhoodPlace } from '../../../types';
@@ -21,7 +21,7 @@ export const TopRatedPlaces = ({ places, neighborhood, onCardOpen, onMapOpen }: 
   if (bestPlaces.length === 0) return null;
   return (
     <Shelf
-      id="top-rated"
+      id={TOP_RATED_ANCHOR}
       title="Top rated"
       places={bestPlaces}
       columns={3}

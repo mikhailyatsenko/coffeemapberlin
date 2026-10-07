@@ -180,35 +180,45 @@ const renderPage = ({
 
 const trackedEvents = (name: string) => vi.mocked(trackEvent).mock.calls.filter(([eventName]) => eventName === name);
 
-/** Stands in for the browser's IntersectionObserver; `enterViewport` fires it for one element. */
-const observed = new Map<Element, FakeIntersectionObserver>();
+/**
+ * Stands in for the browser's IntersectionObserver; `enterViewport` and
+ * `leaveViewport` fire every observer watching one element.
+ */
+const observed = new Map<Element, Set<FakeIntersectionObserver>>();
 class FakeIntersectionObserver {
   constructor(private readonly callback: IntersectionObserverCallback) {}
 
   observe(element: Element) {
-    observed.set(element, this);
+    observed.set(element, (observed.get(element) ?? new Set()).add(this));
   }
 
   unobserve(element: Element) {
-    observed.delete(element);
+    observed.get(element)?.delete(this);
   }
 
   disconnect() {
-    for (const [element, observer] of observed) if (observer === this) observed.delete(element);
+    for (const observers of observed.values()) observers.delete(this);
   }
 
-  fire(element: Element) {
-    const entry = { target: element, isIntersecting: true } as unknown as IntersectionObserverEntry;
+  fire(element: Element, isIntersecting: boolean) {
+    const entry = { target: element, isIntersecting } as unknown as IntersectionObserverEntry;
     this.callback([entry], this as unknown as IntersectionObserver);
   }
 }
-// jsdom has no scrollIntoView; a focused shelf card calls it.
-Element.prototype.scrollIntoView = vi.fn();
+// jsdom has no scrollIntoView; a focused shelf card and a section switcher tap call it.
+const scrollIntoView = vi.fn();
+Element.prototype.scrollIntoView = scrollIntoView;
 
-const enterViewport = (element: Element) => {
+const fireIntersection = (element: Element, isIntersecting: boolean) => {
   act(() => {
-    observed.get(element)?.fire(element);
+    for (const observer of [...(observed.get(element) ?? [])]) observer.fire(element, isIntersecting);
   });
+};
+const enterViewport = (element: Element) => {
+  fireIntersection(element, true);
+};
+const leaveViewport = (element: Element) => {
+  fireIntersection(element, false);
 };
 
 const section = (name: RegExp) => screen.getByRole('region', { name });
@@ -789,6 +799,109 @@ describe('NeighborhoodPage', () => {
       expect(screen.queryByRole('group')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Yes' })).not.toBeInTheDocument();
       expect(trackedEvents('characteristic_answered')).toEqual([]);
+    });
+  });
+
+  describe('section switcher', () => {
+    const switcher = () => screen.getByRole('navigation', { name: 'Sections' });
+    const switcherLinks = () =>
+      within(switcher())
+        .getAllByRole('link')
+        .map((link) => link.textContent);
+
+    it('lists Top rated, each shown Shortlist with its total and All with its total, in page order', async () => {
+      const a = place('a', 4.8, 10);
+      renderPage({
+        topRated: [a],
+        all: [a, place('b', 4.1, 3)],
+        shortlists: { work: shortlist('w', 18), dogFriendly: shortlist('d', 9), breakfastBrunch: shortlist('b', 4) },
+      });
+
+      await screen.findByRole('region', { name: /all 2 places in mitte/i });
+      expect(switcherLinks()).toEqual(['Top rated', 'Work 18', 'Dog friendly 9', 'Breakfast & brunch 4', 'All 2']);
+    });
+
+    it('has no link for a hidden Shortlist or a missing Top rated', async () => {
+      renderPage({
+        topRated: [],
+        all: [place('b', 4.1, 3)],
+        shortlists: { work: shortlist('w', 2), outdoorSeating: shortlist('o', 3) },
+      });
+
+      await screen.findByRole('region', { name: /all 1 place in mitte/i });
+      expect(switcherLinks()).toEqual(['Outdoor seating 3', 'All 1']);
+    });
+
+    it('is left out when the full list is the only section', async () => {
+      renderPage({ topRated: [], all: [place('b', 4.1, 3)], shortlists: { work: shortlist('w', 2) } });
+
+      await screen.findByRole('region', { name: /all 1 place in mitte/i });
+      expect(screen.queryByRole('navigation', { name: 'Sections' })).not.toBeInTheDocument();
+    });
+
+    it('points each link at its section', async () => {
+      const a = place('a', 4.8, 10);
+      renderPage({ topRated: [a], all: [a], shortlists: { dogFriendly: shortlist('d', 3) } });
+
+      await screen.findByRole('region', { name: /all 1 place in mitte/i });
+      const hrefs = within(switcher())
+        .getAllByRole('link')
+        .map((link) => link.getAttribute('href'));
+      expect(hrefs).toEqual(['#top-rated', '#dog-friendly', '#all-places']);
+      for (const href of hrefs) expect(document.getElementById(href!.slice(1))).toBeInTheDocument();
+    });
+
+    it('scrolls to the tapped section, moves focus there and sends neighborhood_nav_click with its target', async () => {
+      const a = place('a', 4.8, 10);
+      renderPage({
+        topRated: [a],
+        all: [a],
+        shortlists: { work: shortlist('w', 3), dogFriendly: shortlist('d', 3) },
+      });
+
+      await screen.findByRole('region', { name: /all 1 place in mitte/i });
+      scrollIntoView.mockClear();
+      await userEvent.click(within(switcher()).getByRole('link', { name: 'Dog friendly 3' }));
+      await userEvent.click(within(switcher()).getByRole('link', { name: 'Top rated' }));
+      await userEvent.click(within(switcher()).getByRole('link', { name: 'All 1' }));
+
+      expect(section(/all 1 place in mitte/i)).toHaveFocus();
+      expect(scrollIntoView.mock.contexts.map((element) => (element as Element).id)).toEqual([
+        'dog-friendly',
+        'top-rated',
+        'all-places',
+      ]);
+      expect(trackedEvents('neighborhood_nav_click')).toEqual([
+        ['neighborhood_nav_click', { neighborhood: 'Mitte', target: 'dogFriendly', actor: 'guest' }],
+        ['neighborhood_nav_click', { neighborhood: 'Mitte', target: 'top_rated', actor: 'guest' }],
+        ['neighborhood_nav_click', { neighborhood: 'Mitte', target: 'all', actor: 'guest' }],
+      ]);
+    });
+
+    it('marks the link of the section in view as current', async () => {
+      const a = place('a', 4.8, 10);
+      renderPage({ topRated: [a], all: [a], shortlists: { work: shortlist('w', 3), dogFriendly: shortlist('d', 3) } });
+
+      await screen.findByRole('region', { name: /all 1 place in mitte/i });
+      const current = () =>
+        within(switcher())
+          .queryAllByRole('link', { current: 'location' })
+          .map((link) => link.textContent);
+      expect(current()).toEqual([]);
+
+      enterViewport(section(/^work$/i));
+      expect(current()).toEqual(['Work 3']);
+
+      leaveViewport(section(/^work$/i));
+      enterViewport(section(/dog friendly/i));
+      expect(current()).toEqual(['Dog friendly 3']);
+
+      enterViewport(section(/top rated/i));
+      expect(current()).toEqual(['Top rated']);
+
+      leaveViewport(section(/top rated/i));
+      leaveViewport(section(/dog friendly/i));
+      expect(current()).toEqual(['Dog friendly 3']);
     });
   });
 });

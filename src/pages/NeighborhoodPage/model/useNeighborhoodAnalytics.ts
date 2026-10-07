@@ -15,7 +15,7 @@ interface NeighborhoodAnalyticsOptions {
 /**
  * Sends `neighborhood_view` once per page view, when the data has loaded, and
  * gives the sections callbacks for `shortlist_view`, `shortlist_map_click`,
- * `neighborhood_card_click` and `neighborhood_map_open`.
+ * `neighborhood_card_click`, `neighborhood_map_open` and `neighborhood_nav_click`.
  */
 export const useNeighborhoodAnalytics = ({
   slug,
@@ -63,5 +63,12 @@ export const useNeighborhoodAnalytics = ({
     trackEvent('neighborhood_map_open', { neighborhood, places_total: placesTotal, actor });
   }, [neighborhood, placesTotal, actor]);
 
-  return { trackShortlistView, trackShortlistMapOpen, trackCardOpen, trackNeighborhoodMapOpen };
+  const trackNavClick = useCallback(
+    (target: NeighborhoodSection) => {
+      trackEvent('neighborhood_nav_click', { neighborhood, target, actor });
+    },
+    [neighborhood, actor],
+  );
+
+  return { trackShortlistView, trackShortlistMapOpen, trackCardOpen, trackNeighborhoodMapOpen, trackNavClick };
 };

@@ -1,12 +1,16 @@
+import clsx from 'clsx';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
 import { Spinner } from 'shared/ui/Loader';
 import { AllPlaces } from '../components/AllPlaces';
 import { NeighborhoodHeader } from '../components/NeighborhoodHeader';
+import { SectionSwitcher } from '../components/SectionSwitcher';
 import { ShortlistBlock } from '../components/ShortlistBlock';
 import { TopRatedPlaces } from '../components/TopRatedPlaces';
+import { SWITCHER_MIN_SECTIONS } from '../constants';
 import { useScrollToHash } from '../hooks/useScrollToHash';
+import { switcherSections } from '../lib/switcherSections';
 import { useNeighborhoodAnalytics } from '../model/useNeighborhoodAnalytics';
 import { useNeighborhoodPlaces } from '../model/useNeighborhoodPlaces';
 import { type NeighborhoodPageProps } from '../types';
@@ -15,7 +19,7 @@ import cls from './NeighborhoodPage.module.scss';
 export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   const { neighborhood: slug } = useParams<{ neighborhood: string }>();
   const { status, displayNeighborhood, topRated, shortlists, all, total } = useNeighborhoodPlaces(slug);
-  const { trackShortlistView, trackShortlistMapOpen, trackCardOpen, trackNeighborhoodMapOpen } =
+  const { trackShortlistView, trackShortlistMapOpen, trackCardOpen, trackNeighborhoodMapOpen, trackNavClick } =
     useNeighborhoodAnalytics({
       slug,
       neighborhood: displayNeighborhood,
@@ -24,6 +28,8 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
       isLoaded: status === 'loaded',
     });
   useScrollToHash(status === 'loaded');
+  const sections = switcherSections({ hasTopRated: topRated.length > 0, shortlists, placesTotal: total });
+  const hasSwitcher = status === 'loaded' && sections.length >= SWITCHER_MIN_SECTIONS;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -32,7 +38,7 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   if (status === 'notFound') return notFound;
 
   return (
-    <main className={`${cls.NeighborhoodPage} container`}>
+    <main className={clsx(cls.NeighborhoodPage, hasSwitcher && cls.withSwitcher, 'container')}>
       <Helmet>
         <title>{`Best Coffee Places in ${displayNeighborhood} | Berlin Coffee Map`}</title>
       </Helmet>
@@ -54,6 +60,7 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
       )}
       {status === 'loaded' && (
         <>
+          {hasSwitcher && <SectionSwitcher sections={sections} onNavigate={trackNavClick} />}
           <TopRatedPlaces
             places={topRated}
             neighborhood={displayNeighborhood}
