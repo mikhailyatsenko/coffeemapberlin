@@ -27,6 +27,8 @@
 }
 
 .imageContainer {
+  /* ImgWithLoader centers its spinner in the nearest positioned box. */
+  position: relative;
   grid-area: photo;
   display: block;
   aspect-ratio: 1;
