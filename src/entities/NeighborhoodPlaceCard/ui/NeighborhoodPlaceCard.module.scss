@@ -8,7 +8,8 @@
   overflow: hidden;
   transition: box-shadow 0.3s ease;
 
-  &:hover {
+  /* A skeleton is no link, so it doesn't lift on hover. */
+  &:not(.skeletonCard):hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 }
@@ -74,4 +75,71 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* The skeleton's blocks take the height of the lines they stand in for. */
+.skeletonCard {
+  /* A narrow card wraps its title and rating summary; the skeleton follows its own width. */
+  container-type: inline-size;
+
+  .imageContainer {
+    border-radius: 0;
+  }
+}
+
+.titleSkeleton {
+  flex: 1;
+}
+
+.titleLineSkeleton {
+  /* A 21px title line. */
+  height: 15px;
+  margin: 3px 0;
+
+  &:first-child {
+    width: 75%;
+  }
+
+  &:last-child {
+    display: none;
+    width: 45%;
+  }
+}
+
+.favoriteSkeleton {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.ratingSkeleton {
+  width: 60%;
+  height: 16px;
+  /* The rating summary's 31px row. */
+  margin: 7.5px 0;
+}
+
+.iconsSkeleton {
+  width: 54px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.addressSkeleton {
+  width: 50%;
+  height: 13px;
+  /* A 17px address line, at the card's bottom. */
+  margin: auto 0 4px;
+}
+
+/* A row-of-5 card: the name often takes two lines and the rating count goes under the beans. */
+@container (width < 240px) {
+  .titleLineSkeleton:last-child {
+    display: block;
+  }
+
+  .ratingSkeleton {
+    margin: 17.5px 0;
+  }
 }

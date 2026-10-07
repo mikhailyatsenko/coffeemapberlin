@@ -85,3 +85,19 @@ $navbar-height: 60px;
     opacity: 0.75;
   }
 }
+
+.pillSkeleton {
+  flex-shrink: 0;
+  /* A link's height: its 14px line, padding and border. */
+  height: 33px;
+  border-radius: 999px;
+
+  /* The usual labels' widths, one per pill of `SectionSwitcherSkeleton`, so the row looks like the one to come. */
+  $widths: 92px, 84px, 128px, 148px, 172px, 76px;
+
+  @for $i from 1 through length($widths) {
+    &:nth-child(#{$i}) {
+      width: nth($widths, $i);
+    }
+  }
+}

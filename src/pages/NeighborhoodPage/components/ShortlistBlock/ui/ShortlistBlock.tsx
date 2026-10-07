@@ -3,6 +3,7 @@ import { SHORTLIST_MIN_RATING, SHORTLISTS } from '../../../constants';
 import { showNeighborhoodOnMap } from '../../../model/showNeighborhoodOnMap';
 import { type NeighborhoodShortlist } from '../../../types';
 import { Shelf } from '../../Shelf';
+import { SHORTLIST_SHELF_SIZE } from '../constants';
 import { useOnFirstView } from '../hooks/useOnFirstView';
 
 interface ShortlistBlockProps {
@@ -26,7 +27,7 @@ export const ShortlistBlock = ({ shortlist, neighborhood, onView, onCardOpen, on
       id={anchor}
       title={title}
       places={shortlist.places}
-      columns={5}
+      columns={SHORTLIST_SHELF_SIZE}
       mapCount={shortlist.total}
       onMapOpen={() => {
         showNeighborhoodOnMap(neighborhood, { amenities: shortlist.amenities, minRating: SHORTLIST_MIN_RATING });

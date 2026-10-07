@@ -141,6 +141,7 @@ const renderPage = ({
   all,
   shortlists = {},
   shortlistsFail = false,
+  allFail = false,
   slug = 'mitte',
   path = `/neighborhood/${slug}`,
   mocks = [],
@@ -149,6 +150,7 @@ const renderPage = ({
   all: Place[];
   shortlists?: Shortlists;
   shortlistsFail?: boolean;
+  allFail?: boolean;
   slug?: string;
   path?: string;
   mocks?: MockedResponse[];
@@ -157,7 +159,9 @@ const renderPage = ({
     <MockedProvider
       mocks={[
         filteredPlacesMock({ neighborhood: slug, minRating: 4.5 }, topRated),
-        filteredPlacesMock({ neighborhood: slug }, all),
+        allFail
+          ? { request: { query: FilteredPlacesDocument, variables: { neighborhood: slug } }, error: new Error('down') }
+          : filteredPlacesMock({ neighborhood: slug }, all),
         shortlistsFail
           ? {
               request: { query: NeighborhoodShortlistsDocument, variables: { neighborhood: slug } },
@@ -297,6 +301,28 @@ describe('NeighborhoodPage', () => {
     await userEvent.click(within(all).getByRole('button', { name: 'Show 20 more' }));
     expect(cardNames(all)).toHaveLength(45);
     expect(within(all).queryByRole('button', { name: 'Show 20 more' })).not.toBeInTheDocument();
+  });
+
+  it('shows the page’s shape while the Places load, and only a status message to a screen reader', async () => {
+    renderPage({ topRated: [place('a', 4.8, 10)], all: [place('a', 4.8, 10)] });
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Best Coffee Places in Mitte' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Loading the Places…');
+    expect(screen.queryByText('Loading places...')).not.toBeInTheDocument();
+    expect(screen.queryAllByRole('region')).toEqual([]);
+    expect(screen.queryAllByRole('heading', { level: 2 })).toEqual([]);
+    expect(screen.queryAllByRole('article')).toEqual([]);
+
+    expect(await screen.findByRole('region', { name: /all 1 place in mitte/i })).toBeInTheDocument();
+    expect(screen.queryByText('Loading the Places…')).not.toBeInTheDocument();
+  });
+
+  it('says the Places couldn’t load when the full list fails', async () => {
+    renderPage({ topRated: [place('a', 4.8, 10)], all: [], allFail: true });
+
+    expect(await screen.findByText('Couldn’t load the Places. Please try again later.')).toBeInTheDocument();
+    expect(screen.queryByText('Loading the Places…')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
   });
 
   it('offers to suggest a missing Place under the full list', async () => {

@@ -1,0 +1,17 @@
+/* No specificity, so the class that sizes a block also overrides its shape. */
+:where(.skeleton) {
+  display: block;
+  border-radius: 4px;
+  background-color: var(--bg-tertiary);
+  animation: pulse 1.5s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}

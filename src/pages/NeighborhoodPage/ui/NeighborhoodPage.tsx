@@ -2,12 +2,11 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
-import { Spinner } from 'shared/ui/Loader';
 import { AllPlaces } from '../components/AllPlaces';
-import { NeighborhoodHeader } from '../components/NeighborhoodHeader';
-import { SectionSwitcher } from '../components/SectionSwitcher';
-import { ShortlistBlock } from '../components/ShortlistBlock';
-import { TopRatedPlaces } from '../components/TopRatedPlaces';
+import { NeighborhoodHeader, NeighborhoodSummary, NeighborhoodSummarySkeleton } from '../components/NeighborhoodHeader';
+import { SectionSwitcher, SectionSwitcherSkeleton } from '../components/SectionSwitcher';
+import { ShortlistBlock, ShortlistBlockSkeleton } from '../components/ShortlistBlock';
+import { TopRatedPlaces, TopRatedPlacesSkeleton } from '../components/TopRatedPlaces';
 import { SWITCHER_MIN_SECTIONS } from '../constants';
 import { useScrollToHash } from '../hooks/useScrollToHash';
 import { switcherSections } from '../lib/switcherSections';
@@ -30,6 +29,7 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   useScrollToHash(status === 'loaded');
   const sections = switcherSections({ hasTopRated: topRated.length > 0, shortlists, placesTotal: total });
   const hasSwitcher = status === 'loaded' && sections.length >= SWITCHER_MIN_SECTIONS;
+  const isLoading = status === 'loading';
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,20 +38,32 @@ export const NeighborhoodPage = ({ notFound }: NeighborhoodPageProps) => {
   if (status === 'notFound') return notFound;
 
   return (
-    <main className={clsx(cls.NeighborhoodPage, hasSwitcher && cls.withSwitcher, 'container')}>
+    <main className={clsx(cls.NeighborhoodPage, (hasSwitcher || isLoading) && cls.withSwitcher, 'container')}>
       <Helmet>
         <title>{`Best Coffee Places in ${displayNeighborhood} | Berlin Coffee Map`}</title>
       </Helmet>
-      <NeighborhoodHeader
-        neighborhood={displayNeighborhood}
-        numbers={status === 'loaded' ? { placesTotal: total, topRatedTotal: topRated.length } : undefined}
-        onMapOpen={trackNeighborhoodMapOpen}
-      />
-      {status === 'loading' && (
-        <div className={cls.loadingState}>
-          <Spinner size="lg" />
-          <p>Loading places...</p>
-        </div>
+      <NeighborhoodHeader neighborhood={displayNeighborhood}>
+        {isLoading && <NeighborhoodSummarySkeleton />}
+        {status === 'loaded' && (
+          <NeighborhoodSummary
+            neighborhood={displayNeighborhood}
+            numbers={{ placesTotal: total, topRatedTotal: topRated.length }}
+            onMapOpen={trackNeighborhoodMapOpen}
+          />
+        )}
+      </NeighborhoodHeader>
+      {isLoading && (
+        <>
+          <p role="status" className="sr-only">
+            Loading the Places…
+          </p>
+          {/* The page's shape in grey, so nothing jumps when the Places arrive: the usual switcher, Top rated and a Shortlist. */}
+          <div aria-hidden="true">
+            <SectionSwitcherSkeleton />
+            <TopRatedPlacesSkeleton />
+            <ShortlistBlockSkeleton />
+          </div>
+        </>
       )}
       {status === 'error' && (
         <div className={cls.emptyState}>

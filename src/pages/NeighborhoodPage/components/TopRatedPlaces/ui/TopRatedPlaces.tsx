@@ -4,7 +4,7 @@ import { sortPlaces } from '../../../lib/sortPlaces';
 import { showNeighborhoodOnMap } from '../../../model/showNeighborhoodOnMap';
 import { type NeighborhoodPlace } from '../../../types';
 import { Shelf } from '../../Shelf';
-import { TOP_RATED_SHELF_SIZE } from '../constants';
+import { TOP_RATED_COLUMNS, TOP_RATED_SHELF_SIZE } from '../constants';
 
 interface TopRatedPlacesProps {
   /** Every Place with an Average rating of 4.5 or higher. */
@@ -24,7 +24,7 @@ export const TopRatedPlaces = ({ places, neighborhood, onCardOpen, onMapOpen }: 
       id={TOP_RATED_ANCHOR}
       title="Top rated"
       places={bestPlaces}
-      columns={3}
+      columns={TOP_RATED_COLUMNS}
       mapCount={places.length}
       onMapOpen={() => {
         showNeighborhoodOnMap(neighborhood, { minRating: TOP_RATED_MIN_RATING });

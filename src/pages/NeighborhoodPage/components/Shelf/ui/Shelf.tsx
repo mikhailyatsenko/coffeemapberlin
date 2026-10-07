@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { NeighborhoodPlaceCard } from 'entities/NeighborhoodPlaceCard';
 import { RoutePaths } from 'shared/constants';
 import { type NeighborhoodPlace } from '../../../types';
+import { type ShelfColumns } from '../types';
 import cls from './Shelf.module.scss';
 
 interface ShelfProps {
@@ -11,8 +12,7 @@ interface ShelfProps {
   id: string;
   title: string;
   places: readonly NeighborhoodPlace[];
-  /** Cards per row on desktop; a phone shows a carousel instead. */
-  columns: 3 | 5;
+  columns: ShelfColumns;
   /** How many Places "See all N on the map" shows. */
   mapCount: number;
   /** Called on "See all N on the map", before the map opens. */
